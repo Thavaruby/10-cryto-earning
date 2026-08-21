@@ -98,12 +98,48 @@
 </footer>
 
 <script>
+    let cooldown = 60 * 60; // 60 minutes
+let timerInterval;
 
 function claimReward() {
+
+    const button = document.querySelector("button");
+
+    button.disabled = true;
 
     document.getElementById("timer").innerText =
         "✅ Claim recorded in TEST MODE!";
 
+    startTimer();
+}
+
+function startTimer() {
+
+    let remaining = cooldown;
+
+    timerInterval = setInterval(function () {
+
+        let minutes = Math.floor(remaining / 60);
+        let seconds = remaining % 60;
+
+        document.getElementById("timer").innerText =
+            "⏳ Next claim in: " +
+            minutes + "m " +
+            seconds + "s";
+
+        remaining--;
+
+        if (remaining < 0) {
+
+            clearInterval(timerInterval);
+
+            document.getElementById("timer").innerText =
+                "🎉 You can claim again!";
+
+            document.querySelector("button").disabled = false;
+        }
+
+    }, 1000);
 }
 
 </script>
