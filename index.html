@@ -3,16 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>My Crypto Faucet</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f4f7;
+            text-align: center;
+            margin: 0;
+        }
+
+        header {
+            background: #1f2937;
+            color: white;
+            padding: 25px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .balance {
+            font-size: 22px;
+            margin: 20px;
+        }
+
+        .reward {
+            font-size: 18px;
+            margin: 20px;
+        }
+
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        #timer {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        footer {
+            margin-top: 40px;
+            padding: 20px;
+            color: #666;
+        }
+    </style>
 </head>
 
 <body>
 
+<header>
     <h1>🎁 My Crypto Faucet</h1>
+    <p>Claim free crypto rewards</p>
+</header>
 
-    <p>Claim free crypto rewards!</p>
+<div class="container">
 
-    <button>CLAIM NOW</button>
+    <h2>🪙 Crypto Faucet</h2>
+
+    <div class="balance">
+        Balance: <strong>0.00000000</strong>
+    </div>
+
+    <div class="reward">
+        🎁 Reward: <strong>0.00000100 BTC</strong>
+    </div>
+
+    <button onclick="claimReward()">
+        CLAIM NOW
+    </button>
+
+    <div id="timer"></div>
+
+</div>
+
+<footer>
+    © 2026 My Crypto Faucet
+</footer>
+
+<script>
+
+function claimReward() {
+
+    document.getElementById("timer").innerText =
+        "✅ Claim recorded in TEST MODE!";
+
+}
+
+</script>
 
 </body>
-</html>
+        </html>
