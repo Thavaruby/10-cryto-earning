@@ -89,14 +89,48 @@
 <script>
 
 document.getElementById("registerForm")
-.addEventListener("submit", function(event) {
+.addEventListener("submit", async function(event) {
 
     event.preventDefault();
 
-    const email = document.getElementById("email").value;
+    const email = document.getElementById("email").value.trim();
 
-    document.getElementById("message").innerText =
-        "✅ TEST account created for: " + email;
+    const message = document.getElementById("message");
+
+    message.innerText = "⏳ Creating account...";
+
+    try {
+
+        const response = await fetch("/api/register", {
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                email: email
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+
+            message.innerText =
+                "✅ Account created successfully!";
+
+        } else {
+
+            message.innerText =
+                "❌ " + result.error;
+        }
+
+    } catch (error) {
+
+        message.innerText =
+            "❌ Connection error. Please try again.";
+    }
 
 });
 
