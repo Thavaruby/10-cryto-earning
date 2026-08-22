@@ -96,29 +96,39 @@
 <script>
 
 document.getElementById("registerForm")
+document.getElementById("registerForm")
 .addEventListener("submit", async function(event) {
 
     event.preventDefault();
 
-    const email = document.getElementById("email").value.trim();
+    const email =
+        document.getElementById("email").value.trim();
 
-    const message = document.getElementById("message");
+    const password =
+        document.getElementById("password").value;
 
-    message.innerText = "⏳ Creating account...";
+    const message =
+        document.getElementById("message");
+
+    message.innerText = "⏳ Creating secure account...";
 
     try {
 
-        const response = await fetch("/api/register", {
-            method: "POST",
+        const response = await fetch(
+            "/api/register-secure",
+            {
+                method: "POST",
 
-            headers: {
-                "Content-Type": "application/json"
-            },
+                headers: {
+                    "Content-Type": "application/json"
+                },
 
-            body: JSON.stringify({
-                email: email
-            })
-        });
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
+            }
+        );
 
         const result = await response.json();
 
@@ -126,6 +136,9 @@ document.getElementById("registerForm")
 
             message.innerText =
                 "✅ Account created successfully!";
+
+            document.getElementById("registerForm")
+                .reset();
 
         } else {
 
