@@ -76,6 +76,10 @@
 
     <p>Current Balance</p>
 
+    <button id="claimButton" onclick="claimReward()">
+    🎁 CLAIM REWARD
+    </button>
+
     <button onclick="logout()">
         LOGOUT
     </button>
@@ -131,6 +135,56 @@ async function logout() {
 
 loadUser();
 
+
+async function claimReward() {
+
+    const button =
+        document.getElementById("claimButton");
+
+    const message =
+        document.getElementById("message");
+
+    button.disabled = true;
+
+    message.innerText =
+        "⏳ Claiming reward...";
+
+    try {
+
+        const response =
+            await fetch("/api/claim", {
+                method: "POST"
+            });
+
+        const result =
+            await response.json();
+
+        if (result.success) {
+
+            document.getElementById("balance")
+                .innerText =
+                result.balance;
+
+            message.innerText =
+                "✅ Reward claimed: " +
+                result.reward;
+
+        } else {
+
+            message.innerText =
+                "❌ " + result.error;
+        }
+
+    } catch (error) {
+
+        message.innerText =
+            "❌ Connection error.";
+
+    } finally {
+
+        button.disabled = false;
+    }
+}
 </script>
 
 </body>
