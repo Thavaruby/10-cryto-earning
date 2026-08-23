@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login - My Crypto Faucet</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f4f7;
+            text-align: center;
+            margin: 0;
+        }
+
+        header {
+            background: #1f2937;
+            color: white;
+            padding: 25px;
+        }
+
+        .container {
+            max-width: 420px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        input {
+            width: 90%;
+            padding: 13px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 16px;
+        }
+
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 13px 30px;
+            font-size: 16px;
+            border-radius: 7px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+        }
+
+        #message {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>🎁 My Crypto Faucet</h1>
+</header>
+
+<div class="container">
+
+    <h2>🔐 Login</h2>
+
+    <form id="loginForm">
+
+        <input
+            type="email"
+            id="email"
+            placeholder="Email address"
+            required
+        >
+
+        <input
+            type="password"
+            id="password"
+            placeholder="Password"
+            required
+        >
+
+        <br>
+
+        <button type="submit" id="loginButton">
+            LOGIN
+        </button>
+
+    </form>
+
+    <div id="message"></div>
+
+</div>
+
+<script>
+
+document.getElementById("loginForm")
+.addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+    const email =
+        document.getElementById("email").value.trim();
+
+    const password =
+        document.getElementById("password").value;
+
+    const message =
+        document.getElementById("message");
+
+    const button =
+        document.getElementById("loginButton");
+
+    button.disabled = true;
+
+    message.innerText =
+        "⏳ Logging in...";
+
+    try {
+
+        const response = await fetch(
+            "/api/login",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
+            }
+        );
+
+        const result =
+            await response.json();
+
+        if (result.success) {
+
+            message.innerText =
+                "✅ Login successful!";
+
+        } else {
+
+            message.innerText =
+                "❌ " + result.error;
+
+            button.disabled = false;
+        }
+
+    } catch (error) {
+
+        message.innerText =
+            "❌ Connection error. Please try again.";
+
+        button.disabled = false;
+    }
+
+});
+</script>
+
+</body>
+</html>
