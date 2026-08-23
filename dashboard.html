@@ -132,11 +132,38 @@ async function loadUser() {
 
 async function logout() {
 
-    document.getElementById("message")
-        .innerText =
-        "Logging out...";
+    const message =
+        document.getElementById("message");
 
-    // Logout function will be added in the next step.
+    message.innerText =
+        "⏳ Logging out...";
+
+    try {
+
+        const response =
+            await fetch("/api/logout", {
+                method: "POST"
+            });
+
+        const result =
+            await response.json();
+
+        if (result.success) {
+
+            window.location.href =
+                "/login.html";
+
+        } else {
+
+            message.innerText =
+                "❌ " + result.error;
+        }
+
+    } catch (error) {
+
+        message.innerText =
+            "❌ Logout failed. Please try again.";
+    }
 }
 
 async function claimReward() {
