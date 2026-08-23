@@ -80,6 +80,12 @@
     🎁 CLAIM REWARD
     </button>
 
+    <h3>📜 Claim History</h3>
+
+<div id="claimHistory">
+    ⏳ Loading...
+</div>
+
     <button onclick="logout()">
         LOGOUT
     </button>
@@ -133,9 +139,6 @@ async function logout() {
     // Logout function will be added in the next step.
 }
 
-loadUser();
-
-
 async function claimReward() {
 
     const button =
@@ -185,6 +188,55 @@ async function claimReward() {
         button.disabled = false;
     }
 }
+async function loadClaimHistory() {
+
+    const history =
+        document.getElementById("claimHistory");
+
+    try {
+
+        const response =
+            await fetch("/api/claims");
+
+        const result =
+            await response.json();
+
+        if (!result.success) {
+            history.innerText =
+                "❌ " + result.error;
+            return;
+        }
+
+        if (result.claims.length === 0) {
+            history.innerText =
+                "No claims yet.";
+            return;
+        }
+
+        history.innerHTML = result.claims
+            .map(claim => `
+                <div style="
+                    padding:10px;
+                    margin:8px 0;
+                    background:#f3f4f6;
+                    border-radius:8px;
+                ">
+                    🎁 Reward: ${claim.reward}<br>
+                    🕐 ${new Date(claim.claimed_at).toLocaleString()}
+                </div>
+            `)
+            .join("");
+
+    } catch (error) {
+
+        history.innerText =
+            "❌ Unable to load claim history.";
+    }
+}
+
+loadUser();
+loadClaimHistory();
+    
 </script>
 
 </body>
