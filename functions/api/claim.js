@@ -35,7 +35,12 @@ async function hashSessionToken(token) {
 export async function onRequestPost(context) {
 
     try {
+        
+          const data =
+          await context.request.json();
 
+          const turnstileToken =
+          data.turnstileToken;
         const sessionToken =
             getCookie(
                 context.request,
