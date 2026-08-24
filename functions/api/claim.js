@@ -1,38 +1,3 @@
-const verifyResponse =
-    await fetch(
-        "https://challenges.cloudflare.com/turnstile/v0/siteverify",
-        {
-            method: "POST",
-
-            headers: {
-                "Content-Type":
-                    "application/x-www-form-urlencoded"
-            },
-
-            body:
-                new URLSearchParams({
-                    secret:
-                        context.env.TURNSTILE_SECRET,
-
-                    response:
-                        turnstileToken
-                })
-        }
-    );
-
-const verifyResult =
-    await verifyResponse.json();
-
-if (!verifyResult.success) {
-
-    return Response.json(
-        {
-            success: false,
-            error: "Verification failed"
-        },
-        { status: 400 }
-    );
-}
 const REWARD = 0.000001;
 const COOLDOWN_SECONDS = 10 * 60;
 
@@ -70,12 +35,63 @@ async function hashSessionToken(token) {
 export async function onRequestPost(context) {
 
     try {
-        
-          const data =
-          await context.request.json();
 
-          const turnstileToken =
-          data.turnstileToken;
+        // Get Turnstile token
+        const data =
+            await context.request.json();
+
+        const turnstileToken =
+            String(data.turnstileToken || "");
+
+        if (!turnstileToken) {
+
+            return Response.json(
+                {
+                    success: false,
+                    error: "Please complete verification"
+                },
+                { status: 400 }
+            );
+        }
+
+        // Verify Turnstile with Cloudflare
+        const verifyResponse =
+            await fetch(
+                "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/x-www-form-urlencoded"
+                    },
+
+                    body:
+                        new URLSearchParams({
+                            secret:
+                                context.env.TURNSTILE_SECRET,
+
+                            response:
+                                turnstileToken
+                        })
+                }
+            );
+
+        const verifyResult =
+            await verifyResponse.json();
+
+        if (!verifyResult.success) {
+
+            return Response.json(
+                {
+                    success: false,
+                    error: "Verification failed"
+                },
+                { status: 400 }
+            );
+        }
+
+        // Get session
         const sessionToken =
             getCookie(
                 context.request,
@@ -136,6 +152,7 @@ export async function onRequestPost(context) {
             );
         }
 
+        // Check cooldown
         const lastClaim =
             await context.env.DB
                 .prepare(
@@ -151,15 +168,13 @@ export async function onRequestPost(context) {
         if (lastClaim) {
 
             const lastTime =
-                new Date(lastClaim.claimed_at)
-                    .getTime();
-
-            const now =
-                Date.now();
+                new Date(
+                    lastClaim.claimed_at
+                ).getTime();
 
             const elapsedSeconds =
                 Math.floor(
-                    (now - lastTime) / 1000
+                    (Date.now() - lastTime) / 1000
                 );
 
             if (
@@ -182,9 +197,12 @@ export async function onRequestPost(context) {
             }
         }
 
+        // Record claim
         await context.env.DB
             .prepare(
-                "INSERT INTO claims (user_id, reward) VALUES (?, ?)"
+                `INSERT INTO claims
+                (user_id, reward)
+                VALUES (?, ?)`
             )
             .bind(
                 user.user_id,
@@ -192,9 +210,12 @@ export async function onRequestPost(context) {
             )
             .run();
 
+        // Add reward to balance
         await context.env.DB
             .prepare(
-                "UPDATE users SET balance = balance + ? WHERE id = ?"
+                `UPDATE users
+                 SET balance = balance + ?
+                 WHERE id = ?`
             )
             .bind(
                 REWARD,
@@ -202,10 +223,13 @@ export async function onRequestPost(context) {
             )
             .run();
 
+        // Get updated balance
         const updatedUser =
             await context.env.DB
                 .prepare(
-                    "SELECT balance FROM users WHERE id = ?"
+                    `SELECT balance
+                     FROM users
+                     WHERE id = ?`
                 )
                 .bind(user.user_id)
                 .first();
