@@ -54,6 +54,7 @@
             margin-top: 20px;
         }
     </style>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 
 <body>
@@ -76,9 +77,17 @@
 
     <p>Current Balance</p>
 
-    <button id="claimButton" onclick="claimReward()">
+<div
+    class="cf-turnstile"
+    data-sitekey="YOUR_SITEKEY_HERE"
+    data-theme="auto">
+</div>
+
+<br>
+
+<button id="claimButton" onclick="claimReward()">
     🎁 CLAIM REWARD
-    </button>
+</button>
 
     <h3>📜 Claim History</h3>
 
