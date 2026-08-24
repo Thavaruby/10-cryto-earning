@@ -129,7 +129,13 @@
 <div id="claimHistory">
     ⏳ Loading...
 </div>
+<hr>
 
+<h3>💸 Withdrawal History</h3>
+
+<div id="withdrawalHistory">
+    ⏳ Loading...
+</div>
     <button onclick="logout()">
         LOGOUT
     </button>
@@ -418,9 +424,70 @@ async function loadClaimHistory() {
             "❌ Unable to load claim history.";
     }
 }
+async function loadWithdrawalHistory() {
 
+    const history =
+        document.getElementById("withdrawalHistory");
+
+    try {
+
+        const response =
+            await fetch("/api/withdrawals");
+
+        const result =
+            await response.json();
+
+        if (!result.success) {
+            history.innerText =
+                "❌ " + result.error;
+            return;
+        }
+
+        if (result.withdrawals.length === 0) {
+            history.innerText =
+                "No withdrawal requests yet.";
+            return;
+        }
+
+        history.innerHTML = result.withdrawals
+            .map(withdrawal => `
+                <div style="
+                    padding:10px;
+                    margin:8px 0;
+                    background:#f3f4f6;
+                    border-radius:8px;
+                    text-align:left;
+                ">
+                    💰 Amount:
+                    ${withdrawal.amount}
+                    ${withdrawal.currency}
+                    <br>
+
+                    🏦 Wallet:
+                    ${withdrawal.wallet_address}
+                    <br>
+
+                    📌 Status:
+                    ${withdrawal.status.toUpperCase()}
+                    <br>
+
+                    🕐 Date:
+                    ${new Date(
+                        withdrawal.created_at
+                    ).toLocaleString()}
+                </div>
+            `)
+            .join("");
+
+    } catch (error) {
+
+        history.innerText =
+            "❌ Unable to load withdrawal history.";
+    }
+    }
 loadUser();
 loadClaimHistory();
+loadWithdrawalHistory(); 
     
 </script>
 
