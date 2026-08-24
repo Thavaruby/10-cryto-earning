@@ -281,6 +281,98 @@ const response =
         button.disabled = false;
     }
 }
+async function submitWithdrawal() {
+
+    const amount =
+        Number(
+            document.getElementById("withdrawAmount").value
+        );
+
+    const currency =
+        document.getElementById("withdrawCurrency").value;
+
+    const walletAddress =
+        document.getElementById("walletAddress").value.trim();
+
+    const button =
+        document.getElementById("withdrawButton");
+
+    const message =
+        document.getElementById("withdrawMessage");
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+        message.innerText =
+            "❌ Enter a valid amount.";
+        return;
+    }
+
+    if (amount < 0.00001) {
+        message.innerText =
+            "❌ Minimum withdrawal is 0.00001.";
+        return;
+    }
+
+    if (!walletAddress) {
+        message.innerText =
+            "❌ Enter your wallet address.";
+        return;
+    }
+
+    button.disabled = true;
+
+    message.innerText =
+        "⏳ Submitting withdrawal request...";
+
+    try {
+
+        const response =
+            await fetch("/api/withdraw", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify({
+                    amount: amount,
+                    currency: currency,
+                    walletAddress: walletAddress
+                })
+            });
+
+        const result =
+            await response.json();
+
+        if (result.success) {
+
+            message.innerText =
+                "✅ Withdrawal request submitted. Status: PENDING";
+
+            document.getElementById("withdrawAmount")
+                .value = "";
+
+            document.getElementById("walletAddress")
+                .value = "";
+
+        } else {
+
+            message.innerText =
+                "❌ " + result.error;
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        message.innerText =
+            "❌ Connection error.";
+    }
+
+    button.disabled = false;
+}
+    
 async function loadClaimHistory() {
 
     const history =
