@@ -190,10 +190,31 @@ async function claimReward() {
 
     try {
 
-        const response =
-            await fetch("/api/claim", {
-                method: "POST"
-            });
+        const turnstileToken =
+    turnstile.getResponse();
+
+if (!turnstileToken) {
+
+    message.innerText =
+        "❌ Please complete verification.";
+
+    button.disabled = false;
+    return;
+}
+
+const response =
+    await fetch("/api/claim", {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+            turnstileToken: turnstileToken
+        })
+    });
 
         const result =
             await response.json();
