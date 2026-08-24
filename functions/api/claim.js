@@ -1,3 +1,38 @@
+const verifyResponse =
+    await fetch(
+        "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type":
+                    "application/x-www-form-urlencoded"
+            },
+
+            body:
+                new URLSearchParams({
+                    secret:
+                        context.env.TURNSTILE_SECRET,
+
+                    response:
+                        turnstileToken
+                })
+        }
+    );
+
+const verifyResult =
+    await verifyResponse.json();
+
+if (!verifyResult.success) {
+
+    return Response.json(
+        {
+            success: false,
+            error: "Verification failed"
+        },
+        { status: 400 }
+    );
+}
 const REWARD = 0.000001;
 const COOLDOWN_SECONDS = 10 * 60;
 
