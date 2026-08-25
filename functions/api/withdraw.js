@@ -1,4 +1,4 @@
-const MIN_WITHDRAWAL = 0.00001;
+const MIN_WITHDRAWAL = 0.0000001;
 
 function getCookie(request, name) {
     const cookieHeader = request.headers.get("Cookie");
