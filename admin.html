@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Admin - Crypto Faucet</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f4f7;
+            margin: 0;
+        }
+
+        header {
+            background: #111827;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+        }
+
+        .withdrawal {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 12px 0;
+            border-radius: 8px;
+        }
+
+        .status {
+            font-weight: bold;
+        }
+
+        button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>🔐 Admin Dashboard</h1>
+</header>
+
+<div class="container">
+
+    <h2>💸 Pending Withdrawals</h2>
+
+    <div id="message">
+        ⏳ Loading...
+    </div>
+
+    <div id="withdrawals"></div>
+
+</div>
+
+<script>
+
+async function loadWithdrawals() {
+
+    const message =
+        document.getElementById("message");
+
+    const container =
+        document.getElementById("withdrawals");
+
+    try {
+
+        const response =
+            await fetch("/api/admin/withdrawals");
+
+        const result =
+            await response.json();
+
+        if (!result.success) {
+
+            message.innerText =
+                "❌ " + result.error;
+
+            return;
+        }
+
+        message.innerText =
+            `${result.withdrawals.length} pending withdrawal(s)`;
+
+        if (result.withdrawals.length === 0) {
+
+            container.innerHTML =
+                "<p>No pending withdrawals.</p>";
+
+            return;
+        }
+
+        container.innerHTML =
+            result.withdrawals.map(item => `
+
+                <div class="withdrawal">
+
+                    <strong>
+                        Withdrawal #${item.id}
+                    </strong>
+
+                    <br><br>
+
+                    👤 User ID:
+                    ${item.user_id}
+
+                    <br>
+
+                    📧 Email:
+                    ${item.email}
+
+                    <br>
+
+                    💰 Amount:
+                    ${item.amount}
+                    ${item.currency}
+
+                    <br>
+
+                    🏦 Wallet:
+                    ${item.wallet_address}
+
+                    <br>
+
+                    📌 Status:
+                    <span class="status">
+                        ${item.status}
+                    </span>
+
+                    <br>
+
+                    🕐 Date:
+                    ${new Date(
+                        item.created_at
+                    ).toLocaleString()}
+
+                </div>
+
+            `).join("");
+
+    } catch (error) {
+
+        message.innerText =
+            "❌ Unable to load withdrawals.";
+    }
+}
+
+loadWithdrawals();
+
+</script>
+
+</body>
+</html>
