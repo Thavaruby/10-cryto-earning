@@ -232,7 +232,22 @@
 
     </button>
 
+<button
+    id="claimButton"
+    onclick="claimReward()">
 
+    🎁 CLAIM REWARD
+
+</button>
+
+<div
+    id="claimCooldown"
+    style="
+        margin: 10px 0 20px;
+        font-weight: bold;
+        color: #2563eb;
+    ">
+</div>
     <hr>
 
 
@@ -410,7 +425,67 @@ async function loadUser() {
         );
     }
 }
+let cooldownTimer = null;
 
+function startClaimCountdown(seconds) {
+
+    const countdown =
+        document.getElementById("claimCooldown");
+
+    const button =
+        document.getElementById("claimButton");
+
+    if (cooldownTimer) {
+        clearInterval(cooldownTimer);
+    }
+
+    function updateCountdown() {
+
+        if (seconds <= 0) {
+
+            clearInterval(cooldownTimer);
+
+            countdown.innerText =
+                "✅ You can claim now!";
+
+            countdown.style.color =
+                "#16a34a";
+
+            button.disabled = false;
+
+            return;
+        }
+
+        const hours =
+            Math.floor(seconds / 3600);
+
+        const minutes =
+            Math.floor(
+                (seconds % 3600) / 60
+            );
+
+        const secs =
+            seconds % 60;
+
+        countdown.innerText =
+            `⏳ Next claim available in ${hours}h ${minutes}m ${secs}s`;
+
+        countdown.style.color =
+            "#2563eb";
+
+        button.disabled = true;
+
+        seconds--;
+    }
+
+    updateCountdown();
+
+    cooldownTimer =
+        setInterval(
+            updateCountdown,
+            1000
+        );
+    }
 
 /* =========================
    LOGOUT
@@ -520,29 +595,58 @@ async function claimReward() {
 
         if (result.success) {
 
-            document.getElementById(
-                "balance"
-            ).innerText =
-                result.balance;
+    document.getElementById("balance")
+        .innerText =
+        result.balance;
 
-            showNotification(
-                "✅ Reward claimed: " +
-                result.reward +
-                " BTC",
-                "success"
+    showNotification(
+        "✅ Reward claimed: " +
+        result.reward +
+        " BTC",
+        "success"
+    );
+
+    startClaimCountdown(3600);
+
+    turnstile.reset();
+} else {
+
+    showNotification(
+        "❌ " + result.error,
+        "error"
+    );
+
+    if (response.status === 429) {
+
+        const match =
+            result.error.match(
+                /(\d+)h\s+(\d+)m\s+(\d+)s/
             );
 
-            turnstile.reset();
+        if (match) {
 
-        } else {
+            const hours =
+                Number(match[1]);
 
-            showNotification(
-                "❌ " + result.error,
-                "error"
+            const minutes =
+                Number(match[2]);
+
+            const seconds =
+                Number(match[3]);
+
+            const totalSeconds =
+                hours * 3600 +
+                minutes * 60 +
+                seconds;
+
+            startClaimCountdown(
+                totalSeconds
             );
-
-            turnstile.reset();
         }
+    }
+
+    turnstile.reset();
+}
 
 
     } catch (error) {
