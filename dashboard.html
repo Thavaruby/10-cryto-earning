@@ -53,6 +53,37 @@
         #message {
             margin-top: 20px;
         }
+        .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background: white;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+    margin: 10% auto;
+    padding: 25px;
+    border-radius: 15px;
+    position: relative;
+    text-align: left;
+}
+
+.closeButton {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    background: #ef4444;
+    padding: 7px 12px;
+    }
     </style>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
