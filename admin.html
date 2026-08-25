@@ -71,7 +71,67 @@
 </div>
 
 <script>
+async function processWithdrawal(id, action) {
 
+    const message =
+        document.getElementById("message");
+
+    const confirmation =
+        confirm(
+            `Are you sure you want to ${action} withdrawal #${id}?`
+        );
+
+    if (!confirmation) {
+        return;
+    }
+
+    message.innerText =
+        "⏳ Processing...";
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/admin/withdrawal-action",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        withdrawalId: id,
+                        action: action
+                    })
+                }
+            );
+
+        const result =
+            await response.json();
+
+        if (result.success) {
+
+            message.innerText =
+                `✅ Withdrawal ${result.status}.`;
+
+            await loadWithdrawals();
+
+        } else {
+
+            message.innerText =
+                "❌ " + result.error;
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        message.innerText =
+            "❌ Connection error.";
+    }
+    }
 async function loadWithdrawals() {
 
     const message =
@@ -108,52 +168,66 @@ async function loadWithdrawals() {
         }
 
         container.innerHTML =
-            result.withdrawals.map(item => `
+    result.withdrawals.map(item => `
 
-                <div class="withdrawal">
+        <div class="withdrawal">
 
-                    <strong>
-                        Withdrawal #${item.id}
-                    </strong>
+            <strong>
+                Withdrawal #${item.id}
+            </strong>
 
-                    <br><br>
+            <br><br>
 
-                    👤 User ID:
-                    ${item.user_id}
+            👤 User ID:
+            ${item.user_id}
 
-                    <br>
+            <br>
 
-                    📧 Email:
-                    ${item.email}
+            📧 Email:
+            ${item.email}
 
-                    <br>
+            <br>
 
-                    💰 Amount:
-                    ${item.amount}
-                    ${item.currency}
+            💰 Amount:
+            ${item.amount}
+            ${item.currency}
 
-                    <br>
+            <br>
 
-                    🏦 Wallet:
-                    ${item.wallet_address}
+            🏦 Wallet:
+            ${item.wallet_address}
 
-                    <br>
+            <br>
 
-                    📌 Status:
-                    <span class="status">
-                        ${item.status}
-                    </span>
+            📌 Status:
+            <span class="status">
+                ${item.status}
+            </span>
 
-                    <br>
+            <br>
 
-                    🕐 Date:
-                    ${new Date(
-                        item.created_at
-                    ).toLocaleString()}
+            🕐 Date:
+            ${new Date(
+                item.created_at
+            ).toLocaleString()}
 
-                </div>
+            <br><br>
 
-            `).join("");
+            <button
+                onclick="processWithdrawal(${item.id}, 'approve')"
+            >
+                ✅ APPROVE
+            </button>
+
+            <button
+                onclick="processWithdrawal(${item.id}, 'reject')"
+            >
+                ❌ REJECT
+            </button>
+
+        </div>
+
+    `).join("");
 
     } catch (error) {
 
