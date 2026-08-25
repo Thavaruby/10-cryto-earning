@@ -248,7 +248,40 @@
     <div class="withdraw-section">
 
         <h3>💸 Withdraw BTC</h3>
+<div style="
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    width:90%;
+    max-width:350px;
+    margin:0 auto 8px;
+">
+    <label for="withdrawAmount">
+        <strong>Amount BTC</strong>
+        <span style="font-size:13px;color:#666;">
+            (Min: 0.0000001 BTC)
+        </span>
+    </label>
 
+    <button
+        type="button"
+        onclick="setMaxWithdrawal()"
+        style="
+            margin:0;
+            padding:6px 12px;
+            font-size:13px;
+        ">
+        MAX
+    </button>
+</div>
+
+<input
+    type="number"
+    id="withdrawAmount"
+    placeholder="Amount BTC"
+    step="0.0000001"
+    min="0.0000001"
+>
         <input
             type="number"
             id="withdrawAmount"
@@ -844,7 +877,37 @@ async function submitWithdrawal() {
         button.disabled = false;
     }
 }
+function setMaxWithdrawal() {
 
+    const balanceElement =
+        document.getElementById("balance");
+
+    const amountInput =
+        document.getElementById("withdrawAmount");
+
+    const balance =
+        Number(
+            balanceElement.innerText
+        );
+
+    if (!Number.isFinite(balance) || balance <= 0) {
+
+        showNotification(
+            "❌ No BTC balance available.",
+            "error"
+        );
+
+        return;
+    }
+
+    amountInput.value =
+        balance.toFixed(8);
+
+    showNotification(
+        "💰 Maximum BTC balance selected.",
+        "info"
+    );
+    }
 
 /* =========================
    OPEN CLAIM HISTORY
