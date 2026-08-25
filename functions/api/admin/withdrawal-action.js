@@ -184,35 +184,68 @@ export async function onRequestPost(context) {
 
         if (action === "reject") {
 
-            const result =
-                await context.env.DB
-                    .prepare(
-                        `UPDATE withdrawals
-                         SET status = 'rejected',
-                             processed_at = CURRENT_TIMESTAMP
-                         WHERE id = ?
-                           AND status = 'pending'`
-                    )
-                    .bind(withdrawalId)
-                    .run();
+    /*
+     * Mark withdrawal rejected AND
+     * return reserved BTC to the user.
+     *
+     * D1 batch is atomic:
+     * both operations succeed together,
+     * or neither operation is committed.
+     */
 
-            if (result.meta.changes !== 1) {
+    const result =
+        await context.env.DB.batch([
 
-                return Response.json(
-                    {
-                        success: false,
-                        error:
-                            "Withdrawal was already processed"
-                    },
-                    { status: 409 }
-                );
-            }
+            context.env.DB
+                .prepare(
+                    `UPDATE withdrawals
+                     SET status = 'rejected',
+                         processed_at = CURRENT_TIMESTAMP
+                     WHERE id = ?
+                       AND status = 'pending'`
+                )
+                .bind(withdrawalId),
 
-            return Response.json({
-                success: true,
-                status: "rejected"
-            });
-        }
+            context.env.DB
+                .prepare(
+                    `UPDATE users
+                     SET balance = balance + ?
+                     WHERE id = ?`
+                )
+                .bind(
+                    withdrawal.amount,
+                    withdrawal.user_id
+                )
+
+        ]);
+
+    /*
+     * First query must update exactly one
+     * pending withdrawal.
+     */
+    if (
+        !result ||
+        !result[0] ||
+        result[0].meta.changes !== 1
+    ) {
+
+        return Response.json(
+            {
+                success: false,
+                error:
+                    "Withdrawal was already processed"
+            },
+            { status: 409 }
+        );
+    }
+
+    return Response.json({
+        success: true,
+        status: "rejected",
+        refunded: withdrawal.amount,
+        currency: "BTC"
+    });
+}
 
         /*
          * APPROVE
