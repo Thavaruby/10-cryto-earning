@@ -478,7 +478,51 @@ function startClaimCountdown(seconds) {
             1000
         );
     }
+async function loadClaimCooldown() {
 
+    try {
+
+        const response =
+            await fetch("/api/claim-status");
+
+        const result =
+            await response.json();
+
+        if (!result.success) {
+            return;
+        }
+
+        if (result.canClaim) {
+
+            document.getElementById(
+                "claimButton"
+            ).disabled = false;
+
+            document.getElementById(
+                "claimCooldown"
+            ).innerText =
+                "✅ You can claim now!";
+
+            document.getElementById(
+                "claimCooldown"
+            ).style.color =
+                "#16a34a";
+
+            return;
+        }
+
+        startClaimCountdown(
+            result.remainingSeconds
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Cooldown error:",
+            error
+        );
+    }
+    }
 /* =========================
    LOGOUT
 ========================= */
@@ -1037,6 +1081,7 @@ window.onclick = function(event) {
 ========================= */
 
 loadUser();
+loadClaimCooldown();
 
 </script>
 
