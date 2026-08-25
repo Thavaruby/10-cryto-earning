@@ -27,45 +27,9 @@ async function hashSessionToken(token) {
         .join("");
 }
 
-export async function onRequestPost(context) {
+export async function onRequestGet(context) {
 
     try {
-
-        const data =
-            await context.request.json();
-
-        const withdrawalId =
-            Number(data.withdrawalId);
-
-        const action =
-            String(data.action || "")
-                .toLowerCase();
-
-        if (
-            !Number.isInteger(withdrawalId) ||
-            withdrawalId <= 0
-        ) {
-            return Response.json(
-                {
-                    success: false,
-                    error: "Invalid withdrawal ID"
-                },
-                { status: 400 }
-            );
-        }
-
-        if (
-            action !== "approve" &&
-            action !== "reject"
-        ) {
-            return Response.json(
-                {
-                    success: false,
-                    error: "Invalid action"
-                },
-                { status: 400 }
-            );
-        }
 
         const sessionToken =
             getCookie(
@@ -122,154 +86,30 @@ export async function onRequestPost(context) {
             );
         }
 
-        const admin =
-            await context.env.DB
-                .prepare(
-                    `SELECT user_id
-                     FROM admins
-                     WHERE user_id = ?
-                     LIMIT 1`
-                )
-                .bind(session.user_id)
-                .first();
-
-        if (!admin) {
-            return Response.json(
-                {
-                    success: false,
-                    error: "Admin access required"
-                },
-                { status: 403 }
-            );
-        }
-
-        const withdrawal =
+        const withdrawals =
             await context.env.DB
                 .prepare(
                     `SELECT
                         id,
-                        user_id,
                         amount,
+                        wallet_address,
                         currency,
-                        status
+                        status,
+                        created_at,
+                        processed_at
                      FROM withdrawals
-                     WHERE id = ?
-                     LIMIT 1`
+                     WHERE user_id = ?
+                     ORDER BY id DESC
+                     LIMIT 100`
                 )
-                .bind(withdrawalId)
-                .first();
+                .bind(session.user_id)
+                .all();
 
-        if (!withdrawal) {
-            return Response.json(
-                {
-                    success: false,
-                    error: "Withdrawal not found"
-                },
-                { status: 404 }
-            );
-        }
-
-        if (withdrawal.status !== "pending") {
-            return Response.json(
-                {
-                    success: false,
-                    error:
-                        "This withdrawal has already been processed"
-                },
-                { status: 409 }
-            );
-        }
-
-        /*
-         * APPROVE
-         *
-         * Balance was already reserved when
-         * the withdrawal was created.
-         *
-         * Therefore DO NOT deduct balance here.
-         */
-        if (action === "approve") {
-
-            const result =
-                await context.env.DB
-                    .prepare(
-                        `UPDATE withdrawals
-                         SET status = 'approved',
-                             processed_at = CURRENT_TIMESTAMP
-                         WHERE id = ?
-                           AND status = 'pending'`
-                    )
-                    .bind(withdrawalId)
-                    .run();
-
-            if (result.meta.changes !== 1) {
-                return Response.json(
-                    {
-                        success: false,
-                        error:
-                            "Withdrawal was already processed"
-                    },
-                    { status: 409 }
-                );
-            }
-
-            return Response.json({
-                success: true,
-                status: "approved",
-                amount: withdrawal.amount,
-                currency: "BTC"
-            });
-        }
-
-        /*
-         * REJECT
-         *
-         * Return the reserved BTC to the user.
-         */
-        if (action === "reject") {
-
-            const result =
-                await context.env.DB
-                    .prepare(
-                        `UPDATE withdrawals
-                         SET status = 'rejected',
-                             processed_at = CURRENT_TIMESTAMP
-                         WHERE id = ?
-                           AND status = 'pending'`
-                    )
-                    .bind(withdrawalId)
-                    .run();
-
-            if (result.meta.changes !== 1) {
-                return Response.json(
-                    {
-                        success: false,
-                        error:
-                            "Withdrawal was already processed"
-                    },
-                    { status: 409 }
-                );
-            }
-
-            await context.env.DB
-                .prepare(
-                    `UPDATE users
-                     SET balance = balance + ?
-                     WHERE id = ?`
-                )
-                .bind(
-                    withdrawal.amount,
-                    withdrawal.user_id
-                )
-                .run();
-
-            return Response.json({
-                success: true,
-                status: "rejected",
-                refunded: withdrawal.amount,
-                currency: "BTC"
-            });
-        }
+        return Response.json({
+            success: true,
+            withdrawals:
+                withdrawals.results || []
+        });
 
     } catch (error) {
 
@@ -281,4 +121,4 @@ export async function onRequestPost(context) {
             { status: 500 }
         );
     }
-                        }
+}
