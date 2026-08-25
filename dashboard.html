@@ -67,9 +67,52 @@
 
     <h2>👤 Dashboard</h2>
 
-    <div class="email" id="email">
-        Loading...
-    </div>
+    <div id="topNotification"></div>
+
+<div class="email" id="email">
+    Loading...
+</div>
+
+<div class="balance">
+    💰 <span id="balance">0</span> BTC
+</div>
+
+<p>Current BTC Balance</p>
+
+<div
+    class="cf-turnstile"
+    data-sitekey="0x4AAAAAAEaIQnOPdSP3LRPa"
+    data-theme="auto">
+</div>
+
+<br>
+
+<button id="claimButton" onclick="claimReward()">
+    🎁 CLAIM REWARD
+</button>
+
+<br><br>
+
+<button onclick="openClaimHistory()">
+    📜 CLAIM HISTORY
+</button>
+
+<button onclick="openWithdrawalHistory()">
+    💸 WITHDRAWAL HISTORY
+</button>
+
+<br><br>
+
+<button onclick="logout()">
+    🚪 LOGOUT
+</button>
+
+<div id="message"></div>
+
+
+    
+
+    
 
     <div class="balance">
         💰 <span id="balance">0</span>
