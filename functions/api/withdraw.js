@@ -79,16 +79,16 @@ export async function onRequestPost(context) {
             );
         }
 
-        if (!["BTC", "LTC", "DOGE"].includes(currency)) {
+        if (currency !== "BTC") {
 
-            return Response.json(
-                {
-                    success: false,
-                    error: "Unsupported currency"
-                },
-                { status: 400 }
-            );
-        }
+    return Response.json(
+        {
+            success: false,
+            error: "Only BTC withdrawals are supported"
+        },
+        { status: 400 }
+    );
+}
 
         const sessionToken =
             getCookie(
