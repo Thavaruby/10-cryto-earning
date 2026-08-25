@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -11,6 +13,7 @@
     <title>Admin - Crypto Faucet</title>
 
     <style>
+
         body {
             font-family: Arial, sans-serif;
             background: #f2f4f7;
@@ -30,17 +33,23 @@
             background: white;
             padding: 25px;
             border-radius: 12px;
+            box-sizing: border-box;
         }
 
         .withdrawal {
             border: 1px solid #ddd;
-            padding: 15px;
+            padding: 18px;
             margin: 12px 0;
-            border-radius: 8px;
+            border-radius: 10px;
+            background: #fafafa;
         }
 
         .status {
             font-weight: bold;
+        }
+
+        .pending {
+            color: #d97706;
         }
 
         button {
@@ -48,19 +57,62 @@
             border: none;
             border-radius: 6px;
             cursor: pointer;
+            margin: 4px;
+            color: white;
+            font-weight: bold;
         }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .approve {
+            background: #16a34a;
+        }
+
+        .reject {
+            background: #dc2626;
+        }
+
+        .refresh {
+            background: #2563eb;
+        }
+
+        #message {
+            margin: 15px 0;
+            font-weight: bold;
+        }
+
+        .empty {
+            padding: 20px;
+            text-align: center;
+            color: #666;
+        }
+
     </style>
+
 </head>
 
 <body>
 
 <header>
+
     <h1>🔐 Admin Dashboard</h1>
+
 </header>
+
 
 <div class="container">
 
-    <h2>💸 Pending Withdrawals</h2>
+    <h2>💸 Pending BTC Withdrawals</h2>
+
+    <button
+        class="refresh"
+        onclick="loadWithdrawals()"
+    >
+        🔄 REFRESH
+    </button>
 
     <div id="message">
         ⏳ Loading...
@@ -70,11 +122,22 @@
 
 </div>
 
+
 <script>
+
+
+let processing = false;
+
+
+/* =========================
+   PROCESS WITHDRAWAL
+========================= */
+
 async function processWithdrawal(id, action) {
 
-    const message =
-        document.getElementById("message");
+    if (processing) {
+        return;
+    }
 
     const confirmation =
         confirm(
@@ -85,8 +148,14 @@ async function processWithdrawal(id, action) {
         return;
     }
 
+    processing = true;
+
+    const message =
+        document.getElementById("message");
+
     message.innerText =
-        "⏳ Processing...";
+        "⏳ Processing withdrawal...";
+
 
     try {
 
@@ -102,27 +171,55 @@ async function processWithdrawal(id, action) {
                     },
 
                     body: JSON.stringify({
+
                         withdrawalId: id,
+
                         action: action
+
                     })
                 }
             );
 
+
         const result =
             await response.json();
 
+
         if (result.success) {
 
-            message.innerText =
-                `✅ Withdrawal ${result.status}.`;
+            if (result.status === "approved") {
 
+                message.innerText =
+                    "✅ Withdrawal approved successfully.";
+
+            } else if (
+                result.status === "rejected"
+            ) {
+
+                message.innerText =
+                    "✅ Withdrawal rejected. BTC refunded to user.";
+
+            } else {
+
+                message.innerText =
+                    "✅ Withdrawal processed.";
+
+            }
+
+            /*
+             * Reload pending withdrawals.
+             */
             await loadWithdrawals();
 
         } else {
 
             message.innerText =
-                "❌ " + result.error;
+                "❌ " + (
+                    result.error ||
+                    "Unable to process withdrawal."
+                );
         }
+
 
     } catch (error) {
 
@@ -130,8 +227,18 @@ async function processWithdrawal(id, action) {
 
         message.innerText =
             "❌ Connection error.";
+
+    } finally {
+
+        processing = false;
     }
-    }
+}
+
+
+/* =========================
+   LOAD PENDING WITHDRAWALS
+========================= */
+
 async function loadWithdrawals() {
 
     const message =
@@ -140,105 +247,159 @@ async function loadWithdrawals() {
     const container =
         document.getElementById("withdrawals");
 
+
+    message.innerText =
+        "⏳ Loading pending withdrawals...";
+
+
     try {
 
         const response =
-            await fetch("/api/admin/withdrawals");
+            await fetch(
+                "/api/admin/withdrawals"
+            );
+
 
         const result =
             await response.json();
 
+
         if (!result.success) {
 
             message.innerText =
-                "❌ " + result.error;
+                "❌ " + (
+                    result.error ||
+                    "Unable to load withdrawals."
+                );
+
+            container.innerHTML = "";
 
             return;
         }
+
+
+        const withdrawals =
+            result.withdrawals || [];
+
 
         message.innerText =
-            `${result.withdrawals.length} pending withdrawal(s)`;
+            `${withdrawals.length} pending BTC withdrawal(s)`;
 
-        if (result.withdrawals.length === 0) {
 
-            container.innerHTML =
-                "<p>No pending withdrawals.</p>";
+        if (withdrawals.length === 0) {
+
+            container.innerHTML = `
+                <div class="empty">
+                    ✅ No pending BTC withdrawals.
+                </div>
+            `;
 
             return;
         }
 
+
         container.innerHTML =
-    result.withdrawals.map(item => `
+            withdrawals
+                .map(item => `
 
-        <div class="withdrawal">
+                    <div class="withdrawal">
 
-            <strong>
-                Withdrawal #${item.id}
-            </strong>
+                        <strong>
+                            Withdrawal #${item.id}
+                        </strong>
 
-            <br><br>
+                        <br><br>
 
-            👤 User ID:
-            ${item.user_id}
+                        👤 User ID:
+                        ${item.user_id}
 
-            <br>
+                        <br>
 
-            📧 Email:
-            ${item.email}
+                        📧 Email:
+                        ${item.email || "N/A"}
 
-            <br>
+                        <br>
 
-            💰 Amount:
-            ${item.amount}
-            ${item.currency}
+                        💰 Amount:
+                        ${item.amount} BTC
 
-            <br>
+                        <br>
 
-            🏦 Wallet:
-            ${item.wallet_address}
+                        🏦 Wallet:
+                        ${item.wallet_address}
 
-            <br>
+                        <br>
 
-            📌 Status:
-            <span class="status">
-                ${item.status}
-            </span>
+                        📌 Status:
 
-            <br>
+                        <span class="status pending">
+                            ${String(
+                                item.status
+                            ).toUpperCase()}
+                        </span>
 
-            🕐 Date:
-            ${new Date(
-                item.created_at
-            ).toLocaleString()}
+                        <br>
 
-            <br><br>
+                        🕐 Date:
+                        ${new Date(
+                            item.created_at
+                        ).toLocaleString()}
 
-            <button
-                onclick="processWithdrawal(${item.id}, 'approve')"
-            >
-                ✅ APPROVE
-            </button>
+                        <br><br>
 
-            <button
-                onclick="processWithdrawal(${item.id}, 'reject')"
-            >
-                ❌ REJECT
-            </button>
 
-        </div>
+                        <button
+                            class="approve"
+                            onclick="
+                                processWithdrawal(
+                                    ${item.id},
+                                    'approve'
+                                )
+                            "
+                        >
+                            ✅ APPROVE
+                        </button>
 
-    `).join("");
+
+                        <button
+                            class="reject"
+                            onclick="
+                                processWithdrawal(
+                                    ${item.id},
+                                    'reject'
+                                )
+                            "
+                        >
+                            ❌ REJECT
+                        </button>
+
+                    </div>
+
+                `)
+                .join("");
+
 
     } catch (error) {
 
+        console.error(error);
+
         message.innerText =
             "❌ Unable to load withdrawals.";
+
+        container.innerHTML = "";
     }
 }
 
+
+/* =========================
+   INITIAL LOAD
+========================= */
+
 loadWithdrawals();
+
 
 </script>
 
 </body>
+
 </html>
