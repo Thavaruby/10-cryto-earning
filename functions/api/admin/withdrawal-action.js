@@ -178,18 +178,35 @@ export async function onRequestPost(context) {
             );
         }
 
+        /*
+         * REJECT
+         */
+
         if (action === "reject") {
 
-            await context.env.DB
-                .prepare(
-                    `UPDATE withdrawals
-                     SET status = 'rejected',
-                         processed_at = CURRENT_TIMESTAMP
-                     WHERE id = ?
-                       AND status = 'pending'`
-                )
-                .bind(withdrawalId)
-                .run();
+            const result =
+                await context.env.DB
+                    .prepare(
+                        `UPDATE withdrawals
+                         SET status = 'rejected',
+                             processed_at = CURRENT_TIMESTAMP
+                         WHERE id = ?
+                           AND status = 'pending'`
+                    )
+                    .bind(withdrawalId)
+                    .run();
+
+            if (result.meta.changes !== 1) {
+
+                return Response.json(
+                    {
+                        success: false,
+                        error:
+                            "Withdrawal was already processed"
+                    },
+                    { status: 409 }
+                );
+            }
 
             return Response.json({
                 success: true,
@@ -200,9 +217,35 @@ export async function onRequestPost(context) {
         /*
          * APPROVE
          *
-         * Deduct balance only if the user still
-         * has enough balance AND the withdrawal
-         * is still pending.
+         * First atomically reserve the pending
+         * withdrawal by changing its status.
+         */
+
+        const reserve =
+            await context.env.DB
+                .prepare(
+                    `UPDATE withdrawals
+                     SET status = 'processing'
+                     WHERE id = ?
+                       AND status = 'pending'`
+                )
+                .bind(withdrawalId)
+                .run();
+
+        if (reserve.meta.changes !== 1) {
+
+            return Response.json(
+                {
+                    success: false,
+                    error:
+                        "Withdrawal was already processed"
+                },
+                { status: 409 }
+            );
+        }
+
+        /*
+         * Deduct balance only if enough balance exists.
          */
 
         const updateBalance =
@@ -222,6 +265,16 @@ export async function onRequestPost(context) {
 
         if (updateBalance.meta.changes !== 1) {
 
+            await context.env.DB
+                .prepare(
+                    `UPDATE withdrawals
+                     SET status = 'pending'
+                     WHERE id = ?
+                       AND status = 'processing'`
+                )
+                .bind(withdrawalId)
+                .run();
+
             return Response.json(
                 {
                     success: false,
@@ -232,25 +285,27 @@ export async function onRequestPost(context) {
             );
         }
 
-        const updateWithdrawal =
+        /*
+         * Mark withdrawal as approved.
+         */
+
+        const approve =
             await context.env.DB
                 .prepare(
                     `UPDATE withdrawals
                      SET status = 'approved',
                          processed_at = CURRENT_TIMESTAMP
                      WHERE id = ?
-                       AND status = 'pending'`
+                       AND status = 'processing'`
                 )
                 .bind(withdrawalId)
                 .run();
 
-        if (updateWithdrawal.meta.changes !== 1) {
+        if (approve.meta.changes !== 1) {
 
             /*
-             * Important:
-             * The withdrawal was no longer pending.
-             * Restore the balance because no payout
-             * should be recorded twice.
+             * Safety rollback if the final update
+             * could not be completed.
              */
 
             await context.env.DB
@@ -265,13 +320,23 @@ export async function onRequestPost(context) {
                 )
                 .run();
 
+            await context.env.DB
+                .prepare(
+                    `UPDATE withdrawals
+                     SET status = 'pending'
+                     WHERE id = ?
+                       AND status = 'processing'`
+                )
+                .bind(withdrawalId)
+                .run();
+
             return Response.json(
                 {
                     success: false,
                     error:
-                        "Withdrawal was already processed"
+                        "Unable to complete withdrawal"
                 },
-                { status: 409 }
+                { status: 500 }
             );
         }
 
@@ -290,4 +355,4 @@ export async function onRequestPost(context) {
             { status: 500 }
         );
     }
-    }
+}
