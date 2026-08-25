@@ -501,6 +501,26 @@ loadClaimHistory();
 loadWithdrawalHistory(); 
     
 </script>
+<div id="historyModal" class="modal">
 
+    <div class="modal-content">
+
+        <button
+            class="closeButton"
+            onclick="closeHistory()">
+            ✕
+        </button>
+
+        <h3 id="historyTitle">
+            History
+        </h3>
+
+        <div id="historyContent">
+            ⏳ Loading...
+        </div>
+
+    </div>
+
+</div>
 </body>
 </html>
