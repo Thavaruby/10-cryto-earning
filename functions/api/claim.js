@@ -1,14 +1,12 @@
-const REWARD = 0.000001;
-const COOLDOWN_SECONDS = 10 * 60;
+const REWARD = 0.00000001;
+const COOLDOWN_SECONDS = 60 * 60;
 
 function getCookie(request, name) {
     const cookieHeader = request.headers.get("Cookie");
 
     if (!cookieHeader) return null;
 
-    const cookies = cookieHeader.split(";");
-
-    for (const cookie of cookies) {
+    for (const cookie of cookieHeader.split(";")) {
         const [key, ...value] = cookie.trim().split("=");
 
         if (key === name) {
@@ -186,11 +184,24 @@ export async function onRequestPost(context) {
                     COOLDOWN_SECONDS -
                     elapsedSeconds;
 
+                const hours =
+                    Math.floor(
+                        remaining / 3600
+                    );
+
+                const minutes =
+                    Math.floor(
+                        (remaining % 3600) / 60
+                    );
+
+                const seconds =
+                    remaining % 60;
+
                 return Response.json(
                     {
                         success: false,
                         error:
-                            `Please wait ${remaining} seconds before claiming again.`
+                            `Please wait ${hours}h ${minutes}m ${seconds}s before claiming again.`
                     },
                     { status: 429 }
                 );
