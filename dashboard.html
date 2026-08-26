@@ -662,17 +662,15 @@ async function logout() {
 async function claimReward() {
 
     const button =
-        document.getElementById(
-            "claimButton"
-        );
+        document.getElementById("claimButton");
 
     button.disabled = true;
 
     showActionNotification(
-    "claimNotification",
-    "⏳ Claiming reward...",
-    "info"
-);
+        "claimNotification",
+        "⏳ Claiming reward...",
+        "info"
+    );
 
     try {
 
@@ -682,119 +680,111 @@ async function claimReward() {
         if (!turnstileToken) {
 
             showActionNotification(
-    "claimNotification",
-    "❌ Please complete CAPTCHA verification.",
-    "error"
-);
+                "claimNotification",
+                "❌ Please complete CAPTCHA verification.",
+                "error"
+            );
 
             button.disabled = false;
-
             return;
         }
 
-
         const response =
-            await fetch(
-                "/api/claim",
-                {
-                    method: "POST",
+            await fetch("/api/claim", {
+                method: "POST",
 
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
+                headers: {
+                    "Content-Type": "application/json"
+                },
 
-                    body: JSON.stringify({
-                        turnstileToken:
-                            turnstileToken
-                    })
-                }
-            );
-
+                body: JSON.stringify({
+                    turnstileToken: turnstileToken
+                })
+            });
 
         const result =
             await response.json();
 
-
         if (result.success) {
 
-    document.getElementById("balance")
-        .innerText =
-        result.balance;
+            document.getElementById("balance")
+                .innerText = result.balance;
 
-    showActionNotification(
-    "claimNotification",
-    "✅ Reward claimed: " +
-    result.reward +
-    " BTC",
-    "success"
-);
-
-    startClaimCountdown(3600);
-
-    turnstile.reset();
-} else {
-
-    } else {
-
-    showActionNotification(
-        "claimNotification",
-        "❌ " + result.error,
-        "error"
-    );
-
-    if (response.status === 429) {
-
-        const match =
-            result.error.match(
-                /(\d+)h\s+(\d+)m\s+(\d+)s/
+            showActionNotification(
+                "claimNotification",
+                "✅ Reward claimed: " +
+                result.reward +
+                " BTC",
+                "success"
             );
 
-        if (match) {
+            startClaimCountdown(3600);
 
-            const hours =
-                Number(match[1]);
+            turnstile.reset();
 
-            const minutes =
-                Number(match[2]);
+        } else {
 
-            const seconds =
-                Number(match[3]);
-
-            const totalSeconds =
-                hours * 3600 +
-                minutes * 60 +
-                seconds;
-
-            startClaimCountdown(
-                totalSeconds
+            showActionNotification(
+                "claimNotification",
+                "❌ " + result.error,
+                "error"
             );
+
+            if (response.status === 429) {
+
+                const match =
+                    result.error.match(
+                        /(\d+)h\s+(\d+)m\s+(\d+)s/
+                    );
+
+                if (match) {
+
+                    const hours =
+                        Number(match[1]);
+
+                    const minutes =
+                        Number(match[2]);
+
+                    const seconds =
+                        Number(match[3]);
+
+                    const totalSeconds =
+                        hours * 3600 +
+                        minutes * 60 +
+                        seconds;
+
+                    startClaimCountdown(
+                        totalSeconds
+                    );
+                }
+            }
+
+            turnstile.reset();
         }
-    }
-
-    turnstile.reset();
-}
-
 
     } catch (error) {
 
-        } catch (error) {
+        console.error(
+            "Claim error:",
+            error
+        );
 
-    showActionNotification(
-        "claimNotification",
-        "❌ Connection error.",
-        "error"
-    );
+        showActionNotification(
+            "claimNotification",
+            "❌ Connection error.",
+            "error"
+        );
 
-    } } finally {
+    } finally {
 
-    /*
-     * Do not enable the button here.
-     * Cooldown controls the button state.
-     */
+        /*
+         * Do not enable the button here.
+         * Cooldown controls the button state.
+         */
+
+    }
 }
-}
-
+                       
 
 /* =========================
    WITHDRAW
@@ -804,38 +794,23 @@ async function submitWithdrawal() {
 
     const amount =
         Number(
-            document.getElementById(
-                "withdrawAmount"
-            ).value
+            document.getElementById("withdrawAmount").value
         );
-
-    const currency =
-        document.getElementById(
-            "withdrawCurrency"
-        ).value;
 
     const walletAddress =
-        document.getElementById(
-            "walletAddress"
-        ).value.trim();
+        document.getElementById("walletAddress")
+            .value.trim();
 
     const button =
-        document.getElementById(
-            "withdrawButton"
-        );
-
-    const message =
-        document.getElementById(
-            "withdrawMessage"
-        );
-
+        document.getElementById("withdrawButton");
 
     if (
         !Number.isFinite(amount) ||
         amount <= 0
     ) {
 
-        showNotification(
+        showActionNotification(
+            "withdrawNotification",
             "❌ Enter a valid BTC amount.",
             "error"
         );
@@ -843,10 +818,10 @@ async function submitWithdrawal() {
         return;
     }
 
-
     if (amount < 0.0000001) {
 
-        showNotification(
+        showActionNotification(
+            "withdrawNotification",
             "❌ Minimum withdrawal is 0.0000001 BTC.",
             "error"
         );
@@ -854,10 +829,10 @@ async function submitWithdrawal() {
         return;
     }
 
-
     if (!walletAddress) {
 
-        showNotification(
+        showActionNotification(
+            "withdrawNotification",
             "❌ Enter your Bitcoin wallet address.",
             "error"
         );
@@ -865,53 +840,55 @@ async function submitWithdrawal() {
         return;
     }
 
-
     button.disabled = true;
 
     showActionNotification(
-    "withdrawNotification",
-    "⏳ Submitting withdrawal request...",
-    "info"
-);
+        "withdrawNotification",
+        "⏳ Submitting withdrawal request...",
+        "info"
+    );
 
     try {
 
         const response =
-            await fetch(
-                "/api/withdraw",
-                {
-                    method: "POST",
+            await fetch("/api/withdraw", {
+                method: "POST",
 
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
+                headers: {
+                    "Content-Type": "application/json"
+                },
 
-                    body: JSON.stringify({
+                body: JSON.stringify({
 
-                        amount: amount,
+                    amount: amount,
 
-                        currency: "BTC",
+                    currency: "BTC",
 
-                        walletAddress:
-                            walletAddress
+                    walletAddress: walletAddress
 
-                    })
-                }
-            );
-
+                })
+            });
 
         const result =
             await response.json();
 
-
         if (result.success) {
 
+            /*
+             * Update balance immediately
+             */
+            document.getElementById("balance")
+                .innerText = result.balance;
+
+            /*
+             * Notification appears
+             * directly under REQUEST WITHDRAWAL button
+             */
             showActionNotification(
-    "withdrawNotification",
-    "✅ Withdrawal request submitted. Status: PENDING",
-    "success"
-);
+                "withdrawNotification",
+                "✅ Withdrawal request submitted. Status: PENDING",
+                "success"
+            );
 
             document.getElementById(
                 "withdrawAmount"
@@ -924,59 +901,31 @@ async function submitWithdrawal() {
         } else {
 
             showActionNotification(
-    "withdrawNotification",
-    "❌ " + result.error,
-    "error"
-);
+                "withdrawNotification",
+                "❌ " + result.error,
+                "error"
+            );
         }
-
 
     } catch (error) {
 
-        } catch (error) {
+        console.error(
+            "Withdrawal error:",
+            error
+        );
 
-    showActionNotification(
-        "withdrawNotification",
-        "❌ Connection error.",
-        "error"
-    );
+        showActionNotification(
+            "withdrawNotification",
+            "❌ Connection error.",
+            "error"
+        );
 
     } finally {
 
         button.disabled = false;
     }
-}
-function setMaxWithdrawal() {
-
-    const balanceElement =
-        document.getElementById("balance");
-
-    const amountInput =
-        document.getElementById("withdrawAmount");
-
-    const balance =
-        Number(
-            balanceElement.innerText
-        );
-
-    if (!Number.isFinite(balance) || balance <= 0) {
-
-        showNotification(
-            "❌ No BTC balance available.",
-            "error"
-        );
-
-        return;
     }
-
-    amountInput.value =
-        balance.toFixed(8);
-
-    showNotification(
-        "💰 Maximum BTC balance selected.",
-        "info"
-    );
-    }
+         
 
 /* =========================
    OPEN CLAIM HISTORY
