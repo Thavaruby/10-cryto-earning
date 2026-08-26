@@ -307,7 +307,213 @@ header p {
 
     font-size: 14px;
 }
+/* =========================
+   AD BANNER SLIDER
+========================= */
 
+.ad-slider {
+    width: 100%;
+    max-width: 100%;
+    margin: 18px auto 22px;
+    overflow: hidden;
+    border-radius: 16px;
+    box-sizing: border-box;
+}
+
+.ad-track {
+    display: flex;
+    width: 900%;
+    transition: transform 0.6s ease-in-out;
+}
+
+.ad-slide {
+    width: 11.111111%;
+    flex-shrink: 0;
+    text-decoration: none;
+    display: block;
+    padding: 0 4px;
+    box-sizing: border-box;
+}
+
+.ad-content {
+    height: 120px;
+    border-radius: 15px;
+    padding: 15px 18px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+    color: white;
+    box-shadow: 0 5px 18px rgba(0,0,0,0.18);
+}
+
+/* Faucet / BTC visual */
+
+.ad-content::after {
+    content: "₿";
+    position: absolute;
+    right: 15px;
+    bottom: -28px;
+    font-size: 95px;
+    font-weight: bold;
+    opacity: 0.14;
+    transform: rotate(-10deg);
+}
+
+.ad-icon {
+    font-size: 48px;
+    width: 70px;
+    text-align: center;
+    flex-shrink: 0;
+    z-index: 2;
+}
+
+.ad-text {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    z-index: 2;
+}
+
+.ad-text strong {
+    font-size: 21px;
+    letter-spacing: 0.5px;
+}
+
+.ad-text span {
+    margin-top: 7px;
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.ad-btc {
+    position: absolute;
+    right: 20px;
+    bottom: 8px;
+    font-size: 34px;
+    z-index: 2;
+}
+
+/* Different banner designs */
+
+.ad-green {
+    background: linear-gradient(135deg, #071b0e, #22c55e);
+}
+
+.ad-blue {
+    background: linear-gradient(135deg, #082f49, #2563eb);
+}
+
+.ad-purple {
+    background: linear-gradient(135deg, #30115e, #7c3aed);
+}
+
+.ad-orange {
+    background: linear-gradient(135deg, #7c2d12, #f97316);
+}
+
+.ad-dark {
+    background: linear-gradient(135deg, #111827, #374151);
+}
+
+.ad-cyan {
+    background: linear-gradient(135deg, #083344, #0891b2);
+}
+
+.ad-red {
+    background: linear-gradient(135deg, #450a0a, #dc2626);
+}
+
+.ad-gold {
+    background: linear-gradient(135deg, #713f12, #eab308);
+}
+
+.ad-teal {
+    background: linear-gradient(135deg, #042f2e, #0d9488);
+}
+
+
+/* DOTS */
+
+.ad-dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.ad-dot {
+    width: 9px;
+    height: 9px;
+    min-width: 9px;
+    padding: 0;
+    margin: 0;
+    border-radius: 50%;
+    border: none;
+    background: #b8bec8;
+    opacity: 1;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.ad-dot.active {
+    width: 11px;
+    height: 11px;
+    min-width: 11px;
+    background: #2563eb;
+    transform: scale(1.15);
+}
+
+
+/* Mobile */
+
+@media (max-width: 500px) {
+
+    .ad-content {
+        height: 105px;
+        padding: 12px;
+    }
+
+    .ad-icon {
+        font-size: 38px;
+        width: 55px;
+    }
+
+    .ad-text strong {
+        font-size: 16px;
+    }
+
+    .ad-text span {
+        font-size: 12px;
+    }
+
+    .ad-btc {
+        font-size: 28px;
+        right: 12px;
+    }
+
+    .ad-content::after {
+        font-size: 75px;
+    }
+
+    .ad-dots {
+        gap: 6px;
+    }
+
+    .ad-dot {
+        width: 7px;
+        height: 7px;
+        min-width: 7px;
+    }
+
+    .ad-dot.active {
+        width: 9px;
+        height: 9px;
+        min-width: 9px;
+    }
+}
 
 /* =====================================================
    BALANCE
@@ -949,7 +1155,195 @@ hr {
 
 <br>
 
+<!-- =========================
+     AD BANNER SLIDER
+========================= -->
 
+<div class="ad-slider">
+
+    <div class="ad-track" id="adTrack">
+
+        <!-- AD 1 -->
+        <a href="https://example.com/ad1"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="ad-slide">
+
+            <div class="ad-content ad-green">
+                <div class="ad-icon">🚰</div>
+                <div class="ad-text">
+                    <strong>₿ HOURLY FAUCET</strong>
+                    <span>Claim free crypto rewards</span>
+                </div>
+                <div class="ad-btc">₿</div>
+            </div>
+
+        </a>
+
+
+        <!-- AD 2 -->
+        <a href="https://example.com/ad2"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="ad-slide">
+
+            <div class="ad-content ad-blue">
+                <div class="ad-icon">₿</div>
+                <div class="ad-text">
+                    <strong>CRYPTO EARNING</strong>
+                    <span>Earn BTC online</span>
+                </div>
+                <div class="ad-btc">💰</div>
+            </div>
+
+        </a>
+
+
+        <!-- AD 3 -->
+        <a href="https://example.com/ad3"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="ad-slide">
+
+            <div class="ad-content ad-purple">
+                <div class="ad-icon">💎</div>
+                <div class="ad-text">
+                    <strong>CRYPTO REWARDS</strong>
+                    <span>Discover new opportunities</span>
+                </div>
+                <div class="ad-btc">₿</div>
+            </div>
+
+        </a>
+
+
+        <!-- AD 4 -->
+        <a href="https://example.com/ad4"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="ad-slide">
+
+            <div class="ad-content ad-orange">
+                <div class="ad-icon">🔥</div>
+                <div class="ad-text">
+                    <strong>HOT CRYPTO</strong>
+                    <span>Explore crypto rewards</span>
+                </div>
+                <div class="ad-btc">₿</div>
+            </div>
+
+        </a>
+
+
+        <!-- AD 5 -->
+        <a href="https://example.com/ad5"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="ad-slide">
+
+            <div class="ad-content ad-dark">
+                <div class="ad-icon">🚀</div>
+                <div class="ad-text">
+                    <strong>CRYPTO GROW</strong>
+                    <span>Grow your digital assets</span>
+                </div>
+                <div class="ad-btc">₿</div>
+            </div>
+
+        </a>
+
+
+        <!-- AD 6 -->
+        <a href="https://example.com/ad6"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="ad-slide">
+
+            <div class="ad-content ad-cyan">
+                <div class="ad-icon">💧</div>
+                <div class="ad-text">
+                    <strong>FREE BTC</strong>
+                    <span>Claim crypto rewards</span>
+                </div>
+                <div class="ad-btc">₿</div>
+            </div>
+
+        </a>
+
+
+        <!-- AD 7 -->
+        <a href="https://example.com/ad7"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="ad-slide">
+
+            <div class="ad-content ad-red">
+                <div class="ad-icon">⚡</div>
+                <div class="ad-text">
+                    <strong>FAST REWARDS</strong>
+                    <span>Start earning crypto</span>
+                </div>
+                <div class="ad-btc">₿</div>
+            </div>
+
+        </a>
+
+
+        <!-- AD 8 -->
+        <a href="https://example.com/ad8"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="ad-slide">
+
+            <div class="ad-content ad-gold">
+                <div class="ad-icon">🏆</div>
+                <div class="ad-text">
+                    <strong>CRYPTO BONUS</strong>
+                    <span>Check today's offers</span>
+                </div>
+                <div class="ad-btc">₿</div>
+            </div>
+
+        </a>
+
+
+        <!-- AD 9 -->
+        <a href="https://example.com/ad9"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="ad-slide">
+
+            <div class="ad-content ad-teal">
+                <div class="ad-icon">🌐</div>
+                <div class="ad-text">
+                    <strong>CRYPTO WORLD</strong>
+                    <span>Explore digital currency</span>
+                </div>
+                <div class="ad-btc">₿</div>
+            </div>
+
+        </a>
+
+    </div>
+
+
+    <!-- 9 DOTS -->
+
+    <div class="ad-dots" id="adDots">
+
+        <button onclick="goToAd(0)" class="ad-dot active"></button>
+        <button onclick="goToAd(1)" class="ad-dot"></button>
+        <button onclick="goToAd(2)" class="ad-dot"></button>
+        <button onclick="goToAd(3)" class="ad-dot"></button>
+        <button onclick="goToAd(4)" class="ad-dot"></button>
+        <button onclick="goToAd(5)" class="ad-dot"></button>
+        <button onclick="goToAd(6)" class="ad-dot"></button>
+        <button onclick="goToAd(7)" class="ad-dot"></button>
+        <button onclick="goToAd(8)" class="ad-dot"></button>
+
+    </div>
+
+</div>
 <!-- =====================================================
      CLAIM
 ===================================================== -->
@@ -2279,7 +2673,104 @@ loadUser();
 
 loadClaimCooldown();
 
+/* =========================
+   AD BANNER AUTO SLIDER
+========================= */
 
+let currentAd = 0;
+let adTimer = null;
+
+const totalAds = 9;
+
+function showAd(index) {
+
+    currentAd = index;
+
+    const track =
+        document.getElementById("adTrack");
+
+    const dots =
+        document.querySelectorAll(".ad-dot");
+
+    if (!track) return;
+
+    track.style.transform =
+        `translateX(-${currentAd * (100 / totalAds)}%)`;
+
+    dots.forEach((dot, i) => {
+
+        dot.classList.toggle(
+            "active",
+            i === currentAd
+        );
+
+    });
+}
+
+
+function goToAd(index) {
+
+    showAd(index);
+
+    restartAdTimer();
+}
+
+
+function nextAd() {
+
+    currentAd =
+        (currentAd + 1) % totalAds;
+
+    showAd(currentAd);
+}
+
+
+function restartAdTimer() {
+
+    if (adTimer) {
+        clearInterval(adTimer);
+    }
+
+    adTimer =
+        setInterval(
+            nextAd,
+            5000
+        );
+}
+
+
+/* Start automatic banner */
+
+restartAdTimer();
+
+
+/* Pause while touching on mobile */
+
+const adSlider =
+    document.querySelector(".ad-slider");
+
+if (adSlider) {
+
+    adSlider.addEventListener(
+        "touchstart",
+        function() {
+
+            if (adTimer) {
+                clearInterval(adTimer);
+            }
+
+        }
+    );
+
+    adSlider.addEventListener(
+        "touchend",
+        function() {
+
+            restartAdTimer();
+
+        }
+    );
+}
 </script>
 
 </body>
