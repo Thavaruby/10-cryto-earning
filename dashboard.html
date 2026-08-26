@@ -223,7 +223,442 @@ header p {
     color: #cbd5e1;
 }
 
+/* =========================
+   CRYPTO FAUCET TOP BANNER
+========================= */
 
+.crypto-header {
+    background: linear-gradient(
+        135deg,
+        #071b2a,
+        #102d3d,
+        #071b2a
+    );
+
+    padding: 28px 15px;
+
+    overflow: hidden;
+}
+
+
+/* Main tape */
+
+.faucet-banner {
+
+    width: 94%;
+    max-width: 1100px;
+
+    height: 180px;
+
+    margin: auto;
+
+    border-radius: 20px;
+
+    position: relative;
+
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+
+    background:
+        linear-gradient(
+            110deg,
+            #02150d 0%,
+            #062015 48%,
+            #4caf50 100%
+        );
+
+    box-shadow:
+        0 10px 35px rgba(0,0,0,0.45),
+        inset 0 0 30px rgba(0,255,100,0.08);
+
+    border: 2px solid rgba(255,255,255,0.08);
+}
+
+
+/* Diagonal right section */
+
+.faucet-banner::after {
+
+    content: "";
+
+    position: absolute;
+
+    right: -80px;
+    top: -40px;
+
+    width: 55%;
+    height: 280px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(88,200,90,0.95),
+            rgba(40,150,70,0.95)
+        );
+
+    transform: skewX(-22deg);
+
+    z-index: 1;
+}
+
+
+/* Faucet area */
+
+.faucet {
+
+    position: relative;
+
+    width: 48%;
+    height: 100%;
+
+    z-index: 5;
+}
+
+
+/* Faucet handle */
+
+.faucet-handle {
+
+    position: absolute;
+
+    width: 90px;
+    height: 16px;
+
+    background: #58d66a;
+
+    border-radius: 10px;
+
+    top: 35px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    box-shadow:
+        0 0 12px rgba(80,255,100,0.35);
+}
+
+
+/* Faucet body */
+
+.faucet-body {
+
+    position: absolute;
+
+    width: 70px;
+    height: 65px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7bea7d,
+            #42b950
+        );
+
+    border-radius: 12px;
+
+    top: 55px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    box-shadow:
+        inset -8px -5px 0 rgba(0,0,0,0.08),
+        0 0 18px rgba(70,220,90,0.25);
+}
+
+
+/* Faucet neck */
+
+.faucet-neck {
+
+    position: absolute;
+
+    width: 22px;
+    height: 45px;
+
+    background: #58d866;
+
+    top: -35px;
+    left: 24px;
+
+    border-radius: 8px;
+}
+
+
+/* Faucet knob */
+
+.faucet-knob {
+
+    position: absolute;
+
+    width: 25px;
+    height: 35px;
+
+    background: #3da94b;
+
+    left: -25px;
+    top: 15px;
+
+    border-radius: 8px;
+}
+
+
+/* Horizontal pipe */
+
+.faucet-pipe {
+
+    position: absolute;
+
+    width: 45px;
+    height: 25px;
+
+    background: #62db6a;
+
+    right: -38px;
+    top: 25px;
+
+    border-radius: 0 15px 15px 0;
+}
+
+
+/* Faucet spout */
+
+.faucet-spout {
+
+    position: absolute;
+
+    width: 32px;
+    height: 45px;
+
+    background: #55d863;
+
+    left: calc(50% + 42px);
+    top: 78px;
+
+    border-radius: 0 0 15px 15px;
+}
+
+
+/* Spout end */
+
+.faucet-spout::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 42px;
+    height: 12px;
+
+    background: #315d3b;
+
+    bottom: -4px;
+    left: -5px;
+
+    border-radius: 6px;
+}
+
+
+/* =========================
+   FALLING BITCOIN
+========================= */
+
+.falling-btc {
+
+    position: absolute;
+
+    left: calc(50% + 37px);
+
+    top: 118px;
+
+    width: 46px;
+    height: 46px;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 28px;
+    font-weight: bold;
+
+    color: white;
+
+    background:
+        radial-gradient(
+            circle at 35% 30%,
+            #ffd45a,
+            #f7931a 65%,
+            #d86d00
+        );
+
+    box-shadow:
+        0 0 12px #f7931a,
+        0 0 30px rgba(247,147,26,0.6);
+
+    z-index: 10;
+
+    animation:
+        bitcoinDrop 1.8s infinite ease-in;
+}
+
+
+@keyframes bitcoinDrop {
+
+    0% {
+        transform:
+            translateY(-15px)
+            scale(0.75)
+            rotate(-10deg);
+
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    70% {
+        opacity: 1;
+    }
+
+    100% {
+        transform:
+            translateY(75px)
+            scale(1)
+            rotate(12deg);
+
+        opacity: 0;
+    }
+}
+
+
+/* =========================
+   TEXT
+========================= */
+
+.faucet-text {
+
+    position: relative;
+
+    z-index: 5;
+
+    margin-left: 20px;
+
+    color: white;
+
+    text-align: left;
+}
+
+
+.faucet-title {
+
+    font-size: 30px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+
+    text-shadow:
+        0 2px 8px rgba(0,0,0,0.3);
+}
+
+
+.faucet-subtitle {
+
+    margin-top: 12px;
+
+    font-size: 20px;
+
+    font-weight: 600;
+
+    color: #eaffea;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+
+    .crypto-header {
+        padding: 18px 8px;
+    }
+
+    .faucet-banner {
+
+        height: 145px;
+
+        width: 96%;
+
+        border-radius: 16px;
+    }
+
+    .faucet {
+
+        width: 45%;
+    }
+
+    .faucet-handle {
+        width: 65px;
+        height: 12px;
+        top: 28px;
+    }
+
+    .faucet-body {
+        width: 55px;
+        height: 52px;
+        top: 45px;
+    }
+
+    .faucet-neck {
+        left: 18px;
+        height: 35px;
+        top: -28px;
+    }
+
+    .faucet-pipe {
+        width: 32px;
+        right: -28px;
+        top: 20px;
+    }
+
+    .faucet-spout {
+        left: calc(50% + 30px);
+        top: 62px;
+        width: 26px;
+        height: 38px;
+    }
+
+    .faucet-spout::after {
+        width: 34px;
+    }
+
+    .falling-btc {
+
+        left: calc(50% + 27px);
+
+        top: 98px;
+
+        width: 38px;
+        height: 38px;
+
+        font-size: 23px;
+    }
+
+    .faucet-title {
+        font-size: 18px;
+    }
+
+    .faucet-subtitle {
+        font-size: 14px;
+        margin-top: 7px;
+    }
+   }
 /* =====================================================
    MAIN CARD
 ===================================================== */
@@ -1109,19 +1544,42 @@ hr {
      HEADER
 ===================================================== -->
 
-<header>
+    <header class="crypto-header">
 
-    <div class="header-faucet">
-        🚰
+    <div class="faucet-banner">
+
+        <!-- Faucet -->
+        <div class="faucet">
+
+            <div class="faucet-handle"></div>
+
+            <div class="faucet-body">
+                <div class="faucet-knob"></div>
+                <div class="faucet-pipe"></div>
+                <div class="faucet-neck"></div>
+            </div>
+
+            <div class="faucet-spout"></div>
+
+            <!-- Falling Bitcoin -->
+            <div class="falling-btc">₿</div>
+
+        </div>
+
+        <!-- Banner text -->
+        <div class="faucet-text">
+
+            <div class="faucet-title">
+                💧 HOURLY FAUCET
+            </div>
+
+            <div class="faucet-subtitle">
+                Claim Free BTC
+            </div>
+
+        </div>
+
     </div>
-
-    <h1>
-        My Crypto <span>Faucet</span>
-    </h1>
-
-    <p>
-        Claim • Earn • Withdraw • Grow
-    </p>
 
 </header>
 
