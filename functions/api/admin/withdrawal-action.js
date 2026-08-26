@@ -40,6 +40,10 @@ export async function onRequestPost(context) {
         const action =
             String(data.action || "").toLowerCase();
 
+        /* =========================
+           VALIDATION
+        ========================= */
+
         if (
             !Number.isInteger(withdrawalId) ||
             withdrawalId <= 0
@@ -65,6 +69,10 @@ export async function onRequestPost(context) {
                 { status: 400 }
             );
         }
+
+        /* =========================
+           SESSION
+        ========================= */
 
         const sessionToken =
             getCookie(
@@ -121,6 +129,10 @@ export async function onRequestPost(context) {
             );
         }
 
+        /* =========================
+           ADMIN CHECK
+        ========================= */
+
         const admin =
             await context.env.DB
                 .prepare(
@@ -142,6 +154,10 @@ export async function onRequestPost(context) {
             );
         }
 
+        /* =========================
+           GET WITHDRAWAL
+        ========================= */
+
         const withdrawal =
             await context.env.DB
                 .prepare(
@@ -149,6 +165,7 @@ export async function onRequestPost(context) {
                         id,
                         user_id,
                         amount,
+                        currency,
                         status
                      FROM withdrawals
                      WHERE id = ?
@@ -167,6 +184,25 @@ export async function onRequestPost(context) {
             );
         }
 
+        /* =========================
+           BTC ONLY
+        ========================= */
+
+        if (withdrawal.currency !== "BTC") {
+            return Response.json(
+                {
+                    success: false,
+                    error:
+                        "Only BTC withdrawals are supported"
+                },
+                { status: 400 }
+            );
+        }
+
+        /* =========================
+           ALREADY PROCESSED
+        ========================= */
+
         if (withdrawal.status !== "pending") {
             return Response.json(
                 {
@@ -178,207 +214,124 @@ export async function onRequestPost(context) {
             );
         }
 
-        /*
-         * REJECT
-         */
+        /* =========================
+           APPROVE
+           
+           IMPORTANT:
+           Balance was already reserved
+           when withdrawal was created.
+
+           DO NOT deduct balance again.
+        ========================= */
+
+        if (action === "approve") {
+
+            const result =
+                await context.env.DB
+                    .prepare(
+                        `UPDATE withdrawals
+                         SET status = 'approved',
+                             processed_at = CURRENT_TIMESTAMP
+                         WHERE id = ?
+                           AND status = 'pending'`
+                    )
+                    .bind(withdrawalId)
+                    .run();
+
+            if (
+                !result ||
+                result.meta.changes !== 1
+            ) {
+                return Response.json(
+                    {
+                        success: false,
+                        error:
+                            "Withdrawal was already processed"
+                    },
+                    { status: 409 }
+                );
+            }
+
+            return Response.json({
+                success: true,
+                status: "approved",
+                amount: withdrawal.amount,
+                currency: "BTC"
+            });
+        }
+
+        /* =========================
+           REJECT
+
+           Balance was reserved during
+           withdrawal request.
+
+           Therefore return the BTC
+           exactly once.
+        ========================= */
 
         if (action === "reject") {
 
-    /*
-     * Mark withdrawal rejected AND
-     * return reserved BTC to the user.
-     *
-     * D1 batch is atomic:
-     * both operations succeed together,
-     * or neither operation is committed.
-     */
+            const result =
+                await context.env.DB.batch([
 
-    const result =
-        await context.env.DB.batch([
+                    context.env.DB
+                        .prepare(
+                            `UPDATE withdrawals
+                             SET status = 'rejected',
+                                 processed_at = CURRENT_TIMESTAMP
+                             WHERE id = ?
+                               AND status = 'pending'`
+                        )
+                        .bind(withdrawalId),
 
-            context.env.DB
-                .prepare(
-                    `UPDATE withdrawals
-                     SET status = 'rejected',
-                         processed_at = CURRENT_TIMESTAMP
-                     WHERE id = ?
-                       AND status = 'pending'`
-                )
-                .bind(withdrawalId),
+                    context.env.DB
+                        .prepare(
+                            `UPDATE users
+                             SET balance = balance + ?
+                             WHERE id = ?`
+                        )
+                        .bind(
+                            withdrawal.amount,
+                            withdrawal.user_id
+                        )
 
-            context.env.DB
-                .prepare(
-                    `UPDATE users
-                     SET balance = balance + ?
-                     WHERE id = ?`
-                )
-                .bind(
-                    withdrawal.amount,
-                    withdrawal.user_id
-                )
-
-        ]);
-
-    /*
-     * First query must update exactly one
-     * pending withdrawal.
-     */
-    if (
-        !result ||
-        !result[0] ||
-        result[0].meta.changes !== 1
-    ) {
-
-        return Response.json(
-            {
-                success: false,
-                error:
-                    "Withdrawal was already processed"
-            },
-            { status: 409 }
-        );
-    }
-
-    return Response.json({
-        success: true,
-        status: "rejected",
-        refunded: withdrawal.amount,
-        currency: "BTC"
-    });
-}
-
-        /*
-         * APPROVE
-         *
-         * First atomically reserve the pending
-         * withdrawal by changing its status.
-         */
-
-        const reserve =
-            await context.env.DB
-                .prepare(
-                    `UPDATE withdrawals
-                     SET status = 'processing'
-                     WHERE id = ?
-                       AND status = 'pending'`
-                )
-                .bind(withdrawalId)
-                .run();
-
-        if (reserve.meta.changes !== 1) {
-
-            return Response.json(
-                {
-                    success: false,
-                    error:
-                        "Withdrawal was already processed"
-                },
-                { status: 409 }
-            );
-        }
-
-        /*
-         * Deduct balance only if enough balance exists.
-         */
-
-        const updateBalance =
-            await context.env.DB
-                .prepare(
-                    `UPDATE users
-                     SET balance = balance - ?
-                     WHERE id = ?
-                       AND balance >= ?`
-                )
-                .bind(
-                    withdrawal.amount,
-                    withdrawal.user_id,
-                    withdrawal.amount
-                )
-                .run();
-
-        if (updateBalance.meta.changes !== 1) {
-
-            await context.env.DB
-                .prepare(
-                    `UPDATE withdrawals
-                     SET status = 'pending'
-                     WHERE id = ?
-                       AND status = 'processing'`
-                )
-                .bind(withdrawalId)
-                .run();
-
-            return Response.json(
-                {
-                    success: false,
-                    error:
-                        "Insufficient user balance"
-                },
-                { status: 400 }
-            );
-        }
-
-        /*
-         * Mark withdrawal as approved.
-         */
-
-        const approve =
-            await context.env.DB
-                .prepare(
-                    `UPDATE withdrawals
-                     SET status = 'approved',
-                         processed_at = CURRENT_TIMESTAMP
-                     WHERE id = ?
-                       AND status = 'processing'`
-                )
-                .bind(withdrawalId)
-                .run();
-
-        if (approve.meta.changes !== 1) {
+                ]);
 
             /*
-             * Safety rollback if the final update
-             * could not be completed.
+             * The withdrawal UPDATE must change
+             * exactly one row.
              */
 
-            await context.env.DB
-                .prepare(
-                    `UPDATE users
-                     SET balance = balance + ?
-                     WHERE id = ?`
-                )
-                .bind(
-                    withdrawal.amount,
-                    withdrawal.user_id
-                )
-                .run();
+            if (
+                !result ||
+                !result[0] ||
+                result[0].meta.changes !== 1
+            ) {
+                return Response.json(
+                    {
+                        success: false,
+                        error:
+                            "Withdrawal was already processed"
+                    },
+                    { status: 409 }
+                );
+            }
 
-            await context.env.DB
-                .prepare(
-                    `UPDATE withdrawals
-                     SET status = 'pending'
-                     WHERE id = ?
-                       AND status = 'processing'`
-                )
-                .bind(withdrawalId)
-                .run();
-
-            return Response.json(
-                {
-                    success: false,
-                    error:
-                        "Unable to complete withdrawal"
-                },
-                { status: 500 }
-            );
+            return Response.json({
+                success: true,
+                status: "rejected",
+                refunded: withdrawal.amount,
+                currency: "BTC"
+            });
         }
 
-        return Response.json({
-            success: true,
-            status: "approved"
-        });
-
     } catch (error) {
+
+        console.error(
+            "Withdrawal action error:",
+            error
+        );
 
         return Response.json(
             {
