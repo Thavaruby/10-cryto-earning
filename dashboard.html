@@ -482,211 +482,82 @@ header p {
 
     transform: rotate(-8deg);
 }
-
-
 /* =========================
-   9 COIN DESIGNS
+   AD BANNER SLIDER
 ========================= */
 
-.ltc-ad {
-    background:
-        linear-gradient(
-            135deg,
-            #263238,
-            #607d8b,
-            #90a4ae
-        );
+.ad-slider {
+    width: 100%;
+    max-width: 400px;
+    margin: 20px auto;
+    overflow: hidden;
+    border-radius: 12px;
 }
 
-.bnb-ad {
-    background:
-        linear-gradient(
-            135deg,
-            #604b00,
-            #d8a900,
-            #f5c842
-        );
-}
-
-.doge-ad {
-    background:
-        linear-gradient(
-            135deg,
-            #665c1e,
-            #a89020,
-            #d6c15a
-        );
-}
-
-.sui-ad {
-    background:
-        linear-gradient(
-            135deg,
-            #064e68,
-            #0891b2,
-            #38bdf8
-        );
-}
-
-.tron-ad {
-    background:
-        linear-gradient(
-            135deg,
-            #650b0b,
-            #dc2626,
-            #ef4444
-        );
-}
-
-.ton-ad {
-    background:
-        linear-gradient(
-            135deg,
-            #075985,
-            #0284c7,
-            #38bdf8
-        );
-}
-
-.sol-ad {
-    background:
-        linear-gradient(
-            135deg,
-            #312e81,
-            #7c3aed,
-            #db2777
-        );
-}
-
-.pol-ad {
-    background:
-        linear-gradient(
-            135deg,
-            #3b0764,
-            #7e22ce,
-            #a855f7
-        );
-}
-
-.bch-ad {
-    background:
-        linear-gradient(
-            135deg,
-            #064e3b,
-            #059669,
-            #34d399
-        );
-}
-
-
-/* =========================
-   DOTS
-========================= */
-
-.crypto-ad-dots {
+.ad-track {
     display: flex;
+    transition: transform 0.5s ease;
+}
 
-    justify-content: center;
+.ad-banner {
+    min-width: 100%;
+    box-sizing: border-box;
+    padding: 18px 12px;
+    text-decoration: none;
+    color: white;
+    background: linear-gradient(
+        135deg,
+        #2563eb,
+        #7c3aed
+    );
+    border-radius: 12px;
+
+    display: flex;
+    flex-direction: column;
     align-items: center;
+    gap: 5px;
 
-    gap: 7px;
-
-    margin-top: 9px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
 }
 
-.crypto-dot {
-    width: 8px;
-    height: 8px;
+.ad-banner strong {
+    font-size: 18px;
+    letter-spacing: 1px;
+}
 
-    min-width: 8px;
+.ad-banner span {
+    font-size: 16px;
+    font-weight: bold;
+}
 
-    padding: 0;
-    margin: 0;
+.ad-banner small {
+    font-size: 13px;
+    opacity: 0.95;
+}
 
+/* DOTS */
+
+.ad-dots {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.ad-dot {
+    width: 7px;
+    height: 7px;
+    background: #cbd5e1;
     border-radius: 50%;
-
-    border: none;
-
-    background: #b8bec8;
-
-    cursor: pointer;
-
-    transition:
-        all 0.3s ease;
+    transition: 0.3s;
 }
 
-.crypto-dot.active {
-    width: 11px;
-    height: 11px;
-
-    min-width: 11px;
-
+.ad-dot.active {
+    width: 18px;
+    border-radius: 5px;
     background: #2563eb;
-
-    transform: scale(1.15);
-
-    box-shadow:
-        0 0 8px rgba(37,99,235,0.5);
 }
 
-
-/* =========================
-   MOBILE
-========================= */
-
-@media (max-width: 500px) {
-
-    .crypto-ad {
-        height: 108px;
-        padding: 12px;
-        border-radius: 14px;
-    }
-
-    .crypto-coin {
-        width: 48px;
-        height: 48px;
-        min-width: 48px;
-
-        font-size: 25px;
-    }
-
-    .crypto-ad-text {
-        margin-left: 10px;
-    }
-
-    .crypto-ad-text strong {
-        font-size: 14px;
-    }
-
-    .crypto-ad-text span {
-        font-size: 16px;
-    }
-
-    .crypto-ad-text small {
-        font-size: 10px;
-    }
-
-    .crypto-symbol {
-        font-size: 45px;
-        bottom: -8px;
-    }
-
-    .crypto-ad-dots {
-        gap: 6px;
-    }
-
-    .crypto-dot {
-        width: 7px;
-        height: 7px;
-        min-width: 7px;
-    }
-
-    .crypto-dot.active {
-        width: 9px;
-        height: 9px;
-        min-width: 9px;
-    }
-}
 
 /* =====================================================
    BALANCE
@@ -1329,239 +1200,113 @@ hr {
 <br>
 
 <!-- =========================
-     CRYPTO AD BANNER SLIDER
+     9 AUTO-ROTATING BANNERS
 ========================= -->
 
-<div class="crypto-ad-slider">
+<div class="ad-slider">
 
-    <div class="crypto-ad-track" id="cryptoAdTrack">
+    <div class="ad-track" id="adTrack">
 
         <!-- 1 LTC -->
-        <a href="https://example.com/ltc"
+        <a href="https://YOUR-LTC-LINK.com"
            target="_blank"
-           rel="noopener noreferrer"
-           class="crypto-ad-slide">
-
-            <div class="crypto-ad ltc-ad">
-                <div class="crypto-coin">Ł</div>
-
-                <div class="crypto-ad-text">
-                    <strong>💧 HOURLY FAUCET</strong>
-                    <span>Claim Free LTC</span>
-                    <small>High Commission Share • 25%</small>
-                </div>
-
-                <div class="crypto-symbol">LTC</div>
-            </div>
-
+           class="ad-banner">
+            <strong>HOURLY FAUCET</strong>
+            <span>Claim Free LTC</span>
+            <small>High Commission Share • 25%</small>
         </a>
-
 
         <!-- 2 BNB -->
-        <a href="https://example.com/bnb"
+        <a href="https://YOUR-BNB-LINK.com"
            target="_blank"
-           rel="noopener noreferrer"
-           class="crypto-ad-slide">
-
-            <div class="crypto-ad bnb-ad">
-                <div class="crypto-coin">◆</div>
-
-                <div class="crypto-ad-text">
-                    <strong>💧 HOURLY FAUCET</strong>
-                    <span>Claim Free BNB</span>
-                    <small>High Commission Share • 25%</small>
-                </div>
-
-                <div class="crypto-symbol">BNB</div>
-            </div>
-
+           class="ad-banner">
+            <strong>HOURLY FAUCET</strong>
+            <span>Claim Free BNB</span>
+            <small>High Commission Share • 25%</small>
         </a>
-
 
         <!-- 3 DOGE -->
-        <a href="https://example.com/doge"
+        <a href="https://YOUR-DOGE-LINK.com"
            target="_blank"
-           rel="noopener noreferrer"
-           class="crypto-ad-slide">
-
-            <div class="crypto-ad doge-ad">
-                <div class="crypto-coin">Ð</div>
-
-                <div class="crypto-ad-text">
-                    <strong>💧 HOURLY FAUCET</strong>
-                    <span>Claim Free DOGE</span>
-                    <small>High Commission Share • 25%</small>
-                </div>
-
-                <div class="crypto-symbol">DOGE</div>
-            </div>
-
+           class="ad-banner">
+            <strong>HOURLY FAUCET</strong>
+            <span>Claim Free DOGE</span>
+            <small>High Commission Share • 25%</small>
         </a>
-
 
         <!-- 4 SUI -->
-        <a href="https://example.com/sui"
+        <a href="https://YOUR-SUI-LINK.com"
            target="_blank"
-           rel="noopener noreferrer"
-           class="crypto-ad-slide">
-
-            <div class="crypto-ad sui-ad">
-                <div class="crypto-coin">S</div>
-
-                <div class="crypto-ad-text">
-                    <strong>💧 HOURLY FAUCET</strong>
-                    <span>Claim Free SUI</span>
-                    <small>High Commission Share • 25%</small>
-                </div>
-
-                <div class="crypto-symbol">SUI</div>
-            </div>
-
+           class="ad-banner">
+            <strong>HOURLY FAUCET</strong>
+            <span>Claim Free SUI</span>
+            <small>High Commission Share • 25%</small>
         </a>
-
 
         <!-- 5 TRON -->
-        <a href="https://example.com/tron"
+        <a href="https://YOUR-TRON-LINK.com"
            target="_blank"
-           rel="noopener noreferrer"
-           class="crypto-ad-slide">
-
-            <div class="crypto-ad tron-ad">
-                <div class="crypto-coin">T</div>
-
-                <div class="crypto-ad-text">
-                    <strong>💧 HOURLY FAUCET</strong>
-                    <span>Claim Free TRON</span>
-                    <small>High Commission Share • 25%</small>
-                </div>
-
-                <div class="crypto-symbol">TRX</div>
-            </div>
-
+           class="ad-banner">
+            <strong>HOURLY FAUCET</strong>
+            <span>Claim Free TRON</span>
+            <small>High Commission Share • 25%</small>
         </a>
-
 
         <!-- 6 TON -->
-        <a href="https://example.com/ton"
+        <a href="https://YOUR-TON-LINK.com"
            target="_blank"
-           rel="noopener noreferrer"
-           class="crypto-ad-slide">
-
-            <div class="crypto-ad ton-ad">
-                <div class="crypto-coin">💎</div>
-
-                <div class="crypto-ad-text">
-                    <strong>💧 HOURLY FAUCET</strong>
-                    <span>Claim Free TON</span>
-                    <small>High Commission Share • 25%</small>
-                </div>
-
-                <div class="crypto-symbol">TON</div>
-            </div>
-
+           class="ad-banner">
+            <strong>HOURLY FAUCET</strong>
+            <span>Claim Free TON</span>
+            <small>High Commission Share • 25%</small>
         </a>
-
 
         <!-- 7 SOL -->
-        <a href="https://example.com/sol"
+        <a href="https://YOUR-SOL-LINK.com"
            target="_blank"
-           rel="noopener noreferrer"
-           class="crypto-ad-slide">
-
-            <div class="crypto-ad sol-ad">
-                <div class="crypto-coin">≋</div>
-
-                <div class="crypto-ad-text">
-                    <strong>💧 HOURLY FAUCET</strong>
-                    <span>Claim Free SOL</span>
-                    <small>High Commission Share • 25%</small>
-                </div>
-
-                <div class="crypto-symbol">SOL</div>
-            </div>
-
+           class="ad-banner">
+            <strong>HOURLY FAUCET</strong>
+            <span>Claim Free SOL</span>
+            <small>High Commission Share • 25%</small>
         </a>
-
 
         <!-- 8 POL -->
-        <a href="https://example.com/pol"
+        <a href="https://YOUR-POL-LINK.com"
            target="_blank"
-           rel="noopener noreferrer"
-           class="crypto-ad-slide">
-
-            <div class="crypto-ad pol-ad">
-                <div class="crypto-coin">⬡</div>
-
-                <div class="crypto-ad-text">
-                    <strong>💧 HOURLY FAUCET</strong>
-                    <span>Claim Free POL</span>
-                    <small>High Commission Share • 25%</small>
-                </div>
-
-                <div class="crypto-symbol">POL</div>
-            </div>
-
+           class="ad-banner">
+            <strong>HOURLY FAUCET</strong>
+            <span>Claim Free POL</span>
+            <small>High Commission Share • 25%</small>
         </a>
 
-
         <!-- 9 BCH -->
-        <a href="https://example.com/bch"
+        <a href="https://YOUR-BCH-LINK.com"
            target="_blank"
-           rel="noopener noreferrer"
-           class="crypto-ad-slide">
-
-            <div class="crypto-ad bch-ad">
-                <div class="crypto-coin">₿</div>
-
-                <div class="crypto-ad-text">
-                    <strong>💧 HOURLY FAUCET</strong>
-                    <span>Claim Free BCH</span>
-                    <small>High Commission Share • 25%</small>
-                </div>
-
-                <div class="crypto-symbol">BCH</div>
-            </div>
-
+           class="ad-banner">
+            <strong>HOURLY FAUCET</strong>
+            <span>Claim Free BCH</span>
+            <small>High Commission Share • 25%</small>
         </a>
 
     </div>
 
+    <!-- 9 dots -->
+    <div class="ad-dots">
 
-    <!-- 9 DOTS -->
-
-    <div class="crypto-ad-dots">
-
-        <button class="crypto-dot active"
-                onclick="goToCryptoAd(0)"></button>
-
-        <button class="crypto-dot"
-                onclick="goToCryptoAd(1)"></button>
-
-        <button class="crypto-dot"
-                onclick="goToCryptoAd(2)"></button>
-
-        <button class="crypto-dot"
-                onclick="goToCryptoAd(3)"></button>
-
-        <button class="crypto-dot"
-                onclick="goToCryptoAd(4)"></button>
-
-        <button class="crypto-dot"
-                onclick="goToCryptoAd(5)"></button>
-
-        <button class="crypto-dot"
-                onclick="goToCryptoAd(6)"></button>
-
-        <button class="crypto-dot"
-                onclick="goToCryptoAd(7)"></button>
-
-        <button class="crypto-dot"
-                onclick="goToCryptoAd(8)"></button>
+        <span class="ad-dot active"></span>
+        <span class="ad-dot"></span>
+        <span class="ad-dot"></span>
+        <span class="ad-dot"></span>
+        <span class="ad-dot"></span>
+        <span class="ad-dot"></span>
+        <span class="ad-dot"></span>
+        <span class="ad-dot"></span>
+        <span class="ad-dot"></span>
 
     </div>
 
 </div>
-      
+                 
 <!-- =====================================================
      CLAIM
 ===================================================== -->
@@ -2890,123 +2635,88 @@ window.onclick =
 loadUser();
 
 loadClaimCooldown();
-/* =========================
-   CRYPTO AD AUTO SLIDER
+   
+ /* =========================
+   AD BANNER SLIDER
+   AUTOMATIC + MANUAL
 ========================= */
 
-let currentCryptoAd = 0;
+const adTrack =
+    document.getElementById("adTrack");
 
-let cryptoAdTimer = null;
+const adDots =
+    document.querySelectorAll(".ad-dot");
 
-const totalCryptoAds = 9;
+let currentAd = 0;
 
+function showAd(index) {
 
-function showCryptoAd(index) {
+    currentAd = index;
 
-    currentCryptoAd = index;
+    adTrack.style.transform =
+        `translateX(-${index * 100}%)`;
 
-    const track =
-        document.getElementById(
-            "cryptoAdTrack"
+    adDots.forEach((dot, i) => {
+
+        dot.classList.toggle(
+            "active",
+            i === index
         );
 
-    const dots =
-        document.querySelectorAll(
-            ".crypto-dot"
-        );
-
-    if (!track) return;
-
-
-    track.style.transform =
-        `translateX(-${currentCryptoAd * (100 / totalCryptoAds)}%)`;
-
-
-    dots.forEach(
-        (dot, i) => {
-
-            dot.classList.toggle(
-                "active",
-                i === currentCryptoAd
-            );
-
-        }
-    );
+    });
 }
 
 
-function goToCryptoAd(index) {
+/* Manual dot access */
 
-    showCryptoAd(index);
+adDots.forEach((dot, index) => {
 
-    restartCryptoAdTimer();
-}
-
-
-function nextCryptoAd() {
-
-    currentCryptoAd =
-        (currentCryptoAd + 1)
-        % totalCryptoAds;
-
-    showCryptoAd(
-        currentCryptoAd
-    );
-}
-
-
-function restartCryptoAdTimer() {
-
-    if (cryptoAdTimer) {
-
-        clearInterval(
-            cryptoAdTimer
-        );
-    }
-
-    cryptoAdTimer =
-        setInterval(
-            nextCryptoAd,
-            5000
-        );
-}
-
-
-/* Start */
-
-restartCryptoAdTimer();
-
-
-/* Pause while touching */
-
-const cryptoAdSlider =
-    document.querySelector(
-        ".crypto-ad-slider"
-    );
-
-if (cryptoAdSlider) {
-
-    cryptoAdSlider.addEventListener(
-        "touchstart",
-        function() {
-
-            clearInterval(
-                cryptoAdTimer
-            );
-
+    dot.addEventListener(
+        "click",
+        () => {
+            showAd(index);
+            resetAdTimer();
         }
     );
 
+});
 
-    cryptoAdSlider.addEventListener(
-        "touchend",
-        function() {
 
-            restartCryptoAdTimer();
+/* Automatic */
 
+let adTimer =
+    setInterval(() => {
+
+        currentAd++;
+
+        if (currentAd >= 9) {
+            currentAd = 0;
         }
-    );
-}
+
+        showAd(currentAd);
+
+    }, 4000);
+
+
+/* Reset automatic timer after manual click */
+
+function resetAdTimer() {
+
+    clearInterval(adTimer);
+
+    adTimer =
+        setInterval(() => {
+
+            currentAd++;
+
+            if (currentAd >= 9) {
+                currentAd = 0;
+            }
+
+            showAd(currentAd);
+
+        }, 4000);
+}     
 
 </script>
 
