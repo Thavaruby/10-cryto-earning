@@ -2,194 +2,772 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Dashboard - My Crypto Faucet</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
+<title>Dashboard - My Crypto Faucet</title>
 
-        body {
-            font-family: Arial, sans-serif;
-            background: #f2f4f7;
-            text-align: center;
-            margin: 0;
-        }
+<style>
 
-        header {
-            background: #1f2937;
-            color: white;
-            padding: 25px;
-        }
+/* =====================================================
+   GLOBAL
+===================================================== */
 
-        .container {
-            max-width: 500px;
-            margin: 40px auto;
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
+* {
+    box-sizing: border-box;
+}
 
-        .email {
-            color: #555;
-            margin-bottom: 20px;
-        }
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    color: #172554;
 
-        .balance {
-            font-size: 28px;
-            margin: 25px 0;
-            font-weight: bold;
-        }
+    background:
+        radial-gradient(circle at 20% 20%, rgba(255,180,0,.20), transparent 25%),
+        radial-gradient(circle at 80% 30%, rgba(37,99,235,.25), transparent 30%),
+        radial-gradient(circle at 50% 80%, rgba(249,115,22,.20), transparent 30%),
+        linear-gradient(135deg, #020617, #0f2a55, #07152f);
 
-        button {
-            background: #2563eb;
-            color: white;
-            border: none;
-            padding: 13px 25px;
-            font-size: 16px;
-            border-radius: 7px;
-            cursor: pointer;
-            margin: 5px;
-        }
+    min-height: 100vh;
+    overflow-x: hidden;
+}
 
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
 
-        .action-notification {
-    display: none;
-    margin: 10px auto 15px;
-    padding: 12px;
-    border-radius: 8px;
+/* =====================================================
+   ANIMATED BACKGROUND
+===================================================== */
+
+.background-coins {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.coin {
+    position: absolute;
+
+    width: 52px;
+    height: 52px;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 27px;
     font-weight: bold;
-    max-width: 350px;
+
+    color: white;
+
+    background:
+        radial-gradient(circle at 35% 30%, #fff7b2, #f59e0b 35%, #d97706 75%);
+
+    border: 3px solid #fbbf24;
+
+    box-shadow:
+        0 0 15px rgba(251,191,36,.8),
+        0 0 35px rgba(245,158,11,.45);
+
+    opacity: .85;
+
+    animation:
+        floatCoin 12s linear infinite,
+        spinCoin 4s linear infinite;
+}
+
+.coin:nth-child(1) {
+    left: 5%;
+    animation-delay: 0s;
+}
+
+.coin:nth-child(2) {
+    left: 18%;
+    width: 38px;
+    height: 38px;
+    font-size: 20px;
+    animation-delay: 3s;
+}
+
+.coin:nth-child(3) {
+    left: 35%;
+    width: 45px;
+    height: 45px;
+    animation-delay: 6s;
+}
+
+.coin:nth-child(4) {
+    left: 55%;
+    animation-delay: 1s;
+}
+
+.coin:nth-child(5) {
+    left: 72%;
+    width: 42px;
+    height: 42px;
+    font-size: 22px;
+    animation-delay: 5s;
+}
+
+.coin:nth-child(6) {
+    left: 88%;
+    width: 60px;
+    height: 60px;
+    font-size: 30px;
+    animation-delay: 8s;
+}
+
+@keyframes floatCoin {
+
+    0% {
+        transform:
+            translateY(110vh)
+            rotate(0deg);
+    }
+
+    100% {
+        transform:
+            translateY(-120px)
+            rotate(360deg);
+    }
+}
+
+@keyframes spinCoin {
+
+    0% {
+        filter: brightness(1);
+    }
+
+    50% {
+        filter: brightness(1.35);
+    }
+
+    100% {
+        filter: brightness(1);
+    }
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+header {
+
+    position: relative;
+    z-index: 2;
+
+    padding: 35px 20px 80px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(2,6,23,.95),
+            rgba(15,42,85,.65),
+            transparent
+        );
+
+    color: white;
+}
+
+.header-faucet {
+
+    font-size: 70px;
+
+    display: inline-block;
+
+    animation:
+        faucetFloat 3s ease-in-out infinite;
+
+    filter:
+        drop-shadow(0 0 15px rgba(251,191,36,.9));
+}
+
+@keyframes faucetFloat {
+
+    0%, 100% {
+        transform: translateY(0) rotate(-2deg);
+    }
+
+    50% {
+        transform: translateY(-8px) rotate(2deg);
+    }
+}
+
+header h1 {
+
+    margin: 8px 0;
+
+    font-size: 38px;
+
+    letter-spacing: 1px;
+
+    text-shadow:
+        0 0 15px rgba(255,255,255,.35);
+}
+
+header h1 span {
+    color: #f59e0b;
+}
+
+header p {
+
+    margin: 8px 0;
+
+    font-size: 16px;
+
+    color: #cbd5e1;
+}
+
+
+/* =====================================================
+   MAIN CARD
+===================================================== */
+
+.container {
+
+    position: relative;
+    z-index: 3;
+
+    width: 92%;
+    max-width: 520px;
+
+    margin: -45px auto 40px;
+
+    padding: 30px;
+
+    background:
+        rgba(255,255,255,.96);
+
+    border-radius: 24px;
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,.45),
+        0 0 30px rgba(59,130,246,.25);
+
+    backdrop-filter: blur(10px);
+}
+
+.container h2 {
+
+    margin-top: 0;
+
+    font-size: 28px;
+}
+
+
+/* =====================================================
+   NOTIFICATION
+===================================================== */
+
+#topNotification {
+
+    display: none;
+
+    margin: 15px 0;
+
+    padding: 12px;
+
+    border-radius: 10px;
+
+    font-weight: bold;
+
     word-break: break-word;
 }
 
-.action-notification.success {
-    display: block;
+.notification-success {
     background: #dcfce7;
     color: #166534;
 }
 
-.action-notification.error {
-    display: block;
+.notification-error {
     background: #fee2e2;
     color: #991b1b;
 }
 
-.action-notification.info {
-    display: block;
+.notification-info {
     background: #dbeafe;
     color: #1e40af;
 }
 
-        input,
-        select {
-            width: 90%;
-            max-width: 350px;
-            padding: 12px;
-            font-size: 15px;
-            border: 1px solid #ccc;
-            border-radius: 7px;
-            box-sizing: border-box;
-        }
 
-        hr {
-            margin: 30px 0;
-            border: 0;
-            border-top: 1px solid #ddd;
-        }
+/* =====================================================
+   EMAIL
+===================================================== */
 
-        /* Notification */
+.email {
 
-        #topNotification {
-            display: none;
-            margin: 20px 0;
-            padding: 14px;
-            border-radius: 8px;
-            font-weight: bold;
-            word-break: break-word;
-        }
+    color: #64748b;
 
-        .notification-success {
-            background: #dcfce7;
-            color: #166534;
-        }
+    margin-bottom: 18px;
 
-        .notification-error {
-            background: #fee2e2;
-            color: #991b1b;
-        }
+    font-size: 14px;
+}
 
-        .notification-info {
-            background: #dbeafe;
-            color: #1e40af;
-        }
 
-        /* Withdraw */
+/* =====================================================
+   BALANCE
+===================================================== */
 
-        .withdraw-section {
-            margin-top: 20px;
-        }
+.balance-box {
 
-        #withdrawMessage {
-            margin-top: 15px;
-            font-weight: bold;
-        }
+    padding: 22px;
 
-        /* History buttons */
+    margin: 20px 0;
 
-        .history-buttons {
-            margin-top: 25px;
-        }
+    border-radius: 18px;
 
-        /* Modal */
+    background:
+        linear-gradient(
+            135deg,
+            #ecfdf5,
+            #dcfce7
+        );
 
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.55);
-        }
+    border: 1px solid #86efac;
 
-        .modal-content {
-            background: white;
-            width: 90%;
-            max-width: 500px;
-            max-height: 80vh;
-            overflow-y: auto;
-            margin: 8% auto;
-            padding: 25px;
-            border-radius: 15px;
-            position: relative;
-            text-align: left;
-            box-sizing: border-box;
-        }
+    box-shadow:
+        inset 0 0 20px rgba(34,197,94,.08);
+}
 
-        .closeButton {
-            position: absolute;
-            right: 10px;
-            top: 10px;
-            background: #ef4444;
-            padding: 7px 12px;
-            margin: 0;
-        }
+.balance-title {
 
-        .history-item {
-            padding: 12px;
-            margin: 8px 0;
-            background: #f3f4f6;
-            border-radius: 8px;
-            word-break: break-word;
-        }
-        .withdraw-status {
+    color: #166534;
+
+    font-size: 16px;
+
+    margin-bottom: 8px;
+}
+
+.balance {
+
+    font-size: 30px;
+
+    font-weight: bold;
+
+    color: #052e16;
+
+    word-break: break-word;
+}
+
+.btc-symbol {
+
+    display: inline-flex;
+
+    width: 38px;
+    height: 38px;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #f59e0b;
+
+    color: white;
+
+    font-size: 22px;
+
+    margin-right: 5px;
+
+    box-shadow:
+        0 0 12px rgba(245,158,11,.6);
+}
+
+
+/* =====================================================
+   CLAIM
+===================================================== */
+
+#claimButton {
+
+    width: 90%;
+    max-width: 370px;
+
+    padding: 15px;
+
+    font-size: 17px;
+
+    font-weight: bold;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #1d4ed8
+        );
+
+    box-shadow:
+        0 7px 20px rgba(37,99,235,.35);
+}
+
+#claimButton:hover {
+    transform: translateY(-2px);
+}
+
+#claimButton:disabled {
+    transform: none;
+}
+
+.action-notification {
+
+    display: none;
+
+    width: 90%;
+    max-width: 370px;
+
+    margin: 10px auto 12px;
+
+    padding: 12px;
+
+    border-radius: 9px;
+
+    font-weight: bold;
+
+    word-break: break-word;
+}
+
+.action-notification.success {
+
+    display: block;
+
+    background: #dcfce7;
+
+    color: #166534;
+}
+
+.action-notification.error {
+
+    display: block;
+
+    background: #fee2e2;
+
+    color: #991b1b;
+}
+
+.action-notification.info {
+
+    display: block;
+
+    background: #dbeafe;
+
+    color: #1e40af;
+}
+
+#claimCooldown {
+
+    margin: 8px 0 20px;
+
+    font-weight: bold;
+
+    color: #2563eb;
+}
+
+
+/* =====================================================
+   WITHDRAW
+===================================================== */
+
+.withdraw-section {
+
+    margin-top: 25px;
+
+    padding: 20px;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fff7ed,
+            #ffedd5
+        );
+
+    border: 1px solid #fdba74;
+}
+
+.withdraw-section h3 {
+
+    margin-top: 0;
+
+    color: #7c2d12;
+
+    font-size: 23px;
+}
+
+
+/* Amount label */
+
+.amount-row {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    width: 90%;
+
+    max-width: 370px;
+
+    margin: 0 auto 8px;
+
+    text-align: left;
+}
+
+.amount-label {
+
+    font-weight: bold;
+
+    color: #172554;
+}
+
+.amount-label small {
+
+    color: #64748b;
+
+    font-weight: normal;
+
+    font-size: 12px;
+}
+
+
+/* MAX */
+
+.max-button {
+
+    margin: 0;
+
+    padding: 7px 13px;
+
+    font-size: 13px;
+
+    font-weight: bold;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f59e0b,
+            #ea580c
+        );
+}
+
+
+/* Inputs */
+
+input,
+select {
+
+    width: 90%;
+
+    max-width: 370px;
+
+    padding: 13px;
+
+    font-size: 15px;
+
+    border: 1px solid #cbd5e1;
+
+    border-radius: 9px;
+
+    background: white;
+
+    outline: none;
+}
+
+input:focus,
+select:focus {
+
+    border-color: #2563eb;
+
+    box-shadow:
+        0 0 0 3px rgba(37,99,235,.12);
+}
+
+
+/* Withdraw button */
+
+#withdrawButton {
+
+    width: 90%;
+
+    max-width: 370px;
+
+    padding: 15px;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f97316,
+            #ea580c
+        );
+
+    box-shadow:
+        0 7px 20px rgba(234,88,12,.30);
+}
+
+
+/* =====================================================
+   HR
+===================================================== */
+
+hr {
+
+    margin: 28px 0;
+
+    border: 0;
+
+    border-top: 1px solid #e2e8f0;
+}
+
+
+/* =====================================================
+   HISTORY BUTTONS
+===================================================== */
+
+.history-buttons {
+
+    display: flex;
+
+    gap: 8px;
+
+    justify-content: center;
+
+    flex-wrap: wrap;
+}
+
+.history-buttons button {
+
+    flex: 1;
+
+    min-width: 170px;
+
+    font-size: 14px;
+
+    padding: 12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #4f46e5,
+            #2563eb
+        );
+}
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+.logout-button {
+
+    margin-top: 22px;
+
+    width: 70%;
+
+    background: #374151;
+}
+
+
+/* =====================================================
+   MODAL
+===================================================== */
+
+.modal {
+
+    display: none;
+
+    position: fixed;
+
+    z-index: 1000;
+
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background:
+        rgba(0,0,0,.65);
+}
+
+.modal-content {
+
+    background: white;
+
+    width: 90%;
+
+    max-width: 500px;
+
+    max-height: 80vh;
+
+    overflow-y: auto;
+
+    margin: 8% auto;
+
+    padding: 25px;
+
+    border-radius: 18px;
+
+    position: relative;
+
+    text-align: left;
+}
+
+.closeButton {
+
+    position: absolute;
+
+    right: 10px;
+    top: 10px;
+
+    background: #ef4444;
+
+    padding: 7px 12px;
+
+    margin: 0;
+}
+
+
+/* =====================================================
+   HISTORY ITEM
+===================================================== */
+
+.history-item {
+
+    padding: 14px;
+
+    margin: 10px 0;
+
+    background: #f8fafc;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 10px;
+
+    word-break: break-word;
+}
+
+.history-item strong {
+
+    color: #1e3a8a;
+}
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+.withdraw-status {
+
     font-weight: bold;
 }
 
@@ -213,69 +791,170 @@
     color: #6b7280;
 }
 
-        .logout-button {
-            margin-top: 25px;
-            background: #374151;
-        }
 
-    </style>
+/* =====================================================
+   MOBILE
+===================================================== */
 
-    <script
-        src="https://challenges.cloudflare.com/turnstile/v0/api.js"
-        async
-        defer>
-    </script>
+@media (max-width: 600px) {
+
+    header h1 {
+        font-size: 29px;
+    }
+
+    .header-faucet {
+        font-size: 55px;
+    }
+
+    .container {
+
+        width: 94%;
+
+        padding: 20px;
+
+        margin-top: -35px;
+    }
+
+    .balance {
+        font-size: 24px;
+    }
+
+    .history-buttons {
+        flex-direction: column;
+    }
+
+    .history-buttons button {
+        width: 100%;
+    }
+
+    .logout-button {
+        width: 100%;
+    }
+}
+
+</style>
+
+<script
+    src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+    async
+    defer>
+</script>
 
 </head>
 
+
 <body>
 
+
+<!-- =====================================================
+     ANIMATED BITCOIN BACKGROUND
+===================================================== -->
+
+<div class="background-coins">
+
+    <div class="coin">₿</div>
+    <div class="coin">₿</div>
+    <div class="coin">₿</div>
+    <div class="coin">₿</div>
+    <div class="coin">₿</div>
+    <div class="coin">₿</div>
+
+</div>
+
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
 <header>
-    <h1>🎁 My Crypto Faucet</h1>
+
+    <div class="header-faucet">
+        🚰
+    </div>
+
+    <h1>
+        My Crypto <span>Faucet</span>
+    </h1>
+
+    <p>
+        Claim • Earn • Withdraw • Grow
+    </p>
+
 </header>
 
 
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
 <div class="container">
 
-    <h2>👤 Dashboard</h2>
+
+<h2>👤 Dashboard</h2>
 
 
-    <!-- Notification -->
+<!-- Notification -->
 
-    <div id="topNotification"></div>
+<div id="topNotification"></div>
 
 
-    <!-- User -->
+<!-- User -->
 
-    <div class="email" id="email">
-        Loading...
+<div
+    class="email"
+    id="email">
+
+    Loading...
+
+</div>
+
+
+<!-- =====================================================
+     BALANCE
+===================================================== -->
+
+<div class="balance-box">
+
+    <div class="balance-title">
+        My BTC Balance
     </div>
-
-
-    <!-- Balance -->
-
-    <p>My BTC Balance</p>
 
     <div class="balance">
-        💰 <span id="balance">0</span> BTC
+
+        <span class="btc-symbol">
+            ₿
+        </span>
+
+        <span id="balance">
+            0.00000000
+        </span>
+
+        BTC
+
     </div>
 
-
-    <!-- CAPTCHA -->
-
-    <div
-        class="cf-turnstile"
-        data-sitekey="0x4AAAAAAEaIQnOPdSP3LRPa"
-        data-theme="auto">
-    </div>
+</div>
 
 
-    <br>
+<!-- =====================================================
+     CAPTCHA
+===================================================== -->
+
+<div
+    class="cf-turnstile"
+    data-sitekey="0x4AAAAAAEaIQnOPdSP3LRPa"
+    data-theme="auto">
+</div>
 
 
-    <!-- Claim -->
+<br>
 
-    <button
+
+<!-- =====================================================
+     CLAIM
+===================================================== -->
+
+<button
     id="claimButton"
     onclick="claimReward()">
 
@@ -283,127 +962,154 @@
 
 </button>
 
+
 <div
     id="claimNotification"
     class="action-notification">
 </div>
 
-<div
-    id="claimCooldown"
-    style="
-        margin: 10px 0 20px;
-        font-weight: bold;
-        color: #2563eb;
-    ">
+
+<div id="claimCooldown">
 </div>
 
 
-    <!-- Withdrawal -->
+<!-- =====================================================
+     WITHDRAW
+===================================================== -->
 
-    <div class="withdraw-section">
+<div class="withdraw-section">
 
-        <h3>💸 Withdraw BTC</h3>
-<div style="
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    width:90%;
-    max-width:350px;
-    margin:0 auto 8px;
-">
-    <label for="withdrawAmount">
-        <strong>Amount BTC</strong>
-        <span style="font-size:13px;color:#666;">
-            (Min: 0.0000001 BTC)
-        </span>
-    </label>
+    <h3>
+        ₿ Withdraw BTC
+    </h3>
 
-    <button
-        type="button"
-        onclick="setMaxWithdrawal()"
-        style="
-            margin:0;
-            padding:6px 12px;
-            font-size:13px;
-        ">
-        MAX
-    </button>
-</div>
 
-<input
-    type="number"
-    id="withdrawAmount"
-    placeholder="Amount BTC"
-    step="0.0000001"
-    min="0.0000001"
->
+    <div class="amount-row">
 
-        <br><br>
+        <label
+            class="amount-label"
+            for="withdrawAmount">
 
-        <select id="withdrawCurrency">
+            Amount BTC
 
-            <option value="BTC">
-                BTC
-            </option>
+            <small>
+                (Min: 0.00000010 BTC)
+            </small>
 
-        </select>
+        </label>
 
-        <br><br>
-
-        <input
-            type="text"
-            id="walletAddress"
-            placeholder="Your Bitcoin wallet address"
-        >
-
-        <br><br>
 
         <button
-    id="withdrawButton"
-    onclick="submitWithdrawal()">
+            type="button"
+            class="max-button"
+            onclick="setMaxWithdrawal()">
 
-    💸 REQUEST WITHDRAWAL
+            MAX
 
-</button>
-
-<div
-    id="withdrawNotification"
-    class="action-notification">
-</div>
-
-
-    <hr>
-
-
-    <!-- History buttons -->
-
-    <div class="history-buttons">
-
-        <button onclick="openClaimHistory()">
-            📜 CLAIM HISTORY
-        </button>
-
-        <button onclick="openWithdrawalHistory()">
-            💸 WITHDRAWAL HISTORY
         </button>
 
     </div>
 
 
-    <!-- Logout -->
+    <input
+        type="number"
+        id="withdrawAmount"
+        placeholder="Amount BTC"
+        step="0.00000001"
+        min="0.0000001"
+    >
+
+
+    <br><br>
+
+
+    <select id="withdrawCurrency">
+
+        <option value="BTC">
+            BTC
+        </option>
+
+    </select>
+
+
+    <br><br>
+
+
+    <input
+        type="text"
+        id="walletAddress"
+        placeholder="Your Bitcoin wallet address"
+    >
+
+
+    <br><br>
+
 
     <button
-        class="logout-button"
-        onclick="logout()">
+        id="withdrawButton"
+        onclick="submitWithdrawal()">
 
-        🚪 LOGOUT
+        💸 REQUEST WITHDRAWAL
+
+    </button>
+
+
+    <!-- IMPORTANT:
+         Notification is directly below button -->
+
+    <div
+        id="withdrawNotification"
+        class="action-notification">
+    </div>
+
+
+</div>
+
+
+<hr>
+
+
+<!-- =====================================================
+     HISTORY
+===================================================== -->
+
+<div class="history-buttons">
+
+    <button onclick="openClaimHistory()">
+
+        📜 CLAIM HISTORY
+
+    </button>
+
+
+    <button onclick="openWithdrawalHistory()">
+
+        💸 WITHDRAWAL HISTORY
 
     </button>
 
 </div>
 
 
-<!-- History Modal -->
+<!-- =====================================================
+     LOGOUT
+===================================================== -->
+
+<button
+    class="logout-button"
+    onclick="logout()">
+
+    🚪 LOGOUT
+
+</button>
+
+
+</div>
+
+
+<!-- =====================================================
+     HISTORY MODAL
+===================================================== -->
 
 <div
     id="historyModal"
@@ -419,9 +1125,11 @@
 
         </button>
 
+
         <h3 id="historyTitle">
             History
         </h3>
+
 
         <div id="historyContent">
             Loading...
@@ -435,18 +1143,35 @@
 <script>
 
 
-/* =========================
-   NOTIFICATION
-========================= */
+/* =====================================================
+   FORMAT BTC
+===================================================== */
 
-/* =========================
-   NOTIFICATION
-========================= */
+function formatBTC(value) {
 
-function showNotification(message, type = "info") {
+    const number = Number(value);
+
+    if (!Number.isFinite(number)) {
+        return "0.00000000";
+    }
+
+    return number.toFixed(8);
+}
+
+
+/* =====================================================
+   TOP NOTIFICATION
+===================================================== */
+
+function showNotification(
+    message,
+    type = "info"
+) {
 
     const notification =
-        document.getElementById("topNotification");
+        document.getElementById(
+            "topNotification"
+        );
 
     notification.className = "";
 
@@ -454,11 +1179,17 @@ function showNotification(message, type = "info") {
         "notification-" + type
     );
 
-    notification.innerText = message;
+    notification.innerText =
+        message;
 
-    notification.style.display = "block";
+    notification.style.display =
+        "block";
 }
 
+
+/* =====================================================
+   ACTION NOTIFICATION
+===================================================== */
 
 function showActionNotification(
     id,
@@ -470,10 +1201,12 @@ function showActionNotification(
         document.getElementById(id);
 
     if (!notification) {
+
         console.error(
             "Notification element not found:",
             id
         );
+
         return;
     }
 
@@ -487,9 +1220,10 @@ function showActionNotification(
         "block";
 }
 
-/* =========================
+
+/* =====================================================
    LOAD USER
-========================= */
+===================================================== */
 
 async function loadUser() {
 
@@ -501,6 +1235,7 @@ async function loadUser() {
         const result =
             await response.json();
 
+
         if (!result.success) {
 
             window.location.href =
@@ -509,15 +1244,25 @@ async function loadUser() {
             return;
         }
 
+
         document.getElementById("email")
             .innerText =
             result.user.email;
 
+
         document.getElementById("balance")
-    .innerText =
-    Number(result.user.balance).toFixed(8);
+            .innerText =
+            formatBTC(
+                result.user.balance
+            );
+
 
     } catch (error) {
+
+        console.error(
+            "Load user error:",
+            error
+        );
 
         showNotification(
             "❌ Unable to load account.",
@@ -525,25 +1270,43 @@ async function loadUser() {
         );
     }
 }
+
+
+/* =====================================================
+   CLAIM COOLDOWN
+===================================================== */
+
 let cooldownTimer = null;
+
 
 function startClaimCountdown(seconds) {
 
     const countdown =
-        document.getElementById("claimCooldown");
+        document.getElementById(
+            "claimCooldown"
+        );
 
     const button =
-        document.getElementById("claimButton");
+        document.getElementById(
+            "claimButton"
+        );
+
 
     if (cooldownTimer) {
-        clearInterval(cooldownTimer);
+
+        clearInterval(
+            cooldownTimer
+        );
     }
+
 
     function updateCountdown() {
 
         if (seconds <= 0) {
 
-            clearInterval(cooldownTimer);
+            clearInterval(
+                cooldownTimer
+            );
 
             countdown.innerText =
                 "✅ You can claim now!";
@@ -551,77 +1314,114 @@ function startClaimCountdown(seconds) {
             countdown.style.color =
                 "#16a34a";
 
-            button.disabled = false;
+            button.disabled =
+                false;
 
             return;
         }
 
+
         const hours =
-            Math.floor(seconds / 3600);
+            Math.floor(
+                seconds / 3600
+            );
+
 
         const minutes =
             Math.floor(
                 (seconds % 3600) / 60
             );
 
+
         const secs =
             seconds % 60;
+
 
         countdown.innerText =
             `⏳ Next claim available in ${hours}h ${minutes}m ${secs}s`;
 
+
         countdown.style.color =
             "#2563eb";
 
-        button.disabled = true;
+
+        button.disabled =
+            true;
+
 
         seconds--;
+
     }
 
+
     updateCountdown();
+
 
     cooldownTimer =
         setInterval(
             updateCountdown,
             1000
         );
-    }
+}
+
+
+/* =====================================================
+   LOAD CLAIM COOLDOWN
+===================================================== */
+
 async function loadClaimCooldown() {
 
     try {
 
         const response =
-            await fetch("/api/claim-status");
+            await fetch(
+                "/api/claim-status"
+            );
+
 
         const result =
             await response.json();
+
 
         if (!result.success) {
             return;
         }
 
+
         if (result.canClaim) {
 
-            document.getElementById(
-                "claimButton"
-            ).disabled = false;
+            const button =
+                document.getElementById(
+                    "claimButton"
+                );
 
-            document.getElementById(
-                "claimCooldown"
-            ).innerText =
+
+            button.disabled =
+                false;
+
+
+            const countdown =
+                document.getElementById(
+                    "claimCooldown"
+                );
+
+
+            countdown.innerText =
                 "✅ You can claim now!";
 
-            document.getElementById(
-                "claimCooldown"
-            ).style.color =
+
+            countdown.style.color =
                 "#16a34a";
+
 
             return;
         }
 
+
         startClaimCountdown(
             result.remainingSeconds
         );
+
 
     } catch (error) {
 
@@ -630,10 +1430,12 @@ async function loadClaimCooldown() {
             error
         );
     }
-    }
-/* =========================
+}
+
+
+/* =====================================================
    LOGOUT
-========================= */
+===================================================== */
 
 async function logout() {
 
@@ -641,6 +1443,7 @@ async function logout() {
         "⏳ Logging out...",
         "info"
     );
+
 
     try {
 
@@ -652,8 +1455,10 @@ async function logout() {
                 }
             );
 
+
         const result =
             await response.json();
+
 
         if (result.success) {
 
@@ -668,6 +1473,7 @@ async function logout() {
             );
         }
 
+
     } catch (error) {
 
         showNotification(
@@ -678,16 +1484,21 @@ async function logout() {
 }
 
 
-/* =========================
+/* =====================================================
    CLAIM REWARD
-========================= */
+===================================================== */
 
 async function claimReward() {
 
     const button =
-        document.getElementById("claimButton");
+        document.getElementById(
+            "claimButton"
+        );
 
-    button.disabled = true;
+
+    button.disabled =
+        true;
+
 
     showActionNotification(
         "claimNotification",
@@ -695,10 +1506,12 @@ async function claimReward() {
         "info"
     );
 
+
     try {
 
         const turnstileToken =
             turnstile.getResponse();
+
 
         if (!turnstileToken) {
 
@@ -708,58 +1521,90 @@ async function claimReward() {
                 "error"
             );
 
-            button.disabled = false;
+
+            button.disabled =
+                false;
+
+
             return;
         }
 
+
         const response =
-            await fetch("/api/claim", {
-                method: "POST",
+            await fetch(
+                "/api/claim",
+                {
+                    method: "POST",
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
 
-                body: JSON.stringify({
-                    turnstileToken: turnstileToken
-                })
-            });
+                    body: JSON.stringify({
+                        turnstileToken:
+                            turnstileToken
+                    })
+                }
+            );
+
 
         const result =
             await response.json();
 
+
         if (result.success) {
 
-            document.getElementById("balance")
-    .innerText =
-    Number(result.balance).toFixed(8);
+
+            document.getElementById(
+                "balance"
+            ).innerText =
+                formatBTC(
+                    result.balance
+                );
+
 
             showActionNotification(
                 "claimNotification",
+
                 "✅ Reward claimed: " +
-                result.reward +
+                formatBTC(result.reward) +
                 " BTC",
+
                 "success"
             );
 
-            startClaimCountdown(3600);
+
+            startClaimCountdown(
+                3600
+            );
+
 
             turnstile.reset();
 
+
         } else {
+
 
             showActionNotification(
                 "claimNotification",
-                "❌ " + result.error,
+
+                "❌ " +
+                result.error,
+
                 "error"
             );
 
-            if (response.status === 429) {
+
+            if (
+                response.status === 429
+            ) {
 
                 const match =
                     result.error.match(
                         /(\d+)h\s+(\d+)m\s+(\d+)s/
                     );
+
 
                 if (match) {
 
@@ -772,10 +1617,12 @@ async function claimReward() {
                     const seconds =
                         Number(match[3]);
 
+
                     const totalSeconds =
                         hours * 3600 +
                         minutes * 60 +
                         seconds;
+
 
                     startClaimCountdown(
                         totalSeconds
@@ -783,8 +1630,10 @@ async function claimReward() {
                 }
             }
 
+
             turnstile.reset();
         }
+
 
     } catch (error) {
 
@@ -793,40 +1642,45 @@ async function claimReward() {
             error
         );
 
+
         showActionNotification(
             "claimNotification",
+
             "❌ Connection error.",
+
             "error"
         );
-
-    } finally {
-
-        /*
-         * Do not enable the button here.
-         * Cooldown controls the button state.
-         */
-
     }
 }
-                       
 
-/* =========================
+
+/* =====================================================
    WITHDRAW
-========================= */
+===================================================== */
 
 async function submitWithdrawal() {
 
     const amount =
         Number(
-            document.getElementById("withdrawAmount").value
+            document.getElementById(
+                "withdrawAmount"
+            ).value
         );
 
+
     const walletAddress =
-        document.getElementById("walletAddress")
-            .value.trim();
+        document.getElementById(
+            "walletAddress"
+        ).value.trim();
+
 
     const button =
-        document.getElementById("withdrawButton");
+        document.getElementById(
+            "withdrawButton"
+        );
+
+
+    /* Minimum */
 
     if (
         !Number.isFinite(amount) ||
@@ -835,114 +1689,142 @@ async function submitWithdrawal() {
 
         showActionNotification(
             "withdrawNotification",
+
             "❌ Enter a valid BTC amount.",
+
             "error"
         );
 
         return;
     }
 
-    if (amount < 0.0000001) {
+
+    if (
+        amount < 0.0000001
+    ) {
 
         showActionNotification(
             "withdrawNotification",
-            "❌ Minimum withdrawal is 0.0000001 BTC.",
+
+            "❌ Minimum withdrawal is 0.00000010 BTC.",
+
             "error"
         );
 
         return;
     }
+
+
+    /* Wallet */
 
     if (!walletAddress) {
 
         showActionNotification(
             "withdrawNotification",
+
             "❌ Enter your Bitcoin wallet address.",
+
             "error"
         );
 
         return;
     }
 
-    button.disabled = true;
+
+    button.disabled =
+        true;
+
 
     showActionNotification(
         "withdrawNotification",
+
         "⏳ Submitting withdrawal request...",
+
         "info"
     );
+
 
     try {
 
         const response =
-            await fetch("/api/withdraw", {
-                method: "POST",
+            await fetch(
+                "/api/withdraw",
+                {
+                    method: "POST",
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
 
-                body: JSON.stringify({
+                    body: JSON.stringify({
 
-                    amount: amount,
+                        amount:
+                            amount,
 
-                    currency: "BTC",
+                        currency:
+                            "BTC",
 
-                    walletAddress: walletAddress
+                        walletAddress:
+                            walletAddress
 
-                })
-            });
+                    })
+                }
+            );
+
 
         const result =
             await response.json();
 
+
         if (result.success) {
 
+
             /*
+             * IMPORTANT:
              * Update balance immediately
              */
-            if (result.success) {
 
-    document.getElementById("balance")
-        .innerText =
-        Number(result.balance).toFixed(8);
+            document.getElementById(
+                "balance"
+            ).innerText =
+                formatBTC(
+                    result.balance
+                );
 
-    showActionNotification(
-        "withdrawNotification",
-        "✅ Withdrawal request submitted. Status: PENDING",
-        "success"
-    );
 
-    document.getElementById("withdrawAmount").value = "";
-    document.getElementById("walletAddress").value = "";
-}
-
-            /*
-             * Notification appears
-             * directly under REQUEST WITHDRAWAL button
-             */
             showActionNotification(
                 "withdrawNotification",
+
                 "✅ Withdrawal request submitted. Status: PENDING",
+
                 "success"
             );
+
 
             document.getElementById(
                 "withdrawAmount"
             ).value = "";
 
+
             document.getElementById(
                 "walletAddress"
             ).value = "";
 
+
         } else {
+
 
             showActionNotification(
                 "withdrawNotification",
-                "❌ " + result.error,
+
+                "❌ " +
+                result.error,
+
                 "error"
             );
         }
+
 
     } catch (error) {
 
@@ -951,22 +1833,82 @@ async function submitWithdrawal() {
             error
         );
 
+
         showActionNotification(
             "withdrawNotification",
+
             "❌ Connection error.",
+
             "error"
         );
 
+
     } finally {
 
-        button.disabled = false;
+        button.disabled =
+            false;
     }
-    }
-         
+}
 
-/* =========================
+
+/* =====================================================
+   MAX WITHDRAWAL
+===================================================== */
+
+function setMaxWithdrawal() {
+
+    const balanceElement =
+        document.getElementById(
+            "balance"
+        );
+
+
+    const amountInput =
+        document.getElementById(
+            "withdrawAmount"
+        );
+
+
+    const balance =
+        Number(
+            balanceElement.innerText
+        );
+
+
+    if (
+        !Number.isFinite(balance) ||
+        balance <= 0
+    ) {
+
+        showActionNotification(
+            "withdrawNotification",
+
+            "❌ No BTC balance available.",
+
+            "error"
+        );
+
+        return;
+    }
+
+
+    amountInput.value =
+        formatBTC(balance);
+
+
+    showActionNotification(
+        "withdrawNotification",
+
+        "💰 Maximum BTC balance selected.",
+
+        "info"
+    );
+}
+
+
+/* =====================================================
    OPEN CLAIM HISTORY
-========================= */
+===================================================== */
 
 async function openClaimHistory() {
 
@@ -975,10 +1917,12 @@ async function openClaimHistory() {
             "historyModal"
         );
 
+
     const title =
         document.getElementById(
             "historyTitle"
         );
+
 
     const content =
         document.getElementById(
@@ -989,8 +1933,10 @@ async function openClaimHistory() {
     title.innerText =
         "📜 Claim History";
 
+
     content.innerHTML =
         "⏳ Loading...";
+
 
     modal.style.display =
         "block";
@@ -1003,6 +1949,7 @@ async function openClaimHistory() {
                 "/api/claims"
             );
 
+
         const result =
             await response.json();
 
@@ -1010,7 +1957,8 @@ async function openClaimHistory() {
         if (!result.success) {
 
             content.innerText =
-                "❌ " + result.error;
+                "❌ " +
+                result.error;
 
             return;
         }
@@ -1028,83 +1976,48 @@ async function openClaimHistory() {
         }
 
 
+        /*
+         * IMPORTANT:
+         * Claims use result.claims
+         */
+
         content.innerHTML =
-    result.withdrawals
-        .map(withdrawal => {
+            result.claims
+                .map(claim => `
 
-            let statusText = "";
-            let statusClass = "";
+                    <div class="history-item">
 
-            if (withdrawal.status === "approved") {
-                statusText = "🟢 APPROVED";
-                statusClass = "approved";
-            }
-            else if (withdrawal.status === "rejected") {
-                statusText = "🔴 REJECTED";
-                statusClass = "rejected";
-            }
-            else if (withdrawal.status === "pending") {
-                statusText = "🟡 PENDING";
-                statusClass = "pending";
-            }
-            else if (withdrawal.status === "processing") {
-                statusText = "🔵 PROCESSING";
-                statusClass = "processing";
-            }
-            else {
-                statusText =
-                    withdrawal.status.toUpperCase();
-                statusClass = "unknown";
-            }
+                        <strong>
+                            🎁 Reward Claimed
+                        </strong>
 
-            const refundText =
-                withdrawal.status === "rejected"
-                    ? `<br><strong>💰 BTC refunded</strong>`
-                    : "";
+                        <br><br>
 
-            return `
+                        💰 Reward:
+                        ${formatBTC(
+                            claim.reward
+                        )} BTC
 
-                <div class="history-item">
+                        <br>
 
-                    <strong>
-                        💸 Withdrawal
-                    </strong>
+                        🕐 Date:
+                        ${new Date(
+                            claim.claimed_at
+                        ).toLocaleString()}
 
-                    <br><br>
+                    </div>
 
-                    💰 Amount:
-                    ${withdrawal.amount} BTC
-
-                    <br>
-
-                    🏦 Wallet:
-                    ${withdrawal.wallet_address}
-
-                    <br>
-
-                    📌 Status:
-                    <span class="withdraw-status ${statusClass}">
-                        ${statusText}
-                    </span>
-
-                    ${refundText}
-
-                    <br>
-
-                    🕐 Date:
-                    ${new Date(
-                        withdrawal.created_at
-                    ).toLocaleString()}
-
-                </div>
-
-            `;
-
-        })
-        .join("");
+                `)
+                .join("");
 
 
     } catch (error) {
+
+        console.error(
+            "Claim history error:",
+            error
+        );
+
 
         content.innerText =
             "❌ Unable to load claim history.";
@@ -1112,9 +2025,9 @@ async function openClaimHistory() {
 }
 
 
-/* =========================
+/* =====================================================
    OPEN WITHDRAWAL HISTORY
-========================= */
+===================================================== */
 
 async function openWithdrawalHistory() {
 
@@ -1123,10 +2036,12 @@ async function openWithdrawalHistory() {
             "historyModal"
         );
 
+
     const title =
         document.getElementById(
             "historyTitle"
         );
+
 
     const content =
         document.getElementById(
@@ -1137,8 +2052,10 @@ async function openWithdrawalHistory() {
     title.innerText =
         "💸 Withdrawal History";
 
+
     content.innerHTML =
         "⏳ Loading...";
+
 
     modal.style.display =
         "block";
@@ -1151,6 +2068,7 @@ async function openWithdrawalHistory() {
                 "/api/withdrawals"
             );
 
+
         const result =
             await response.json();
 
@@ -1158,7 +2076,8 @@ async function openWithdrawalHistory() {
         if (!result.success) {
 
             content.innerText =
-                "❌ " + result.error;
+                "❌ " +
+                result.error;
 
             return;
         }
@@ -1178,38 +2097,138 @@ async function openWithdrawalHistory() {
 
         content.innerHTML =
             result.withdrawals
-                .map(withdrawal => `
+                .map(withdrawal => {
 
-                    <div class="history-item">
 
-                        💰 Amount:
-                        ${withdrawal.amount}
-                        BTC
+                    let statusText =
+                        "UNKNOWN";
 
-                        <br>
 
-                        🏦 Wallet:
-                        ${withdrawal.wallet_address}
+                    let statusClass =
+                        "unknown";
 
-                        <br>
 
-                        📌 Status:
-                        ${withdrawal.status.toUpperCase()}
+                    if (
+                        withdrawal.status ===
+                        "approved"
+                    ) {
 
-                        <br>
+                        statusText =
+                            "🟢 APPROVED";
 
-                        🕐 Date:
-                        ${new Date(
-                            withdrawal.created_at
-                        ).toLocaleString()}
+                        statusClass =
+                            "approved";
+                    }
 
-                    </div>
 
-                `)
+                    else if (
+                        withdrawal.status ===
+                        "rejected"
+                    ) {
+
+                        statusText =
+                            "🔴 REJECTED";
+
+                        statusClass =
+                            "rejected";
+                    }
+
+
+                    else if (
+                        withdrawal.status ===
+                        "pending"
+                    ) {
+
+                        statusText =
+                            "🟡 PENDING";
+
+                        statusClass =
+                            "pending";
+                    }
+
+
+                    else if (
+                        withdrawal.status ===
+                        "processing"
+                    ) {
+
+                        statusText =
+                            "🔵 PROCESSING";
+
+                        statusClass =
+                            "processing";
+                    }
+
+
+                    const refundText =
+                        withdrawal.status ===
+                        "rejected"
+
+                        ? `
+                            <br>
+                            <strong style="color:#16a34a;">
+                                💰 BTC refunded
+                            </strong>
+                          `
+
+                        : "";
+
+
+                    return `
+
+                        <div class="history-item">
+
+                            <strong>
+                                💸 Withdrawal
+                            </strong>
+
+                            <br><br>
+
+                            💰 Amount:
+                            ${formatBTC(
+                                withdrawal.amount
+                            )} BTC
+
+                            <br>
+
+                            🏦 Wallet:
+                            ${withdrawal.wallet_address}
+
+                            <br>
+
+                            📌 Status:
+
+                            <span
+                                class="withdraw-status ${statusClass}">
+
+                                ${statusText}
+
+                            </span>
+
+                            ${refundText}
+
+                            <br>
+
+                            🕐 Date:
+                            ${new Date(
+                                withdrawal.created_at
+                            ).toLocaleString()}
+
+                        </div>
+
+                    `;
+
+                })
                 .join("");
 
 
     } catch (error) {
+
+        console.error(
+            "Withdrawal history error:",
+            error
+        );
+
 
         content.innerText =
             "❌ Unable to load withdrawal history.";
@@ -1217,9 +2236,9 @@ async function openWithdrawalHistory() {
 }
 
 
-/* =========================
+/* =====================================================
    CLOSE HISTORY
-========================= */
+===================================================== */
 
 function closeHistory() {
 
@@ -1230,32 +2249,39 @@ function closeHistory() {
 }
 
 
-/* =========================
-   CLOSE MODAL BY BACKGROUND
-========================= */
+/* =====================================================
+   CLOSE MODAL BACKGROUND
+===================================================== */
 
-window.onclick = function(event) {
+window.onclick =
+    function(event) {
 
-    const modal =
-        document.getElementById(
-            "historyModal"
-        );
-
-    if (event.target === modal) {
-
-        closeHistory();
-    }
-};
+        const modal =
+            document.getElementById(
+                "historyModal"
+            );
 
 
-/* =========================
+        if (
+            event.target === modal
+        ) {
+
+            closeHistory();
+        }
+    };
+
+
+/* =====================================================
    INITIAL LOAD
-========================= */
+===================================================== */
 
 loadUser();
+
 loadClaimCooldown();
+
 
 </script>
 
 </body>
-    </html>
+
+</html>
