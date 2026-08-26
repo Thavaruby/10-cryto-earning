@@ -189,6 +189,29 @@
             border-radius: 8px;
             word-break: break-word;
         }
+        .withdraw-status {
+    font-weight: bold;
+}
+
+.withdraw-status.approved {
+    color: #16a34a;
+}
+
+.withdraw-status.rejected {
+    color: #dc2626;
+}
+
+.withdraw-status.pending {
+    color: #ca8a04;
+}
+
+.withdraw-status.processing {
+    color: #2563eb;
+}
+
+.withdraw-status.unknown {
+    color: #6b7280;
+}
 
         .logout-button {
             margin-top: 25px;
@@ -992,25 +1015,79 @@ async function openClaimHistory() {
 
 
         content.innerHTML =
-            result.claims
-                .map(claim => `
+    result.withdrawals
+        .map(withdrawal => {
 
-                    <div class="history-item">
+            let statusText = "";
+            let statusClass = "";
 
-                        🎁 Reward:
-                        ${claim.reward} BTC
+            if (withdrawal.status === "approved") {
+                statusText = "🟢 APPROVED";
+                statusClass = "approved";
+            }
+            else if (withdrawal.status === "rejected") {
+                statusText = "🔴 REJECTED";
+                statusClass = "rejected";
+            }
+            else if (withdrawal.status === "pending") {
+                statusText = "🟡 PENDING";
+                statusClass = "pending";
+            }
+            else if (withdrawal.status === "processing") {
+                statusText = "🔵 PROCESSING";
+                statusClass = "processing";
+            }
+            else {
+                statusText =
+                    withdrawal.status.toUpperCase();
+                statusClass = "unknown";
+            }
 
-                        <br>
+            const refundText =
+                withdrawal.status === "rejected"
+                    ? `<br><strong>💰 BTC refunded</strong>`
+                    : "";
 
-                        🕐
-                        ${new Date(
-                            claim.claimed_at
-                        ).toLocaleString()}
+            return `
 
-                    </div>
+                <div class="history-item">
 
-                `)
-                .join("");
+                    <strong>
+                        💸 Withdrawal
+                    </strong>
+
+                    <br><br>
+
+                    💰 Amount:
+                    ${withdrawal.amount} BTC
+
+                    <br>
+
+                    🏦 Wallet:
+                    ${withdrawal.wallet_address}
+
+                    <br>
+
+                    📌 Status:
+                    <span class="withdraw-status ${statusClass}">
+                        ${statusText}
+                    </span>
+
+                    ${refundText}
+
+                    <br>
+
+                    🕐 Date:
+                    ${new Date(
+                        withdrawal.created_at
+                    ).toLocaleString()}
+
+                </div>
+
+            `;
+
+        })
+        .join("");
 
 
     } catch (error) {
