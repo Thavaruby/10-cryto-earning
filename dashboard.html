@@ -336,16 +336,17 @@
         <br><br>
 
         <button
-            id="withdrawButton"
-            onclick="submitWithdrawal()">
+    id="withdrawButton"
+    onclick="submitWithdrawal()">
 
-            💸 REQUEST WITHDRAWAL
+    💸 REQUEST WITHDRAWAL
 
-        </button>
+</button>
 
-        <div id="withdrawMessage"></div>
-
-    </div>
+<div
+    id="withdrawNotification"
+    class="action-notification">
+</div>
 
 
     <hr>
@@ -416,7 +417,17 @@
 ========================= */
 
 function showNotification(message, type = "info") {
+function showActionNotification(id, message, type = "info") {
 
+    const notification =
+        document.getElementById(id);
+
+    notification.className =
+        "action-notification " + type;
+
+    notification.innerText =
+        message;
+}
     const notification =
         document.getElementById(
             "topNotification"
@@ -641,10 +652,11 @@ async function claimReward() {
 
     button.disabled = true;
 
-    showNotification(
-        "⏳ Claiming reward...",
-        "info"
-    );
+    showActionNotification(
+    "claimNotification",
+    "⏳ Claiming reward...",
+    "info"
+);
 
     try {
 
@@ -653,10 +665,11 @@ async function claimReward() {
 
         if (!turnstileToken) {
 
-            showNotification(
-                "❌ Please complete CAPTCHA verification.",
-                "error"
-            );
+            showActionNotification(
+    "claimNotification",
+    "❌ Please complete CAPTCHA verification.",
+    "error"
+);
 
             button.disabled = false;
 
@@ -693,12 +706,13 @@ async function claimReward() {
         .innerText =
         result.balance;
 
-    showNotification(
-        "✅ Reward claimed: " +
-        result.reward +
-        " BTC",
-        "success"
-    );
+    showActionNotification(
+    "claimNotification",
+    "✅ Reward claimed: " +
+    result.reward +
+    " BTC",
+    "success"
+);
 
     startClaimCountdown(3600);
 
@@ -829,11 +843,11 @@ async function submitWithdrawal() {
 
     button.disabled = true;
 
-    showNotification(
-        "⏳ Submitting withdrawal request...",
-        "info"
-    );
-
+    showActionNotification(
+    "withdrawNotification",
+    "⏳ Submitting withdrawal request...",
+    "info"
+);
 
     try {
 
@@ -868,10 +882,11 @@ async function submitWithdrawal() {
 
         if (result.success) {
 
-            showNotification(
-                "✅ Withdrawal request submitted. Status: PENDING",
-                "success"
-            );
+            showActionNotification(
+    "withdrawNotification",
+    "✅ Withdrawal request submitted. Status: PENDING",
+    "success"
+);
 
             document.getElementById(
                 "withdrawAmount"
@@ -883,10 +898,11 @@ async function submitWithdrawal() {
 
         } else {
 
-            showNotification(
-                "❌ " + result.error,
-                "error"
-            );
+            showActionNotification(
+    "withdrawNotification",
+    "❌ " + result.error,
+    "error"
+);
         }
 
 
