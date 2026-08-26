@@ -514,8 +514,8 @@ async function loadUser() {
             result.user.email;
 
         document.getElementById("balance")
-            .innerText =
-            result.user.balance;
+    .innerText =
+    Number(result.user.balance).toFixed(8);
 
     } catch (error) {
 
@@ -731,7 +731,8 @@ async function claimReward() {
         if (result.success) {
 
             document.getElementById("balance")
-                .innerText = result.balance;
+    .innerText =
+    Number(result.balance).toFixed(8);
 
             showActionNotification(
                 "claimNotification",
@@ -900,8 +901,21 @@ async function submitWithdrawal() {
             /*
              * Update balance immediately
              */
-            document.getElementById("balance")
-                .innerText = result.balance;
+            if (result.success) {
+
+    document.getElementById("balance")
+        .innerText =
+        Number(result.balance).toFixed(8);
+
+    showActionNotification(
+        "withdrawNotification",
+        "✅ Withdrawal request submitted. Status: PENDING",
+        "success"
+    );
+
+    document.getElementById("withdrawAmount").value = "";
+    document.getElementById("walletAddress").value = "";
+}
 
             /*
              * Notification appears
