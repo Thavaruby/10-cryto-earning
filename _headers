@@ -1,0 +1,14 @@
+/dashboard.html
+  Cache-Control: no-cache, must-revalidate
+
+/admin.html
+  Cache-Control: no-cache, must-revalidate
+
+/index.html
+  Cache-Control: no-cache, must-revalidate
+
+/login.html
+  Cache-Control: no-cache, must-revalidate
+
+/register.html
+  Cache-Control: no-cache, must-revalidate
