@@ -2636,27 +2636,38 @@ loadUser();
 
 loadClaimCooldown();
    
- /* =========================
-   AD BANNER SLIDER
-   AUTOMATIC + MANUAL
+/* =========================
+   CRYPTO AD SLIDER
 ========================= */
 
-const adTrack =
-    document.getElementById("adTrack");
+let currentCryptoAd = 0;
 
-const adDots =
-    document.querySelectorAll(".ad-dot");
+let cryptoAdTimer = null;
 
-let currentAd = 0;
+const totalCryptoAds = 9;
 
-function showAd(index) {
 
-    currentAd = index;
+/* SHOW AD */
 
-    adTrack.style.transform =
-        `translateX(-${index * 100}%)`;
+function showCryptoAd(index) {
 
-    adDots.forEach((dot, i) => {
+    currentCryptoAd = index;
+
+    const track =
+        document.getElementById("cryptoAdTrack");
+
+    const dots =
+        document.querySelectorAll(".crypto-dot");
+
+    if (!track) {
+        return;
+    }
+
+    track.style.transform =
+        `translateX(-${index * 11.111111}%)`;
+
+
+    dots.forEach((dot, i) => {
 
         dot.classList.toggle(
             "active",
@@ -2667,56 +2678,108 @@ function showAd(index) {
 }
 
 
-/* Manual dot access */
+/* NEXT */
 
-adDots.forEach((dot, index) => {
+function manualNextAd() {
 
-    dot.addEventListener(
-        "click",
-        () => {
-            showAd(index);
-            resetAdTimer();
+    currentCryptoAd =
+        (currentCryptoAd + 1)
+        % totalCryptoAds;
+
+    showCryptoAd(currentCryptoAd);
+
+    restartCryptoAdTimer();
+}
+
+
+/* PREVIOUS */
+
+function manualPrevAd() {
+
+    currentCryptoAd =
+        (currentCryptoAd - 1 + totalCryptoAds)
+        % totalCryptoAds;
+
+    showCryptoAd(currentCryptoAd);
+
+    restartCryptoAdTimer();
+}
+
+
+/* DOT */
+
+function goToCryptoAd(index) {
+
+    showCryptoAd(index);
+
+    restartCryptoAdTimer();
+}
+
+
+/* AUTOMATIC */
+
+function restartCryptoAdTimer() {
+
+    if (cryptoAdTimer) {
+
+        clearInterval(
+            cryptoAdTimer
+        );
+    }
+
+    cryptoAdTimer =
+        setInterval(
+            function() {
+
+                currentCryptoAd =
+                    (currentCryptoAd + 1)
+                    % totalCryptoAds;
+
+                showCryptoAd(
+                    currentCryptoAd
+                );
+
+            },
+            5000
+        );
+}
+
+
+/* START */
+
+restartCryptoAdTimer();
+
+
+/* PAUSE ON TOUCH */
+
+const adSlider =
+    document.getElementById(
+        "cryptoAdSlider"
+    );
+
+if (adSlider) {
+
+    adSlider.addEventListener(
+        "touchstart",
+        function() {
+
+            clearInterval(
+                cryptoAdTimer
+            );
+
         }
     );
 
-});
 
+    adSlider.addEventListener(
+        "touchend",
+        function() {
 
-/* Automatic */
+            restartCryptoAdTimer();
 
-let adTimer =
-    setInterval(() => {
-
-        currentAd++;
-
-        if (currentAd >= 9) {
-            currentAd = 0;
         }
-
-        showAd(currentAd);
-
-    }, 4000);
-
-
-/* Reset automatic timer after manual click */
-
-function resetAdTimer() {
-
-    clearInterval(adTimer);
-
-    adTimer =
-        setInterval(() => {
-
-            currentAd++;
-
-            if (currentAd >= 9) {
-                currentAd = 0;
-            }
-
-            showAd(currentAd);
-
-        }, 4000);
-}     
+    );
+}
 
 </script>
 
