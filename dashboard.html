@@ -416,29 +416,46 @@
    NOTIFICATION
 ========================= */
 
+/* =========================
+   NOTIFICATION
+========================= */
+
 function showNotification(message, type = "info") {
-function showActionNotification(id, message, type = "info") {
 
     const notification =
-        document.getElementById(id);
+        document.getElementById("topNotification");
 
-    notification.className =
-        "action-notification " + type;
-
-    notification.innerText =
-        message;
-}
-    const notification =
-        document.getElementById(
-            "topNotification"
-        );
-
-    notification.className =
-        "";
+    notification.className = "";
 
     notification.classList.add(
         "notification-" + type
     );
+
+    notification.innerText = message;
+
+    notification.style.display = "block";
+}
+
+
+function showActionNotification(
+    id,
+    message,
+    type = "info"
+) {
+
+    const notification =
+        document.getElementById(id);
+
+    if (!notification) {
+        console.error(
+            "Notification element not found:",
+            id
+        );
+        return;
+    }
+
+    notification.className =
+        "action-notification " + type;
 
     notification.innerText =
         message;
@@ -446,7 +463,6 @@ function showActionNotification(id, message, type = "info") {
     notification.style.display =
         "block";
 }
-
 
 /* =========================
    LOAD USER
@@ -719,7 +735,10 @@ async function claimReward() {
     turnstile.reset();
 } else {
 
-    showNotification(
+    } else {
+
+    showActionNotification(
+        "claimNotification",
         "❌ " + result.error,
         "error"
     );
@@ -759,15 +778,21 @@ async function claimReward() {
 
     } catch (error) {
 
-        showNotification(
-            "❌ Connection error.",
-            "error"
-        );
+        } catch (error) {
 
-    } finally {
+    showActionNotification(
+        "claimNotification",
+        "❌ Connection error.",
+        "error"
+    );
 
-        button.disabled = false;
-    }
+    } } finally {
+
+    /*
+     * Do not enable the button here.
+     * Cooldown controls the button state.
+     */
+}
 }
 
 
@@ -908,10 +933,13 @@ async function submitWithdrawal() {
 
     } catch (error) {
 
-        showNotification(
-            "❌ Connection error.",
-            "error"
-        );
+        } catch (error) {
+
+    showActionNotification(
+        "withdrawNotification",
+        "❌ Connection error.",
+        "error"
+    );
 
     } finally {
 
