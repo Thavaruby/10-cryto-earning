@@ -2961,7 +2961,7 @@ async function openClaimHistory() {
 
                         🕐 Date:
                         ${new Date(
-                            claim.claimed_at
+                            claim.claimed_at + "Z"
                         ).toLocaleString()}
 
                     </div>
@@ -3170,7 +3170,7 @@ async function openWithdrawalHistory() {
 
                             🕐 Date:
                             ${new Date(
-                                withdrawal.created_at
+                                withdrawal.created_at + "Z"
                             ).toLocaleString()}
 
                         </div>
