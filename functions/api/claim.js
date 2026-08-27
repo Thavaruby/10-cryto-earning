@@ -34,25 +34,109 @@ export async function onRequestPost(context) {
 
     try {
 
-        // Get Turnstile token
-        const data =
-            await context.request.json();
+        /* =====================================================
+           1. READ REQUEST
+        ===================================================== */
 
-        const turnstileToken =
-            String(data.turnstileToken || "");
+        let data;
 
-        if (!turnstileToken) {
-
+        try {
+            data = await context.request.json();
+        } catch {
             return Response.json(
                 {
                     success: false,
-                    error: "Please complete verification"
+                    error: "Invalid request."
                 },
                 { status: 400 }
             );
         }
 
-        // Verify Turnstile with Cloudflare
+        const turnstileToken =
+            String(data.turnstileToken || "");
+
+        if (!turnstileToken) {
+            return Response.json(
+                {
+                    success: false,
+                    error: "Please complete verification."
+                },
+                { status: 400 }
+            );
+        }
+
+
+        /* =====================================================
+           2. GET SESSION
+        ===================================================== */
+
+        const sessionToken =
+            getCookie(
+                context.request,
+                "session"
+            );
+
+        if (!sessionToken) {
+            return Response.json(
+                {
+                    success: false,
+                    error: "Please login first."
+                },
+                { status: 401 }
+            );
+        }
+
+        const tokenHash =
+            await hashSessionToken(
+                sessionToken
+            );
+
+
+        /* =====================================================
+           3. VERIFY SESSION
+        ===================================================== */
+
+        const session =
+            await context.env.DB
+                .prepare(
+                    `SELECT
+                        user_id,
+                        expires_at
+                     FROM sessions
+                     WHERE token_hash = ?
+                     LIMIT 1`
+                )
+                .bind(tokenHash)
+                .first();
+
+        if (!session) {
+            return Response.json(
+                {
+                    success: false,
+                    error: "Invalid session."
+                },
+                { status: 401 }
+            );
+        }
+
+        if (
+            !session.expires_at ||
+            new Date(session.expires_at) <= new Date()
+        ) {
+            return Response.json(
+                {
+                    success: false,
+                    error: "Session expired."
+                },
+                { status: 401 }
+            );
+        }
+
+
+        /* =====================================================
+           4. VERIFY TURNSTILE
+        ===================================================== */
+
         const verifyResponse =
             await fetch(
                 "https://challenges.cloudflare.com/turnstile/v0/siteverify",
@@ -75,189 +159,228 @@ export async function onRequestPost(context) {
                 }
             );
 
+        if (!verifyResponse.ok) {
+            return Response.json(
+                {
+                    success: false,
+                    error: "Verification service unavailable."
+                },
+                { status: 503 }
+            );
+        }
+
         const verifyResult =
             await verifyResponse.json();
 
         if (!verifyResult.success) {
-
             return Response.json(
                 {
                     success: false,
-                    error: "Verification failed"
+                    error: "Verification failed."
                 },
                 { status: 400 }
             );
         }
 
-        // Get session
-        const sessionToken =
-            getCookie(
-                context.request,
-                "session"
-            );
 
-        if (!sessionToken) {
+        /* =====================================================
+           5. ATOMIC COOLDOWN + CLAIM
+           
+           IMPORTANT:
+           The cooldown condition is checked inside the
+           INSERT statement itself.
 
-            return Response.json(
-                {
-                    success: false,
-                    error: "Please login first"
-                },
-                { status: 401 }
-            );
-        }
+           This prevents two simultaneous requests from
+           both passing the cooldown check.
+        ===================================================== */
 
-        const tokenHash =
-            await hashSessionToken(
-                sessionToken
-            );
-
-        const user =
+        const claimResult =
             await context.env.DB
                 .prepare(
-                    `SELECT
-                        sessions.user_id,
-                        sessions.expires_at
-                     FROM sessions
-                     WHERE sessions.token_hash = ?
-                     LIMIT 1`
+                    `INSERT INTO claims
+                    (
+                        user_id,
+                        reward
+                    )
+                    SELECT
+                        ?,
+                        ?
+                    WHERE NOT EXISTS (
+                        SELECT 1
+                        FROM claims
+                        WHERE user_id = ?
+                          AND claimed_at >
+                              datetime('now', ?)
+                    )`
                 )
-                .bind(tokenHash)
-                .first();
+                .bind(
+                    session.user_id,
+                    REWARD,
+                    session.user_id,
+                    `-${COOLDOWN_SECONDS} seconds`
+                )
+                .run();
 
-        if (!user) {
 
-            return Response.json(
-                {
-                    success: false,
-                    error: "Invalid session"
-                },
-                { status: 401 }
-            );
-        }
+        /* =====================================================
+           6. COOLDOWN ACTIVE
+        ===================================================== */
 
         if (
-            new Date(user.expires_at) <=
-            new Date()
+            !claimResult.meta ||
+            claimResult.meta.changes !== 1
         ) {
+
+            const lastClaim =
+                await context.env.DB
+                    .prepare(
+                        `SELECT claimed_at
+                         FROM claims
+                         WHERE user_id = ?
+                         ORDER BY claimed_at DESC
+                         LIMIT 1`
+                    )
+                    .bind(session.user_id)
+                    .first();
+
+            let remainingSeconds =
+                COOLDOWN_SECONDS;
+
+            if (lastClaim?.claimed_at) {
+
+                const lastTime =
+                    new Date(
+                        lastClaim.claimed_at
+                    ).getTime();
+
+                const elapsed =
+                    Math.floor(
+                        (Date.now() - lastTime) / 1000
+                    );
+
+                remainingSeconds =
+                    Math.max(
+                        0,
+                        COOLDOWN_SECONDS - elapsed
+                    );
+            }
+
+            const hours =
+                Math.floor(
+                    remainingSeconds / 3600
+                );
+
+            const minutes =
+                Math.floor(
+                    (remainingSeconds % 3600) / 60
+                );
+
+            const seconds =
+                remainingSeconds % 60;
 
             return Response.json(
                 {
                     success: false,
-                    error: "Session expired"
+                    error:
+                        `Please wait ${hours}h ${minutes}m ${seconds}s before claiming again.`
                 },
-                { status: 401 }
+                { status: 429 }
             );
         }
 
-        // Check cooldown
-        const lastClaim =
+
+        /* =====================================================
+           7. ADD REWARD TO BALANCE
+        ===================================================== */
+
+        const balanceResult =
             await context.env.DB
                 .prepare(
-                    `SELECT claimed_at
-                     FROM claims
-                     WHERE user_id = ?
-                     ORDER BY claimed_at DESC
-                     LIMIT 1`
+                    `UPDATE users
+                     SET balance = balance + ?
+                     WHERE id = ?`
                 )
-                .bind(user.user_id)
-                .first();
+                .bind(
+                    REWARD,
+                    session.user_id
+                )
+                .run();
 
-        if (lastClaim) {
+        if (
+            !balanceResult.meta ||
+            balanceResult.meta.changes !== 1
+        ) {
 
-            const lastTime =
-                new Date(
-                    lastClaim.claimed_at
-                ).getTime();
+            /*
+             * This should normally never happen.
+             * If the user disappeared between operations,
+             * return an error instead of pretending the
+             * claim was successful.
+             */
 
-            const elapsedSeconds =
-                Math.floor(
-                    (Date.now() - lastTime) / 1000
-                );
-
-            if (
-                elapsedSeconds <
-                COOLDOWN_SECONDS
-            ) {
-
-                const remaining =
-                    COOLDOWN_SECONDS -
-                    elapsedSeconds;
-
-                const hours =
-                    Math.floor(
-                        remaining / 3600
-                    );
-
-                const minutes =
-                    Math.floor(
-                        (remaining % 3600) / 60
-                    );
-
-                const seconds =
-                    remaining % 60;
-
-                return Response.json(
-                    {
-                        success: false,
-                        error:
-                            `Please wait ${hours}h ${minutes}m ${seconds}s before claiming again.`
-                    },
-                    { status: 429 }
-                );
-            }
+            return Response.json(
+                {
+                    success: false,
+                    error:
+                        "Unable to update account balance."
+                },
+                { status: 500 }
+            );
         }
 
-        // Record claim
-        await context.env.DB
-            .prepare(
-                `INSERT INTO claims
-                (user_id, reward)
-                VALUES (?, ?)`
-            )
-            .bind(
-                user.user_id,
-                REWARD
-            )
-            .run();
 
-        // Add reward to balance
-        await context.env.DB
-            .prepare(
-                `UPDATE users
-                 SET balance = balance + ?
-                 WHERE id = ?`
-            )
-            .bind(
-                REWARD,
-                user.user_id
-            )
-            .run();
+        /* =====================================================
+           8. GET UPDATED BALANCE
+        ===================================================== */
 
-        // Get updated balance
         const updatedUser =
             await context.env.DB
                 .prepare(
                     `SELECT balance
                      FROM users
-                     WHERE id = ?`
+                     WHERE id = ?
+                     LIMIT 1`
                 )
-                .bind(user.user_id)
+                .bind(session.user_id)
                 .first();
+
+        if (!updatedUser) {
+            return Response.json(
+                {
+                    success: false,
+                    error:
+                        "Unable to load updated balance."
+                },
+                { status: 500 }
+            );
+        }
+
+
+        /* =====================================================
+           9. SUCCESS
+        ===================================================== */
 
         return Response.json({
             success: true,
-            message: "Reward claimed successfully!",
+            message:
+                "Reward claimed successfully!",
             reward: REWARD,
             balance: updatedUser.balance
         });
 
+
     } catch (error) {
+
+        console.error(
+            "Claim error:",
+            error
+        );
 
         return Response.json(
             {
                 success: false,
-                error: error.message
+                error:
+                    "Unable to process claim."
             },
             { status: 500 }
         );
