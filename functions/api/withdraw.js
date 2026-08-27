@@ -1,12 +1,54 @@
 const MIN_WITHDRAWAL = 0.0000001;
 
+/*
+ * Basic Bitcoin address validation.
+ *
+ * Supports:
+ * - Legacy: 1...
+ * - P2SH: 3...
+ * - Native SegWit: bc1q...
+ * - Taproot: bc1p...
+ *
+ * This is format validation only.
+ * It does NOT verify that the address actually exists
+ * or belongs to the user.
+ */
+function isValidBitcoinAddress(address) {
+
+    const value = String(address || "").trim();
+
+    if (value.length < 14 || value.length > 90) {
+        return false;
+    }
+
+    const legacy =
+        /^(1|3)[a-km-zA-HJ-NP-Z1-9]{25,34}$/;
+
+    const bech32 =
+        /^bc1[ac-hj-np-z02-9]{11,87}$/;
+
+    return (
+        legacy.test(value) ||
+        bech32.test(value.toLowerCase())
+    );
+}
+
+
 function getCookie(request, name) {
-    const cookieHeader = request.headers.get("Cookie");
 
-    if (!cookieHeader) return null;
+    const cookieHeader =
+        request.headers.get("Cookie");
 
-    for (const cookie of cookieHeader.split(";")) {
-        const [key, ...value] = cookie.trim().split("=");
+    if (!cookieHeader) {
+        return null;
+    }
+
+    for (
+        const cookie of cookieHeader.split(";")
+    ) {
+
+        const [key, ...value] =
+            cookie.trim().split("=");
 
         if (key === name) {
             return value.join("=");
@@ -16,63 +58,194 @@ function getCookie(request, name) {
     return null;
 }
 
+
 async function hashSessionToken(token) {
-    const data = new TextEncoder().encode(token);
 
-    const hash = await crypto.subtle.digest(
-        "SHA-256",
-        data
-    );
+    const data =
+        new TextEncoder().encode(token);
 
-    return Array.from(new Uint8Array(hash))
-        .map(byte => byte.toString(16).padStart(2, "0"))
+    const hash =
+        await crypto.subtle.digest(
+            "SHA-256",
+            data
+        );
+
+    return Array.from(
+        new Uint8Array(hash)
+    )
+        .map(
+            byte =>
+                byte
+                    .toString(16)
+                    .padStart(2, "0")
+        )
         .join("");
 }
+
 
 export async function onRequestPost(context) {
 
     try {
 
-        const data = await context.request.json();
+        /* =====================================================
+           1. READ REQUEST
+        ===================================================== */
 
-        const amount = Number(data.amount);
+        let data;
 
-        const walletAddress =
-            String(data.walletAddress || "").trim();
+        try {
 
-        // BTC ONLY
-        const currency = "BTC";
+            data =
+                await context.request.json();
 
-        if (!Number.isFinite(amount) || amount <= 0) {
+        } catch {
+
             return Response.json(
                 {
                     success: false,
-                    error: "Invalid withdrawal amount"
+                    error: "Invalid request."
                 },
                 { status: 400 }
             );
         }
 
-        if (amount < MIN_WITHDRAWAL) {
+
+        const amount =
+            Number(data.amount);
+
+
+        const walletAddress =
+            String(
+                data.walletAddress || ""
+            ).trim();
+
+
+        /* BTC ONLY */
+
+        const currency = "BTC";
+
+
+        /* =====================================================
+           2. AMOUNT VALIDATION
+        ===================================================== */
+
+        if (
+            !Number.isFinite(amount) ||
+            amount <= 0
+        ) {
+
             return Response.json(
                 {
                     success: false,
                     error:
-                        "Minimum withdrawal is 0.0000001 BTC"
+                        "Invalid withdrawal amount."
                 },
                 { status: 400 }
             );
         }
 
-        if (!walletAddress) {
+
+        if (
+            amount < MIN_WITHDRAWAL
+        ) {
+
             return Response.json(
                 {
                     success: false,
-                    error: "Bitcoin wallet address is required"
+                    error:
+                        "Minimum withdrawal is 0.0000001 BTC."
                 },
                 { status: 400 }
             );
         }
+
+
+        /*
+         * Prevent extremely long decimal values.
+         *
+         * BTC uses 8 decimal places.
+         */
+
+        const satoshis =
+            Math.round(
+                amount * 100000000
+            );
+
+
+        if (
+            !Number.isSafeInteger(
+                satoshis
+            ) ||
+            satoshis <= 0
+        ) {
+
+            return Response.json(
+                {
+                    success: false,
+                    error:
+                        "Invalid BTC amount."
+                },
+                { status: 400 }
+            );
+        }
+
+
+        const normalizedAmount =
+            satoshis / 100000000;
+
+
+        if (
+            normalizedAmount !== amount
+        ) {
+
+            return Response.json(
+                {
+                    success: false,
+                    error:
+                        "BTC amount can have a maximum of 8 decimal places."
+                },
+                { status: 400 }
+            );
+        }
+
+
+        /* =====================================================
+           3. WALLET VALIDATION
+        ===================================================== */
+
+        if (!walletAddress) {
+
+            return Response.json(
+                {
+                    success: false,
+                    error:
+                        "Bitcoin wallet address is required."
+                },
+                { status: 400 }
+            );
+        }
+
+
+        if (
+            !isValidBitcoinAddress(
+                walletAddress
+            )
+        ) {
+
+            return Response.json(
+                {
+                    success: false,
+                    error:
+                        "Invalid Bitcoin wallet address."
+                },
+                { status: 400 }
+            );
+        }
+
+
+        /* =====================================================
+           4. SESSION
+        ===================================================== */
 
         const sessionToken =
             getCookie(
@@ -80,25 +253,36 @@ export async function onRequestPost(context) {
                 "session"
             );
 
+
         if (!sessionToken) {
+
             return Response.json(
                 {
                     success: false,
-                    error: "Please login first"
+                    error:
+                        "Please login first."
                 },
                 { status: 401 }
             );
         }
+
 
         const tokenHash =
             await hashSessionToken(
                 sessionToken
             );
 
+
+        /* =====================================================
+           5. VERIFY SESSION
+        ===================================================== */
+
         const session =
             await context.env.DB
                 .prepare(
-                    `SELECT user_id, expires_at
+                    `SELECT
+                        user_id,
+                        expires_at
                      FROM sessions
                      WHERE token_hash = ?
                      LIMIT 1`
@@ -106,33 +290,72 @@ export async function onRequestPost(context) {
                 .bind(tokenHash)
                 .first();
 
+
         if (!session) {
+
             return Response.json(
                 {
                     success: false,
-                    error: "Invalid session"
+                    error:
+                        "Invalid session."
                 },
                 { status: 401 }
             );
         }
+
 
         if (
+            !session.expires_at ||
             new Date(session.expires_at) <=
-            new Date()
+                new Date()
         ) {
+
             return Response.json(
                 {
                     success: false,
-                    error: "Session expired"
+                    error:
+                        "Session expired."
                 },
                 { status: 401 }
             );
         }
 
-        /*
-         * Prevent multiple pending withdrawals
-         * for the same user.
-         */
+
+        /* =====================================================
+           6. CHECK USER
+        ===================================================== */
+
+        const user =
+            await context.env.DB
+                .prepare(
+                    `SELECT
+                        id,
+                        balance
+                     FROM users
+                     WHERE id = ?
+                     LIMIT 1`
+                )
+                .bind(session.user_id)
+                .first();
+
+
+        if (!user) {
+
+            return Response.json(
+                {
+                    success: false,
+                    error:
+                        "User account not found."
+                },
+                { status: 404 }
+            );
+        }
+
+
+        /* =====================================================
+           7. PREVENT MULTIPLE PENDING WITHDRAWALS
+        ===================================================== */
+
         const existingPending =
             await context.env.DB
                 .prepare(
@@ -145,7 +368,9 @@ export async function onRequestPost(context) {
                 .bind(session.user_id)
                 .first();
 
+
         if (existingPending) {
+
             return Response.json(
                 {
                     success: false,
@@ -156,13 +381,11 @@ export async function onRequestPost(context) {
             );
         }
 
-        /*
-         * Reserve the balance immediately.
-         *
-         * The WHERE balance >= amount condition
-         * prevents negative balances and protects
-         * against concurrent withdrawal requests.
-         */
+
+        /* =====================================================
+           8. RESERVE BALANCE
+        ===================================================== */
+
         const reserveBalance =
             await context.env.DB
                 .prepare(
@@ -172,25 +395,33 @@ export async function onRequestPost(context) {
                        AND balance >= ?`
                 )
                 .bind(
-                    amount,
+                    normalizedAmount,
                     session.user_id,
-                    amount
+                    normalizedAmount
                 )
                 .run();
 
-        if (reserveBalance.meta.changes !== 1) {
+
+        if (
+            !reserveBalance.meta ||
+            reserveBalance.meta.changes !== 1
+        ) {
+
             return Response.json(
                 {
                     success: false,
-                    error: "Insufficient BTC balance"
+                    error:
+                        "Insufficient BTC balance."
                 },
                 { status: 400 }
             );
         }
 
-        /*
-         * Create pending withdrawal.
-         */
+
+        /* =====================================================
+           9. CREATE PENDING WITHDRAWAL
+        ===================================================== */
+
         try {
 
             await context.env.DB
@@ -207,18 +438,19 @@ export async function onRequestPost(context) {
                 )
                 .bind(
                     session.user_id,
-                    amount,
+                    normalizedAmount,
                     walletAddress,
                     currency
                 )
                 .run();
 
+
         } catch (insertError) {
 
             /*
-             * If creating the withdrawal fails,
-             * restore the reserved balance.
+             * Restore balance if withdrawal creation fails.
              */
+
             await context.env.DB
                 .prepare(
                     `UPDATE users
@@ -226,43 +458,89 @@ export async function onRequestPost(context) {
                      WHERE id = ?`
                 )
                 .bind(
-                    amount,
+                    normalizedAmount,
                     session.user_id
                 )
                 .run();
 
+
             throw insertError;
         }
 
-        /*
-         * Get updated balance.
-         */
+
+        /* =====================================================
+           10. GET UPDATED BALANCE
+        ===================================================== */
+
         const updatedUser =
             await context.env.DB
                 .prepare(
-                    `SELECT balance
+                    `SELECT
+                        balance
                      FROM users
-                     WHERE id = ?`
+                     WHERE id = ?
+                     LIMIT 1`
                 )
                 .bind(session.user_id)
                 .first();
 
+
+        if (!updatedUser) {
+
+            return Response.json(
+                {
+                    success: false,
+                    error:
+                        "Unable to load updated balance."
+                },
+                { status: 500 }
+            );
+        }
+
+
+        /* =====================================================
+           11. SUCCESS
+        ===================================================== */
+
         return Response.json({
+
             success: true,
+
             message:
                 "Withdrawal request submitted successfully.",
-            status: "pending",
-            amount: amount,
-            currency: "BTC",
-            balance: updatedUser.balance
+
+            status:
+                "pending",
+
+            amount:
+                normalizedAmount,
+
+            currency:
+                "BTC",
+
+            balance:
+                updatedUser.balance
         });
 
+
     } catch (error) {
+
+        console.error(
+            "Withdrawal error:",
+            error
+        );
+
+
+        /*
+         * Do not expose internal database errors
+         * to users.
+         */
 
         return Response.json(
             {
                 success: false,
-                error: error.message
+                error:
+                    "Unable to process withdrawal request."
             },
             { status: 500 }
         );
