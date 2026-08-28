@@ -384,27 +384,21 @@ export async function onRequestPost(context) {
 
         const faucetPayResponse =
             await fetch(
-                "https://faucetpay.io/api/v1/send",
+                "https://faucetpay.io/api/v2/send",
                 {
                     method: "POST",
 
                     headers: {
-                        "Content-Type":
-                            "application/json",
+    "Authorization": `Bearer ${apiKey}`,
+    "Content-Type": "application/json"
+},
 
-                        "X-API-KEY":
-                            apiKey
-                    },
-
-                    body: JSON.stringify({
-
-                        currency: "BTC",
-
-                        amount: satoshis,
-
-                        address:
-                            withdrawal.wallet_address
-
+                    {
+    idempotency_key: `withdrawal-${withdrawal.id}`,
+    to: withdrawal.wallet_address,
+    amount: satoshis,
+    currency: "BTC"
+                }
                     })
                 }
             );
