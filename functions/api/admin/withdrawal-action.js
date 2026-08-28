@@ -461,11 +461,10 @@ const faucetPayResponse =
            GET TXID
         ========================= */
 
-        const txid =
-            faucetPayResult.txid ||
-            faucetPayResult.transaction_id ||
-            faucetPayResult.tx_id ||
-            null;
+        const payoutId =
+    faucetPayResult?.data?.payout_id ||
+    faucetPayResult?.payout_id ||
+    null;
 
 
         /* =========================
