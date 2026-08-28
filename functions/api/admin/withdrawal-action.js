@@ -14,7 +14,6 @@ function getCookie(request, name) {
     return null;
 }
 
-
 async function hashSessionToken(token) {
     const data = new TextEncoder().encode(token);
 
@@ -24,20 +23,23 @@ async function hashSessionToken(token) {
     );
 
     return Array.from(new Uint8Array(hash))
-        .map(byte => byte.toString(16).padStart(2, "0"))
+        .map(byte =>
+            byte.toString(16).padStart(2, "0")
+        )
         .join("");
 }
 
-
-/* =====================================================
-   ADMIN WITHDRAWAL ACTION
-===================================================== */
 
 export async function onRequestPost(context) {
 
     try {
 
-        const data = await context.request.json();
+        /* =========================
+           READ REQUEST
+        ========================= */
+
+        const data =
+            await context.request.json();
 
         const withdrawalId =
             Number(data.withdrawalId);
@@ -108,9 +110,7 @@ export async function onRequestPost(context) {
         const session =
             await context.env.DB
                 .prepare(
-                    `SELECT
-                        user_id,
-                        expires_at
+                    `SELECT user_id, expires_at
                      FROM sessions
                      WHERE token_hash = ?
                      LIMIT 1`
@@ -133,7 +133,7 @@ export async function onRequestPost(context) {
         if (
             !session.expires_at ||
             new Date(session.expires_at) <=
-                new Date()
+            new Date()
         ) {
             return Response.json(
                 {
@@ -185,8 +185,7 @@ export async function onRequestPost(context) {
                         amount,
                         wallet_address,
                         currency,
-                        status,
-                        txid
+                        status
                      FROM withdrawals
                      WHERE id = ?
                      LIMIT 1`
@@ -238,45 +237,33 @@ export async function onRequestPost(context) {
         }
 
 
-        /* =================================================
+        /* =====================================================
            REJECT
-        ================================================= */
+        ===================================================== */
 
         if (action === "reject") {
 
+            /*
+             * First mark rejected.
+             * Only if this succeeds do we refund.
+             */
+
             const result =
-                await context.env.DB.batch([
-
-                    context.env.DB
-                        .prepare(
-                            `UPDATE withdrawals
-                             SET
-                                status = 'rejected',
-                                processed_at = CURRENT_TIMESTAMP
-                             WHERE id = ?
-                               AND status = 'pending'`
-                        )
-                        .bind(withdrawalId),
-
-
-                    context.env.DB
-                        .prepare(
-                            `UPDATE users
-                             SET balance = balance + ?
-                             WHERE id = ?`
-                        )
-                        .bind(
-                            withdrawal.amount,
-                            withdrawal.user_id
-                        )
-
-                ]);
+                await context.env.DB
+                    .prepare(
+                        `UPDATE withdrawals
+                         SET status = 'rejected',
+                             processed_at = CURRENT_TIMESTAMP
+                         WHERE id = ?
+                           AND status = 'pending'`
+                    )
+                    .bind(withdrawalId)
+                    .run();
 
 
             if (
                 !result ||
-                !result[0] ||
-                result[0].meta.changes !== 1
+                result.meta.changes !== 1
             ) {
                 return Response.json(
                     {
@@ -287,6 +274,23 @@ export async function onRequestPost(context) {
                     { status: 409 }
                 );
             }
+
+
+            /*
+             * Refund reserved balance.
+             */
+
+            await context.env.DB
+                .prepare(
+                    `UPDATE users
+                     SET balance = balance + ?
+                     WHERE id = ?`
+                )
+                .bind(
+                    withdrawal.amount,
+                    withdrawal.user_id
+                )
+                .run();
 
 
             return Response.json({
@@ -304,16 +308,51 @@ export async function onRequestPost(context) {
         }
 
 
-        /* =================================================
+        /* =====================================================
            APPROVE
-        ================================================= */
+        ===================================================== */
 
         /*
-         * BTC smallest unit = satoshis.
+         * IMPORTANT:
          *
-         * Example:
+         * The user's balance was already reserved
+         * when the withdrawal was created.
          *
-         * 0.0000001 BTC = 10 satoshis
+         * Therefore we DO NOT deduct it again.
+         */
+
+
+        /* =========================
+           CHECK API KEY
+        ========================= */
+
+        const apiKey =
+            context.env.FAUCETPAY_API_KEY;
+
+
+        if (!apiKey) {
+
+            return Response.json(
+                {
+                    success: false,
+                    error:
+                        "FaucetPay API key is not configured."
+                },
+                { status: 500 }
+            );
+        }
+
+
+        /* =========================
+           FAUCETPAY PAYMENT
+        ========================= */
+
+        /*
+         * FaucetPay expects the amount in
+         * the smallest currency unit.
+         *
+         * BTC:
+         * 1 BTC = 100,000,000 satoshis
          */
 
         const satoshis =
@@ -327,80 +366,46 @@ export async function onRequestPost(context) {
             !Number.isSafeInteger(satoshis) ||
             satoshis <= 0
         ) {
+
             return Response.json(
                 {
                     success: false,
                     error:
-                        "Invalid BTC withdrawal amount"
+                        "Invalid BTC withdrawal amount."
                 },
                 { status: 400 }
             );
         }
 
 
-        /* =========================
-           FAUCETPAY SECRET
-        ========================= */
-
-        const apiKey =
-            context.env.FAUCETPAY_API_KEY;
-
-
-        if (!apiKey) {
-
-            return Response.json(
-                {
-                    success: false,
-                    error:
-                        "FaucetPay API key is not configured"
-                },
-                { status: 500 }
-            );
-        }
-
-
-        /* =========================
-           IDEMPOTENCY KEY
-        ========================= */
-
-        const idempotencyKey =
-            `withdrawal-${withdrawal.id}`;
-
-
-        /* =========================
-           FAUCETPAY PAYOUT
-        ========================= */
+        /*
+         * Send payment through FaucetPay.
+         */
 
         const faucetPayResponse =
             await fetch(
-                "https://faucetpay.io/api/v2/send",
+                "https://faucetpay.io/api/v1/send",
                 {
                     method: "POST",
 
                     headers: {
-                        "Authorization":
-                            `Bearer ${apiKey}`,
-
                         "Content-Type":
-                            "application/json"
+                            "application/json",
+
+                        "X-API-KEY":
+                            apiKey
                     },
 
-                    body:
-                        JSON.stringify({
+                    body: JSON.stringify({
 
-                            idempotency_key:
-                                idempotencyKey,
+                        currency: "BTC",
 
-                            to:
-                                withdrawal.wallet_address,
+                        amount: satoshis,
 
-                            amount:
-                                satoshis,
+                        address:
+                            withdrawal.wallet_address
 
-                            currency:
-                                "BTC"
-
-                        })
+                    })
                 }
             );
 
@@ -415,12 +420,11 @@ export async function onRequestPost(context) {
         } catch {
 
             faucetPayResult = null;
-
         }
 
 
         /* =========================
-           FAUCETPAY FAILURE
+           FAUCETPAY ERROR
         ========================= */
 
         if (
@@ -430,18 +434,24 @@ export async function onRequestPost(context) {
         ) {
 
             console.error(
-                "FaucetPay payout failed:",
+                "FaucetPay payment failed:",
                 faucetPayResult
             );
 
 
+            /*
+             * DO NOT mark withdrawal approved.
+             *
+             * User's reserved balance remains safe.
+             */
+
             return Response.json(
                 {
                     success: false,
-
                     error:
                         faucetPayResult?.message ||
-                        "FaucetPay payout failed. Withdrawal remains pending."
+                        faucetPayResult?.error ||
+                        "FaucetPay payment failed. Withdrawal remains pending."
                 },
                 { status: 502 }
             );
@@ -449,75 +459,54 @@ export async function onRequestPost(context) {
 
 
         /* =========================
-           PAYOUT ID
+           GET TXID
         ========================= */
 
-        const payoutId =
-            faucetPayResult.data?.payout_id;
+        const txid =
+            faucetPayResult.txid ||
+            faucetPayResult.transaction_id ||
+            faucetPayResult.tx_id ||
+            null;
 
 
-        if (!payoutId) {
-
-            console.error(
-                "FaucetPay response missing payout_id:",
-                faucetPayResult
-            );
-
-
-            return Response.json(
-                {
-                    success: false,
-                    error:
-                        "FaucetPay payout succeeded but payout ID was not returned."
-                },
-                { status: 502 }
-            );
-        }
-
-
-        /* =================================================
+        /* =========================
            MARK APPROVED
-        ================================================= */
+        ========================= */
 
-        const updateResult =
+        const result =
             await context.env.DB
                 .prepare(
                     `UPDATE withdrawals
-                     SET
-                        status = 'approved',
-                        txid = ?,
-                        processed_at = CURRENT_TIMESTAMP
+                     SET status = 'approved',
+                         processed_at = CURRENT_TIMESTAMP,
+                         txid = ?
                      WHERE id = ?
                        AND status = 'pending'`
                 )
                 .bind(
-                    String(payoutId),
+                    txid,
                     withdrawalId
                 )
                 .run();
 
 
         if (
-            !updateResult ||
-            updateResult.meta.changes !== 1
+            !result ||
+            result.meta.changes !== 1
         ) {
 
             /*
-             * IMPORTANT:
+             * Payment may already have been sent.
              *
-             * FaucetPay already paid.
-             *
-             * Therefore DO NOT refund the user here.
-             *
-             * The idempotency key prevents another
-             * payout if this endpoint is retried.
+             * This is intentionally NOT retried automatically,
+             * because retrying could create a duplicate payment.
              */
 
             console.error(
-                "Database update failed after FaucetPay payout.",
+                "Database update failed after FaucetPay payment.",
                 {
                     withdrawalId,
-                    payoutId
+                    txid
                 }
             );
 
@@ -525,12 +514,9 @@ export async function onRequestPost(context) {
             return Response.json(
                 {
                     success: false,
-
                     error:
-                        "BTC was sent, but withdrawal status could not be updated. Contact admin.",
-
-                    payout_id:
-                        String(payoutId)
+                        "Payment was sent, but withdrawal status could not be updated. Check FaucetPay before retrying.",
+                    txid: txid
                 },
                 { status: 500 }
             );
@@ -553,11 +539,8 @@ export async function onRequestPost(context) {
             currency:
                 "BTC",
 
-            payout_id:
-                String(payoutId),
-
             txid:
-                String(payoutId)
+                txid
 
         });
 
