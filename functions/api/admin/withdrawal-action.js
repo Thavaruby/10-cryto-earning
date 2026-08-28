@@ -551,12 +551,13 @@ console.log(
 
 
         return Response.json(
-            {
-                success: false,
-                error:
-                    "Unable to process withdrawal."
-            },
-            { status: 500 }
-        );
+    {
+        success: false,
+        error:
+            error?.message ||
+            "Unable to process withdrawal."
+    },
+    { status: 500 }
+);
     }
 }
