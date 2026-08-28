@@ -1,9 +1,7 @@
 function getCookie(request, name) {
     const cookieHeader = request.headers.get("Cookie");
 
-    if (!cookieHeader) {
-        return null;
-    }
+    if (!cookieHeader) return null;
 
     for (const cookie of cookieHeader.split(";")) {
         const [key, ...value] = cookie.trim().split("=");
@@ -18,25 +16,15 @@ function getCookie(request, name) {
 
 
 async function hashSessionToken(token) {
+    const data = new TextEncoder().encode(token);
 
-    const data =
-        new TextEncoder().encode(token);
+    const hash = await crypto.subtle.digest(
+        "SHA-256",
+        data
+    );
 
-    const hash =
-        await crypto.subtle.digest(
-            "SHA-256",
-            data
-        );
-
-    return Array.from(
-        new Uint8Array(hash)
-    )
-        .map(
-            byte =>
-                byte
-                    .toString(16)
-                    .padStart(2, "0")
-        )
+    return Array.from(new Uint8Array(hash))
+        .map(byte => byte.toString(16).padStart(2, "0"))
         .join("");
 }
 
@@ -45,51 +33,28 @@ export async function onRequestPost(context) {
 
     try {
 
-        /* =====================================================
-           1. READ REQUEST
-        ===================================================== */
-
-        let data;
-
-        try {
-
-            data =
-                await context.request.json();
-
-        } catch {
-
-            return Response.json(
-                {
-                    success: false,
-                    error: "Invalid request."
-                },
-                { status: 400 }
-            );
-        }
-
+        const data =
+            await context.request.json();
 
         const withdrawalId =
             Number(data.withdrawalId);
 
         const action =
-            String(
-                data.action || ""
-            ).toLowerCase();
+            String(data.action || "").toLowerCase();
 
 
-        /* =====================================================
-           2. VALIDATION
-        ===================================================== */
+        /* =========================
+           VALIDATION
+        ========================= */
 
         if (
             !Number.isInteger(withdrawalId) ||
             withdrawalId <= 0
         ) {
-
             return Response.json(
                 {
                     success: false,
-                    error: "Invalid withdrawal ID."
+                    error: "Invalid withdrawal ID"
                 },
                 { status: 400 }
             );
@@ -100,20 +65,19 @@ export async function onRequestPost(context) {
             action !== "approve" &&
             action !== "reject"
         ) {
-
             return Response.json(
                 {
                     success: false,
-                    error: "Invalid action."
+                    error: "Invalid action"
                 },
                 { status: 400 }
             );
         }
 
 
-        /* =====================================================
-           3. CHECK LOGIN
-        ===================================================== */
+        /* =========================
+           SESSION
+        ========================= */
 
         const sessionToken =
             getCookie(
@@ -121,22 +85,16 @@ export async function onRequestPost(context) {
                 "session"
             );
 
-
         if (!sessionToken) {
-
             return Response.json(
                 {
                     success: false,
-                    error: "Please login first."
+                    error: "Please login first"
                 },
                 { status: 401 }
             );
         }
 
-
-        /* =====================================================
-           4. VERIFY SESSION
-        ===================================================== */
 
         const tokenHash =
             await hashSessionToken(
@@ -147,9 +105,7 @@ export async function onRequestPost(context) {
         const session =
             await context.env.DB
                 .prepare(
-                    `SELECT
-                        user_id,
-                        expires_at
+                    `SELECT user_id, expires_at
                      FROM sessions
                      WHERE token_hash = ?
                      LIMIT 1`
@@ -159,11 +115,10 @@ export async function onRequestPost(context) {
 
 
         if (!session) {
-
             return Response.json(
                 {
                     success: false,
-                    error: "Invalid session."
+                    error: "Invalid session"
                 },
                 { status: 401 }
             );
@@ -173,22 +128,21 @@ export async function onRequestPost(context) {
         if (
             !session.expires_at ||
             new Date(session.expires_at) <=
-                new Date()
+            new Date()
         ) {
-
             return Response.json(
                 {
                     success: false,
-                    error: "Session expired."
+                    error: "Session expired"
                 },
                 { status: 401 }
             );
         }
 
 
-        /* =====================================================
-           5. ADMIN CHECK
-        ===================================================== */
+        /* =========================
+           ADMIN CHECK
+        ========================= */
 
         const admin =
             await context.env.DB
@@ -203,20 +157,19 @@ export async function onRequestPost(context) {
 
 
         if (!admin) {
-
             return Response.json(
                 {
                     success: false,
-                    error: "Admin access required."
+                    error: "Admin access required"
                 },
                 { status: 403 }
             );
         }
 
 
-        /* =====================================================
-           6. GET WITHDRAWAL
-        ===================================================== */
+        /* =========================
+           GET WITHDRAWAL
+        ========================= */
 
         const withdrawal =
             await context.env.DB
@@ -237,49 +190,42 @@ export async function onRequestPost(context) {
 
 
         if (!withdrawal) {
-
             return Response.json(
                 {
                     success: false,
-                    error: "Withdrawal not found."
+                    error: "Withdrawal not found"
                 },
                 { status: 404 }
             );
         }
 
 
-        /* =====================================================
-           7. BTC ONLY
-        ===================================================== */
+        /* =========================
+           BTC ONLY
+        ========================= */
 
-        if (
-            withdrawal.currency !== "BTC"
-        ) {
-
+        if (withdrawal.currency !== "BTC") {
             return Response.json(
                 {
                     success: false,
                     error:
-                        "Only BTC withdrawals are supported."
+                        "Only BTC withdrawals are supported"
                 },
                 { status: 400 }
             );
         }
 
 
-        /* =====================================================
-           8. PENDING ONLY
-        ===================================================== */
+        /* =========================
+           PENDING ONLY
+        ========================= */
 
-        if (
-            withdrawal.status !== "pending"
-        ) {
-
+        if (withdrawal.status !== "pending") {
             return Response.json(
                 {
                     success: false,
                     error:
-                        "This withdrawal has already been processed."
+                        "This withdrawal has already been processed"
                 },
                 { status: 409 }
             );
@@ -287,18 +233,16 @@ export async function onRequestPost(context) {
 
 
         /* =====================================================
-           9. REJECT
+           REJECT
         ===================================================== */
 
         if (action === "reject") {
 
             /*
-             * Mark rejected AND refund balance
-             * in one D1 batch.
+             * Withdrawal was already deducted
+             * from user's balance.
              *
-             * This prevents a situation where the
-             * withdrawal becomes rejected but the
-             * refund fails.
+             * Mark rejected + refund together.
              */
 
             const result =
@@ -307,15 +251,12 @@ export async function onRequestPost(context) {
                     context.env.DB
                         .prepare(
                             `UPDATE withdrawals
-                             SET
-                                status = 'rejected',
-                                processed_at = CURRENT_TIMESTAMP
+                             SET status = 'rejected',
+                                 processed_at = CURRENT_TIMESTAMP
                              WHERE id = ?
                                AND status = 'pending'`
                         )
-                        .bind(
-                            withdrawalId
-                        ),
+                        .bind(withdrawalId),
 
                     context.env.DB
                         .prepare(
@@ -341,7 +282,7 @@ export async function onRequestPost(context) {
                     {
                         success: false,
                         error:
-                            "Withdrawal was already processed."
+                            "Withdrawal was already processed"
                     },
                     { status: 409 }
                 );
@@ -364,7 +305,7 @@ export async function onRequestPost(context) {
 
 
         /* =====================================================
-           10. APPROVE
+           APPROVE
         ===================================================== */
 
         const apiKey =
@@ -377,16 +318,16 @@ export async function onRequestPost(context) {
                 {
                     success: false,
                     error:
-                        "FaucetPay API key is not configured."
+                        "FaucetPay API key is not configured"
                 },
                 { status: 500 }
             );
         }
 
 
-        /* =====================================================
-           11. BTC → SATOSHIS
-        ===================================================== */
+        /* =========================
+           BTC → SATOSHIS
+        ========================= */
 
         const satoshis =
             Math.round(
@@ -404,16 +345,24 @@ export async function onRequestPost(context) {
                 {
                     success: false,
                     error:
-                        "Invalid BTC withdrawal amount."
+                        "Invalid BTC withdrawal amount"
                 },
                 { status: 400 }
             );
         }
 
 
-        /* =====================================================
-           12. FAUCETPAY V2 SEND
-        ===================================================== */
+        /* =========================
+           IDEMPOTENCY KEY
+        ========================= */
+
+        const idempotencyKey =
+            `withdrawal-${withdrawal.id}`;
+
+
+        /* =========================
+           FAUCETPAY V2 SEND
+        ========================= */
 
         const faucetPayResponse =
             await fetch(
@@ -429,22 +378,21 @@ export async function onRequestPost(context) {
                             "application/json"
                     },
 
-                    body:
-                        JSON.stringify({
+                    body: JSON.stringify({
 
-                            idempotency_key:
-                                `withdrawal-${withdrawal.id}`,
+                        idempotency_key:
+                            idempotencyKey,
 
-                            to:
-                                withdrawal.wallet_address,
+                        to:
+                            withdrawal.wallet_address,
 
-                            amount:
-                                satoshis,
+                        amount:
+                            satoshis,
 
-                            currency:
-                                "BTC"
+                        currency:
+                            "BTC"
 
-                        })
+                    })
                 }
             );
 
@@ -460,12 +408,13 @@ export async function onRequestPost(context) {
         } catch {
 
             faucetPayResult = null;
+
         }
 
 
-        /* =====================================================
-           13. FAUCETPAY ERROR
-        ===================================================== */
+        /* =========================
+           FAUCETPAY ERROR
+        ========================= */
 
         if (
             !faucetPayResponse.ok ||
@@ -474,7 +423,7 @@ export async function onRequestPost(context) {
         ) {
 
             console.error(
-                "FaucetPay payment failed:",
+                "FaucetPay error:",
                 faucetPayResult
             );
 
@@ -485,82 +434,66 @@ export async function onRequestPost(context) {
 
                     error:
                         faucetPayResult?.message ||
-                        faucetPayResult?.error ||
                         "FaucetPay payment failed. Withdrawal remains pending."
                 },
-
-                {
-                    status:
-                        faucetPayResponse.status ||
-                        502
-                }
+                { status: 502 }
             );
         }
 
 
-        /* =====================================================
-           14. GET FAUCETPAY PAYOUT ID
-        ===================================================== */
+        /* =========================
+           GET PAYOUT ID
+        ========================= */
 
         const payoutId =
-            faucetPayResult?.data?.payout_id ||
-            faucetPayResult?.payout_id ||
+            faucetPayResult.data?.payout_id ||
             null;
 
 
         /*
          * IMPORTANT:
          *
-         * payout_id is a FaucetPay reference.
-         * It is NOT necessarily a blockchain TXID.
+         * payout_id is NOT blockchain TXID.
          *
-         * We store it in the existing txid column
-         * to avoid changing the database schema.
+         * We store it separately.
          */
 
 
-        /* =====================================================
-           15. MARK APPROVED
-        ===================================================== */
+        /* =========================
+           MARK APPROVED
+        ========================= */
 
-        const updateResult =
+        const result =
             await context.env.DB
                 .prepare(
                     `UPDATE withdrawals
-                     SET
-                        status = 'approved',
-                        processed_at = CURRENT_TIMESTAMP,
-                        txid = ?
+                     SET status = 'approved',
+                         processed_at = CURRENT_TIMESTAMP,
+                         payout_id = ?
                      WHERE id = ?
                        AND status = 'pending'`
                 )
                 .bind(
-                    payoutId
-                        ? String(payoutId)
-                        : null,
-
+                    String(payoutId || ""),
                     withdrawalId
                 )
                 .run();
 
 
-        /* =====================================================
-           16. DATABASE UPDATE FAILED
-        ===================================================== */
-
         if (
-            !updateResult ||
-            updateResult.meta.changes !== 1
+            !result ||
+            result.meta.changes !== 1
         ) {
 
             /*
-             * DO NOT automatically retry.
+             * VERY IMPORTANT:
              *
              * FaucetPay may already have paid.
+             * DO NOT automatically retry.
              */
 
             console.error(
-                "Database update failed after FaucetPay payment.",
+                "Database update failed after FaucetPay payment",
                 {
                     withdrawalId,
                     payoutId
@@ -573,27 +506,25 @@ export async function onRequestPost(context) {
                     success: false,
 
                     error:
-                        "Payment was sent, but withdrawal status could not be updated. Check FaucetPay before retrying.",
+                        "Payment was sent by FaucetPay, but database update failed. Do not retry automatically.",
 
-                    payoutId:
+                    payout_id:
                         payoutId
                 },
-
                 { status: 500 }
             );
         }
 
 
-        /* =====================================================
-           17. SUCCESS
-        ===================================================== */
+        /* =========================
+           SUCCESS
+        ========================= */
 
         return Response.json({
 
             success: true,
 
-            status:
-                "approved",
+            status: "approved",
 
             amount:
                 withdrawal.amount,
@@ -601,7 +532,7 @@ export async function onRequestPost(context) {
             currency:
                 "BTC",
 
-            payoutId:
+            payout_id:
                 payoutId
 
         });
