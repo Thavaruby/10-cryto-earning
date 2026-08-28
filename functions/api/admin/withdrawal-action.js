@@ -445,10 +445,14 @@ export async function onRequestPost(context) {
            GET PAYOUT ID
         ========================= */
 
-        const payoutId =
+      /*  const payoutId =
             faucetPayResult.data?.payout_id ||
             null;
-
+            */
+console.log(
+    "FAUCETPAY RESPONSE:",
+    JSON.stringify(faucetPayResult)
+);
 
         /*
          * IMPORTANT:
