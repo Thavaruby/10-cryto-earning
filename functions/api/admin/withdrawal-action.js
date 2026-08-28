@@ -412,152 +412,112 @@ export async function onRequestPost(context) {
         }
 
 
-        /* =========================
-           FAUCETPAY ERROR
-        ========================= */
+     /* =========================
+   FAUCETPAY ERROR
+========================= */
 
-        if (
-            !faucetPayResponse.ok ||
-            !faucetPayResult ||
-            faucetPayResult.success !== true
-        ) {
+if (
+    !faucetPayResponse.ok ||
+    !faucetPayResult ||
+    faucetPayResult.success !== true
+) {
 
-            console.error(
-                "FaucetPay error:",
-                faucetPayResult
-            );
+    console.error(
+        "FaucetPay error:",
+        faucetPayResult
+    );
+
+    return Response.json(
+        {
+            success: false,
+            error:
+                faucetPayResult?.message ||
+                faucetPayResult?.error ||
+                "FaucETPAY payment failed. Withdrawal remains pending."
+        },
+        { status: 502 }
+    );
+}
 
 
-            return Response.json(
-                {
-                    success: false,
+/* =========================
+   GET PAYOUT ID
+========================= */
 
-                    error:
-                        faucetPayResult?.message ||
-                        "FaucetPay payment failed. Withdrawal remains pending."
-                },
-                { status: 502 }
-            );
+const payoutId =
+    faucetPayResult?.data?.payout_id ||
+    faucetPayResult?.payout_id ||
+    null;
+
+
+/* =========================
+   MARK APPROVED
+========================= */
+
+const result =
+    await context.env.DB
+        .prepare(
+            `UPDATE withdrawals
+             SET status = 'approved',
+                 processed_at = CURRENT_TIMESTAMP,
+                 payout_id = ?
+             WHERE id = ?
+               AND status = 'pending'`
+        )
+        .bind(
+            payoutId ? String(payoutId) : null,
+            withdrawalId
+        )
+        .run();
+
+
+if (
+    !result ||
+    result.meta.changes !== 1
+) {
+
+    console.error(
+        "Database update failed after FaucetPay payment",
+        {
+            withdrawalId,
+            payoutId
         }
+    );
 
-
-        /* =========================
-           GET PAYOUT ID
-        ========================= */
-
-      /*  const payoutId =
-            faucetPayResult.data?.payout_id ||
-            null;
-            */
-console.log(
-    "FAUCETPAY RESPONSE:",
-    JSON.stringify(faucetPayResult)
-);
-
-        /*
-         * IMPORTANT:
-         *
-         * payout_id is NOT blockchain TXID.
-         *
-         * We store it separately.
-         */
-
-
-        /* =========================
-           MARK APPROVED
-        ========================= */
-
-        const result =
-            await context.env.DB
-                .prepare(
-                    `UPDATE withdrawals
-                     SET status = 'approved',
-                         processed_at = CURRENT_TIMESTAMP,
-                         payout_id = ?
-                     WHERE id = ?
-                       AND status = 'pending'`
-                )
-                .bind(
-                    String(payoutId || ""),
-                    withdrawalId
-                )
-                .run();
-
-
-        if (
-            !result ||
-            result.meta.changes !== 1
-        ) {
-
-            /*
-             * VERY IMPORTANT:
-             *
-             * FaucetPay may already have paid.
-             * DO NOT automatically retry.
-             */
-
-            console.error(
-                "Database update failed after FaucetPay payment",
-                {
-                    withdrawalId,
-                    payoutId
-                }
-            );
-
-
-            return Response.json(
-                {
-                    success: false,
-
-                    error:
-                        "Payment was sent by FaucetPay, but database update failed. Do not retry automatically.",
-
-                    payout_id:
-                        payoutId
-                },
-                { status: 500 }
-            );
-        }
-
-
-        /* =========================
-           SUCCESS
-        ========================= */
-
-        return Response.json({
-
-            success: true,
-
-            status: "approved",
-
-            amount:
-                withdrawal.amount,
-
-            currency:
-                "BTC",
-
+    return Response.json(
+        {
+            success: false,
+            error:
+                "Payment was sent by FaucetPay, but database update failed. Do not retry automatically.",
             payout_id:
                 payoutId
-
-        });
-
-
-    } catch (error) {
-
-        console.error(
-            "Withdrawal action error:",
-            error
-        );
+        },
+        { status: 500 }
+    );
+}
 
 
-        return Response.json(
-    {
-        success: false,
-        error:
-            error?.message ||
-            "Unable to process withdrawal."
-    },
-    { status: 500 }
-);
+/* =========================
+   SUCCESS
+========================= */
+
+return Response.json({
+
+    success: true,
+
+    status: "approved",
+
+    amount:
+        withdrawal.amount,
+
+    currency:
+        "BTC",
+
+    payout_id:
+        payoutId
+
+});               
+
+                
     }
 }
