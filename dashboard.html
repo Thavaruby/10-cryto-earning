@@ -3132,6 +3132,29 @@ async function openWithdrawalHistory() {
 
                         : "";
 
+                   
+const payoutText =
+    withdrawal.status === "approved" &&
+    withdrawal.payout_id
+        ? `
+            <br>
+            🔖 FaucetPay Payout ID:
+            <strong>${withdrawal.payout_id}</strong>
+          `
+        : "";
+
+const txidText =
+    withdrawal.txid
+        ? `
+            <br>
+            🔗 Transaction ID:
+            <strong style="word-break:break-all;">
+                ${withdrawal.txid}
+            </strong>
+          `
+        : "";
+                   
+
 
                     return `
 
@@ -3165,6 +3188,8 @@ async function openWithdrawalHistory() {
                             </span>
 
                             ${refundText}
+                            ${payoutText}
+                            ${txidText}
 
                             <br>
 
