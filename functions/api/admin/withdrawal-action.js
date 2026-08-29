@@ -441,7 +441,7 @@ if (
 
 
 /* =========================
-   GET PAYOUT ID
+   GET PAYOUT ID.
 ========================= */
 
 const payoutId =
