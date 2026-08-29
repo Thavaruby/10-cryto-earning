@@ -501,23 +501,62 @@ if (
    SUCCESS
 ========================= */
 
-return Response.json({
+        return Response.json({
 
-    success: true,
+            success: true,
 
-    status: "approved",
+            status: "approved",
 
-    amount:
-        withdrawal.amount,
+            amount:
+                withdrawal.amount,
 
-    currency:
-        "BTC",
+            currency:
+                "BTC",
 
-    payout_id:
-        payoutId
+            payout_id:
+                payoutId
 
-});               
+        });
 
-                
+
+    } catch (error) {
+
+        console.error(
+            "Withdrawal action error:",
+            error
+        );
+
+        return Response.json(
+            {
+                success: false,
+                error:
+                    error?.message ||
+                    "Unable to process withdrawal."
+            },
+            { status: 500 }
+        );
     }
 }
+
+let faucetPayResult = null;
+
+try {
+
+    faucetPayResult =
+        await faucetPayResponse.json();
+
+} catch {
+
+    faucetPayResult = null;
+
+        }
+
+console.log(
+    "FAUCETPAY STATUS:",
+    faucetPayResponse.status
+);
+
+console.log(
+    "FAUCETPAY RESPONSE:",
+    JSON.stringify(faucetPayResult)
+);
