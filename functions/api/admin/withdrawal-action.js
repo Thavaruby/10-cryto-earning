@@ -448,7 +448,10 @@ const payoutId =
     faucetPayResult?.data?.payout_id ||
     faucetPayResult?.payout_id ||
     null;
-
+console.log(
+    "FAUCETPAY SUCCESS RESPONSE:",
+    JSON.stringify(faucetPayResult)
+);
 
 /* =========================
    MARK APPROVED
