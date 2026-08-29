@@ -536,7 +536,6 @@ if (
             { status: 500 }
         );
     }
-}
 
 let faucetPayResult = null;
 
@@ -560,3 +559,4 @@ console.log(
     "FAUCETPAY RESPONSE:",
     JSON.stringify(faucetPayResult)
 );
+}
