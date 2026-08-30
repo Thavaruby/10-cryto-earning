@@ -87,23 +87,26 @@ export async function onRequestGet(context) {
         }
 
         const withdrawals =
-            await context.env.DB
-                .prepare(
-                    `SELECT
-                        id,
-                        amount,
-                        wallet_address,
-                        currency,
-                        status,
-                        created_at,
-                        processed_at
-                     FROM withdrawals
-                     WHERE user_id = ?
-                     ORDER BY id DESC
-                     LIMIT 100`
-                )
-                .bind(session.user_id)
-                .all();
+        const withdrawals =
+    await context.env.DB
+        .prepare(
+            `SELECT
+                id,
+                amount,
+                wallet_address,
+                currency,
+                status,
+                created_at,
+                processed_at,
+                payout_id,
+                txid
+             FROM withdrawals
+             WHERE user_id = ?
+             ORDER BY id DESC
+             LIMIT 100`
+        )
+        .bind(session.user_id)
+        .all();
 
         return Response.json({
             success: true,
