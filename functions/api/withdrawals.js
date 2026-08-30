@@ -87,7 +87,6 @@ export async function onRequestGet(context) {
         }
 
         const withdrawals =
-        const withdrawals =
     await context.env.DB
         .prepare(
             `SELECT
