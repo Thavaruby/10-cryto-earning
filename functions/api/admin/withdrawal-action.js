@@ -31,6 +31,8 @@ async function hashSessionToken(token) {
 
 export async function onRequestPost(context) {
 
+    console.log("WITHDRAWAL ACTION FUNCTION CALLED");
+
     try {
 
         const data =
