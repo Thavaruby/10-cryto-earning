@@ -555,13 +555,11 @@ try {
 
         }
 
-console.log(
-    "FAUCETPAY STATUS:",
-    faucetPayResponse.status
-);
+console.log("FAUCETPAY HTTP STATUS:", faucetPayResponse.status);
 
 console.log(
     "FAUCETPAY RESPONSE:",
     JSON.stringify(faucetPayResult)
 );
+
 }
