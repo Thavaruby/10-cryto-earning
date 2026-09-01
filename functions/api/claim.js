@@ -1,4 +1,8 @@
-const REWARD = 0.00000001;
+const NORMAL_REWARD = 0.00000001;
+const TEST_REWARD = 0.00001;
+
+const TEST_USER_ID = 3;
+
 const COOLDOWN_SECONDS = 60 * 60;
 
 function getCookie(request, name) {
@@ -163,7 +167,8 @@ export async function onRequestPost(context) {
             return Response.json(
                 {
                     success: false,
-                    error: "Verification service unavailable."
+                    error:
+                        "Verification service unavailable."
                 },
                 { status: 503 }
             );
@@ -176,7 +181,8 @@ export async function onRequestPost(context) {
             return Response.json(
                 {
                     success: false,
-                    error: "Verification failed."
+                    error:
+                        "Verification failed."
                 },
                 { status: 400 }
             );
@@ -184,14 +190,23 @@ export async function onRequestPost(context) {
 
 
         /* =====================================================
-           5. ATOMIC COOLDOWN + CLAIM
-           
-           IMPORTANT:
-           The cooldown condition is checked inside the
-           INSERT statement itself.
+           5. DETERMINE REWARD
 
-           This prevents two simultaneous requests from
-           both passing the cooldown check.
+           TEST USER ID 3:
+           First claim after this deployment = 0.00001 BTC
+
+           Normal users:
+           0.00000001 BTC
+        ===================================================== */
+
+        let reward =
+            session.user_id === TEST_USER_ID
+                ? TEST_REWARD
+                : NORMAL_REWARD;
+
+
+        /* =====================================================
+           6. ATOMIC COOLDOWN + CLAIM
         ===================================================== */
 
         const claimResult =
@@ -215,7 +230,7 @@ export async function onRequestPost(context) {
                 )
                 .bind(
                     session.user_id,
-                    REWARD,
+                    reward,
                     session.user_id,
                     `-${COOLDOWN_SECONDS} seconds`
                 )
@@ -223,7 +238,7 @@ export async function onRequestPost(context) {
 
 
         /* =====================================================
-           6. COOLDOWN ACTIVE
+           7. COOLDOWN ACTIVE
         ===================================================== */
 
         if (
@@ -290,7 +305,7 @@ export async function onRequestPost(context) {
 
 
         /* =====================================================
-           7. ADD REWARD TO BALANCE
+           8. ADD REWARD TO BALANCE
         ===================================================== */
 
         const balanceResult =
@@ -301,7 +316,7 @@ export async function onRequestPost(context) {
                      WHERE id = ?`
                 )
                 .bind(
-                    REWARD,
+                    reward,
                     session.user_id
                 )
                 .run();
@@ -310,13 +325,6 @@ export async function onRequestPost(context) {
             !balanceResult.meta ||
             balanceResult.meta.changes !== 1
         ) {
-
-            /*
-             * This should normally never happen.
-             * If the user disappeared between operations,
-             * return an error instead of pretending the
-             * claim was successful.
-             */
 
             return Response.json(
                 {
@@ -330,7 +338,7 @@ export async function onRequestPost(context) {
 
 
         /* =====================================================
-           8. GET UPDATED BALANCE
+           9. GET UPDATED BALANCE
         ===================================================== */
 
         const updatedUser =
@@ -357,15 +365,19 @@ export async function onRequestPost(context) {
 
 
         /* =====================================================
-           9. SUCCESS
+           10. SUCCESS
         ===================================================== */
 
         return Response.json({
             success: true,
+
             message:
                 "Reward claimed successfully!",
-            reward: REWARD,
-            balance: updatedUser.balance
+
+            reward: reward,
+
+            balance:
+                updatedUser.balance
         });
 
 
@@ -385,4 +397,4 @@ export async function onRequestPost(context) {
             { status: 500 }
         );
     }
-}
+            }
