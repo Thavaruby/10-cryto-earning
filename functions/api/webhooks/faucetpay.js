@@ -102,43 +102,131 @@ export async function onRequestPost(context) {
         );
 
 
-        if (
-            event.event ===
-            "payout.sent"
-        ) {
+        if (event.event === "payout.sent") {
 
-            const payoutId =
-                event.data?.payout_id ||
-                null;
+    const payoutId =
+        event.data?.payout_id ?? null;
 
-            const currency =
-                event.data?.currency ||
-                null;
+    const currency =
+        event.data?.currency ?? null;
 
-            const amount =
-                event.data?.amount ||
-                null;
+    const amount =
+        event.data?.amount ?? null;
+
+    const walletAddress =
+        event.data?.to ?? null;
+
+    console.log(
+        "FAUCETPAY PAYOUT SENT:",
+        JSON.stringify({
+            payoutId,
+            currency,
+            amount,
+            walletAddress
+        })
+    );
+
+    if (!payoutId) {
+        console.error(
+            "Webhook payout_id is missing"
+        );
+
+        return new Response(
+            "Missing payout_id",
+            { status: 400 }
+        );
+    }
+
+    /*
+     * Find the withdrawal created by
+     * the FaucetPay payout.
+     */
+    const withdrawal =
+        await context.env.DB
+            .prepare(`
+                SELECT
+                    id,
+                    status,
+                    payout_id,
+                    txid
+                FROM withdrawals
+                WHERE payout_id = ?
+                LIMIT 1
+            `)
+            .bind(String(payoutId))
+            .first();
 
 
-            console.log(
-                "FAUCETPAY PAYOUT SENT:",
-                JSON.stringify({
-                    payoutId,
-                    currency,
-                    amount
-                })
-            );
+    /*
+     * Withdrawal not found.
+     */
+    if (!withdrawal) {
+
+        console.warn(
+            "No withdrawal found for payout_id:",
+            payoutId
+        );
+
+        /*
+         * Still return 200 so FaucetPay
+         * does not repeatedly retry the event.
+         */
+        return new Response(
+            "OK",
+            { status: 200 }
+        );
+    }
 
 
-            /*
-             * IMPORTANT:
-             *
-             * Webhook payload currently does not
-             * provide a blockchain TXID.
-             *
-             * Therefore we only log the event here.
-             */
-        }
+    /*
+     * Already processed.
+     */
+    if (
+        withdrawal.status === "approved"
+        &&
+        withdrawal.payout_id
+    ) {
+
+        console.log(
+            "Withdrawal already processed:",
+            withdrawal.id
+        );
+
+        return new Response(
+            "OK",
+            { status: 200 }
+        );
+    }
+
+
+    /*
+     * Update withdrawal.
+     *
+     * TXID remains NULL because the
+     * payout.sent webhook does not contain
+     * a blockchain transaction hash.
+     */
+    await context.env.DB
+        .prepare(`
+            UPDATE withdrawals
+            SET
+                status = 'approved',
+                processed_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        `)
+        .bind(withdrawal.id)
+        .run();
+
+
+    console.log(
+        "WITHDRAWAL UPDATED:",
+        JSON.stringify({
+            withdrawalId: withdrawal.id,
+            payoutId: payoutId,
+            txid: withdrawal.txid
+        })
+    );
+}
 
 
         return new Response(
