@@ -89,7 +89,25 @@ export async function onRequestPost(context) {
 
 
         const event =
-            JSON.parse(rawBody);
+    JSON.parse(rawBody);
+
+const eventId =
+    event.id ?? null;
+
+const eventType =
+    event.event ?? null;
+
+if (!eventId || !eventType) {
+
+    console.error(
+        "Invalid FaucetPay webhook event"
+    );
+
+    return new Response(
+        "Invalid event",
+        { status: 400 }
+    );
+}
 
 
         console.log(
@@ -137,7 +155,29 @@ export async function onRequestPost(context) {
         );
     }
 
-    /*
+   const existingEvent =
+    await context.env.DB
+        .prepare(`
+            SELECT id
+            FROM faucetpay_webhook_events
+            WHERE event_id = ?
+            LIMIT 1
+        `)
+        .bind(String(eventId))
+        .first();
+
+if (existingEvent) {
+
+    console.log(
+        "Duplicate FaucetPay webhook:",
+        eventId
+    );
+
+    return new Response(
+        "OK",
+        { status: 200 }
+    );
+} /*
      * Find the withdrawal created by
      * the FaucetPay payout.
      */
@@ -177,7 +217,27 @@ export async function onRequestPost(context) {
         );
     }
 
+const payoutId =
+    event.data?.payout_id ?? null;
 
+await context.env.DB
+    .prepare(`
+        INSERT INTO faucetpay_webhook_events
+        (
+            event_id,
+            event_type,
+            payout_id
+        )
+        VALUES (?, ?, ?)
+    `)
+    .bind(
+        String(eventId),
+        String(eventType),
+        payoutId
+            ? String(payoutId)
+            : null
+    )
+    .run();
     /*
      * Already processed.
      */
