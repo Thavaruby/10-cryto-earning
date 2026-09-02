@@ -271,17 +271,14 @@ export async function onRequestGet(context) {
 
     });
 
-  } catch (error) {
+    } catch (error) {
 
-    console.error(
-      "ADMIN STATS ERROR:",
-      error
-    );
+    console.error("ADMIN STATS ERROR:", error);
 
     return Response.json(
       {
         success: false,
-        error: "Internal server error"
+        error: error?.message || String(error)
       },
       { status: 500 }
     );
