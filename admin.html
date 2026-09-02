@@ -444,3 +444,887 @@
 <!-- =========================
      CONFIRMATION MODAL
 ========================== -->
+
+<div
+    class="modal-overlay"
+    id="confirmModal"
+>
+
+    <div class="modal">
+
+        <h3 id="modalTitle">
+            Confirm Action
+        </h3>
+
+        <div
+            class="modal-text"
+            id="modalText"
+        >
+            Are you sure?
+        </div>
+
+        <div class="modal-actions">
+
+            <button
+                class="cancel-button"
+                onclick="closeModal()"
+            >
+                Cancel
+            </button>
+
+            <button
+                class="confirm-button"
+                id="confirmActionButton"
+                onclick="confirmWithdrawalAction()"
+            >
+                Confirm
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+
+/* =========================
+   STATE
+========================= */
+
+let currentStatus = "pending";
+
+let currentPage = 1;
+
+const itemsPerPage = 10;
+
+let allWithdrawals = [];
+
+let selectedWithdrawalId = null;
+
+let selectedAction = null;
+
+let processing = false;
+
+
+/* =========================
+   CHANGE TAB
+========================= */
+
+function changeTab(status) {
+
+    if (processing) {
+        return;
+    }
+
+    currentStatus = status;
+
+    currentPage = 1;
+
+    document
+        .querySelectorAll(".tab")
+        .forEach(button => {
+
+            button.classList.toggle(
+                "active",
+                button.dataset.status === status
+            );
+
+        });
+
+    loadWithdrawals();
+}
+
+
+/* =========================
+   LOAD WITHDRAWALS
+========================= */
+
+async function loadWithdrawals() {
+
+    const message =
+        document.getElementById("message");
+
+    const container =
+        document.getElementById("withdrawals");
+
+    const pagination =
+        document.getElementById("pagination");
+
+    const refreshButton =
+        document.getElementById("refreshButton");
+
+
+    message.innerText =
+        `⏳ Loading ${currentStatus} withdrawals...`;
+
+    container.innerHTML = "";
+
+    pagination.style.display = "none";
+
+    refreshButton.disabled = true;
+
+
+    try {
+
+        const response =
+            await fetch(
+                `/api/admin/withdrawals?status=${encodeURIComponent(currentStatus)}`,
+                {
+                    method: "GET",
+                    credentials: "same-origin",
+                    cache: "no-store"
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (!response.ok || !result.success) {
+
+            message.innerText =
+                "❌ " + (
+                    result.error ||
+                    "Unable to load withdrawals."
+                );
+
+            allWithdrawals = [];
+
+            return;
+        }
+
+
+        allWithdrawals =
+            Array.isArray(result.withdrawals)
+                ? result.withdrawals
+                : [];
+
+
+        if (allWithdrawals.length === 0) {
+
+            message.innerText =
+                `0 ${currentStatus} BTC withdrawal(s)`;
+
+            container.innerHTML = `
+                <div class="empty">
+                    ${
+                        currentStatus === "pending"
+                            ? "✅ No pending BTC withdrawals."
+                            : currentStatus === "approved"
+                                ? "📭 No approved BTC withdrawals."
+                                : "📭 No rejected BTC withdrawals."
+                    }
+                </div>
+            `;
+
+            return;
+        }
+
+
+        message.innerText =
+            `${allWithdrawals.length} ${currentStatus} BTC withdrawal(s)`;
+
+
+        renderWithdrawals();
+
+
+    } catch (error) {
+
+        console.error(
+            "Load withdrawals error:",
+            error
+        );
+
+        message.innerText =
+            "❌ Unable to load withdrawals.";
+
+        container.innerHTML = "";
+
+    } finally {
+
+        refreshButton.disabled = false;
+
+    }
+}
+
+
+/* =========================
+   RENDER
+========================= */
+
+function renderWithdrawals() {
+
+    const container =
+        document.getElementById("withdrawals");
+
+    const pagination =
+        document.getElementById("pagination");
+
+
+    const totalPages =
+        Math.ceil(
+            allWithdrawals.length /
+            itemsPerPage
+        );
+
+
+    if (currentPage > totalPages) {
+        currentPage = totalPages;
+    }
+
+
+    const start =
+        (currentPage - 1) *
+        itemsPerPage;
+
+
+    const end =
+        start + itemsPerPage;
+
+
+    const pageItems =
+        allWithdrawals.slice(
+            start,
+            end
+        );
+
+
+    container.innerHTML = `
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+
+                        <th>User</th>
+
+                        <th>Amount</th>
+
+                        <th>Wallet</th>
+
+                        <th>Status</th>
+
+                        <th>Payout ID</th>
+
+                        <th>TXID</th>
+
+                        <th>Created</th>
+
+                        <th>Processed</th>
+
+                        ${
+                            currentStatus === "pending"
+                                ? "<th>Actions</th>"
+                                : ""
+                        }
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    ${
+                        pageItems
+                            .map(item =>
+                                createWithdrawalRow(item)
+                            )
+                            .join("")
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    `;
+
+
+    /* =========================
+       PAGINATION UI
+    ========================== */
+
+    pagination.style.display =
+        totalPages > 1
+            ? "flex"
+            : "none";
+
+
+    document.getElementById(
+        "pageInfo"
+    ).innerText =
+        `Page ${currentPage} of ${totalPages}`;
+
+
+    document.getElementById(
+        "previousButton"
+    ).disabled =
+        currentPage <= 1;
+
+
+    document.getElementById(
+        "nextButton"
+    ).disabled =
+        currentPage >= totalPages;
+}
+
+
+/* =========================
+   CREATE TABLE ROW
+========================= */
+
+function createWithdrawalRow(item) {
+
+    const status =
+        String(
+            item.status || ""
+        ).toLowerCase();
+
+
+    const created =
+        formatDate(
+            item.created_at
+        );
+
+
+    const processed =
+        item.processed_at
+            ? formatDate(item.processed_at)
+            : "—";
+
+
+    const payoutId =
+        item.payout_id
+            ? escapeHtml(
+                String(item.payout_id)
+            )
+            : "—";
+
+
+    const txid =
+        item.txid
+            ? escapeHtml(
+                String(item.txid)
+            )
+            : "—";
+
+
+    return `
+
+        <tr>
+
+            <td>
+                <strong>#${escapeHtml(String(item.id))}</strong>
+            </td>
+
+
+            <td>
+
+                <strong>
+                    ${escapeHtml(
+                        item.email || "N/A"
+                    )}
+                </strong>
+
+                <br>
+
+                <small>
+                    User ID:
+                    ${escapeHtml(
+                        String(item.user_id)
+                    )}
+                </small>
+
+            </td>
+
+
+            <td class="amount">
+
+                ${escapeHtml(
+                    String(item.amount)
+                )}
+                BTC
+
+            </td>
+
+
+            <td>
+
+                <div class="wallet">
+
+                    ${escapeHtml(
+                        item.wallet_address || "N/A"
+                    )}
+
+                </div>
+
+            </td>
+
+
+            <td>
+
+                <span class="status ${status}">
+
+                    ${escapeHtml(
+                        status.toUpperCase()
+                    )}
+
+                </span>
+
+            </td>
+
+
+            <td>
+
+                <span class="id-text">
+
+                    ${payoutId}
+
+                </span>
+
+            </td>
+
+
+            <td>
+
+                <span class="id-text">
+
+                    ${txid}
+
+                </span>
+
+            </td>
+
+
+            <td>
+
+                ${created}
+
+            </td>
+
+
+            <td>
+
+                ${processed}
+
+            </td>
+
+
+            ${
+                currentStatus === "pending"
+                    ? `
+
+                    <td class="actions">
+
+                        <button
+                            class="approve"
+                            onclick="openConfirmation(
+                                ${Number(item.id)},
+                                'approve'
+                            )"
+                        >
+                            ✅ Approve
+                        </button>
+
+                        <button
+                            class="reject"
+                            onclick="openConfirmation(
+                                ${Number(item.id)},
+                                'reject'
+                            )"
+                        >
+                            ❌ Reject
+                        </button>
+
+                    </td>
+
+                    `
+                    : ""
+            }
+
+        </tr>
+
+    `;
+}
+
+
+/* =========================
+   CONFIRMATION MODAL
+========================= */
+
+function openConfirmation(
+    id,
+    action
+) {
+
+    if (processing) {
+        return;
+    }
+
+
+    selectedWithdrawalId = id;
+
+    selectedAction = action;
+
+
+    const modal =
+        document.getElementById(
+            "confirmModal"
+        );
+
+    const title =
+        document.getElementById(
+            "modalTitle"
+        );
+
+    const text =
+        document.getElementById(
+            "modalText"
+        );
+
+    const confirmButton =
+        document.getElementById(
+            "confirmActionButton"
+        );
+
+
+    if (action === "approve") {
+
+        title.innerText =
+            "Approve Withdrawal?";
+
+        text.innerHTML =
+            `Are you sure you want to approve withdrawal <strong>#${id}</strong>?<br><br>
+             This will send the BTC payout through FaucetPay.`;
+
+        confirmButton.innerText =
+            "✅ Approve";
+
+        confirmButton.className =
+            "confirm-button approve-confirm";
+
+    } else {
+
+        title.innerText =
+            "Reject Withdrawal?";
+
+        text.innerHTML =
+            `Are you sure you want to reject withdrawal <strong>#${id}</strong>?<br><br>
+             The reserved BTC will be refunded to the user.`;
+
+        confirmButton.innerText =
+            "❌ Reject";
+
+        confirmButton.className =
+            "confirm-button reject-confirm";
+
+    }
+
+
+    modal.classList.add("show");
+}
+
+
+/* =========================
+   CLOSE MODAL
+========================= */
+
+function closeModal() {
+
+    document
+        .getElementById(
+            "confirmModal"
+        )
+        .classList.remove("show");
+
+
+    selectedWithdrawalId = null;
+
+    selectedAction = null;
+}
+
+
+/* =========================
+   CONFIRM ACTION
+========================= */
+
+async function confirmWithdrawalAction() {
+
+    if (
+        processing ||
+        !selectedWithdrawalId ||
+        !selectedAction
+    ) {
+        return;
+    }
+
+
+    const id =
+        selectedWithdrawalId;
+
+    const action =
+        selectedAction;
+
+
+    closeModal();
+
+
+    processing = true;
+
+
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+
+    message.innerText =
+        "⏳ Processing withdrawal...";
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/admin/withdrawal-action",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    credentials:
+                        "same-origin",
+
+                    body: JSON.stringify({
+
+                        withdrawalId: id,
+
+                        action: action
+
+                    })
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (!response.ok || !result.success) {
+
+            message.innerText =
+                "❌ " + (
+                    result.error ||
+                    "Unable to process withdrawal."
+                );
+
+            return;
+        }
+
+
+        if (
+            result.status ===
+            "approved"
+        ) {
+
+            message.innerText =
+                "✅ Withdrawal approved successfully.";
+
+        } else if (
+            result.status ===
+            "rejected"
+        ) {
+
+            message.innerText =
+                "✅ Withdrawal rejected. BTC refunded to user.";
+
+        } else {
+
+            message.innerText =
+                "✅ Withdrawal processed.";
+
+        }
+
+
+        /*
+         * Reload current tab.
+         */
+
+        await loadWithdrawals();
+
+
+    } catch (error) {
+
+        console.error(
+            "Process withdrawal error:",
+            error
+        );
+
+        message.innerText =
+            "❌ Connection error.";
+
+    } finally {
+
+        processing = false;
+
+    }
+}
+
+
+/* =========================
+   PAGINATION
+========================= */
+
+function previousPage() {
+
+    if (currentPage <= 1) {
+        return;
+    }
+
+    currentPage--;
+
+    renderWithdrawals();
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+
+function nextPage() {
+
+    const totalPages =
+        Math.ceil(
+            allWithdrawals.length /
+            itemsPerPage
+        );
+
+
+    if (currentPage >= totalPages) {
+        return;
+    }
+
+    currentPage++;
+
+    renderWithdrawals();
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+
+/* =========================
+   DATE FORMAT
+========================= */
+
+function formatDate(value) {
+
+    if (!value) {
+        return "—";
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+        return escapeHtml(
+            String(value)
+        );
+    }
+
+
+    return escapeHtml(
+        date.toLocaleString()
+    );
+}
+
+
+/* =========================
+   HTML ESCAPE
+========================= */
+
+function escapeHtml(value) {
+
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+/* =========================
+   CLOSE MODAL
+   WHEN CLICK OUTSIDE
+========================= */
+
+document
+    .getElementById("confirmModal")
+    .addEventListener(
+        "click",
+        function(event) {
+
+            if (
+                event.target ===
+                this
+            ) {
+                closeModal();
+            }
+
+        }
+    );
+
+
+/* =========================
+   ESC KEY
+========================= */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "Escape"
+        ) {
+            closeModal();
+        }
+
+    }
+);
+
+
+/* =========================
+   INITIAL LOAD
+========================= */
+
+loadWithdrawals();
+
+
+</script>
+
+</body>
+
+</html>
