@@ -1,62 +1,65 @@
+async function hashSessionToken(token) {
+    const data = new TextEncoder().encode(token);
+
+    const hashBuffer = await crypto.subtle.digest(
+        "SHA-256",
+        data
+    );
+
+    return Array.from(new Uint8Array(hashBuffer))
+        .map(b => b.toString(16).padStart(2, "0"))
+        .join("");
+}
+
 function getCookie(request, name) {
     const cookieHeader = request.headers.get("Cookie");
 
-    if (!cookieHeader) return null;
+    if (!cookieHeader) {
+        return null;
+    }
 
-    for (const cookie of cookieHeader.split(";")) {
-        const [key, ...value] = cookie.trim().split("=");
+    const cookies = cookieHeader.split(";");
+
+    for (const cookie of cookies) {
+        const [key, ...valueParts] = cookie.trim().split("=");
 
         if (key === name) {
-            return value.join("=");
+            return decodeURIComponent(valueParts.join("="));
         }
     }
 
     return null;
 }
 
-async function hashSessionToken(token) {
-    const data = new TextEncoder().encode(token);
-
-    const hash = await crypto.subtle.digest(
-        "SHA-256",
-        data
-    );
-
-    return Array.from(new Uint8Array(hash))
-        .map(byte => byte.toString(16).padStart(2, "0"))
-        .join("");
-}
-
 export async function onRequestPost(context) {
-
     try {
+        const { request, env } = context;
 
-        const sessionToken =
-            getCookie(context.request, "session");
+        const sessionToken = getCookie(
+            request,
+            "session"
+        );
 
         if (sessionToken) {
-
             const tokenHash =
                 await hashSessionToken(sessionToken);
 
-            await context.env.DB
-                .prepare(
-                    "DELETE FROM sessions WHERE token_hash = ?"
-                )
+            await env.DB.prepare(`
+                DELETE FROM sessions
+                WHERE token_hash = ?
+            `)
                 .bind(tokenHash)
                 .run();
         }
 
         return new Response(
             JSON.stringify({
-                success: true,
-                message: "Logged out successfully"
+                success: true
             }),
             {
+                status: 200,
                 headers: {
-                    "Content-Type":
-                        "application/json",
-
+                    "Content-Type": "application/json",
                     "Set-Cookie":
                         "session=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0"
                 }
@@ -64,13 +67,19 @@ export async function onRequestPost(context) {
         );
 
     } catch (error) {
-    console.error("LOGOUT ERROR:", error);
+        console.error("Logout error:", error);
 
-    return Response.json(
-        {
-            success: false,
-            error: "Internal server error"
-        },
-        { status: 500 }
-    );
+        return new Response(
+            JSON.stringify({
+                success: false,
+                error: "Internal server error"
+            }),
+            {
+                status: 500,
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }
+        );
+    }
 }
