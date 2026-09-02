@@ -41,7 +41,7 @@ export async function onRequestGet(context) {
     try {
 
         /* =========================
-           CHECK LOGIN
+           1. CHECK LOGIN
         ========================= */
 
         const sessionToken =
@@ -49,6 +49,7 @@ export async function onRequestGet(context) {
                 context.request,
                 "session"
             );
+
 
         if (!sessionToken) {
 
@@ -63,13 +64,14 @@ export async function onRequestGet(context) {
 
 
         /* =========================
-           CHECK SESSION
+           2. CHECK SESSION
         ========================= */
 
         const tokenHash =
             await hashSessionToken(
                 sessionToken
             );
+
 
         const session =
             await context.env.DB
@@ -79,6 +81,7 @@ export async function onRequestGet(context) {
                         expires_at
                      FROM sessions
                      WHERE token_hash = ?
+                       AND expires_at > CURRENT_TIMESTAMP
                      LIMIT 1`
                 )
                 .bind(tokenHash)
@@ -90,22 +93,7 @@ export async function onRequestGet(context) {
             return Response.json(
                 {
                     success: false,
-                    error: "Invalid session"
-                },
-                { status: 401 }
-            );
-        }
-
-
-        if (
-            new Date(session.expires_at) <=
-            new Date()
-        ) {
-
-            return Response.json(
-                {
-                    success: false,
-                    error: "Session expired"
+                    error: "Invalid or expired session"
                 },
                 { status: 401 }
             );
@@ -113,7 +101,7 @@ export async function onRequestGet(context) {
 
 
         /* =========================
-           CHECK ADMIN
+           3. CHECK ADMIN
         ========================= */
 
         const admin =
@@ -141,11 +129,12 @@ export async function onRequestGet(context) {
 
 
         /* =========================
-           READ STATUS FILTER
+           4. READ STATUS FILTER
         ========================= */
 
         const url =
             new URL(context.request.url);
+
 
         const requestedStatus =
             String(
@@ -155,11 +144,12 @@ export async function onRequestGet(context) {
 
 
         /* =========================
-           ALLOWED STATUSES ONLY
+           5. ALLOWED STATUSES
         ========================= */
 
         const allowedStatuses = [
             "pending",
+            "processing",
             "approved",
             "rejected"
         ];
@@ -174,7 +164,8 @@ export async function onRequestGet(context) {
             return Response.json(
                 {
                     success: false,
-                    error: "Invalid withdrawal status"
+                    error:
+                        "Invalid withdrawal status"
                 },
                 { status: 400 }
             );
@@ -182,8 +173,7 @@ export async function onRequestGet(context) {
 
 
         /* =========================
-           LOAD BTC WITHDRAWALS
-           BY STATUS
+           6. LOAD BTC WITHDRAWALS
         ========================= */
 
         const withdrawals =
@@ -218,14 +208,15 @@ export async function onRequestGet(context) {
 
 
         /* =========================
-           RESPONSE
+           7. RESPONSE
         ========================= */
 
         return Response.json({
 
             success: true,
 
-            status: requestedStatus,
+            status:
+                requestedStatus,
 
             withdrawals:
                 withdrawals.results || []
@@ -240,10 +231,12 @@ export async function onRequestGet(context) {
             error
         );
 
+
         return Response.json(
             {
                 success: false,
-                error: "Internal server error"
+                error:
+                    "Internal server error"
             },
             { status: 500 }
         );
