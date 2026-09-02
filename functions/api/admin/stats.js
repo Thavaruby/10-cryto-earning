@@ -30,7 +30,10 @@ export async function onRequestGet(context) {
 
     const sessionToken = sessionMatch[1];
 
-    // SHA-256 session token
+    // ========================================
+    // HASH SESSION TOKEN
+    // ========================================
+
     const tokenHashBuffer = await crypto.subtle.digest(
       "SHA-256",
       new TextEncoder().encode(sessionToken)
@@ -105,7 +108,7 @@ export async function onRequestGet(context) {
     const claims = await env.DB.prepare(`
       SELECT
         COUNT(*) AS total_claims,
-        COALESCE(SUM(amount), 0) AS total_claimed
+        COALESCE(SUM(reward), 0) AS total_claimed
       FROM claims
     `).first();
 
@@ -177,11 +180,9 @@ export async function onRequestGet(context) {
     const todayClaims = await env.DB.prepare(`
       SELECT
         COUNT(*) AS count,
-        COALESCE(SUM(amount), 0) AS amount
-
+        COALESCE(SUM(reward), 0) AS amount
       FROM claims
-
-      WHERE date(created_at) = date('now')
+      WHERE date(claimed_at) = date('now')
     `).first();
 
     // ========================================
@@ -192,9 +193,7 @@ export async function onRequestGet(context) {
       SELECT
         COUNT(*) AS count,
         COALESCE(SUM(amount), 0) AS amount
-
       FROM withdrawals
-
       WHERE currency = 'BTC'
         AND date(created_at) = date('now')
     `).first();
@@ -271,9 +270,12 @@ export async function onRequestGet(context) {
 
     });
 
-    } catch (error) {
+  } catch (error) {
 
-    console.error("ADMIN STATS ERROR:", error);
+    console.error(
+      "ADMIN STATS ERROR:",
+      error
+    );
 
     return Response.json(
       {
