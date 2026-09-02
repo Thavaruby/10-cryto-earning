@@ -141,8 +141,49 @@ export async function onRequestGet(context) {
 
 
         /* =========================
-           LOAD PENDING BTC
-           WITHDRAWALS ONLY
+           READ STATUS FILTER
+        ========================= */
+
+        const url =
+            new URL(context.request.url);
+
+        const requestedStatus =
+            String(
+                url.searchParams.get("status") ||
+                "pending"
+            ).toLowerCase();
+
+
+        /* =========================
+           ALLOWED STATUSES ONLY
+        ========================= */
+
+        const allowedStatuses = [
+            "pending",
+            "approved",
+            "rejected"
+        ];
+
+
+        if (
+            !allowedStatuses.includes(
+                requestedStatus
+            )
+        ) {
+
+            return Response.json(
+                {
+                    success: false,
+                    error: "Invalid withdrawal status"
+                },
+                { status: 400 }
+            );
+        }
+
+
+        /* =========================
+           LOAD BTC WITHDRAWALS
+           BY STATUS
         ========================= */
 
         const withdrawals =
@@ -156,15 +197,23 @@ export async function onRequestGet(context) {
                         withdrawals.wallet_address,
                         withdrawals.currency,
                         withdrawals.status,
-                        withdrawals.created_at
+                        withdrawals.created_at,
+                        withdrawals.processed_at,
+                        withdrawals.txid,
+                        withdrawals.payout_id
+
                      FROM withdrawals
+
                      JOIN users
                        ON users.id =
                           withdrawals.user_id
-                     WHERE withdrawals.status = 'pending'
+
+                     WHERE withdrawals.status = ?
                        AND withdrawals.currency = 'BTC'
+
                      ORDER BY withdrawals.id DESC`
                 )
+                .bind(requestedStatus)
                 .all();
 
 
@@ -175,6 +224,8 @@ export async function onRequestGet(context) {
         return Response.json({
 
             success: true,
+
+            status: requestedStatus,
 
             withdrawals:
                 withdrawals.results || []
@@ -192,7 +243,7 @@ export async function onRequestGet(context) {
         return Response.json(
             {
                 success: false,
-                error: error.message
+                error: "Internal server error"
             },
             { status: 500 }
         );
