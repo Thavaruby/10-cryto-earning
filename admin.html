@@ -47,6 +47,127 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
         }
 
+        /* =========================
+           STATISTICS
+        ========================= */
+
+        .stats-section {
+            margin-bottom: 30px;
+        }
+
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .stats-header h2 {
+            margin: 0;
+        }
+
+        .stats-refresh {
+            background: #2563eb;
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .stat-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 18px;
+            min-height: 120px;
+        }
+
+        .stat-icon {
+            font-size: 25px;
+            margin-bottom: 8px;
+        }
+
+        .stat-title {
+            color: #6b7280;
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 21px;
+            font-weight: bold;
+            color: #111827;
+            word-break: break-word;
+        }
+
+        .stat-sub {
+            margin-top: 7px;
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        .today-section {
+            margin-top: 15px;
+        }
+
+        .today-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 18px;
+        }
+
+        .today-card h3 {
+            margin: 0 0 15px 0;
+        }
+
+        .today-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .today-item {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .today-item-title {
+            color: #6b7280;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .today-item-value {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        #statsMessage {
+            min-height: 18px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        /* =========================
+           WITHDRAWALS
+        ========================= */
+
+        .withdrawal-section {
+            border-top: 1px solid #e5e7eb;
+            padding-top: 25px;
+        }
+
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -292,6 +413,22 @@
             background: #dc2626;
         }
 
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 900px) {
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .today-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
         @media (max-width: 600px) {
 
             .container {
@@ -306,6 +443,18 @@
 
             header h1 {
                 font-size: 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .today-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-refresh {
+                width: 100%;
             }
 
             .top-bar {
@@ -324,6 +473,7 @@
             .tab {
                 width: 100%;
             }
+
         }
 
     </style>
@@ -343,100 +493,419 @@
 <div class="container">
 
 
-    <div class="top-bar">
+    <!-- =========================
+         ADMIN STATISTICS
+    ========================== -->
 
-        <h2>💸 BTC Withdrawals</h2>
+    <section class="stats-section">
 
-        <button
-            class="refresh"
-            id="refreshButton"
-            onclick="loadWithdrawals()"
-        >
-            🔄 REFRESH
-        </button>
+        <div class="stats-header">
 
-    </div>
+            <h2>📊 Statistics</h2>
+
+            <button
+                class="stats-refresh"
+                id="statsRefreshButton"
+                onclick="loadStats()"
+                type="button"
+            >
+                🔄 REFRESH STATS
+            </button>
+
+        </div>
+
+
+        <div id="statsMessage">
+            ⏳ Loading statistics...
+        </div>
+
+
+        <div class="stats-grid">
+
+
+            <!-- TOTAL USERS -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    👥
+                </div>
+
+                <div class="stat-title">
+                    Total Users
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="totalUsers"
+                >
+                    —
+                </div>
+
+            </div>
+
+
+            <!-- TOTAL CLAIMED -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🎁
+                </div>
+
+                <div class="stat-title">
+                    Total Claimed
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="totalClaimed"
+                >
+                    —
+                </div>
+
+                <div class="stat-sub">
+                    BTC
+                </div>
+
+            </div>
+
+
+            <!-- TOTAL WITHDRAWN -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    💸
+                </div>
+
+                <div class="stat-title">
+                    Total Withdrawn
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="totalWithdrawn"
+                >
+                    —
+                </div>
+
+                <div class="stat-sub">
+                    Approved BTC
+                </div>
+
+            </div>
+
+
+            <!-- PENDING -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    ⏳
+                </div>
+
+                <div class="stat-title">
+                    Pending Withdrawals
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="pendingWithdrawals"
+                >
+                    —
+                </div>
+
+                <div
+                    class="stat-sub"
+                    id="pendingAmount"
+                >
+                    —
+                </div>
+
+            </div>
+
+
+            <!-- APPROVED -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    ✅
+                </div>
+
+                <div class="stat-title">
+                    Approved
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="approvedWithdrawals"
+                >
+                    —
+                </div>
+
+            </div>
+
+
+            <!-- REJECTED -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    ❌
+                </div>
+
+                <div class="stat-title">
+                    Rejected
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="rejectedWithdrawals"
+                >
+                    —
+                </div>
+
+            </div>
+
+
+            <!-- TOTAL WITHDRAWALS -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    📤
+                </div>
+
+                <div class="stat-title">
+                    Total Withdrawals
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="totalWithdrawals"
+                >
+                    —
+                </div>
+
+            </div>
+
+
+            <!-- TOTAL CLAIM COUNT -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🎯
+                </div>
+
+                <div class="stat-title">
+                    Total Claims
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="totalClaims"
+                >
+                    —
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             TODAY
+        ========================== -->
+
+        <div class="today-section">
+
+            <div class="today-card">
+
+                <h3>
+                    📅 Today's Activity
+                </h3>
+
+
+                <div class="today-grid">
+
+
+                    <div class="today-item">
+
+                        <div class="today-item-title">
+                            Claims Today
+                        </div>
+
+                        <div
+                            class="today-item-value"
+                            id="todayClaims"
+                        >
+                            —
+                        </div>
+
+                    </div>
+
+
+                    <div class="today-item">
+
+                        <div class="today-item-title">
+                            BTC Claimed Today
+                        </div>
+
+                        <div
+                            class="today-item-value"
+                            id="todayClaimed"
+                        >
+                            —
+                        </div>
+
+                    </div>
+
+
+                    <div class="today-item">
+
+                        <div class="today-item-title">
+                            Withdrawals Today
+                        </div>
+
+                        <div
+                            class="today-item-value"
+                            id="todayWithdrawals"
+                        >
+                            —
+                        </div>
+
+                    </div>
+
+
+                    <div class="today-item">
+
+                        <div class="today-item-title">
+                            BTC Withdrawn Today
+                        </div>
+
+                        <div
+                            class="today-item-value"
+                            id="todayWithdrawn"
+                        >
+                            —
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
 
 
     <!-- =========================
-         TABS
+         WITHDRAWAL MANAGEMENT
     ========================== -->
 
-    <div class="tabs">
+    <section class="withdrawal-section">
 
-        <button
-            class="tab pending active"
-            data-status="pending"
-            onclick="changeTab('pending')"
+
+        <div class="top-bar">
+
+            <h2>💸 BTC Withdrawals</h2>
+
+            <button
+                class="refresh"
+                id="refreshButton"
+                onclick="loadWithdrawals()"
+                type="button"
+            >
+                🔄 REFRESH
+            </button>
+
+        </div>
+
+
+        <!-- TABS -->
+
+        <div class="tabs">
+
+            <button
+                class="tab pending active"
+                data-status="pending"
+                onclick="changeTab('pending')"
+                type="button"
+            >
+                🟠 PENDING
+            </button>
+
+            <button
+                class="tab approved"
+                data-status="approved"
+                onclick="changeTab('approved')"
+                type="button"
+            >
+                🟢 APPROVED
+            </button>
+
+            <button
+                class="tab rejected"
+                data-status="rejected"
+                onclick="changeTab('rejected')"
+                type="button"
+            >
+                🔴 REJECTED
+            </button>
+
+        </div>
+
+
+        <div id="message">
+            ⏳ Loading...
+        </div>
+
+
+        <div id="withdrawals"></div>
+
+
+        <!-- PAGINATION -->
+
+        <div
+            class="pagination"
+            id="pagination"
+            style="display:none;"
         >
-            🟠 PENDING
-        </button>
 
-        <button
-            class="tab approved"
-            data-status="approved"
-            onclick="changeTab('approved')"
-        >
-            🟢 APPROVED
-        </button>
+            <button
+                class="page-button"
+                id="previousButton"
+                onclick="previousPage()"
+                type="button"
+            >
+                ← Previous
+            </button>
 
-        <button
-            class="tab rejected"
-            data-status="rejected"
-            onclick="changeTab('rejected')"
-        >
-            🔴 REJECTED
-        </button>
+            <span
+                class="page-info"
+                id="pageInfo"
+            >
+                Page 1
+            </span>
 
-    </div>
+            <button
+                class="page-button"
+                id="nextButton"
+                onclick="nextPage()"
+                type="button"
+            >
+                Next →
+            </button>
 
+        </div>
 
-    <div id="message">
-        ⏳ Loading...
-    </div>
-
-
-    <!-- =========================
-         WITHDRAWAL TABLE
-    ========================== -->
-
-    <div id="withdrawals"></div>
-
-
-    <!-- =========================
-         PAGINATION
-    ========================== -->
-
-    <div
-        class="pagination"
-        id="pagination"
-        style="display:none;"
-    >
-
-        <button
-            class="page-button"
-            id="previousButton"
-            onclick="previousPage()"
-        >
-            ← Previous
-        </button>
-
-        <span
-            class="page-info"
-            id="pageInfo"
-        >
-            Page 1
-        </span>
-
-        <button
-            class="page-button"
-            id="nextButton"
-            onclick="nextPage()"
-        >
-            Next →
-        </button>
-
-    </div>
+    </section>
 
 </div>
 
@@ -468,6 +937,7 @@
             <button
                 class="cancel-button"
                 onclick="closeModal()"
+                type="button"
             >
                 Cancel
             </button>
@@ -476,6 +946,7 @@
                 class="confirm-button"
                 id="confirmActionButton"
                 onclick="confirmWithdrawalAction()"
+                type="button"
             >
                 Confirm
             </button>
@@ -489,10 +960,9 @@
 
 <script>
 
-
-/* =========================
-   STATE
-========================= */
+/* =========================================================
+   GLOBAL STATE
+========================================================= */
 
 let currentStatus = "pending";
 
@@ -509,9 +979,220 @@ let selectedAction = null;
 let processing = false;
 
 
-/* =========================
+/* =========================================================
+   BTC FORMAT
+========================================================= */
+
+function formatBTC(value) {
+
+    const number = Number(value);
+
+    if (!Number.isFinite(number)) {
+        return "0";
+    }
+
+    return number
+        .toFixed(8)
+        .replace(/0+$/, "")
+        .replace(/\.$/, "");
+
+}
+
+
+/* =========================================================
+   LOAD ADMIN STATS
+========================================================= */
+
+async function loadStats() {
+
+    const message =
+        document.getElementById("statsMessage");
+
+    const refreshButton =
+        document.getElementById("statsRefreshButton");
+
+
+    message.innerText =
+        "⏳ Loading statistics...";
+
+    refreshButton.disabled = true;
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/admin/stats",
+                {
+                    method: "GET",
+                    credentials: "same-origin",
+                    cache: "no-store"
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (!response.ok || !result.success) {
+
+            message.innerText =
+                "❌ " + (
+                    result.error ||
+                    "Unable to load statistics."
+                );
+
+            return;
+        }
+
+
+        /* =========================
+           USERS
+        ========================== */
+
+        document.getElementById(
+            "totalUsers"
+        ).innerText =
+            Number(
+                result.users?.total || 0
+            ).toLocaleString();
+
+
+        /* =========================
+           CLAIMS
+        ========================== */
+
+        document.getElementById(
+            "totalClaims"
+        ).innerText =
+            Number(
+                result.claims?.totalClaims || 0
+            ).toLocaleString();
+
+
+        document.getElementById(
+            "totalClaimed"
+        ).innerText =
+            formatBTC(
+                result.claims?.totalClaimed
+            ) + " BTC";
+
+
+        /* =========================
+           WITHDRAWALS
+        ========================== */
+
+        document.getElementById(
+            "totalWithdrawals"
+        ).innerText =
+            Number(
+                result.withdrawals?.total || 0
+            ).toLocaleString();
+
+
+        document.getElementById(
+            "totalWithdrawn"
+        ).innerText =
+            formatBTC(
+                result.withdrawals?.totalWithdrawn
+            ) + " BTC";
+
+
+        document.getElementById(
+            "pendingWithdrawals"
+        ).innerText =
+            Number(
+                result.withdrawals?.pending || 0
+            ).toLocaleString();
+
+
+        document.getElementById(
+            "pendingAmount"
+        ).innerText =
+            formatBTC(
+                result.withdrawals?.pendingAmount
+            ) + " BTC pending";
+
+
+        document.getElementById(
+            "approvedWithdrawals"
+        ).innerText =
+            Number(
+                result.withdrawals?.approved || 0
+            ).toLocaleString();
+
+
+        document.getElementById(
+            "rejectedWithdrawals"
+        ).innerText =
+            Number(
+                result.withdrawals?.rejected || 0
+            ).toLocaleString();
+
+
+        /* =========================
+           TODAY
+        ========================== */
+
+        document.getElementById(
+            "todayClaims"
+        ).innerText =
+            Number(
+                result.today?.claims || 0
+            ).toLocaleString();
+
+
+        document.getElementById(
+            "todayClaimed"
+        ).innerText =
+            formatBTC(
+                result.today?.claimedAmount
+            ) + " BTC";
+
+
+        document.getElementById(
+            "todayWithdrawals"
+        ).innerText =
+            Number(
+                result.today?.withdrawals || 0
+            ).toLocaleString();
+
+
+        document.getElementById(
+            "todayWithdrawn"
+        ).innerText =
+            formatBTC(
+                result.today?.withdrawalAmount
+            ) + " BTC";
+
+
+        message.innerText =
+            "✅ Statistics updated.";
+
+
+    } catch (error) {
+
+        console.error(
+            "Load stats error:",
+            error
+        );
+
+        message.innerText =
+            "❌ Unable to load statistics.";
+
+    } finally {
+
+        refreshButton.disabled = false;
+
+    }
+
+}
+
+
+/* =========================================================
    CHANGE TAB
-========================= */
+========================================================= */
 
 function changeTab(status) {
 
@@ -522,6 +1203,7 @@ function changeTab(status) {
     currentStatus = status;
 
     currentPage = 1;
+
 
     document
         .querySelectorAll(".tab")
@@ -534,13 +1216,15 @@ function changeTab(status) {
 
         });
 
+
     loadWithdrawals();
+
 }
 
 
-/* =========================
+/* =========================================================
    LOAD WITHDRAWALS
-========================= */
+========================================================= */
 
 async function loadWithdrawals() {
 
@@ -649,12 +1333,13 @@ async function loadWithdrawals() {
         refreshButton.disabled = false;
 
     }
+
 }
 
 
-/* =========================
-   RENDER
-========================= */
+/* =========================================================
+   RENDER WITHDRAWALS
+========================================================= */
 
 function renderWithdrawals() {
 
@@ -750,10 +1435,6 @@ function renderWithdrawals() {
     `;
 
 
-    /* =========================
-       PAGINATION UI
-    ========================== */
-
     pagination.style.display =
         totalPages > 1
             ? "flex"
@@ -776,12 +1457,13 @@ function renderWithdrawals() {
         "nextButton"
     ).disabled =
         currentPage >= totalPages;
+
 }
 
 
-/* =========================
-   CREATE TABLE ROW
-========================= */
+/* =========================================================
+   CREATE WITHDRAWAL ROW
+========================================================= */
 
 function createWithdrawalRow(item) {
 
@@ -824,7 +1506,11 @@ function createWithdrawalRow(item) {
         <tr>
 
             <td>
-                <strong>#${escapeHtml(String(item.id))}</strong>
+                <strong>
+                    #${escapeHtml(
+                        String(item.id)
+                    )}
+                </strong>
             </td>
 
 
@@ -850,9 +1536,7 @@ function createWithdrawalRow(item) {
 
             <td class="amount">
 
-                ${escapeHtml(
-                    String(item.amount)
-                )}
+                ${formatBTC(item.amount)}
                 BTC
 
             </td>
@@ -932,6 +1616,7 @@ function createWithdrawalRow(item) {
                                 ${Number(item.id)},
                                 'approve'
                             )"
+                            type="button"
                         >
                             ✅ Approve
                         </button>
@@ -942,6 +1627,7 @@ function createWithdrawalRow(item) {
                                 ${Number(item.id)},
                                 'reject'
                             )"
+                            type="button"
                         >
                             ❌ Reject
                         </button>
@@ -955,12 +1641,13 @@ function createWithdrawalRow(item) {
         </tr>
 
     `;
+
 }
 
 
-/* =========================
+/* =========================================================
    CONFIRMATION MODAL
-========================= */
+========================================================= */
 
 function openConfirmation(
     id,
@@ -1032,12 +1719,13 @@ function openConfirmation(
 
 
     modal.classList.add("show");
+
 }
 
 
-/* =========================
+/* =========================================================
    CLOSE MODAL
-========================= */
+========================================================= */
 
 function closeModal() {
 
@@ -1051,12 +1739,13 @@ function closeModal() {
     selectedWithdrawalId = null;
 
     selectedAction = null;
+
 }
 
 
-/* =========================
-   CONFIRM ACTION
-========================= */
+/* =========================================================
+   CONFIRM WITHDRAWAL ACTION
+========================================================= */
 
 async function confirmWithdrawalAction() {
 
@@ -1159,11 +1848,13 @@ async function confirmWithdrawalAction() {
         }
 
 
-        /*
-         * Reload current tab.
-         */
+        /* Reload withdrawals */
 
         await loadWithdrawals();
+
+        /* Also refresh statistics */
+
+        await loadStats();
 
 
     } catch (error) {
@@ -1181,12 +1872,13 @@ async function confirmWithdrawalAction() {
         processing = false;
 
     }
+
 }
 
 
-/* =========================
+/* =========================================================
    PAGINATION
-========================= */
+========================================================= */
 
 function previousPage() {
 
@@ -1194,14 +1886,17 @@ function previousPage() {
         return;
     }
 
+
     currentPage--;
 
     renderWithdrawals();
+
 
     window.scrollTo({
         top: 0,
         behavior: "smooth"
     });
+
 }
 
 
@@ -1218,20 +1913,23 @@ function nextPage() {
         return;
     }
 
+
     currentPage++;
 
     renderWithdrawals();
+
 
     window.scrollTo({
         top: 0,
         behavior: "smooth"
     });
+
 }
 
 
-/* =========================
+/* =========================================================
    DATE FORMAT
-========================= */
+========================================================= */
 
 function formatDate(value) {
 
@@ -1241,7 +1939,9 @@ function formatDate(value) {
 
 
     const date =
-        new Date(value);
+        new Date(
+            String(value).replace(" ", "T")
+        );
 
 
     if (
@@ -1249,21 +1949,24 @@ function formatDate(value) {
             date.getTime()
         )
     ) {
+
         return escapeHtml(
             String(value)
         );
+
     }
 
 
     return escapeHtml(
         date.toLocaleString()
     );
+
 }
 
 
-/* =========================
+/* =========================================================
    HTML ESCAPE
-========================= */
+========================================================= */
 
 function escapeHtml(value) {
 
@@ -1273,13 +1976,13 @@ function escapeHtml(value) {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+
 }
 
 
-/* =========================
-   CLOSE MODAL
-   WHEN CLICK OUTSIDE
-========================= */
+/* =========================================================
+   MODAL OUTSIDE CLICK
+========================================================= */
 
 document
     .getElementById("confirmModal")
@@ -1288,19 +1991,20 @@ document
         function(event) {
 
             if (
-                event.target ===
-                this
+                event.target === this
             ) {
+
                 closeModal();
+
             }
 
         }
     );
 
 
-/* =========================
+/* =========================================================
    ESC KEY
-========================= */
+========================================================= */
 
 document.addEventListener(
     "keydown",
@@ -1309,19 +2013,22 @@ document.addEventListener(
         if (
             event.key === "Escape"
         ) {
+
             closeModal();
+
         }
 
     }
 );
 
 
-/* =========================
+/* =========================================================
    INITIAL LOAD
-========================= */
+========================================================= */
+
+loadStats();
 
 loadWithdrawals();
-
 
 </script>
 
