@@ -231,6 +231,15 @@
             background: #dc2626;
         }
 
+        .tab.processing.active {
+    background: #2563eb;
+}
+
+.status.processing {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
         #message {
             margin: 15px 0;
             font-weight: bold;
@@ -833,31 +842,40 @@
         <div class="tabs">
 
             <button
-                class="tab pending active"
-                data-status="pending"
-                onclick="changeTab('pending')"
-                type="button"
-            >
-                🟠 PENDING
-            </button>
+    class="tab pending active"
+    data-status="pending"
+    onclick="changeTab('pending')"
+    type="button"
+>
+    🟠 PENDING
+</button>
 
-            <button
-                class="tab approved"
-                data-status="approved"
-                onclick="changeTab('approved')"
-                type="button"
-            >
-                🟢 APPROVED
-            </button>
+<button
+    class="tab processing"
+    data-status="processing"
+    onclick="changeTab('processing')"
+    type="button"
+>
+    🔵 PROCESSING
+</button>
 
-            <button
-                class="tab rejected"
-                data-status="rejected"
-                onclick="changeTab('rejected')"
-                type="button"
-            >
-                🔴 REJECTED
-            </button>
+<button
+    class="tab approved"
+    data-status="approved"
+    onclick="changeTab('approved')"
+    type="button"
+>
+    🟢 APPROVED
+</button>
+
+<button
+    class="tab rejected"
+    data-status="rejected"
+    onclick="changeTab('rejected')"
+    type="button"
+>
+    🔴 REJECTED
+</button>
 
         </div>
 
@@ -1294,16 +1312,18 @@ async function loadWithdrawals() {
                 `0 ${currentStatus} BTC withdrawal(s)`;
 
             container.innerHTML = `
-                <div class="empty">
-                    ${
-                        currentStatus === "pending"
-                            ? "✅ No pending BTC withdrawals."
-                            : currentStatus === "approved"
-                                ? "📭 No approved BTC withdrawals."
-                                : "📭 No rejected BTC withdrawals."
-                    }
-                </div>
-            `;
+    <div class="empty">
+        ${
+            currentStatus === "pending"
+                ? "✅ No pending BTC withdrawals."
+                : currentStatus === "processing"
+                    ? "🔵 No processing BTC withdrawals."
+                    : currentStatus === "approved"
+                        ? "📭 No approved BTC withdrawals."
+                        : "📭 No rejected BTC withdrawals."
+        }
+    </div>
+`;
 
             return;
         }
