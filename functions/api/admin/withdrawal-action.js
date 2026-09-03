@@ -141,17 +141,18 @@ export async function onRequestPost(context) {
 
 
         const session =
-            await context.env.DB
-                .prepare(
-                    `SELECT
-                        user_id,
-                        expires_at
-                     FROM sessions
-                     WHERE token_hash = ?
-                     LIMIT 1`
-                )
-                .bind(tokenHash)
-                .first();
+    await context.env.DB
+        .prepare(
+            `SELECT
+                user_id,
+                expires_at
+             FROM sessions
+             WHERE token_hash = ?
+               AND expires_at > CURRENT_TIMESTAMP
+             LIMIT 1`
+        )
+        .bind(tokenHash)
+        .first();
 
 
         if (!session) {
@@ -161,23 +162,6 @@ export async function onRequestPost(context) {
                     success: false,
                     error:
                         "Invalid session."
-                },
-                { status: 401 }
-            );
-        }
-
-
-        if (
-            !session.expires_at ||
-            new Date(session.expires_at) <=
-                new Date()
-        ) {
-
-            return Response.json(
-                {
-                    success: false,
-                    error:
-                        "Session expired."
                 },
                 { status: 401 }
             );
@@ -614,11 +598,14 @@ if (action === "reject") {
 
 
         console.log(
-            "FAUCETPAY RESPONSE:",
-            JSON.stringify(
-                faucetPayResult
-            )
-        );
+    "FAUCETPAY RESPONSE RECEIVED:",
+    JSON.stringify({
+        withdrawalId,
+        httpStatus: faucetPayResponse.status,
+        success:
+            faucetPayResult?.success === true
+    })
+);
 
 
         /* =====================================================
@@ -655,8 +642,6 @@ if (action === "reject") {
                 {
                     success: false,
                     error:
-                        faucetPayResult?.message ||
-                        faucetPayResult?.error ||
                         "FaucetPay payment failed. Withdrawal remains pending."
                 },
                 { status: 502 }
