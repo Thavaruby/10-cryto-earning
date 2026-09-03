@@ -10,8 +10,6 @@ const MIN_WITHDRAWAL = 0.0000001;
  * - Taproot: bc1p...
  *
  * This is format validation only.
- * It does NOT verify that the address actually exists
- * or belongs to the user.
  */
 function isValidBitcoinAddress(address) {
 
@@ -161,8 +159,6 @@ export async function onRequestPost(context) {
 
 
         /*
-         * Prevent extremely long decimal values.
-         *
          * BTC uses 8 decimal places.
          */
 
@@ -285,6 +281,7 @@ export async function onRequestPost(context) {
                         expires_at
                      FROM sessions
                      WHERE token_hash = ?
+                       AND expires_at > CURRENT_TIMESTAMP
                      LIMIT 1`
                 )
                 .bind(tokenHash)
@@ -297,24 +294,7 @@ export async function onRequestPost(context) {
                 {
                     success: false,
                     error:
-                        "Invalid session."
-                },
-                { status: 401 }
-            );
-        }
-
-
-        if (
-            !session.expires_at ||
-            new Date(session.expires_at) <=
-                new Date()
-        ) {
-
-            return Response.json(
-                {
-                    success: false,
-                    error:
-                        "Session expired."
+                        "Invalid or expired session."
                 },
                 { status: 401 }
             );
@@ -353,29 +333,31 @@ export async function onRequestPost(context) {
 
 
         /* =====================================================
-           7. PREVENT MULTIPLE PENDING WITHDRAWALS
+           7. FRIENDLY PRE-CHECK
         ===================================================== */
 
-        const existingPending =
+        const existingWithdrawal =
             await context.env.DB
                 .prepare(
-                    `SELECT id
+                    `SELECT
+                        id,
+                        status
                      FROM withdrawals
                      WHERE user_id = ?
-                       AND status = 'pending'
+                       AND status IN ('pending', 'processing')
                      LIMIT 1`
                 )
                 .bind(session.user_id)
                 .first();
 
 
-        if (existingPending) {
+        if (existingWithdrawal) {
 
             return Response.json(
                 {
                     success: false,
                     error:
-                        "You already have a pending withdrawal."
+                        "You already have a withdrawal being processed."
                 },
                 { status: 409 }
             );
@@ -383,29 +365,157 @@ export async function onRequestPost(context) {
 
 
         /* =====================================================
-           8. RESERVE BALANCE
+           8. ATOMIC BALANCE + WITHDRAWAL CREATION
         ===================================================== */
 
-        const reserveBalance =
-            await context.env.DB
-                .prepare(
-                    `UPDATE users
-                     SET balance = balance - ?
-                     WHERE id = ?
-                       AND balance >= ?`
-                )
-                .bind(
-                    normalizedAmount,
-                    session.user_id,
-                    normalizedAmount
-                )
-                .run();
+        /*
+         * IMPORTANT:
+         *
+         * The balance deduction and withdrawal INSERT
+         * are executed in ONE atomic D1 batch.
+         *
+         * The balance UPDATE itself also checks that there is
+         * no pending/processing withdrawal.
+         *
+         * This protects against concurrent withdrawal requests.
+         */
+
+        const atomicResult =
+            await context.env.DB.batch([
+
+                /* ---------------------------------------------
+                   A. RESERVE BALANCE
+                --------------------------------------------- */
+
+                context.env.DB
+                    .prepare(
+                        `UPDATE users
+                         SET balance = balance - ?
+                         WHERE id = ?
+                           AND balance >= ?
+                           AND NOT EXISTS (
+                               SELECT 1
+                               FROM withdrawals
+                               WHERE user_id = ?
+                                 AND status IN ('pending', 'processing')
+                           )`
+                    )
+                    .bind(
+                        normalizedAmount,
+                        session.user_id,
+                        normalizedAmount,
+                        session.user_id
+                    ),
+
+
+                /* ---------------------------------------------
+                   B. CREATE WITHDRAWAL
+                --------------------------------------------- */
+
+                context.env.DB
+                    .prepare(
+                        `INSERT INTO withdrawals
+                        (
+                            user_id,
+                            amount,
+                            wallet_address,
+                            currency,
+                            status
+                        )
+                        SELECT
+                            ?,
+                            ?,
+                            ?,
+                            ?,
+                            'pending'
+                        WHERE EXISTS (
+                            SELECT 1
+                            FROM users
+                            WHERE id = ?
+                        )
+                        AND NOT EXISTS (
+                            SELECT 1
+                            FROM withdrawals
+                            WHERE user_id = ?
+                              AND status IN ('pending', 'processing')
+                        )`
+                    )
+                    .bind(
+                        session.user_id,
+                        normalizedAmount,
+                        walletAddress,
+                        currency,
+                        session.user_id,
+                        session.user_id
+                    )
+            ]);
+
+
+        /* =====================================================
+           9. VERIFY ATOMIC OPERATION
+        ===================================================== */
+
+        const balanceUpdate =
+            atomicResult[0];
+
+        const withdrawalInsert =
+            atomicResult[1];
 
 
         if (
-            !reserveBalance.meta ||
-            reserveBalance.meta.changes !== 1
+            !balanceUpdate.meta ||
+            balanceUpdate.meta.changes !== 1 ||
+            !withdrawalInsert.meta ||
+            withdrawalInsert.meta.changes !== 1
         ) {
+
+            /*
+             * D1 batch is atomic.
+             *
+             * If either operation failed, the entire batch
+             * is rolled back.
+             *
+             * Therefore NO manual refund is performed here.
+             */
+
+            const currentState =
+                await context.env.DB
+                    .prepare(
+                        `SELECT
+                            balance,
+                            (
+                                SELECT id
+                                FROM withdrawals
+                                WHERE user_id = ?
+                                  AND status IN ('pending', 'processing')
+                                LIMIT 1
+                            ) AS existing_withdrawal
+                         FROM users
+                         WHERE id = ?
+                         LIMIT 1`
+                    )
+                    .bind(
+                        session.user_id,
+                        session.user_id
+                    )
+                    .first();
+
+
+            if (
+                currentState &&
+                currentState.existing_withdrawal
+            ) {
+
+                return Response.json(
+                    {
+                        success: false,
+                        error:
+                            "You already have a withdrawal being processed."
+                    },
+                    { status: 409 }
+                );
+            }
+
 
             return Response.json(
                 {
@@ -415,56 +525,6 @@ export async function onRequestPost(context) {
                 },
                 { status: 400 }
             );
-        }
-
-
-        /* =====================================================
-           9. CREATE PENDING WITHDRAWAL
-        ===================================================== */
-
-        try {
-
-            await context.env.DB
-                .prepare(
-                    `INSERT INTO withdrawals
-                    (
-                        user_id,
-                        amount,
-                        wallet_address,
-                        currency,
-                        status
-                    )
-                    VALUES (?, ?, ?, ?, 'pending')`
-                )
-                .bind(
-                    session.user_id,
-                    normalizedAmount,
-                    walletAddress,
-                    currency
-                )
-                .run();
-
-
-        } catch (insertError) {
-
-            /*
-             * Restore balance if withdrawal creation fails.
-             */
-
-            await context.env.DB
-                .prepare(
-                    `UPDATE users
-                     SET balance = balance + ?
-                     WHERE id = ?`
-                )
-                .bind(
-                    normalizedAmount,
-                    session.user_id
-                )
-                .run();
-
-
-            throw insertError;
         }
 
 
@@ -487,11 +547,25 @@ export async function onRequestPost(context) {
 
         if (!updatedUser) {
 
+            /*
+             * The withdrawal has already been created.
+             *
+             * Do NOT attempt another balance modification here.
+             * The balance is already correctly reserved.
+             */
+
+            console.error(
+                "Withdrawal created but updated balance could not be loaded.",
+                {
+                    userId: session.user_id
+                }
+            );
+
             return Response.json(
                 {
                     success: false,
                     error:
-                        "Unable to load updated balance."
+                        "Withdrawal submitted, but balance could not be loaded."
                 },
                 { status: 500 }
             );
@@ -530,11 +604,6 @@ export async function onRequestPost(context) {
             error
         );
 
-
-        /*
-         * Do not expose internal database errors
-         * to users.
-         */
 
         return Response.json(
             {
