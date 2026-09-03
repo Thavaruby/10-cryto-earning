@@ -269,113 +269,85 @@ export async function onRequestPost(context) {
             );
         }
 
+/* =====================================================
+   7. REJECT
+     
+   PENDING → REJECTED
+     
+   The database trigger automatically refunds
+   the reserved withdrawal amount to the user.
+     
+   Refund happens exactly once because the UPDATE
+   only succeeds when status is still 'pending'.
+===================================================== */
 
-        /* =====================================================
-           7. REJECT
-           
-           Atomic state change:
-           
-           PENDING → REJECTED
-           
-           Refund happens only when the withdrawal
-           is still pending.
-        ===================================================== */
+if (action === "reject") {
 
-        if (action === "reject") {
-
-            const result =
-                await context.env.DB.batch([
-
-                    context.env.DB
-                        .prepare(
-                            `UPDATE users
-                             SET balance =
-                                 balance + ?
-                             WHERE id = ?
-                               AND EXISTS (
-                                   SELECT 1
-                                   FROM withdrawals
-                                   WHERE id = ?
-                                     AND status = 'pending'
-                               )`
-                        )
-                        .bind(
-                            withdrawal.amount,
-                            withdrawal.user_id,
-                            withdrawalId
-                        ),
-
-                    context.env.DB
-                        .prepare(
-                            `UPDATE withdrawals
-                             SET
-                                status = 'rejected',
-                                processed_at =
-                                    CURRENT_TIMESTAMP
-                             WHERE id = ?
-                               AND status = 'pending'`
-                        )
-                        .bind(
-                            withdrawalId
-                        )
-                ]);
+    const result =
+        await context.env.DB
+            .prepare(
+                `UPDATE withdrawals
+                 SET
+                    status = 'rejected',
+                    processed_at = CURRENT_TIMESTAMP
+                 WHERE id = ?
+                   AND status = 'pending'`
+            )
+            .bind(withdrawalId)
+            .run();
 
 
-            if (
-                !result ||
-                !result[0] ||
-                !result[1] ||
-                result[0].meta.changes !== 1 ||
-                result[1].meta.changes !== 1
-            ) {
+    if (
+        !result ||
+        !result.meta ||
+        result.meta.changes !== 1
+    ) {
 
-                console.error(
-                    "Withdrawal rejection failed:",
-                    {
-                        withdrawalId
-                    }
-                );
-
-
-                return Response.json(
-                    {
-                        success: false,
-                        error:
-                            "Withdrawal was already processed or refund failed."
-                    },
-                    { status: 409 }
-                );
+        console.error(
+            "Withdrawal rejection failed or already processed:",
+            {
+                withdrawalId
             }
+        );
 
 
-            console.log(
-                "WITHDRAWAL REJECTED:",
-                JSON.stringify({
-                    withdrawalId,
-                    refunded:
-                        withdrawal.amount,
-                    userId:
-                        withdrawal.user_id
-                })
-            );
+        return Response.json(
+            {
+                success: false,
+                error:
+                    "Withdrawal was already processed or is being processed."
+            },
+            { status: 409 }
+        );
+    }
 
 
-            return Response.json({
+    console.log(
+        "WITHDRAWAL REJECTED:",
+        JSON.stringify({
+            withdrawalId,
+            refunded: withdrawal.amount,
+            userId: withdrawal.user_id
+        })
+    );
 
-                success: true,
 
-                status:
-                    "rejected",
+    return Response.json({
 
-                refunded:
-                    withdrawal.amount,
+        success: true,
 
-                currency:
-                    "BTC"
+        status:
+            "rejected",
 
-            });
-        }
+        refunded:
+            withdrawal.amount,
 
+        currency:
+            "BTC"
+
+    });
+}
+        
 
         /* =====================================================
            8. APPROVE
