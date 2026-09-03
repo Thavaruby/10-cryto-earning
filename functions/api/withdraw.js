@@ -452,125 +452,201 @@ export async function onRequestPost(context) {
 
 
         /* =====================================================
-           9. VERIFY ATOMIC OPERATION
-        ===================================================== */
+   9. VERIFY ATOMIC OPERATION
+===================================================== */
 
-        const balanceUpdate =
-            atomicResult[0];
+const balanceUpdate =
+    atomicResult[0];
 
-        const withdrawalInsert =
-            atomicResult[1];
-
-
-        if (
-            !balanceUpdate.meta ||
-            balanceUpdate.meta.changes !== 1 ||
-            !withdrawalInsert.meta ||
-            withdrawalInsert.meta.changes !== 1
-        ) {
-
-            /*
-             * D1 batch is atomic.
-             *
-             * If either operation failed, the entire batch
-             * is rolled back.
-             *
-             * Therefore NO manual refund is performed here.
-             */
-
-            const currentState =
-                await context.env.DB
-                    .prepare(
-                        `SELECT
-                            balance,
-                            (
-                                SELECT id
-                                FROM withdrawals
-                                WHERE user_id = ?
-                                  AND status IN ('pending', 'processing')
-                                LIMIT 1
-                            ) AS existing_withdrawal
-                         FROM users
-                         WHERE id = ?
-                         LIMIT 1`
-                    )
-                    .bind(
-                        session.user_id,
-                        session.user_id
-                    )
-                    .first();
+const withdrawalInsert =
+    atomicResult[1];
 
 
-            if (
-                currentState &&
-                currentState.existing_withdrawal
-            ) {
+/*
+ * D1 batch is atomic.
+ *
+ * If either operation did not make exactly one change,
+ * the batch is treated as unsuccessful.
+ *
+ * No manual refund is performed here.
+ */
 
-                return Response.json(
-                    {
-                        success: false,
-                        error:
-                            "You already have a withdrawal being processed."
-                    },
-                    { status: 409 }
-                );
+if (
+    !balanceUpdate.meta ||
+    balanceUpdate.meta.changes !== 1 ||
+    !withdrawalInsert.meta ||
+    withdrawalInsert.meta.changes !== 1
+) {
+
+    /*
+     * Check the current database state so that we can
+     * distinguish:
+     *
+     * 1. Existing pending/processing withdrawal
+     * 2. Insufficient balance
+     * 3. Unexpected database state
+     */
+
+    const currentState =
+        await context.env.DB
+            .prepare(
+                `SELECT
+                    balance,
+                    (
+                        SELECT id
+                        FROM withdrawals
+                        WHERE user_id = ?
+                          AND status IN ('pending', 'processing')
+                        LIMIT 1
+                    ) AS existing_withdrawal
+                 FROM users
+                 WHERE id = ?
+                 LIMIT 1`
+            )
+            .bind(
+                session.user_id,
+                session.user_id
+            )
+            .first();
+
+
+    /*
+     * User disappeared unexpectedly.
+     */
+
+    if (!currentState) {
+
+        console.error(
+            "Withdrawal atomic operation failed: user not found after batch.",
+            {
+                userId:
+                    session.user_id
             }
+        );
+
+        return Response.json(
+            {
+                success: false,
+                error:
+                    "Unable to process withdrawal request."
+            },
+            { status: 500 }
+        );
+    }
 
 
-            return Response.json(
-                {
-                    success: false,
-                    error:
-                        "Insufficient BTC balance."
-                },
-                { status: 400 }
-            );
+    /*
+     * Another withdrawal is already pending/processing.
+     */
+
+    if (
+        currentState.existing_withdrawal
+    ) {
+
+        return Response.json(
+            {
+                success: false,
+                error:
+                    "You already have a withdrawal being processed."
+            },
+            { status: 409 }
+        );
+    }
+
+
+    /*
+     * Balance is insufficient.
+     */
+
+    if (
+        Number(currentState.balance) <
+        normalizedAmount
+    ) {
+
+        return Response.json(
+            {
+                success: false,
+                error:
+                    "Insufficient BTC balance."
+            },
+            { status: 400 }
+        );
+    }
+
+
+    /*
+     * If balance is sufficient but the atomic operation
+     * still failed, this is an unexpected database error.
+     */
+
+    console.error(
+        "Withdrawal atomic operation failed unexpectedly.",
+        {
+            userId:
+                session.user_id,
+
+            amount:
+                normalizedAmount,
+
+            balance:
+                currentState.balance
         }
+    );
 
 
-        /* =====================================================
-           10. GET UPDATED BALANCE
-        ===================================================== */
-
-        const updatedUser =
-            await context.env.DB
-                .prepare(
-                    `SELECT
-                        balance
-                     FROM users
-                     WHERE id = ?
-                     LIMIT 1`
-                )
-                .bind(session.user_id)
-                .first();
+    return Response.json(
+        {
+            success: false,
+            error:
+                "Unable to process withdrawal request."
+        },
+        { status: 500 }
+    );
+}
 
 
-        if (!updatedUser) {
+/* =====================================================
+   10. GET UPDATED BALANCE
+===================================================== */
 
-            /*
-             * The withdrawal has already been created.
-             *
-             * Do NOT attempt another balance modification here.
-             * The balance is already correctly reserved.
-             */
+const updatedUser =
+    await context.env.DB
+        .prepare(
+            `SELECT
+                balance
+             FROM users
+             WHERE id = ?
+             LIMIT 1`
+        )
+        .bind(session.user_id)
+        .first();
 
-            console.error(
-                "Withdrawal created but updated balance could not be loaded.",
-                {
-                    userId: session.user_id
-                }
-            );
 
-            return Response.json(
-                {
-                    success: false,
-                    error:
-                        "Withdrawal submitted, but balance could not be loaded."
-                },
-                { status: 500 }
-            );
+if (!updatedUser) {
+
+    /*
+     * Withdrawal was already created successfully.
+     *
+     * Do NOT modify the balance again.
+     */
+
+    console.error(
+        "Withdrawal created but updated balance could not be loaded.",
+        {
+            userId:
+                session.user_id
         }
+    );
 
+    return Response.json(
+        {
+            success: false,
+            error:
+                "Your withdrawal was submitted successfully. Please check your balance again shortly."
+        },
+        { status: 500 }
+    );
+}
 
         /* =====================================================
            11. SUCCESS
