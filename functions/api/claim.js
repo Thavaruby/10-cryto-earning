@@ -1,13 +1,18 @@
 const REWARD = 0.00000001;
 const COOLDOWN_SECONDS = 60 * 60;
 
+
 function getCookie(request, name) {
-    const cookieHeader = request.headers.get("Cookie");
+
+    const cookieHeader =
+        request.headers.get("Cookie");
 
     if (!cookieHeader) return null;
 
     for (const cookie of cookieHeader.split(";")) {
-        const [key, ...value] = cookie.trim().split("=");
+
+        const [key, ...value] =
+            cookie.trim().split("=");
 
         if (key === name) {
             return value.join("=");
@@ -17,18 +22,30 @@ function getCookie(request, name) {
     return null;
 }
 
+
 async function hashSessionToken(token) {
-    const data = new TextEncoder().encode(token);
 
-    const hash = await crypto.subtle.digest(
-        "SHA-256",
-        data
-    );
+    const data =
+        new TextEncoder().encode(token);
 
-    return Array.from(new Uint8Array(hash))
-        .map(byte => byte.toString(16).padStart(2, "0"))
+    const hash =
+        await crypto.subtle.digest(
+            "SHA-256",
+            data
+        );
+
+    return Array.from(
+        new Uint8Array(hash)
+    )
+        .map(
+            byte =>
+                byte
+                    .toString(16)
+                    .padStart(2, "0")
+        )
         .join("");
 }
+
 
 export async function onRequestPost(context) {
 
@@ -41,8 +58,12 @@ export async function onRequestPost(context) {
         let data;
 
         try {
-            data = await context.request.json();
+
+            data =
+                await context.request.json();
+
         } catch {
+
             return Response.json(
                 {
                     success: false,
@@ -52,14 +73,20 @@ export async function onRequestPost(context) {
             );
         }
 
+
         const turnstileToken =
-            String(data.turnstileToken || "");
+            String(
+                data.turnstileToken || ""
+            );
+
 
         if (!turnstileToken) {
+
             return Response.json(
                 {
                     success: false,
-                    error: "Please complete verification."
+                    error:
+                        "Please complete verification."
                 },
                 { status: 400 }
             );
@@ -76,15 +103,19 @@ export async function onRequestPost(context) {
                 "session"
             );
 
+
         if (!sessionToken) {
+
             return Response.json(
                 {
                     success: false,
-                    error: "Please login first."
+                    error:
+                        "Please login first."
                 },
                 { status: 401 }
             );
         }
+
 
         const tokenHash =
             await hashSessionToken(
@@ -104,29 +135,20 @@ export async function onRequestPost(context) {
                         expires_at
                      FROM sessions
                      WHERE token_hash = ?
+                       AND expires_at > CURRENT_TIMESTAMP
                      LIMIT 1`
                 )
                 .bind(tokenHash)
                 .first();
 
-        if (!session) {
-            return Response.json(
-                {
-                    success: false,
-                    error: "Invalid session."
-                },
-                { status: 401 }
-            );
-        }
 
-        if (
-            !session.expires_at ||
-            new Date(session.expires_at) <= new Date()
-        ) {
+        if (!session) {
+
             return Response.json(
                 {
                     success: false,
-                    error: "Session expired."
+                    error:
+                        "Invalid or expired session."
                 },
                 { status: 401 }
             );
@@ -150,6 +172,7 @@ export async function onRequestPost(context) {
 
                     body:
                         new URLSearchParams({
+
                             secret:
                                 context.env.TURNSTILE_SECRET,
 
@@ -159,24 +182,31 @@ export async function onRequestPost(context) {
                 }
             );
 
+
         if (!verifyResponse.ok) {
+
             return Response.json(
                 {
                     success: false,
-                    error: "Verification service unavailable."
+                    error:
+                        "Verification service unavailable."
                 },
                 { status: 503 }
             );
         }
 
+
         const verifyResult =
             await verifyResponse.json();
 
+
         if (!verifyResult.success) {
+
             return Response.json(
                 {
                     success: false,
-                    error: "Verification failed."
+                    error:
+                        "Verification failed."
                 },
                 { status: 400 }
             );
@@ -184,14 +214,17 @@ export async function onRequestPost(context) {
 
 
         /* =====================================================
-           5. ATOMIC COOLDOWN + CLAIM
+           5. ATOMIC CLAIM
            
-           IMPORTANT:
-           The cooldown condition is checked inside the
-           INSERT statement itself.
-
-           This prevents two simultaneous requests from
-           both passing the cooldown check.
+           INSERT claim only.
+           
+           The database trigger:
+           
+           claims INSERT
+                ↓
+           users.balance + reward
+           
+           This keeps the claim and balance update together.
         ===================================================== */
 
         const claimResult =
@@ -243,8 +276,10 @@ export async function onRequestPost(context) {
                     .bind(session.user_id)
                     .first();
 
+
             let remainingSeconds =
                 COOLDOWN_SECONDS;
+
 
             if (lastClaim?.claimed_at) {
 
@@ -253,34 +288,47 @@ export async function onRequestPost(context) {
                         lastClaim.claimed_at
                     ).getTime();
 
+
                 const elapsed =
                     Math.floor(
-                        (Date.now() - lastTime) / 1000
+                        (
+                            Date.now() -
+                            lastTime
+                        ) / 1000
                     );
+
 
                 remainingSeconds =
                     Math.max(
                         0,
-                        COOLDOWN_SECONDS - elapsed
+                        COOLDOWN_SECONDS -
+                        elapsed
                     );
             }
+
 
             const hours =
                 Math.floor(
                     remainingSeconds / 3600
                 );
 
+
             const minutes =
                 Math.floor(
-                    (remainingSeconds % 3600) / 60
+                    (
+                        remainingSeconds % 3600
+                    ) / 60
                 );
+
 
             const seconds =
                 remainingSeconds % 60;
 
+
             return Response.json(
                 {
                     success: false,
+
                     error:
                         `Please wait ${hours}h ${minutes}m ${seconds}s before claiming again.`
                 },
@@ -290,53 +338,14 @@ export async function onRequestPost(context) {
 
 
         /* =====================================================
-           7. ADD REWARD TO BALANCE
-        ===================================================== */
-
-        const balanceResult =
-            await context.env.DB
-                .prepare(
-                    `UPDATE users
-                     SET balance = balance + ?
-                     WHERE id = ?`
-                )
-                .bind(
-                    REWARD,
-                    session.user_id
-                )
-                .run();
-
-        if (
-            !balanceResult.meta ||
-            balanceResult.meta.changes !== 1
-        ) {
-
-            /*
-             * This should normally never happen.
-             * If the user disappeared between operations,
-             * return an error instead of pretending the
-             * claim was successful.
-             */
-
-            return Response.json(
-                {
-                    success: false,
-                    error:
-                        "Unable to update account balance."
-                },
-                { status: 500 }
-            );
-        }
-
-
-        /* =====================================================
-           8. GET UPDATED BALANCE
+           7. GET UPDATED BALANCE
         ===================================================== */
 
         const updatedUser =
             await context.env.DB
                 .prepare(
-                    `SELECT balance
+                    `SELECT
+                        balance
                      FROM users
                      WHERE id = ?
                      LIMIT 1`
@@ -344,7 +353,18 @@ export async function onRequestPost(context) {
                 .bind(session.user_id)
                 .first();
 
+
         if (!updatedUser) {
+
+            console.error(
+                "Claim created but user balance could not be loaded.",
+                {
+                    userId:
+                        session.user_id
+                }
+            );
+
+
             return Response.json(
                 {
                     success: false,
@@ -357,15 +377,21 @@ export async function onRequestPost(context) {
 
 
         /* =====================================================
-           9. SUCCESS
+           8. SUCCESS
         ===================================================== */
 
         return Response.json({
+
             success: true,
+
             message:
                 "Reward claimed successfully!",
-            reward: REWARD,
-            balance: updatedUser.balance
+
+            reward:
+                REWARD,
+
+            balance:
+                updatedUser.balance
         });
 
 
@@ -375,6 +401,7 @@ export async function onRequestPost(context) {
             "Claim error:",
             error
         );
+
 
         return Response.json(
             {
