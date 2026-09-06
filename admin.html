@@ -834,17 +834,6 @@
                 🔄 REFRESH
             </button>
 
-
-            <button
-    id="duplicateTestButton"
-    onclick="testDuplicateApprove()"
-    type="button"
-    style="background:#7c3aed;color:white;"
->
-    🧪 TEST DUPLICATE #34
-</button>
-
-
         </div>
 
 
@@ -1772,119 +1761,6 @@ function closeModal() {
     selectedAction = null;
 
 }
-/* =========================================================
-   TEMPORARY DUPLICATE PAYOUT TEST
-========================================================= */
-
-async function testDuplicateApprove() {
-
-    const button =
-        document.getElementById(
-            "duplicateTestButton"
-        );
-
-    const message =
-        document.getElementById(
-            "message"
-        );
-
-    button.disabled = true;
-
-    message.innerText =
-        "🧪 Testing duplicate approve for withdrawal #34...";
-
-    try {
-
-        const response =
-            await fetch(
-                "/api/admin/withdrawal-action",
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    credentials:
-                        "same-origin",
-
-                    body: JSON.stringify({
-                        withdrawalId: 34,
-                        action: "approve"
-                    })
-                }
-            );
-
-
-        const result =
-            await response.json();
-
-
-        console.log(
-            "Duplicate test:",
-            response.status,
-            result
-        );
-
-
-        if (
-            response.status === 409 &&
-            !result.success
-        ) {
-
-            message.innerText =
-                "✅ PASS — Duplicate payout was blocked. Withdrawal #34 is already processed.";
-
-            alert(
-                "✅ DUPLICATE PAYOUT TEST: PASS\n\n" +
-                "HTTP Status: 409\n" +
-                "Withdrawal #34 was already processed.\n\n" +
-                "No second payout was sent."
-            );
-
-        } else {
-
-            message.innerText =
-                "❌ FAIL — Unexpected response.";
-
-            alert(
-                "❌ DUPLICATE PAYOUT TEST: FAIL\n\n" +
-                "HTTP Status: " +
-                response.status +
-                "\n\n" +
-                JSON.stringify(
-                    result,
-                    null,
-                    2
-                )
-            );
-
-        }
-
-
-    } catch (error) {
-
-        console.error(
-            "Duplicate test error:",
-            error
-        );
-
-        message.innerText =
-            "❌ Test connection error.";
-
-        alert(
-            "❌ TEST ERROR\n\n" +
-            error.message
-        );
-
-    } finally {
-
-        button.disabled = false;
-
-    }
-
-    }
 
 /* =========================================================
    CONFIRM WITHDRAWAL ACTION
