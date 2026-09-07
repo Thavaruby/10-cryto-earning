@@ -635,6 +635,34 @@
             </div>
 
 
+            <!-- PROCESSING -->
+
+<div class="stat-card">
+
+    <div class="stat-icon">
+        🔵
+    </div>
+
+    <div class="stat-title">
+        Processing Withdrawals
+    </div>
+
+    <div
+        class="stat-value"
+        id="processingWithdrawals"
+    >
+        —
+    </div>
+
+    <div
+        class="stat-sub"
+        id="processingAmount"
+    >
+        —
+    </div>
+
+</div>
+
             <!-- APPROVED -->
 
             <div class="stat-card">
@@ -1132,6 +1160,21 @@ async function loadStats() {
                 result.withdrawals?.pendingAmount
             ) + " BTC pending";
 
+
+    document.getElementById(
+    "processingWithdrawals"
+).innerText =
+    Number(
+        result.withdrawals?.processing || 0
+    ).toLocaleString();
+
+
+document.getElementById(
+    "processingAmount"
+).innerText =
+    formatBTC(
+        result.withdrawals?.processingAmount
+    ) + " BTC processing";
 
         document.getElementById(
             "approvedWithdrawals"
