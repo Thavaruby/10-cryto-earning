@@ -98,14 +98,20 @@ export async function onRequestGet(context) {
             claims: claims.results
         });
 
-    } catch (error) {
+        } catch (error) {
+
+        console.error(
+            "Claims history error:",
+            error
+        );
 
         return Response.json(
             {
                 success: false,
-                error: error.message
+                error: "Unable to load claim history."
             },
             { status: 500 }
         );
     }
+}
 }
