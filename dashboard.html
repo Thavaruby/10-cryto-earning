@@ -2510,42 +2510,36 @@ async function claimReward() {
 
         const result =
             await response.json();
-alert(
-    "CLAIM API RESULT:\n" +
-    JSON.stringify(result, null, 2)
-);
 
         if (result.success) {
 
-
-            document.getElementById(
-                "balance"
-            ).innerText =
-                formatBTC(
-                    result.balance
-                );
+    /*
+     * Refresh user balance immediately
+     * from the server after successful claim
+     */
+    await loadUser();
 
 
-            showActionNotification(
-                "claimNotification",
+    showActionNotification(
+        "claimNotification",
 
-                "✅ Reward claimed: " +
-                formatBTC(result.reward) +
-                " BTC",
+        "✅ Reward claimed: " +
+        formatBTC(result.reward) +
+        " BTC",
 
-                "success"
-            );
-
-
-            startClaimCountdown(
-                3600
-            );
+        "success"
+    );
 
 
-            turnstile.reset();
+    startClaimCountdown(
+        3600
+    );
 
 
-        } else {
+    turnstile.reset();
+
+
+} else {
 
 
             showActionNotification(
