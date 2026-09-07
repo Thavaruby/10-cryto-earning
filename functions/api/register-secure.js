@@ -112,12 +112,17 @@ export async function onRequestPost(context) {
 
     } catch (error) {
 
-        return Response.json(
-            {
-                success: false,
-                error: error.message
-            },
-            { status: 500 }
-        );
-    }
+    console.error(
+        "Secure registration error:",
+        error
+    );
+
+    return Response.json(
+        {
+            success: false,
+            error: "Unable to create account."
+        },
+        { status: 500 }
+    );
+}
 }
