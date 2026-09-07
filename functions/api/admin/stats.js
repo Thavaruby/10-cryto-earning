@@ -152,6 +152,24 @@ export async function onRequestGet(context) {
           END
         ) AS pending_count,
 
+SUM(
+  CASE
+    WHEN status = 'processing'
+    THEN 1
+    ELSE 0
+  END
+) AS processing_count,
+
+COALESCE(
+  SUM(
+    CASE
+      WHEN status = 'processing'
+      THEN amount
+      ELSE 0
+    END
+  ),
+  0
+) AS processing_amount,
         SUM(
           CASE
             WHEN status = 'approved'
@@ -240,6 +258,14 @@ export async function onRequestGet(context) {
           withdrawals?.pending_amount || 0
         ),
 
+processing: Number(
+  withdrawals?.processing_count || 0
+),
+
+processingAmount: Number(
+  withdrawals?.processing_amount || 0
+),
+        
         approved: Number(
           withdrawals?.approved_count || 0
         ),
