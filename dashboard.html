@@ -2510,7 +2510,10 @@ async function claimReward() {
 
         const result =
             await response.json();
-
+alert(
+    "CLAIM API RESULT:\n" +
+    JSON.stringify(result, null, 2)
+);
 
         if (result.success) {
 
