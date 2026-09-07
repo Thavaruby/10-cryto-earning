@@ -108,12 +108,13 @@ export async function onRequestGet(context) {
 
     } catch (error) {
 
-        return Response.json(
-            {
-                success: false,
-                error: error.message
-            },
-            { status: 500 }
-        );
-    }
+    console.error("Me endpoint error:", error);
+
+    return Response.json(
+        {
+            success: false,
+            error: "Unable to load account."
+        },
+        { status: 500 }
+    );
 }
