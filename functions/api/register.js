@@ -44,12 +44,17 @@ export async function onRequestPost(context) {
 
     } catch (error) {
 
-        return Response.json(
-            {
-                success: false,
-                error: error.message
-            },
-            { status: 500 }
-        );
-    }
+    console.error(
+        "Registration error:",
+        error
+    );
+
+    return Response.json(
+        {
+            success: false,
+            error: "Unable to create account."
+        },
+        { status: 500 }
+    );
+}
 }
