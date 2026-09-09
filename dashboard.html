@@ -2429,7 +2429,6 @@ async function logout() {
     }
 }
 
-
 /* =====================================================
    CLAIM REWARD
 ===================================================== */
@@ -2439,15 +2438,17 @@ async function claimReward() {
     const button =
         document.getElementById("claimButton");
 
-    const notification =
-        document.getElementById("claimNotification");
+    const balanceElement =
+        document.getElementById("balance");
 
-    /* Prevent double click */
+
     if (button.disabled) {
         return;
     }
 
+
     button.disabled = true;
+
 
     showActionNotification(
         "claimNotification",
@@ -2455,14 +2456,16 @@ async function claimReward() {
         "info"
     );
 
+
     try {
 
         /* =================================================
-           1. TURNSTILE
+           CAPTCHA
         ================================================= */
 
         const turnstileToken =
             turnstile.getResponse();
+
 
         if (!turnstileToken) {
 
@@ -2479,7 +2482,7 @@ async function claimReward() {
 
 
         /* =================================================
-           2. CLAIM API
+           CLAIM
         ================================================= */
 
         const response =
@@ -2511,75 +2514,106 @@ async function claimReward() {
 
 
         /* =================================================
-           3. SUCCESS
+           SUCCESS
         ================================================= */
 
         if (response.ok && result.success) {
 
             /*
-             * IMPORTANT
+             * The reward is fixed:
              *
-             * The server already calculated the real
-             * database balance.
+             * 0.00000001 BTC
              *
-             * Do NOT calculate the balance in JavaScript.
+             * Read the CURRENT displayed balance correctly.
+             *
+             * Example:
+             * ₿ 0.00000012 BTC
              */
 
-            const balanceElement =
-                document.getElementById("balance");
+            const displayedText =
+                balanceElement.textContent || "";
 
+
+            const currentBalance =
+                Number(
+                    displayedText
+                        .replace("₿", "")
+                        .replace("BTC", "")
+                        .trim()
+                );
+
+
+            const reward =
+                Number(result.reward);
+
+
+            /*
+             * Calculate the next displayed balance.
+             *
+             * This is ONLY for immediate UI display.
+             * The database remains the source of truth.
+             */
 
             if (
-                balanceElement &&
-                result.balance !== undefined &&
-                result.balance !== null
+                Number.isFinite(currentBalance) &&
+                Number.isFinite(reward)
             ) {
 
+                const newBalance =
+                    currentBalance + reward;
+
+
                 balanceElement.textContent =
-                    formatBTC(result.balance);
+                    formatBTC(newBalance);
 
             }
 
 
-            /* Success message */
+            /* =================================================
+               SUCCESS MESSAGE
+            ================================================= */
 
             showActionNotification(
                 "claimNotification",
 
                 "✅ Reward claimed: " +
-                formatBTC(result.reward) +
+                formatBTC(reward) +
                 " BTC",
 
                 "success"
             );
 
 
-            /* Start 1 hour cooldown */
+            /* =================================================
+               COOLDOWN
+            ================================================= */
 
             startClaimCountdown(
                 3600
             );
 
 
-            /* Reset CAPTCHA */
+            /* =================================================
+               RESET CAPTCHA
+            ================================================= */
 
             if (
                 typeof turnstile !== "undefined" &&
-                turnstile.reset
+                typeof turnstile.reset === "function"
             ) {
 
                 turnstile.reset();
 
             }
 
+
             /*
              * IMPORTANT:
              *
-             * Do NOT call loadUser() here.
+             * DO NOT call loadUser() here.
              *
-             * Do NOT calculate currentBalance + reward.
-             *
-             * The server response is the source of truth.
+             * It can overwrite the freshly displayed
+             * balance with an older response.
              */
 
             return;
@@ -2587,7 +2621,7 @@ async function claimReward() {
 
 
         /* =================================================
-           4. CLAIM FAILED
+           FAILED
         ================================================= */
 
         showActionNotification(
@@ -2604,7 +2638,7 @@ async function claimReward() {
 
 
         /* =================================================
-           5. COOLDOWN ERROR
+           COOLDOWN ERROR
         ================================================= */
 
         if (
@@ -2635,18 +2669,10 @@ async function claimReward() {
                     Number(match[3]);
 
 
-                const totalSeconds =
-                    (
-                        hours * 3600
-                    ) +
-                    (
-                        minutes * 60
-                    ) +
-                    seconds;
-
-
                 startClaimCountdown(
-                    totalSeconds
+                    hours * 3600 +
+                    minutes * 60 +
+                    seconds
                 );
 
             }
@@ -2654,22 +2680,15 @@ async function claimReward() {
         }
 
 
-        /* Reset CAPTCHA */
-
         if (
             typeof turnstile !== "undefined" &&
-            turnstile.reset
+            typeof turnstile.reset === "function"
         ) {
 
             turnstile.reset();
 
         }
 
-
-        /*
-         * If claim failed for another reason,
-         * allow user to try again.
-         */
 
         if (
             response.status !== 429
@@ -2699,7 +2718,7 @@ async function claimReward() {
 
         if (
             typeof turnstile !== "undefined" &&
-            turnstile.reset
+            typeof turnstile.reset === "function"
         ) {
 
             turnstile.reset();
@@ -2708,10 +2727,8 @@ async function claimReward() {
 
 
         button.disabled = false;
-
     }
 }
-
 
 /* =====================================================
    WITHDRAW
