@@ -2185,43 +2185,27 @@ function showActionNotification(
 ===================================================== */
 
 async function loadUser() {
-
     try {
+        const response = await fetch("/api/me", {
+            method: "GET",
+            cache: "no-store"
+        });
 
-        const response =
-            await fetch("/api/me");
-
-        const result =
-            await response.json();
-
+        const result = await response.json();
 
         if (!result.success) {
-
-            window.location.href =
-                "/login.html";
-
+            window.location.href = "/login.html";
             return;
         }
 
-
-        document.getElementById("email")
-            .innerText =
+        document.getElementById("email").innerText =
             result.user.email;
 
-
-        document.getElementById("balance")
-            .innerText =
-            formatBTC(
-                result.user.balance
-            );
-
+        document.getElementById("balance").innerText =
+            formatBTC(result.user.balance);
 
     } catch (error) {
-
-        console.error(
-            "Load user error:",
-            error
-        );
+        console.error("Load user error:", error);
 
         showNotification(
             "❌ Unable to load account.",
@@ -2513,20 +2497,32 @@ async function claimReward() {
 
         if (result.success) {
 
-    console.log("CLAIM API RESULT:", result);
-    console.log("CLAIM BALANCE:", result.balance);
-    console.log(
-        "BALANCE ELEMENT:",
-        document.getElementById("balance")
-    );
+    const balanceElement =
+        document.getElementById("balance");
 
-    document.getElementById("balance").innerText =
-        formatBTC(result.balance);
+    // Current displayed balance
+    const currentBalance =
+        Number(
+            balanceElement.innerText
+                .replace("BTC", "")
+                .trim()
+        ) || 0;
+
+    // Reward returned by server
+    const reward =
+        Number(result.reward) || 0;
+
+    // Immediately update UI
+    const newBalance =
+        currentBalance + reward;
+
+    balanceElement.innerText =
+        formatBTC(newBalance);
 
     showActionNotification(
         "claimNotification",
         "✅ Reward claimed: " +
-        formatBTC(result.reward) +
+        formatBTC(reward) +
         " BTC",
         "success"
     );
@@ -2534,8 +2530,13 @@ async function claimReward() {
     startClaimCountdown(3600);
 
     turnstile.reset();
-} else {
 
+    // Sync with the real database balance
+    setTimeout(async () => {
+        await loadUser();
+    }, 1000);
+
+} else {
 
             showActionNotification(
                 "claimNotification",
