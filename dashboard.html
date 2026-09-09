@@ -2513,7 +2513,13 @@ async function claimReward() {
 
         if (result.success) {
 
-    // Update balance immediately from claim API response
+    console.log("CLAIM API RESULT:", result);
+    console.log("CLAIM BALANCE:", result.balance);
+    console.log(
+        "BALANCE ELEMENT:",
+        document.getElementById("balance")
+    );
+
     document.getElementById("balance").innerText =
         formatBTC(result.balance);
 
@@ -2528,8 +2534,6 @@ async function claimReward() {
     startClaimCountdown(3600);
 
     turnstile.reset();
-
-
 } else {
 
 
