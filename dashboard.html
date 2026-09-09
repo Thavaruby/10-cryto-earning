@@ -2513,28 +2513,19 @@ async function claimReward() {
 
         if (result.success) {
 
-    /*
-     * Refresh user balance immediately
-     * from the server after successful claim
-     */
-    await loadUser();
-
+    // Update balance immediately from claim API response
+    document.getElementById("balance").innerText =
+        formatBTC(result.balance);
 
     showActionNotification(
         "claimNotification",
-
         "✅ Reward claimed: " +
         formatBTC(result.reward) +
         " BTC",
-
         "success"
     );
 
-
-    startClaimCountdown(
-        3600
-    );
-
+    startClaimCountdown(3600);
 
     turnstile.reset();
 
