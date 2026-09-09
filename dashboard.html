@@ -2317,10 +2317,13 @@ async function loadClaimCooldown() {
     try {
 
         const response =
-            await fetch(
-                "/api/claim-status"
-            );
-
+            await fetch("/api/claim-status", {
+    method: "GET",
+    cache: "no-store",
+    headers: {
+        "Cache-Control": "no-cache"
+    }
+})
 
         const result =
             await response.json();
@@ -2434,14 +2437,17 @@ async function logout() {
 async function claimReward() {
 
     const button =
-        document.getElementById(
-            "claimButton"
-        );
+        document.getElementById("claimButton");
 
+    const notification =
+        document.getElementById("claimNotification");
 
-    button.disabled =
-        true;
+    /* Prevent double click */
+    if (button.disabled) {
+        return;
+    }
 
+    button.disabled = true;
 
     showActionNotification(
         "claimNotification",
@@ -2449,12 +2455,14 @@ async function claimReward() {
         "info"
     );
 
-
     try {
+
+        /* =================================================
+           1. TURNSTILE
+        ================================================= */
 
         const turnstileToken =
             turnstile.getResponse();
-
 
         if (!turnstileToken) {
 
@@ -2464,14 +2472,15 @@ async function claimReward() {
                 "error"
             );
 
-
-            button.disabled =
-                false;
-
+            button.disabled = false;
 
             return;
         }
 
+
+        /* =================================================
+           2. CLAIM API
+        ================================================= */
 
         const response =
             await fetch(
@@ -2479,9 +2488,14 @@ async function claimReward() {
                 {
                     method: "POST",
 
+                    cache: "no-store",
+
                     headers: {
                         "Content-Type":
-                            "application/json"
+                            "application/json",
+
+                        "Cache-Control":
+                            "no-cache"
                     },
 
                     body: JSON.stringify({
@@ -2495,95 +2509,174 @@ async function claimReward() {
         const result =
             await response.json();
 
-        if (result.success) {
 
-    const balanceElement =
-        document.getElementById("balance");
+        /* =================================================
+           3. SUCCESS
+        ================================================= */
 
-    // Current displayed balance
-    const currentBalance =
-        Number(
-            balanceElement.innerText
-                .replace("BTC", "")
-                .trim()
-        ) || 0;
+        if (response.ok && result.success) {
 
-    // Reward returned by server
-    const reward =
-        Number(result.reward) || 0;
+            /*
+             * IMPORTANT
+             *
+             * The server already calculated the real
+             * database balance.
+             *
+             * Do NOT calculate the balance in JavaScript.
+             */
 
-    // Immediately update UI
-    const newBalance =
-        currentBalance + reward;
+            const balanceElement =
+                document.getElementById("balance");
 
-    balanceElement.innerText =
-        formatBTC(newBalance);
 
-    showActionNotification(
-        "claimNotification",
-        "✅ Reward claimed: " +
-        formatBTC(reward) +
-        " BTC",
-        "success"
-    );
+            if (
+                balanceElement &&
+                result.balance !== undefined &&
+                result.balance !== null
+            ) {
 
-    startClaimCountdown(3600);
+                balanceElement.textContent =
+                    formatBTC(result.balance);
 
-    turnstile.reset();
+            }
 
-    // Sync with the real database balance
-    setTimeout(async () => {
-        await loadUser();
-    }, 1000);
 
-} else {
+            /* Success message */
 
             showActionNotification(
                 "claimNotification",
 
-                "❌ " +
-                result.error,
+                "✅ Reward claimed: " +
+                formatBTC(result.reward) +
+                " BTC",
 
-                "error"
+                "success"
             );
 
 
+            /* Start 1 hour cooldown */
+
+            startClaimCountdown(
+                3600
+            );
+
+
+            /* Reset CAPTCHA */
+
             if (
-                response.status === 429
+                typeof turnstile !== "undefined" &&
+                turnstile.reset
             ) {
 
-                const match =
-                    result.error.match(
-                        /(\d+)h\s+(\d+)m\s+(\d+)s/
-                    );
+                turnstile.reset();
 
-
-                if (match) {
-
-                    const hours =
-                        Number(match[1]);
-
-                    const minutes =
-                        Number(match[2]);
-
-                    const seconds =
-                        Number(match[3]);
-
-
-                    const totalSeconds =
-                        hours * 3600 +
-                        minutes * 60 +
-                        seconds;
-
-
-                    startClaimCountdown(
-                        totalSeconds
-                    );
-                }
             }
 
+            /*
+             * IMPORTANT:
+             *
+             * Do NOT call loadUser() here.
+             *
+             * Do NOT calculate currentBalance + reward.
+             *
+             * The server response is the source of truth.
+             */
+
+            return;
+        }
+
+
+        /* =================================================
+           4. CLAIM FAILED
+        ================================================= */
+
+        showActionNotification(
+            "claimNotification",
+
+            "❌ " +
+            (
+                result.error ||
+                "Unable to claim reward."
+            ),
+
+            "error"
+        );
+
+
+        /* =================================================
+           5. COOLDOWN ERROR
+        ================================================= */
+
+        if (
+            response.status === 429
+        ) {
+
+            const errorMessage =
+                String(
+                    result.error || ""
+                );
+
+
+            const match =
+                errorMessage.match(
+                    /(\d+)h\s+(\d+)m\s+(\d+)s/
+                );
+
+
+            if (match) {
+
+                const hours =
+                    Number(match[1]);
+
+                const minutes =
+                    Number(match[2]);
+
+                const seconds =
+                    Number(match[3]);
+
+
+                const totalSeconds =
+                    (
+                        hours * 3600
+                    ) +
+                    (
+                        minutes * 60
+                    ) +
+                    seconds;
+
+
+                startClaimCountdown(
+                    totalSeconds
+                );
+
+            }
+
+        }
+
+
+        /* Reset CAPTCHA */
+
+        if (
+            typeof turnstile !== "undefined" &&
+            turnstile.reset
+        ) {
 
             turnstile.reset();
+
+        }
+
+
+        /*
+         * If claim failed for another reason,
+         * allow user to try again.
+         */
+
+        if (
+            response.status !== 429
+        ) {
+
+            button.disabled = false;
+
         }
 
 
@@ -2598,10 +2691,24 @@ async function claimReward() {
         showActionNotification(
             "claimNotification",
 
-            "❌ Connection error.",
+            "❌ Connection error. Please try again.",
 
             "error"
         );
+
+
+        if (
+            typeof turnstile !== "undefined" &&
+            turnstile.reset
+        ) {
+
+            turnstile.reset();
+
+        }
+
+
+        button.disabled = false;
+
     }
 }
 
