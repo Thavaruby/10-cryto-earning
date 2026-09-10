@@ -66,12 +66,13 @@ export async function onRequestPost(context) {
     try {
 
         /*
-         * IMPORTANT
+         * IMPORTANT:
          *
-         * Start this D1 operation from PRIMARY.
+         * Start D1 session from PRIMARY.
          *
-         * This prevents a freshly updated balance from
-         * being read from a stale replica.
+         * This guarantees that the claim write
+         * and the following balance read remain
+         * sequentially consistent.
          */
 
         const db =
@@ -98,7 +99,9 @@ export async function onRequestPost(context) {
                     success: false,
                     error: "Invalid request."
                 },
-                { status: 400 }
+                {
+                    status: 400
+                }
             );
         }
 
@@ -117,7 +120,9 @@ export async function onRequestPost(context) {
                     error:
                         "Please complete verification."
                 },
-                { status: 400 }
+                {
+                    status: 400
+                }
             );
         }
 
@@ -141,7 +146,9 @@ export async function onRequestPost(context) {
                     error:
                         "Please login first."
                 },
-                { status: 401 }
+                {
+                    status: 401
+                }
             );
         }
 
@@ -179,7 +186,9 @@ export async function onRequestPost(context) {
                     error:
                         "Invalid or expired session."
                 },
-                { status: 401 }
+                {
+                    status: 401
+                }
             );
         }
 
@@ -201,7 +210,6 @@ export async function onRequestPost(context) {
 
                     body:
                         new URLSearchParams({
-
                             secret:
                                 context.env.TURNSTILE_SECRET,
 
@@ -220,7 +228,9 @@ export async function onRequestPost(context) {
                     error:
                         "Verification service unavailable."
                 },
-                { status: 503 }
+                {
+                    status: 503
+                }
             );
         }
 
@@ -237,7 +247,9 @@ export async function onRequestPost(context) {
                     error:
                         "Verification failed."
                 },
-                { status: 400 }
+                {
+                    status: 400
+                }
             );
         }
 
@@ -352,13 +364,15 @@ export async function onRequestPost(context) {
                     error:
                         `Please wait ${hours}h ${minutes}m ${seconds}s before claiming again.`
                 },
-                { status: 429 }
+                {
+                    status: 429
+                }
             );
         }
 
 
         /* =================================================
-           7. READ FRESH BALANCE FROM PRIMARY SESSION
+           7. READ UPDATED BALANCE
         ================================================= */
 
         const updatedUser =
@@ -386,7 +400,9 @@ export async function onRequestPost(context) {
                     error:
                         "Unable to load updated balance."
                 },
-                { status: 500 }
+                {
+                    status: 500
+                }
             );
         }
 
@@ -411,9 +427,13 @@ export async function onRequestPost(context) {
             {
                 headers: {
                     "Cache-Control":
-                        "no-store, no-cache, must-revalidate",
+                        "no-store, no-cache, must-revalidate, max-age=0",
+
                     "Pragma":
-                        "no-cache"
+                        "no-cache",
+
+                    "Expires":
+                        "0"
                 }
             }
         );
@@ -426,14 +446,15 @@ export async function onRequestPost(context) {
             error
         );
 
-
         return Response.json(
             {
                 success: false,
                 error:
                     "Unable to process claim."
             },
-            { status: 500 }
+            {
+                status: 500
+            }
         );
     }
 }
