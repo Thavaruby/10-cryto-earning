@@ -2,12 +2,18 @@ const REWARD = 0.00000001;
 const COOLDOWN_SECONDS = 60 * 60;
 
 
+/* =====================================================
+   COOKIE
+===================================================== */
+
 function getCookie(request, name) {
 
     const cookieHeader =
         request.headers.get("Cookie");
 
-    if (!cookieHeader) return null;
+    if (!cookieHeader) {
+        return null;
+    }
 
     for (const cookie of cookieHeader.split(";")) {
 
@@ -22,6 +28,10 @@ function getCookie(request, name) {
     return null;
 }
 
+
+/* =====================================================
+   SESSION TOKEN HASH
+===================================================== */
 
 async function hashSessionToken(token) {
 
@@ -47,13 +57,32 @@ async function hashSessionToken(token) {
 }
 
 
+/* =====================================================
+   CLAIM
+===================================================== */
+
 export async function onRequestPost(context) {
 
     try {
 
-        /* =====================================================
+        /*
+         * IMPORTANT
+         *
+         * Start this D1 operation from PRIMARY.
+         *
+         * This prevents a freshly updated balance from
+         * being read from a stale replica.
+         */
+
+        const db =
+            context.env.DB.withSession(
+                "first-primary"
+            );
+
+
+        /* =================================================
            1. READ REQUEST
-        ===================================================== */
+        ================================================= */
 
         let data;
 
@@ -93,9 +122,9 @@ export async function onRequestPost(context) {
         }
 
 
-        /* =====================================================
-           2. GET SESSION
-        ===================================================== */
+        /* =================================================
+           2. GET SESSION COOKIE
+        ================================================= */
 
         const sessionToken =
             getCookie(
@@ -123,12 +152,12 @@ export async function onRequestPost(context) {
             );
 
 
-        /* =====================================================
+        /* =================================================
            3. VERIFY SESSION
-        ===================================================== */
+        ================================================= */
 
         const session =
-            await context.env.DB
+            await db
                 .prepare(
                     `SELECT
                         user_id,
@@ -155,9 +184,9 @@ export async function onRequestPost(context) {
         }
 
 
-        /* =====================================================
+        /* =================================================
            4. VERIFY TURNSTILE
-        ===================================================== */
+        ================================================= */
 
         const verifyResponse =
             await fetch(
@@ -213,22 +242,12 @@ export async function onRequestPost(context) {
         }
 
 
-        /* =====================================================
+        /* =================================================
            5. ATOMIC CLAIM
-           
-           INSERT claim only.
-           
-           The database trigger:
-           
-           claims INSERT
-                ↓
-           users.balance + reward
-           
-           This keeps the claim and balance update together.
-        ===================================================== */
+        ================================================= */
 
         const claimResult =
-            await context.env.DB
+            await db
                 .prepare(
                     `INSERT INTO claims
                     (
@@ -255,9 +274,9 @@ export async function onRequestPost(context) {
                 .run();
 
 
-        /* =====================================================
-           6. COOLDOWN ACTIVE
-        ===================================================== */
+        /* =================================================
+           6. COOLDOWN
+        ================================================= */
 
         if (
             !claimResult.meta ||
@@ -265,9 +284,10 @@ export async function onRequestPost(context) {
         ) {
 
             const lastClaim =
-                await context.env.DB
+                await db
                     .prepare(
-                        `SELECT claimed_at
+                        `SELECT
+                            claimed_at
                          FROM claims
                          WHERE user_id = ?
                          ORDER BY claimed_at DESC
@@ -337,12 +357,12 @@ export async function onRequestPost(context) {
         }
 
 
-        /* =====================================================
-           7. GET UPDATED BALANCE
-        ===================================================== */
+        /* =================================================
+           7. READ FRESH BALANCE FROM PRIMARY SESSION
+        ================================================= */
 
         const updatedUser =
-            await context.env.DB
+            await db
                 .prepare(
                     `SELECT
                         balance
@@ -357,13 +377,8 @@ export async function onRequestPost(context) {
         if (!updatedUser) {
 
             console.error(
-                "Claim created but user balance could not be loaded.",
-                {
-                    userId:
-                        session.user_id
-                }
+                "Claim balance read failed."
             );
-
 
             return Response.json(
                 {
@@ -376,23 +391,32 @@ export async function onRequestPost(context) {
         }
 
 
-        /* =====================================================
+        /* =================================================
            8. SUCCESS
-        ===================================================== */
+        ================================================= */
 
-        return Response.json({
+        return Response.json(
+            {
+                success: true,
 
-            success: true,
+                message:
+                    "Reward claimed successfully!",
 
-            message:
-                "Reward claimed successfully!",
+                reward:
+                    REWARD,
 
-            reward:
-                REWARD,
-
-            balance:
-                updatedUser.balance
-        });
+                balance:
+                    updatedUser.balance
+            },
+            {
+                headers: {
+                    "Cache-Control":
+                        "no-store, no-cache, must-revalidate",
+                    "Pragma":
+                        "no-cache"
+                }
+            }
+        );
 
 
     } catch (error) {
