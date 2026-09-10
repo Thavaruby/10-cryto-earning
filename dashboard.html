@@ -2519,105 +2519,23 @@ async function claimReward() {
 
         if (response.ok && result.success) {
 
-            /*
-             * The reward is fixed:
-             *
-             * 0.00000001 BTC
-             *
-             * Read the CURRENT displayed balance correctly.
-             *
-             * Example:
-             * ₿ 0.00000012 BTC
-             */
+    document.getElementById("balance").textContent =
+        formatBTC(result.balance);
 
-            const displayedText =
-                balanceElement.textContent || "";
+    showActionNotification(
+        "claimNotification",
+        "✅ Reward claimed: " +
+        formatBTC(result.reward) +
+        " BTC",
+        "success"
+    );
 
+    startClaimCountdown(3600);
 
-            const currentBalance =
-                Number(
-                    displayedText
-                        .replace("₿", "")
-                        .replace("BTC", "")
-                        .trim()
-                );
+    turnstile.reset();
 
-
-            const reward =
-                Number(result.reward);
-
-
-            /*
-             * Calculate the next displayed balance.
-             *
-             * This is ONLY for immediate UI display.
-             * The database remains the source of truth.
-             */
-
-            if (
-                Number.isFinite(currentBalance) &&
-                Number.isFinite(reward)
-            ) {
-
-                const newBalance =
-                    currentBalance + reward;
-
-
-                balanceElement.textContent =
-                    formatBTC(newBalance);
-
-            }
-
-
-            /* =================================================
-               SUCCESS MESSAGE
-            ================================================= */
-
-            showActionNotification(
-                "claimNotification",
-
-                "✅ Reward claimed: " +
-                formatBTC(reward) +
-                " BTC",
-
-                "success"
-            );
-
-
-            /* =================================================
-               COOLDOWN
-            ================================================= */
-
-            startClaimCountdown(
-                3600
-            );
-
-
-            /* =================================================
-               RESET CAPTCHA
-            ================================================= */
-
-            if (
-                typeof turnstile !== "undefined" &&
-                typeof turnstile.reset === "function"
-            ) {
-
-                turnstile.reset();
-
-            }
-
-
-            /*
-             * IMPORTANT:
-             *
-             * DO NOT call loadUser() here.
-             *
-             * It can overwrite the freshly displayed
-             * balance with an older response.
-             */
-
-            return;
-        }
+    return;
+}
 
 
         /* =================================================
