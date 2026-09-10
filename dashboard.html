@@ -2519,6 +2519,20 @@ async function claimReward() {
 
         if (response.ok && result.success) {
 
+console.log("========== CLAIM DEBUG ==========");
+console.log("CLAIM RESULT:", result);
+console.log("CLAIM BALANCE:", result.balance);
+console.log("CURRENT UI BALANCE:", document.getElementById("balance")?.innerText);
+console.log("================================");
+
+
+   alert(
+    "SERVER BALANCE = " +
+    result.balance +
+    "\nREWARD = " +
+    result.reward
+);
+   
     document.getElementById("balance").textContent =
         formatBTC(result.balance);
 
