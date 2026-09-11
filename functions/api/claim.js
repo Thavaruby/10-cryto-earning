@@ -1,24 +1,14 @@
 const REWARD = 0.00000001;
 const COOLDOWN_SECONDS = 60 * 60;
 
-
-/* =====================================================
-   COOKIE
-===================================================== */
-
+/* COOKIE */
 function getCookie(request, name) {
+    const cookieHeader = request.headers.get("Cookie");
 
-    const cookieHeader =
-        request.headers.get("Cookie");
-
-    if (!cookieHeader) {
-        return null;
-    }
+    if (!cookieHeader) return null;
 
     for (const cookie of cookieHeader.split(";")) {
-
-        const [key, ...value] =
-            cookie.trim().split("=");
+        const [key, ...value] = cookie.trim().split("=");
 
         if (key === name) {
             return value.join("=");
@@ -28,455 +18,276 @@ function getCookie(request, name) {
     return null;
 }
 
-
-/* =====================================================
-   SESSION TOKEN HASH
-===================================================== */
-
+/* SESSION TOKEN HASH */
 async function hashSessionToken(token) {
+    const data = new TextEncoder().encode(token);
 
-    const data =
-        new TextEncoder().encode(token);
+    const hash = await crypto.subtle.digest(
+        "SHA-256",
+        data
+    );
 
-    const hash =
-        await crypto.subtle.digest(
-            "SHA-256",
-            data
-        );
-
-    return Array.from(
-        new Uint8Array(hash)
-    )
-        .map(
-            byte =>
-                byte
-                    .toString(16)
-                    .padStart(2, "0")
-        )
+    return Array.from(new Uint8Array(hash))
+        .map(byte => byte.toString(16).padStart(2, "0"))
         .join("");
 }
 
+/* RESPONSE */
+function jsonResponse(data, status = 200) {
+    return Response.json(data, {
+        status,
+        headers: {
+            "Cache-Control":
+                "no-store, no-cache, must-revalidate, max-age=0",
+            "Pragma": "no-cache",
+            "Expires": "0"
+        }
+    });
+}
 
-/* =====================================================
-   CLAIM
-===================================================== */
-
+/* CLAIM */
 export async function onRequestPost(context) {
-
     try {
+        const db = context.env.DB.withSession("first-primary");
 
-        /* =================================================
-           D1 PRIMARY SESSION
-        ================================================= */
-
-        const db =
-            context.env.DB.withSession(
-                "first-primary"
-            );
-
-
-        /* =================================================
+        /* -----------------------------
            1. READ REQUEST
-        ================================================= */
+        ----------------------------- */
 
         let data;
 
         try {
-
-            data =
-                await context.request.json();
-
+            data = await context.request.json();
         } catch {
-
-            return Response.json(
+            return jsonResponse(
                 {
                     success: false,
                     error: "Invalid request."
                 },
-                {
-                    status: 400,
-                    headers: {
-                        "Cache-Control": "no-store"
-                    }
-                }
+                400
             );
         }
 
-
-        const turnstileToken =
-            String(
-                data.turnstileToken || ""
-            );
-
+        const turnstileToken = String(
+            data.turnstileToken || ""
+        );
 
         if (!turnstileToken) {
-
-            return Response.json(
+            return jsonResponse(
                 {
                     success: false,
-                    error:
-                        "Please complete verification."
+                    error: "Please complete verification."
                 },
-                {
-                    status: 400,
-                    headers: {
-                        "Cache-Control": "no-store"
-                    }
-                }
+                400
             );
         }
 
+        /* -----------------------------
+           2. CHECK SESSION
+        ----------------------------- */
 
-        /* =================================================
-           2. GET SESSION COOKIE
-        ================================================= */
-
-        const sessionToken =
-            getCookie(
-                context.request,
-                "session"
-            );
-
+        const sessionToken = getCookie(
+            context.request,
+            "session"
+        );
 
         if (!sessionToken) {
-
-            return Response.json(
+            return jsonResponse(
                 {
                     success: false,
-                    error:
-                        "Please login first."
+                    error: "Please login first."
                 },
-                {
-                    status: 401,
-                    headers: {
-                        "Cache-Control": "no-store"
-                    }
-                }
+                401
             );
         }
-
 
         const tokenHash =
-            await hashSessionToken(
-                sessionToken
-            );
+            await hashSessionToken(sessionToken);
 
-
-        /* =================================================
-           3. VERIFY SESSION
-        ================================================= */
-
-        const session =
-            await db
-                .prepare(
-                    `SELECT
-                        user_id,
-                        expires_at
-                     FROM sessions
-                     WHERE token_hash = ?
-                       AND expires_at > CURRENT_TIMESTAMP
-                     LIMIT 1`
-                )
-                .bind(tokenHash)
-                .first();
-
+        const session = await db
+            .prepare(
+                `SELECT
+                    user_id,
+                    expires_at
+                 FROM sessions
+                 WHERE token_hash = ?
+                   AND expires_at > CURRENT_TIMESTAMP
+                 LIMIT 1`
+            )
+            .bind(tokenHash)
+            .first();
 
         if (!session) {
-
-            return Response.json(
+            return jsonResponse(
                 {
                     success: false,
-                    error:
-                        "Invalid or expired session."
+                    error: "Invalid or expired session."
                 },
-                {
-                    status: 401,
-                    headers: {
-                        "Cache-Control": "no-store"
-                    }
-                }
+                401
             );
         }
 
+        const userId = Number(session.user_id);
 
-        /* =================================================
-           4. VERIFY TURNSTILE
-        ================================================= */
-
-        const verifyResponse =
-            await fetch(
-                "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+        if (!Number.isInteger(userId) || userId <= 0) {
+            return jsonResponse(
                 {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/x-www-form-urlencoded"
-                    },
-
-                    body:
-                        new URLSearchParams({
-                            secret:
-                                context.env.TURNSTILE_SECRET,
-
-                            response:
-                                turnstileToken
-                        })
-                }
+                    success: false,
+                    error: "Invalid user session."
+                },
+                401
             );
+        }
 
+        /* -----------------------------
+           3. VERIFY TURNSTILE
+        ----------------------------- */
+
+        const verifyResponse = await fetch(
+            "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/x-www-form-urlencoded"
+                },
+
+                body: new URLSearchParams({
+                    secret: context.env.TURNSTILE_SECRET,
+                    response: turnstileToken
+                })
+            }
+        );
 
         if (!verifyResponse.ok) {
-
-            return Response.json(
+            return jsonResponse(
                 {
                     success: false,
                     error:
                         "Verification service unavailable."
                 },
-                {
-                    status: 503,
-                    headers: {
-                        "Cache-Control": "no-store"
-                    }
-                }
+                503
             );
         }
-
 
         const verifyResult =
             await verifyResponse.json();
 
-
         if (!verifyResult.success) {
-
-            return Response.json(
+            return jsonResponse(
                 {
                     success: false,
-                    error:
-                        "Verification failed."
+                    error: "Verification failed."
                 },
-                {
-                    status: 400,
-                    headers: {
-                        "Cache-Control": "no-store"
-                    }
-                }
+                400
             );
         }
 
+        /* -----------------------------
+           4. ATOMIC CLAIM
+        ----------------------------- */
 
-        /* =================================================
-           5. ATOMIC CLAIM
-        ================================================= */
+        /*
+         * First statement creates the claim only
+         * when the user has no claim during the
+         * last hour.
+         *
+         * Second statement increases the balance.
+         *
+         * Both statements are executed inside one
+         * D1 batch transaction.
+         */
 
-        const claimResult =
-            await db
+        const results = await db.batch([
+            db.prepare(
+                `INSERT INTO claims
+                (
+                    user_id,
+                    reward
+                )
+                SELECT
+                    ?,
+                    ?
+                WHERE NOT EXISTS (
+                    SELECT 1
+                    FROM claims
+                    WHERE user_id = ?
+                      AND claimed_at >
+                          datetime('now', ?)
+                )`
+            ).bind(
+                userId,
+                REWARD,
+                userId,
+                `-${COOLDOWN_SECONDS} seconds`
+            ),
+
+            db.prepare(
+                `UPDATE users
+                 SET balance = balance + ?
+                 WHERE id = ?
+                   AND EXISTS (
+                       SELECT 1
+                       FROM claims
+                       WHERE user_id = ?
+                         AND reward = ?
+                         AND claimed_at >=
+                             datetime('now', '-2 seconds')
+                   )`
+            ).bind(
+                REWARD,
+                userId,
+                userId,
+                REWARD
+            )
+        ]);
+
+        /* -----------------------------
+           5. CHECK CLAIM RESULT
+        ----------------------------- */
+
+        const claimChanges =
+            results?.[0]?.meta?.changes ?? 0;
+
+        if (claimChanges !== 1) {
+            const lastClaim = await db
                 .prepare(
-                    `INSERT INTO claims
-                    (
-                        user_id,
-                        reward
-                    )
-                    SELECT
-                        ?,
-                        ?
-                    WHERE NOT EXISTS (
-                        SELECT 1
-                        FROM claims
-                        WHERE user_id = ?
-                          AND claimed_at >
-                              datetime('now', ?)
-                    )`
+                    `SELECT
+                        claimed_at
+                     FROM claims
+                     WHERE user_id = ?
+                     ORDER BY claimed_at DESC
+                     LIMIT 1`
                 )
-                .bind(
-                    session.user_id,
-                    REWARD,
-                    session.user_id,
-                    `-${COOLDOWN_SECONDS} seconds`
-                )
-                .run();
-
-
-        /* =================================================
-           6. COOLDOWN
-        ================================================= */
-
-        if (
-            !claimResult.meta ||
-            claimResult.meta.changes !== 1
-        ) {
-
-            const lastClaim =
-                await db
-                    .prepare(
-                        `SELECT
-                            claimed_at
-                         FROM claims
-                         WHERE user_id = ?
-                         ORDER BY claimed_at DESC
-                         LIMIT 1`
-                    )
-                    .bind(session.user_id)
-                    .first();
-
+                .bind(userId)
+                .first();
 
             let remainingSeconds =
                 COOLDOWN_SECONDS;
 
-
             if (lastClaim?.claimed_at) {
-
                 const lastTime =
                     new Date(
                         lastClaim.claimed_at
                     ).getTime();
 
-
-                const elapsed =
-                    Math.floor(
-                        (
-                            Date.now() -
-                            lastTime
-                        ) / 1000
-                    );
-
-
-                remainingSeconds =
-                    Math.max(
-                        0,
-                        COOLDOWN_SECONDS -
-                        elapsed
-                    );
-            }
-
-
-            const hours =
-                Math.floor(
-                    remainingSeconds / 3600
+                const elapsed = Math.floor(
+                    (Date.now() - lastTime) / 1000
                 );
 
-
-            const minutes =
-                Math.floor(
-                    (
-                        remainingSeconds % 3600
-                    ) / 60
+                remainingSeconds = Math.max(
+                    0,
+                    COOLDOWN_SECONDS - elapsed
                 );
-
-
-            const seconds =
-                remainingSeconds % 60;
-
-
-            return Response.json(
-                {
-                    success: false,
-
-                    error:
-                        `Please wait ${hours}h ${minutes}m ${seconds}s before claiming again.`
-                },
-                {
-                    status: 429,
-                    headers: {
-                        "Cache-Control": "no-store"
-                    }
-                }
-            );
-        }
-
-
-        /* =================================================
-           7. READ UPDATED BALANCE
-        ================================================= */
-
-        const updatedUser =
-            await db
-                .prepare(
-                    `SELECT
-                        balance
-                     FROM users
-                     WHERE id = ?
-                     LIMIT 1`
-                )
-                .bind(session.user_id)
-                .first();
-
-
-        if (!updatedUser) {
-
-            console.error(
-                "Claim balance read failed."
-            );
-
-            return Response.json(
-                {
-                    success: false,
-                    error:
-                        "Unable to load updated balance."
-                },
-                {
-                    status: 500,
-                    headers: {
-                        "Cache-Control": "no-store"
-                    }
-                }
-            );
-        }
-
-
-        /* =================================================
-           8. SUCCESS
-        ================================================= */
-
-        return Response.json(
-            {
-                success: true,
-
-                message:
-                    "Reward claimed successfully!",
-
-                reward:
-                    REWARD,
-
-                balance:
-                    updatedUser.balance
-            },
-            {
-                headers: {
-                    "Cache-Control":
-                        "no-store, no-cache, must-revalidate, max-age=0",
-
-                    "Pragma":
-                        "no-cache",
-
-                    "Expires":
-                        "0"
-                }
             }
-        );
 
+            const hours = Math.floor(
+                remainingSeconds / 3600
+            );
 
-    } catch (error) {
+            const minutes = Math.floor(
+                (remainingSeconds % 3600) / 60
+            );
 
-        console.error(
-            "Claim error:",
-            error
-        );
-
-
-        return Response.json(
-            {
-                success: false,
-                error:
-                    "Unable to process claim."
-            },
-            {
-                status: 500,
-                headers: {
-                    "Cache-Control": "no-store"
-                }
-            }
-        );
-    }
-}
+           
