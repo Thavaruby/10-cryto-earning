@@ -2247,21 +2247,21 @@ function startClaimCountdown(seconds) {
 
         if (seconds <= 0) {
 
-            clearInterval(
-                cooldownTimer
-            );
+    clearInterval(cooldownTimer);
 
-            countdown.innerText =
-                "✅ You can claim now!";
+    countdown.innerText =
+        "✅ You can claim now!";
 
-            countdown.style.color =
-                "#16a34a";
+    countdown.style.color =
+        "#16a34a";
 
-            button.disabled =
-                false;
+    claimInProgress = false;
 
-            return;
-        }
+    button.disabled =
+        false;
+
+    return;
+}
 
 
         const hours =
@@ -2433,8 +2433,11 @@ async function logout() {
    CLAIM REWARD
 ===================================================== */
 
+let claimInProgress = false;
+
+
 async function claimReward() {
-alert("CLAIM FUNCTION UPDATED");
+
     const button =
         document.getElementById("claimButton");
 
@@ -2442,10 +2445,17 @@ alert("CLAIM FUNCTION UPDATED");
         document.getElementById("balance");
 
 
-    if (button.disabled) {
+    /* Prevent duplicate request */
+
+    if (
+        button.disabled ||
+        claimInProgress
+    ) {
         return;
     }
 
+
+    claimInProgress = true;
 
     button.disabled = true;
 
@@ -2475,6 +2485,7 @@ alert("CLAIM FUNCTION UPDATED");
                 "error"
             );
 
+            claimInProgress = false;
             button.disabled = false;
 
             return;
@@ -2482,7 +2493,7 @@ alert("CLAIM FUNCTION UPDATED");
 
 
         /* =================================================
-           CLAIM
+           ONE CLAIM REQUEST
         ================================================= */
 
         const response =
@@ -2513,51 +2524,73 @@ alert("CLAIM FUNCTION UPDATED");
             await response.json();
 
 
-alert(
-    "API RESULT\n\n" +
-    JSON.stringify(result, null, 2)
-);
         /* =================================================
            SUCCESS
         ================================================= */
 
-        if (response.ok && result.success) {
+        if (
+            response.ok &&
+            result.success
+        ) {
 
-console.log("========== CLAIM DEBUG ==========");
-console.log("CLAIM RESULT:", result);
-console.log("CLAIM BALANCE:", result.balance);
-console.log("CURRENT UI BALANCE:", document.getElementById("balance")?.innerText);
-console.log("================================");
+            /* Update balance immediately */
+
+            if (
+                balanceElement &&
+                result.balance !== undefined
+            ) {
+
+                balanceElement.textContent =
+                    formatBTC(
+                        result.balance
+                    );
+            }
 
 
-   alert(
-    "SERVER BALANCE = " +
-    result.balance +
-    "\nREWARD = " +
-    result.reward
-);
-   
-    document.getElementById("balance").textContent =
-        formatBTC(result.balance);
+            /* Success message */
 
-    showActionNotification(
-        "claimNotification",
-        "✅ Reward claimed: " +
-        formatBTC(result.reward) +
-        " BTC",
-        "success"
-    );
+            showActionNotification(
+                "claimNotification",
 
-    startClaimCountdown(3600);
+                "✅ Reward claimed: " +
+                formatBTC(
+                    result.reward
+                ) +
+                " BTC",
 
-    turnstile.reset();
+                "success"
+            );
 
-    return;
-}
+
+            /* Start cooldown */
+
+            startClaimCountdown(
+                3600
+            );
+
+
+            /* Reset CAPTCHA */
+
+            if (
+                typeof turnstile !== "undefined" &&
+                typeof turnstile.reset === "function"
+            ) {
+
+                turnstile.reset();
+            }
+
+
+            /*
+             * Keep claimInProgress TRUE.
+             * Cooldown is now active.
+             */
+
+            return;
+        }
 
 
         /* =================================================
-           FAILED
+           FAILED CLAIM
         ================================================= */
 
         showActionNotification(
@@ -2610,11 +2643,32 @@ console.log("================================");
                     minutes * 60 +
                     seconds
                 );
-
             }
 
+
+            /*
+             * Keep button disabled
+             * during cooldown.
+             */
+
+            claimInProgress = true;
         }
 
+
+        /* =================================================
+           OTHER ERROR
+        ================================================= */
+
+        if (
+            response.status !== 429
+        ) {
+
+            claimInProgress = false;
+            button.disabled = false;
+        }
+
+
+        /* Reset CAPTCHA */
 
         if (
             typeof turnstile !== "undefined" &&
@@ -2622,16 +2676,6 @@ console.log("================================");
         ) {
 
             turnstile.reset();
-
-        }
-
-
-        if (
-            response.status !== 429
-        ) {
-
-            button.disabled = false;
-
         }
 
 
@@ -2658,10 +2702,10 @@ console.log("================================");
         ) {
 
             turnstile.reset();
-
         }
 
 
+        claimInProgress = false;
         button.disabled = false;
     }
 }
