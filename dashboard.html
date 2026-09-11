@@ -2456,7 +2456,6 @@ async function claimReward() {
 
 
     claimInProgress = true;
-
     button.disabled = true;
 
 
@@ -2472,6 +2471,24 @@ async function claimReward() {
         /* =================================================
            CAPTCHA
         ================================================= */
+
+        if (
+            typeof turnstile === "undefined" ||
+            typeof turnstile.getResponse !== "function"
+        ) {
+
+            showActionNotification(
+                "claimNotification",
+                "❌ CAPTCHA is not ready. Please try again.",
+                "error"
+            );
+
+            claimInProgress = false;
+            button.disabled = false;
+
+            return;
+        }
+
 
         const turnstileToken =
             turnstile.getResponse();
@@ -2493,7 +2510,7 @@ async function claimReward() {
 
 
         /* =================================================
-           ONE CLAIM REQUEST
+           CLAIM REQUEST
         ================================================= */
 
         const response =
@@ -2505,11 +2522,8 @@ async function claimReward() {
                     cache: "no-store",
 
                     headers: {
-                        "Content-Type":
-                            "application/json",
-
-                        "Cache-Control":
-                            "no-cache"
+                        "Content-Type": "application/json",
+                        "Cache-Control": "no-cache"
                     },
 
                     body: JSON.stringify({
@@ -2520,8 +2534,35 @@ async function claimReward() {
             );
 
 
-        const result =
-            await response.json();
+        /* =================================================
+           READ RESPONSE
+        ================================================= */
+
+        let result;
+
+        try {
+
+            result =
+                await response.json();
+
+        } catch (jsonError) {
+
+            console.error(
+                "Invalid claim response:",
+                jsonError
+            );
+
+            showActionNotification(
+                "claimNotification",
+                "❌ Server returned an invalid response.",
+                "error"
+            );
+
+            claimInProgress = false;
+            button.disabled = false;
+
+            return;
+        }
 
 
         /* =================================================
@@ -2530,46 +2571,78 @@ async function claimReward() {
 
         if (
             response.ok &&
-            result.success
+            result.success === true
         ) {
 
-            /* Update balance immediately */
+            /* ---------------------------------------------
+               Validate returned balance
+            --------------------------------------------- */
+
+            const newBalance =
+                Number(result.balance);
+
 
             if (
-                balanceElement &&
-                result.balance !== undefined
+                !Number.isFinite(newBalance) ||
+                newBalance < 0
             ) {
 
-                balanceElement.textContent =
-                    formatBTC(
-                        result.balance
-                    );
+                console.error(
+                    "Invalid balance returned from claim:",
+                    result.balance
+                );
+
+                showActionNotification(
+                    "claimNotification",
+                    "❌ Claim completed, but the updated balance could not be loaded.",
+                    "error"
+                );
+
+                /*
+                 * Do NOT change the displayed balance
+                 * when the server did not return a valid one.
+                 */
+
+                claimInProgress = false;
+                button.disabled = false;
+
+                return;
             }
 
 
-            /* Success message */
+            /* ---------------------------------------------
+               UPDATE BALANCE IMMEDIATELY
+            --------------------------------------------- */
+
+            balanceElement.textContent =
+                formatBTC(newBalance);
+
+
+            /* ---------------------------------------------
+               SUCCESS MESSAGE
+            --------------------------------------------- */
 
             showActionNotification(
                 "claimNotification",
 
                 "✅ Reward claimed: " +
-                formatBTC(
-                    result.reward
-                ) +
+                formatBTC(result.reward) +
                 " BTC",
 
                 "success"
             );
 
 
-            /* Start cooldown */
+            /* ---------------------------------------------
+               START 1 HOUR COOLDOWN
+            --------------------------------------------- */
 
-            startClaimCountdown(
-                3600
-            );
+            startClaimCountdown(3600);
 
 
-            /* Reset CAPTCHA */
+            /* ---------------------------------------------
+               RESET CAPTCHA
+            --------------------------------------------- */
 
             if (
                 typeof turnstile !== "undefined" &&
@@ -2582,7 +2655,10 @@ async function claimReward() {
 
             /*
              * Keep claimInProgress TRUE.
-             * Cooldown is now active.
+             *
+             * startClaimCountdown()
+             * will set it back to FALSE
+             * when the cooldown reaches zero.
              */
 
             return;
@@ -2643,32 +2719,27 @@ async function claimReward() {
                     minutes * 60 +
                     seconds
                 );
+
+            } else {
+
+                claimInProgress = false;
+                button.disabled = false;
             }
 
 
+        } else {
+
             /*
-             * Keep button disabled
-             * during cooldown.
+             * Other errors:
+             * user can try again.
              */
-
-            claimInProgress = true;
-        }
-
-
-        /* =================================================
-           OTHER ERROR
-        ================================================= */
-
-        if (
-            response.status !== 429
-        ) {
 
             claimInProgress = false;
             button.disabled = false;
         }
 
 
-        /* Reset CAPTCHA */
+        /* Reset CAPTCHA after failed claim */
 
         if (
             typeof turnstile !== "undefined" &&
@@ -2710,6 +2781,7 @@ async function claimReward() {
     }
 }
 
+            
 /* =====================================================
    WITHDRAW
 ===================================================== */
