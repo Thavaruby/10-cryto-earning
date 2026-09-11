@@ -32,7 +32,7 @@ async function hashSessionToken(token) {
         .join("");
 }
 
-/* RESPONSE */
+/* JSON RESPONSE */
 function jsonResponse(data, status = 200) {
     return Response.json(data, {
         status,
@@ -50,9 +50,9 @@ export async function onRequestPost(context) {
     try {
         const db = context.env.DB.withSession("first-primary");
 
-        /* -----------------------------
+        /* --------------------------------
            1. READ REQUEST
-        ----------------------------- */
+        -------------------------------- */
 
         let data;
 
@@ -82,9 +82,9 @@ export async function onRequestPost(context) {
             );
         }
 
-        /* -----------------------------
+        /* --------------------------------
            2. CHECK SESSION
-        ----------------------------- */
+        -------------------------------- */
 
         const sessionToken = getCookie(
             context.request,
@@ -139,9 +139,9 @@ export async function onRequestPost(context) {
             );
         }
 
-        /* -----------------------------
+        /* --------------------------------
            3. VERIFY TURNSTILE
-        ----------------------------- */
+        -------------------------------- */
 
         const verifyResponse = await fetch(
             "https://challenges.cloudflare.com/turnstile/v0/siteverify",
@@ -184,22 +184,46 @@ export async function onRequestPost(context) {
             );
         }
 
-        /* -----------------------------
-           4. ATOMIC CLAIM
-        ----------------------------- */
+        /* --------------------------------
+           4. ATOMIC CLAIM + BALANCE UPDATE
+        -------------------------------- */
 
         /*
-         * First statement creates the claim only
-         * when the user has no claim during the
-         * last hour.
+         * IMPORTANT:
          *
-         * Second statement increases the balance.
+         * Statement 1:
+         *   Increase balance ONLY if the user
+         *   has not claimed during the last hour.
          *
-         * Both statements are executed inside one
-         * D1 batch transaction.
+         * Statement 2:
+         *   Create the claim ONLY if statement 1
+         *   actually changed one user row.
+         *
+         * Both statements are inside one D1 batch.
+         *
+         * If either statement fails, the batch
+         * is rolled back.
          */
 
         const results = await db.batch([
+            db.prepare(
+                `UPDATE users
+                 SET balance = balance + ?
+                 WHERE id = ?
+                   AND NOT EXISTS (
+                       SELECT 1
+                       FROM claims
+                       WHERE user_id = ?
+                         AND claimed_at >
+                             datetime('now', ?)
+                   )`
+            ).bind(
+                REWARD,
+                userId,
+                userId,
+                `-${COOLDOWN_SECONDS} seconds`
+            ),
+
             db.prepare(
                 `INSERT INTO claims
                 (
@@ -209,48 +233,21 @@ export async function onRequestPost(context) {
                 SELECT
                     ?,
                     ?
-                WHERE NOT EXISTS (
-                    SELECT 1
-                    FROM claims
-                    WHERE user_id = ?
-                      AND claimed_at >
-                          datetime('now', ?)
-                )`
+                WHERE changes() = 1`
             ).bind(
-                userId,
-                REWARD,
-                userId,
-                `-${COOLDOWN_SECONDS} seconds`
-            ),
-
-            db.prepare(
-                `UPDATE users
-                 SET balance = balance + ?
-                 WHERE id = ?
-                   AND EXISTS (
-                       SELECT 1
-                       FROM claims
-                       WHERE user_id = ?
-                         AND reward = ?
-                         AND claimed_at >=
-                             datetime('now', '-2 seconds')
-                   )`
-            ).bind(
-                REWARD,
-                userId,
                 userId,
                 REWARD
             )
         ]);
 
-        /* -----------------------------
-           5. CHECK CLAIM RESULT
-        ----------------------------- */
+        /* --------------------------------
+           5. CHECK BALANCE UPDATE
+        -------------------------------- */
 
-        const claimChanges =
+        const balanceChanges =
             results?.[0]?.meta?.changes ?? 0;
 
-        if (claimChanges !== 1) {
+        if (balanceChanges !== 1) {
             const lastClaim = await db
                 .prepare(
                     `SELECT
@@ -290,4 +287,127 @@ export async function onRequestPost(context) {
                 (remainingSeconds % 3600) / 60
             );
 
-           
+            const seconds =
+                remainingSeconds % 60;
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        `Please wait ${hours}h ${minutes}m ${seconds}s before claiming again.`
+                },
+                429
+            );
+        }
+
+        /* --------------------------------
+           6. CHECK CLAIM INSERT
+        -------------------------------- */
+
+        const claimChanges =
+            results?.[1]?.meta?.changes ?? 0;
+
+        if (claimChanges !== 1) {
+            console.error(
+                "Claim record was not created.",
+                {
+                    userId,
+                    balanceChanges,
+                    claimChanges
+                }
+            );
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Unable to record your claim."
+                },
+                500
+            );
+        }
+
+        /* --------------------------------
+           7. LOAD UPDATED BALANCE
+        -------------------------------- */
+
+        const updatedUser = await db
+            .prepare(
+                `SELECT
+                    balance
+                 FROM users
+                 WHERE id = ?
+                 LIMIT 1`
+            )
+            .bind(userId)
+            .first();
+
+        if (!updatedUser) {
+            console.error(
+                "Updated balance could not be loaded.",
+                { userId }
+            );
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Unable to load updated balance."
+                },
+                500
+            );
+        }
+
+        const balance =
+            Number(updatedUser.balance);
+
+        if (
+            !Number.isFinite(balance) ||
+            balance < 0
+        ) {
+            console.error(
+                "Invalid balance returned.",
+                {
+                    userId,
+                    balance: updatedUser.balance
+                }
+            );
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Invalid balance received."
+                },
+                500
+            );
+        }
+
+        /* --------------------------------
+           8. SUCCESS
+        -------------------------------- */
+
+        return jsonResponse({
+            success: true,
+            message:
+                "Reward claimed successfully!",
+            reward: REWARD,
+            balance: balance
+        });
+
+    } catch (error) {
+        console.error(
+            "Claim error:",
+            error
+        );
+
+        return jsonResponse(
+            {
+                success: false,
+                error:
+                    "Unable to process claim."
+            },
+            500
+        );
+    }
+}
