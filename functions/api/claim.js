@@ -65,15 +65,9 @@ export async function onRequestPost(context) {
 
     try {
 
-        /*
-         * IMPORTANT:
-         *
-         * Start D1 session from PRIMARY.
-         *
-         * This guarantees that the claim write
-         * and the following balance read remain
-         * sequentially consistent.
-         */
+        /* =================================================
+           D1 PRIMARY SESSION
+        ================================================= */
 
         const db =
             context.env.DB.withSession(
@@ -100,7 +94,10 @@ export async function onRequestPost(context) {
                     error: "Invalid request."
                 },
                 {
-                    status: 400
+                    status: 400,
+                    headers: {
+                        "Cache-Control": "no-store"
+                    }
                 }
             );
         }
@@ -121,7 +118,10 @@ export async function onRequestPost(context) {
                         "Please complete verification."
                 },
                 {
-                    status: 400
+                    status: 400,
+                    headers: {
+                        "Cache-Control": "no-store"
+                    }
                 }
             );
         }
@@ -147,7 +147,10 @@ export async function onRequestPost(context) {
                         "Please login first."
                 },
                 {
-                    status: 401
+                    status: 401,
+                    headers: {
+                        "Cache-Control": "no-store"
+                    }
                 }
             );
         }
@@ -187,7 +190,10 @@ export async function onRequestPost(context) {
                         "Invalid or expired session."
                 },
                 {
-                    status: 401
+                    status: 401,
+                    headers: {
+                        "Cache-Control": "no-store"
+                    }
                 }
             );
         }
@@ -229,7 +235,10 @@ export async function onRequestPost(context) {
                         "Verification service unavailable."
                 },
                 {
-                    status: 503
+                    status: 503,
+                    headers: {
+                        "Cache-Control": "no-store"
+                    }
                 }
             );
         }
@@ -248,7 +257,10 @@ export async function onRequestPost(context) {
                         "Verification failed."
                 },
                 {
-                    status: 400
+                    status: 400,
+                    headers: {
+                        "Cache-Control": "no-store"
+                    }
                 }
             );
         }
@@ -365,7 +377,10 @@ export async function onRequestPost(context) {
                         `Please wait ${hours}h ${minutes}m ${seconds}s before claiming again.`
                 },
                 {
-                    status: 429
+                    status: 429,
+                    headers: {
+                        "Cache-Control": "no-store"
+                    }
                 }
             );
         }
@@ -401,7 +416,10 @@ export async function onRequestPost(context) {
                         "Unable to load updated balance."
                 },
                 {
-                    status: 500
+                    status: 500,
+                    headers: {
+                        "Cache-Control": "no-store"
+                    }
                 }
             );
         }
@@ -446,6 +464,7 @@ export async function onRequestPost(context) {
             error
         );
 
+
         return Response.json(
             {
                 success: false,
@@ -453,7 +472,10 @@ export async function onRequestPost(context) {
                     "Unable to process claim."
             },
             {
-                status: 500
+                status: 500,
+                headers: {
+                    "Cache-Control": "no-store"
+                }
             }
         );
     }
