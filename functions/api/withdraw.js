@@ -1,7 +1,7 @@
 const MIN_WITHDRAWAL = 0.0000001;
 
 /*
- * Basic Bitcoin address validation.
+ * Bitcoin address format validation.
  *
  * Supports:
  * - Legacy: 1...
@@ -10,9 +10,9 @@ const MIN_WITHDRAWAL = 0.0000001;
  * - Taproot: bc1p...
  *
  * This is format validation only.
+ * It does NOT verify the Bitcoin address checksum.
  */
 function isValidBitcoinAddress(address) {
-
     const value = String(address || "").trim();
 
     if (value.length < 14 || value.length > 90) {
@@ -31,12 +31,10 @@ function isValidBitcoinAddress(address) {
     );
 }
 
-
 /*
  * Get cookie value.
  */
 function getCookie(request, name) {
-
     const cookieHeader =
         request.headers.get("Cookie");
 
@@ -44,10 +42,7 @@ function getCookie(request, name) {
         return null;
     }
 
-    for (
-        const cookie of cookieHeader.split(";")
-    ) {
-
+    for (const cookie of cookieHeader.split(";")) {
         const [key, ...value] =
             cookie.trim().split("=");
 
@@ -59,12 +54,10 @@ function getCookie(request, name) {
     return null;
 }
 
-
 /*
  * SHA-256 session token hash.
  */
 async function hashSessionToken(token) {
-
     const data =
         new TextEncoder().encode(token);
 
@@ -86,10 +79,25 @@ async function hashSessionToken(token) {
         .join("");
 }
 
+/*
+ * Standard JSON response.
+ */
+function jsonResponse(data, status = 200) {
+    return Response.json(data, {
+        status,
+        headers: {
+            "Cache-Control":
+                "no-store, no-cache, must-revalidate, max-age=0",
+            "Pragma": "no-cache",
+            "Expires": "0"
+        }
+    });
+}
 
 export async function onRequestPost(context) {
-
     try {
+        const db =
+            context.env.DB.withSession("first-primary");
 
         /* =====================================================
            1. READ REQUEST
@@ -98,38 +106,30 @@ export async function onRequestPost(context) {
         let data;
 
         try {
-
             data =
                 await context.request.json();
-
         } catch {
-
-            return Response.json(
+            return jsonResponse(
                 {
                     success: false,
                     error: "Invalid request."
                 },
-                { status: 400 }
+                400
             );
         }
 
-
         const amount =
             Number(data.amount);
-
 
         const walletAddress =
             String(
                 data.walletAddress || ""
             ).trim();
 
-
         /*
          * BTC ONLY
          */
-
         const currency = "BTC";
-
 
         /* =====================================================
            2. AMOUNT VALIDATION
@@ -139,113 +139,97 @@ export async function onRequestPost(context) {
             !Number.isFinite(amount) ||
             amount <= 0
         ) {
-
-            return Response.json(
+            return jsonResponse(
                 {
                     success: false,
                     error:
                         "Invalid withdrawal amount."
                 },
-                { status: 400 }
+                400
             );
         }
 
-
-        if (
-            amount < MIN_WITHDRAWAL
-        ) {
-
-            return Response.json(
+        if (amount < MIN_WITHDRAWAL) {
+            return jsonResponse(
                 {
                     success: false,
                     error:
                         "Minimum withdrawal is 0.0000001 BTC."
                 },
-                { status: 400 }
+                400
             );
         }
 
-
         /*
-         * BTC uses 8 decimal places.
+         * BTC has 8 decimal places.
+         *
+         * Convert to satoshis first so that we never
+         * accept a value with more than 8 decimals.
          */
-
         const satoshis =
             Math.round(
                 amount * 100000000
             );
 
-
         if (
-            !Number.isSafeInteger(
-                satoshis
-            ) ||
+            !Number.isSafeInteger(satoshis) ||
             satoshis <= 0
         ) {
-
-            return Response.json(
+            return jsonResponse(
                 {
                     success: false,
                     error:
                         "Invalid BTC amount."
                 },
-                { status: 400 }
+                400
             );
         }
-
 
         const normalizedAmount =
             satoshis / 100000000;
 
-
         if (
             normalizedAmount !== amount
         ) {
-
-            return Response.json(
+            return jsonResponse(
                 {
                     success: false,
                     error:
                         "BTC amount can have a maximum of 8 decimal places."
                 },
-                { status: 400 }
+                400
             );
         }
-
 
         /* =====================================================
            3. WALLET VALIDATION
         ===================================================== */
 
         if (!walletAddress) {
-
-            return Response.json(
+            return jsonResponse(
                 {
                     success: false,
                     error:
                         "Bitcoin wallet address is required."
                 },
-                { status: 400 }
+                400
             );
         }
-
 
         if (
             !isValidBitcoinAddress(
                 walletAddress
             )
         ) {
-
-            return Response.json(
+            return jsonResponse(
                 {
                     success: false,
                     error:
                         "Invalid Bitcoin wallet address."
                 },
-                { status: 400 }
+                400
             );
         }
-
 
         /* =====================================================
            4. SESSION
@@ -257,32 +241,28 @@ export async function onRequestPost(context) {
                 "session"
             );
 
-
         if (!sessionToken) {
-
-            return Response.json(
+            return jsonResponse(
                 {
                     success: false,
                     error:
                         "Please login first."
                 },
-                { status: 401 }
+                401
             );
         }
-
 
         const tokenHash =
             await hashSessionToken(
                 sessionToken
             );
 
-
         /* =====================================================
            5. VERIFY SESSION
         ===================================================== */
 
         const session =
-            await context.env.DB
+            await db
                 .prepare(
                     `SELECT
                         user_id,
@@ -295,26 +275,40 @@ export async function onRequestPost(context) {
                 .bind(tokenHash)
                 .first();
 
-
         if (!session) {
-
-            return Response.json(
+            return jsonResponse(
                 {
                     success: false,
                     error:
                         "Invalid or expired session."
                 },
-                { status: 401 }
+                401
             );
         }
 
+        const userId =
+            Number(session.user_id);
+
+        if (
+            !Number.isInteger(userId) ||
+            userId <= 0
+        ) {
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Invalid user session."
+                },
+                401
+            );
+        }
 
         /* =====================================================
-           6. CHECK USER
+           6. VERIFY USER
         ===================================================== */
 
         const user =
-            await context.env.DB
+            await db
                 .prepare(
                     `SELECT
                         id,
@@ -323,35 +317,35 @@ export async function onRequestPost(context) {
                      WHERE id = ?
                      LIMIT 1`
                 )
-                .bind(session.user_id)
+                .bind(userId)
                 .first();
 
-
         if (!user) {
-
-            return Response.json(
+            return jsonResponse(
                 {
                     success: false,
                     error:
                         "User account not found."
                 },
-                { status: 404 }
+                404
             );
         }
 
-
         /* =====================================================
-           7. FRIENDLY PRE-CHECK
-        ===================================================== */
+           7. FRIENDLY DUPLICATE CHECK
+           ===================================================== */
 
         /*
-         * This is only a friendly response.
+         * This check is only for a fast user-friendly response.
          *
-         * The database trigger is the REAL protection.
+         * It is NOT the real security protection.
+         *
+         * The database trigger remains authoritative and
+         * protects against concurrent requests.
          */
 
         const existingWithdrawal =
-            await context.env.DB
+            await db
                 .prepare(
                     `SELECT
                         id,
@@ -361,57 +355,47 @@ export async function onRequestPost(context) {
                        AND status IN ('pending', 'processing')
                      LIMIT 1`
                 )
-                .bind(session.user_id)
+                .bind(userId)
                 .first();
 
-
         if (existingWithdrawal) {
-
-            return Response.json(
+            return jsonResponse(
                 {
                     success: false,
                     error:
                         "You already have a withdrawal being processed."
                 },
-                { status: 409 }
+                409
             );
         }
 
-
         /* =====================================================
            8. CREATE WITHDRAWAL
-        ===================================================== */
+           ===================================================== */
 
         /*
-         * IMPORTANT
+         * IMPORTANT:
          *
-         * Balance deduction is handled by the
-         * database trigger:
-         *
+         * The database trigger
          * validate_withdrawal_before_insert
-         *
-         * The trigger checks:
+         * performs the authoritative checks:
          *
          * 1. User exists
          * 2. No pending/processing withdrawal
-         * 3. Balance >= withdrawal amount
+         * 3. Balance is sufficient
+         * 4. Balance is deducted
          *
-         * Then it deducts the balance.
+         * If a check fails, SQLite aborts the INSERT.
          *
-         * If any check fails, SQLite aborts the INSERT.
-         *
-         * Therefore:
-         *
-         * withdrawal creation + balance deduction
-         * happen atomically.
+         * Therefore the withdrawal creation and balance
+         * deduction are atomic at the database level.
          */
 
         let withdrawalResult;
 
         try {
-
             withdrawalResult =
-                await context.env.DB
+                await db
                     .prepare(
                         `INSERT INTO withdrawals
                         (
@@ -425,7 +409,7 @@ export async function onRequestPost(context) {
                         (?, ?, ?, ?, 'pending')`
                     )
                     .bind(
-                        session.user_id,
+                        userId,
                         normalizedAmount,
                         walletAddress,
                         currency
@@ -433,135 +417,103 @@ export async function onRequestPost(context) {
                     .run();
 
         } catch (error) {
-
             const message =
                 String(
                     error?.message || ""
                 );
-
-
-            /* ---------------------------------------------
-               INSUFFICIENT BALANCE
-               --------------------------------------------- */
 
             if (
                 message.includes(
                     "INSUFFICIENT_BALANCE"
                 )
             ) {
-
-                return Response.json(
+                return jsonResponse(
                     {
                         success: false,
                         error:
                             "Insufficient BTC balance."
                     },
-                    { status: 400 }
+                    400
                 );
             }
-
-
-            /* ---------------------------------------------
-               DUPLICATE WITHDRAWAL
-               --------------------------------------------- */
 
             if (
                 message.includes(
                     "WITHDRAWAL_ALREADY_PENDING"
                 )
             ) {
-
-                return Response.json(
+                return jsonResponse(
                     {
                         success: false,
                         error:
                             "You already have a withdrawal being processed."
                     },
-                    { status: 409 }
+                    409
                 );
             }
-
-
-            /* ---------------------------------------------
-               USER NOT FOUND
-               --------------------------------------------- */
 
             if (
                 message.includes(
                     "USER_NOT_FOUND"
                 )
             ) {
-
-                return Response.json(
+                return jsonResponse(
                     {
                         success: false,
                         error:
                             "User account not found."
                     },
-                    { status: 404 }
+                    404
                 );
             }
-
-
-            /*
-             * Unexpected database error.
-             */
 
             console.error(
                 "Withdrawal insert error:",
                 error
             );
 
-
-            return Response.json(
+            return jsonResponse(
                 {
                     success: false,
                     error:
                         "Unable to process withdrawal request."
                 },
-                { status: 500 }
+                500
             );
         }
 
-
         /* =====================================================
            9. VERIFY INSERT
-        ===================================================== */
+           ===================================================== */
 
         if (
             !withdrawalResult.meta ||
             withdrawalResult.meta.changes !== 1
         ) {
-
             console.error(
                 "Withdrawal insert did not create exactly one row.",
                 {
-                    userId:
-                        session.user_id,
-
-                    amount:
-                        normalizedAmount
+                    userId,
+                    amount: normalizedAmount
                 }
             );
 
-
-            return Response.json(
+            return jsonResponse(
                 {
                     success: false,
                     error:
                         "Unable to process withdrawal request."
                 },
-                { status: 500 }
+                500
             );
         }
 
-
         /* =====================================================
            10. GET UPDATED BALANCE
-        ===================================================== */
+           ===================================================== */
 
         const updatedUser =
-            await context.env.DB
+            await db
                 .prepare(
                     `SELECT
                         balance
@@ -569,79 +521,94 @@ export async function onRequestPost(context) {
                      WHERE id = ?
                      LIMIT 1`
                 )
-                .bind(session.user_id)
+                .bind(userId)
                 .first();
 
-
         if (!updatedUser) {
-
             /*
-             * Withdrawal already exists and balance was already
-             * deducted by the database trigger.
+             * IMPORTANT:
              *
-             * DO NOT modify the balance again.
+             * The withdrawal was already created and the
+             * balance was already deducted.
+             *
+             * Never deduct the balance again here.
              */
 
             console.error(
                 "Withdrawal created but updated balance could not be loaded.",
                 {
-                    userId:
-                        session.user_id
+                    userId
                 }
             );
 
-
-            return Response.json(
+            return jsonResponse(
                 {
                     success: false,
                     error:
                         "Your withdrawal was submitted successfully. Please check your balance again shortly."
                 },
-                { status: 500 }
+                500
             );
         }
 
+        const balance =
+            Number(updatedUser.balance);
+
+        if (
+            !Number.isFinite(balance) ||
+            balance < 0
+        ) {
+            console.error(
+                "Invalid balance returned after withdrawal.",
+                {
+                    userId,
+                    balance: updatedUser.balance
+                }
+            );
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Your withdrawal was submitted successfully. Please check your balance again shortly."
+                },
+                500
+            );
+        }
 
         /* =====================================================
            11. SUCCESS
-        ===================================================== */
+           ===================================================== */
 
-        return Response.json({
-
+        return jsonResponse({
             success: true,
 
             message:
                 "Withdrawal request submitted successfully.",
 
-            status:
-                "pending",
+            status: "pending",
 
             amount:
                 normalizedAmount,
 
-            currency:
-                "BTC",
+            currency: "BTC",
 
-            balance:
-                updatedUser.balance
+            balance
         });
 
-
     } catch (error) {
-
         console.error(
             "Withdrawal error:",
             error
         );
 
-
-        return Response.json(
+        return jsonResponse(
             {
                 success: false,
                 error:
                     "Unable to process withdrawal request."
             },
-            { status: 500 }
+            500
         );
     }
-            }
+}
