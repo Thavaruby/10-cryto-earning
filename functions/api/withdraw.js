@@ -483,30 +483,50 @@ export async function onRequestPost(context) {
         }
 
         /* =====================================================
-           9. VERIFY INSERT
-           ===================================================== */
+   9. VERIFY WITHDRAWAL WAS CREATED
+===================================================== */
 
-        if (
-            !withdrawalResult.meta ||
-            withdrawalResult.meta.changes !== 1
-        ) {
-            console.error(
-                "Withdrawal insert did not create exactly one row.",
-                {
-                    userId,
-                    amount: normalizedAmount
-                }
-            );
+const createdWithdrawal =
+    await db
+        .prepare(
+            `SELECT
+                id,
+                amount,
+                currency,
+                status,
+                created_at
+             FROM withdrawals
+             WHERE user_id = ?
+               AND amount = ?
+               AND currency = 'BTC'
+               AND status = 'pending'
+             ORDER BY id DESC
+             LIMIT 1`
+        )
+        .bind(
+            userId,
+            normalizedAmount
+        )
+        .first();
 
-            return jsonResponse(
-                {
-                    success: false,
-                    error:
-                        "Unable to process withdrawal request."
-                },
-                500
-            );
+if (!createdWithdrawal) {
+    console.error(
+        "Withdrawal INSERT succeeded but record could not be verified.",
+        {
+            userId,
+            amount: normalizedAmount
         }
+    );
+
+    return jsonResponse(
+        {
+            success: false,
+            error:
+                "Your withdrawal may have been submitted. Please check your withdrawal history."
+        },
+        500
+    );
+}
 
         /* =====================================================
            10. GET UPDATED BALANCE
