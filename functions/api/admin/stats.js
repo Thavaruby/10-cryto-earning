@@ -1,5 +1,3 @@
-
-
 // ========================================
 // ADMIN STATISTICS
 // GET /api/admin/stats
@@ -7,6 +5,9 @@
 
 export async function onRequestGet(context) {
   const { request, env } = context;
+
+  // Use D1 session for consistent reads
+  const db = env.DB.withSession("first-primary");
 
   try {
 
@@ -51,7 +52,7 @@ export async function onRequestGet(context) {
     // CHECK SESSION
     // ========================================
 
-    const session = await env.DB.prepare(`
+    const session = await db.prepare(`
       SELECT user_id
       FROM sessions
       WHERE token_hash = ?
@@ -75,7 +76,7 @@ export async function onRequestGet(context) {
     // CHECK ADMIN
     // ========================================
 
-    const admin = await env.DB.prepare(`
+    const admin = await db.prepare(`
       SELECT user_id
       FROM admins
       WHERE user_id = ?
@@ -98,7 +99,7 @@ export async function onRequestGet(context) {
     // TOTAL USERS
     // ========================================
 
-    const users = await env.DB.prepare(`
+    const users = await db.prepare(`
       SELECT COUNT(*) AS total_users
       FROM users
     `).first();
@@ -107,7 +108,7 @@ export async function onRequestGet(context) {
     // CLAIM STATISTICS
     // ========================================
 
-    const claims = await env.DB.prepare(`
+    const claims = await db.prepare(`
       SELECT
         COUNT(*) AS total_claims,
         COALESCE(SUM(reward), 0) AS total_claimed
@@ -119,7 +120,7 @@ export async function onRequestGet(context) {
     // BTC ONLY
     // ========================================
 
-    const withdrawals = await env.DB.prepare(`
+    const withdrawals = await db.prepare(`
       SELECT
 
         COUNT(*) AS total_withdrawals,
@@ -154,24 +155,25 @@ export async function onRequestGet(context) {
           END
         ) AS pending_count,
 
-SUM(
-  CASE
-    WHEN status = 'processing'
-    THEN 1
-    ELSE 0
-  END
-) AS processing_count,
+        SUM(
+          CASE
+            WHEN status = 'processing'
+            THEN 1
+            ELSE 0
+          END
+        ) AS processing_count,
 
-COALESCE(
-  SUM(
-    CASE
-      WHEN status = 'processing'
-      THEN amount
-      ELSE 0
-    END
-  ),
-  0
-) AS processing_amount,
+        COALESCE(
+          SUM(
+            CASE
+              WHEN status = 'processing'
+              THEN amount
+              ELSE 0
+            END
+          ),
+          0
+        ) AS processing_amount,
+
         SUM(
           CASE
             WHEN status = 'approved'
@@ -197,7 +199,7 @@ COALESCE(
     // TODAY'S CLAIMS
     // ========================================
 
-    const todayClaims = await env.DB.prepare(`
+    const todayClaims = await db.prepare(`
       SELECT
         COUNT(*) AS count,
         COALESCE(SUM(reward), 0) AS amount
@@ -209,7 +211,7 @@ COALESCE(
     // TODAY'S WITHDRAWALS
     // ========================================
 
-    const todayWithdrawals = await env.DB.prepare(`
+    const todayWithdrawals = await db.prepare(`
       SELECT
         COUNT(*) AS count,
         COALESCE(SUM(amount), 0) AS amount
@@ -260,14 +262,14 @@ COALESCE(
           withdrawals?.pending_amount || 0
         ),
 
-processing: Number(
-  withdrawals?.processing_count || 0
-),
+        processing: Number(
+          withdrawals?.processing_count || 0
+        ),
 
-processingAmount: Number(
-  withdrawals?.processing_amount || 0
-),
-        
+        processingAmount: Number(
+          withdrawals?.processing_amount || 0
+        ),
+
         approved: Number(
           withdrawals?.approved_count || 0
         ),
@@ -300,6 +302,7 @@ processingAmount: Number(
 
   } catch (error) {
 
+    // Keep technical details in server logs only
     console.error(
       "ADMIN STATS ERROR:",
       error
@@ -308,7 +311,7 @@ processingAmount: Number(
     return Response.json(
       {
         success: false,
-        error: error?.message || String(error)
+        error: "Unable to load admin statistics."
       },
       { status: 500 }
     );
