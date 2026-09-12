@@ -1,10 +1,20 @@
+// ========================================
+// ADMIN WITHDRAWALS
+// GET /api/admin/withdrawals
+// ========================================
+
+
 function getCookie(request, name) {
-    const cookieHeader = request.headers.get("Cookie");
+
+    const cookieHeader =
+        request.headers.get("Cookie");
 
     if (!cookieHeader) return null;
 
     for (const cookie of cookieHeader.split(";")) {
-        const [key, ...value] = cookie.trim().split("=");
+
+        const [key, ...value] =
+            cookie.trim().split("=");
 
         if (key === name) {
             return value.join("=");
@@ -14,6 +24,10 @@ function getCookie(request, name) {
     return null;
 }
 
+
+// ========================================
+// HASH SESSION TOKEN
+// ========================================
 
 async function hashSessionToken(token) {
 
@@ -36,7 +50,21 @@ async function hashSessionToken(token) {
 }
 
 
+// ========================================
+// GET ADMIN WITHDRAWALS
+// ========================================
+
 export async function onRequestGet(context) {
+
+    // ========================================
+    // D1 SESSION
+    // ========================================
+
+    const db =
+        context.env.DB.withSession(
+            "first-primary"
+        );
+
 
     try {
 
@@ -74,7 +102,7 @@ export async function onRequestGet(context) {
 
 
         const session =
-            await context.env.DB
+            await db
                 .prepare(
                     `SELECT
                         user_id,
@@ -93,7 +121,8 @@ export async function onRequestGet(context) {
             return Response.json(
                 {
                     success: false,
-                    error: "Invalid or expired session"
+                    error:
+                        "Invalid or expired session"
                 },
                 { status: 401 }
             );
@@ -105,7 +134,7 @@ export async function onRequestGet(context) {
         ========================= */
 
         const admin =
-            await context.env.DB
+            await db
                 .prepare(
                     `SELECT user_id
                      FROM admins
@@ -121,7 +150,8 @@ export async function onRequestGet(context) {
             return Response.json(
                 {
                     success: false,
-                    error: "Admin access required"
+                    error:
+                        "Admin access required"
                 },
                 { status: 403 }
             );
@@ -133,7 +163,9 @@ export async function onRequestGet(context) {
         ========================= */
 
         const url =
-            new URL(context.request.url);
+            new URL(
+                context.request.url
+            );
 
 
         const requestedStatus =
@@ -177,7 +209,7 @@ export async function onRequestGet(context) {
         ========================= */
 
         const withdrawals =
-            await context.env.DB
+            await db
                 .prepare(
                     `SELECT
                         withdrawals.id,
@@ -226,11 +258,19 @@ export async function onRequestGet(context) {
 
     } catch (error) {
 
+        /* =========================
+           ERROR LOG
+        ========================= */
+
         console.error(
             "Admin withdrawals error:",
             error
         );
 
+
+        /* =========================
+           SAFE ERROR RESPONSE
+        ========================= */
 
         return Response.json(
             {
