@@ -1,10 +1,20 @@
+// ========================================
+// ADMIN WITHDRAWAL ACTION
+// POST /api/admin/withdrawal-action
+// ========================================
+
+
 function getCookie(request, name) {
-    const cookieHeader = request.headers.get("Cookie");
+
+    const cookieHeader =
+        request.headers.get("Cookie");
 
     if (!cookieHeader) return null;
 
     for (const cookie of cookieHeader.split(";")) {
-        const [key, ...value] = cookie.trim().split("=");
+
+        const [key, ...value] =
+            cookie.trim().split("=");
 
         if (key === name) {
             return value.join("=");
@@ -15,7 +25,12 @@ function getCookie(request, name) {
 }
 
 
+// ========================================
+// HASH SESSION TOKEN
+// ========================================
+
 async function hashSessionToken(token) {
+
     const data =
         new TextEncoder().encode(token);
 
@@ -35,11 +50,26 @@ async function hashSessionToken(token) {
 }
 
 
+// ========================================
+// ADMIN WITHDRAWAL ACTION
+// ========================================
+
 export async function onRequestPost(context) {
 
     console.log(
         "WITHDRAWAL ACTION FUNCTION CALLED"
     );
+
+
+    // ========================================
+    // D1 SESSION
+    // ========================================
+
+    const db =
+        context.env.DB.withSession(
+            "first-primary"
+        );
+
 
     try {
 
@@ -59,7 +89,8 @@ export async function onRequestPost(context) {
             return Response.json(
                 {
                     success: false,
-                    error: "Invalid request."
+                    error:
+                        "Invalid request."
                 },
                 { status: 400 }
             );
@@ -67,10 +98,12 @@ export async function onRequestPost(context) {
 
 
         const withdrawalId =
-            Number(data.withdrawalId);
+            Number(data?.withdrawalId);
+
 
         const action =
-            String(data.action || "")
+            String(data?.action || "")
+                .trim()
                 .toLowerCase();
 
 
@@ -141,18 +174,18 @@ export async function onRequestPost(context) {
 
 
         const session =
-    await context.env.DB
-        .prepare(
-            `SELECT
-                user_id,
-                expires_at
-             FROM sessions
-             WHERE token_hash = ?
-               AND expires_at > CURRENT_TIMESTAMP
-             LIMIT 1`
-        )
-        .bind(tokenHash)
-        .first();
+            await db
+                .prepare(
+                    `SELECT
+                        user_id,
+                        expires_at
+                     FROM sessions
+                     WHERE token_hash = ?
+                       AND expires_at > CURRENT_TIMESTAMP
+                     LIMIT 1`
+                )
+                .bind(tokenHash)
+                .first();
 
 
         if (!session) {
@@ -161,7 +194,7 @@ export async function onRequestPost(context) {
                 {
                     success: false,
                     error:
-                        "Invalid session."
+                        "Invalid or expired session."
                 },
                 { status: 401 }
             );
@@ -173,9 +206,10 @@ export async function onRequestPost(context) {
         ===================================================== */
 
         const admin =
-            await context.env.DB
+            await db
                 .prepare(
-                    `SELECT user_id
+                    `SELECT
+                        user_id
                      FROM admins
                      WHERE user_id = ?
                      LIMIT 1`
@@ -202,7 +236,7 @@ export async function onRequestPost(context) {
         ===================================================== */
 
         const withdrawal =
-            await context.env.DB
+            await db
                 .prepare(
                     `SELECT
                         id,
@@ -253,104 +287,107 @@ export async function onRequestPost(context) {
             );
         }
 
-/* =====================================================
-   7. REJECT
-     
-   PENDING → REJECTED
-     
-   The database trigger automatically refunds
-   the reserved withdrawal amount to the user.
-     
-   Refund happens exactly once because the UPDATE
-   only succeeds when status is still 'pending'.
-===================================================== */
 
-if (action === "reject") {
+        /* =====================================================
+           7. REJECT
+           
+           PENDING → REJECTED
 
-    const result =
-        await context.env.DB
-            .prepare(
-                `UPDATE withdrawals
-                 SET
-                    status = 'rejected',
-                    processed_at = CURRENT_TIMESTAMP
-                 WHERE id = ?
-                   AND status = 'pending'`
-            )
-            .bind(withdrawalId)
-            .run();
+           Existing D1 trigger refunds the reserved
+           withdrawal amount.
+
+           The UPDATE only succeeds when status
+           is still pending.
+        ===================================================== */
+
+        if (action === "reject") {
+
+            const result =
+                await db
+                    .prepare(
+                        `UPDATE withdrawals
+                         SET
+                            status = 'rejected',
+                            processed_at =
+                                CURRENT_TIMESTAMP
+                         WHERE id = ?
+                           AND status = 'pending'`
+                    )
+                    .bind(withdrawalId)
+                    .run();
 
 
-    if (
-        !result ||
-        !result.meta ||
-        result.meta.changes !== 1
-    ) {
+            if (
+                !result ||
+                !result.meta ||
+                result.meta.changes !== 1
+            ) {
 
-        console.error(
-            "Withdrawal rejection failed or already processed:",
-            {
-                withdrawalId
+                console.error(
+                    "Withdrawal rejection failed or already processed:",
+                    {
+                        withdrawalId
+                    }
+                );
+
+
+                return Response.json(
+                    {
+                        success: false,
+                        error:
+                            "Withdrawal was already processed or is being processed."
+                    },
+                    { status: 409 }
+                );
             }
-        );
 
 
-        return Response.json(
-            {
-                success: false,
-                error:
-                    "Withdrawal was already processed or is being processed."
-            },
-            { status: 409 }
-        );
-    }
+            console.log(
+                "WITHDRAWAL REJECTED:",
+                JSON.stringify({
+                    withdrawalId,
+                    refunded:
+                        withdrawal.amount,
+                    userId:
+                        withdrawal.user_id
+                })
+            );
 
 
-    console.log(
-        "WITHDRAWAL REJECTED:",
-        JSON.stringify({
-            withdrawalId,
-            refunded: withdrawal.amount,
-            userId: withdrawal.user_id
-        })
-    );
+            return Response.json({
 
+                success: true,
 
-    return Response.json({
+                status:
+                    "rejected",
 
-        success: true,
+                refunded:
+                    withdrawal.amount,
 
-        status:
-            "rejected",
+                currency:
+                    "BTC"
 
-        refunded:
-            withdrawal.amount,
+            });
+        }
 
-        currency:
-            "BTC"
-
-    });
-}
-        
 
         /* =====================================================
            8. APPROVE
            
-           IMPORTANT:
-           
-           Atomically claim the withdrawal first:
-           
+           Atomically claim the withdrawal:
+
            PENDING → PROCESSING
-           
-           This prevents two admins from sending
+
+           This prevents two admins from paying
            the same withdrawal simultaneously.
         ===================================================== */
 
         const claimResult =
-            await context.env.DB
+            await db
                 .prepare(
                     `UPDATE withdrawals
-                     SET status = 'processing'
+                     SET
+                        status = 'processing'
                      WHERE id = ?
                        AND status = 'pending'`
                 )
@@ -360,6 +397,7 @@ if (action === "reject") {
 
         if (
             !claimResult ||
+            !claimResult.meta ||
             claimResult.meta.changes !== 1
         ) {
 
@@ -384,13 +422,22 @@ if (action === "reject") {
 
         if (!apiKey) {
 
-            /* Restore pending because
-               payment was not attempted. */
+            console.error(
+                "FAUCETPAY_API_KEY is not configured."
+            );
 
-            await context.env.DB
+
+            /*
+             * Payment was NOT attempted.
+             *
+             * Safe to restore pending.
+             */
+
+            await db
                 .prepare(
                     `UPDATE withdrawals
-                     SET status = 'pending'
+                     SET
+                        status = 'pending'
                      WHERE id = ?
                        AND status = 'processing'`
                 )
@@ -422,10 +469,21 @@ if (action === "reject") {
             amountBTC <= 0
         ) {
 
-            await context.env.DB
+            console.error(
+                "Invalid BTC withdrawal amount:",
+                {
+                    withdrawalId,
+                    amount:
+                        withdrawal.amount
+                }
+            );
+
+
+            await db
                 .prepare(
                     `UPDATE withdrawals
-                     SET status = 'pending'
+                     SET
+                        status = 'pending'
                      WHERE id = ?
                        AND status = 'processing'`
                 )
@@ -455,10 +513,21 @@ if (action === "reject") {
             satoshis <= 0
         ) {
 
-            await context.env.DB
+            console.error(
+                "Invalid BTC satoshi amount:",
+                {
+                    withdrawalId,
+                    amountBTC,
+                    satoshis
+                }
+            );
+
+
+            await db
                 .prepare(
                     `UPDATE withdrawals
-                     SET status = 'pending'
+                     SET
+                        status = 'pending'
                      WHERE id = ?
                        AND status = 'processing'`
                 )
@@ -507,6 +576,7 @@ if (action === "reject") {
 
         let faucetPayResponse;
 
+
         try {
 
             faucetPayResponse =
@@ -548,25 +618,27 @@ if (action === "reject") {
             );
 
 
-            /* Payment was not confirmed.
-               Return withdrawal to pending. */
-
-            await context.env.DB
-                .prepare(
-                    `UPDATE withdrawals
-                     SET status = 'pending'
-                     WHERE id = ?
-                       AND status = 'processing'`
-                )
-                .bind(withdrawalId)
-                .run();
-
+            /*
+             * IMPORTANT:
+             *
+             * We cannot know whether FaucetPay
+             * received/processed the request.
+             *
+             * Therefore DO NOT automatically
+             * return this withdrawal to pending.
+             *
+             * Keep it in PROCESSING so it cannot
+             * accidentally be paid twice.
+             *
+             * The same idempotency key can be used
+             * later for reconciliation/retry.
+             */
 
             return Response.json(
                 {
                     success: false,
                     error:
-                        "FaucetPay could not be reached. Withdrawal remains pending."
+                        "FaucetPay could not be reached. Withdrawal remains processing and requires reconciliation."
                 },
                 { status: 502 }
             );
@@ -598,14 +670,15 @@ if (action === "reject") {
 
 
         console.log(
-    "FAUCETPAY RESPONSE RECEIVED:",
-    JSON.stringify({
-        withdrawalId,
-        httpStatus: faucetPayResponse.status,
-        success:
-            faucetPayResult?.success === true
-    })
-);
+            "FAUCETPAY RESPONSE RECEIVED:",
+            JSON.stringify({
+                withdrawalId,
+                httpStatus:
+                    faucetPayResponse.status,
+                success:
+                    faucetPayResult?.success === true
+            })
+        );
 
 
         /* =====================================================
@@ -620,17 +693,30 @@ if (action === "reject") {
 
             console.error(
                 "FaucetPay payment failed:",
-                faucetPayResult
+                JSON.stringify({
+                    withdrawalId,
+                    httpStatus:
+                        faucetPayResponse.status,
+                    response:
+                        faucetPayResult
+                })
             );
 
 
-            /* Payment was not confirmed.
-               Restore pending. */
+            /*
+             * Here FaucetPay explicitly returned
+             * a failed HTTP/API response.
+             *
+             * Payment was not confirmed.
+             *
+             * Safe to return to pending.
+             */
 
-            await context.env.DB
+            await db
                 .prepare(
                     `UPDATE withdrawals
-                     SET status = 'pending'
+                     SET
+                        status = 'pending'
                      WHERE id = ?
                        AND status = 'processing'`
                 )
@@ -677,7 +763,7 @@ if (action === "reject") {
         ===================================================== */
 
         const updateResult =
-            await context.env.DB
+            await db
                 .prepare(
                     `UPDATE withdrawals
                      SET
@@ -704,6 +790,7 @@ if (action === "reject") {
 
         if (
             !updateResult ||
+            !updateResult.meta ||
             updateResult.meta.changes !== 1
         ) {
 
@@ -717,12 +804,14 @@ if (action === "reject") {
 
 
             /*
-             * FaucetPay payment has already succeeded.
+             * FaucetPay already confirmed payment.
              *
-             * DO NOT retry automatically.
+             * DO NOT:
+             * - retry payment
+             * - return to pending
+             * - mark rejected
              *
-             * Keep PROCESSING so it is obvious that
-             * manual investigation is required.
+             * Keep PROCESSING for reconciliation.
              */
 
             return Response.json(
@@ -787,6 +876,11 @@ if (action === "reject") {
             error
         );
 
+
+        /*
+         * Do not expose internal error
+         * details to the browser.
+         */
 
         return Response.json(
             {
