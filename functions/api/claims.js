@@ -212,13 +212,7 @@ export async function onRequestGet(context) {
         );
 
 
-    } catch (error) {
-
-        console.error(
-            "Claims history error:",
-            error
-        );
-
+    } catch {
 
         return Response.json(
             {
