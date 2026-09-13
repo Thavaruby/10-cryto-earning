@@ -256,15 +256,14 @@ export async function onRequestGet(context) {
         });
 
 
-    } catch (error) {
+    } catch {
 
         /* =========================
            ERROR LOG
         ========================= */
 
         console.error(
-            "Admin withdrawals error:",
-            error
+            "ADMIN WITHDRAWALS ERROR."
         );
 
 
