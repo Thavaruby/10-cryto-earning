@@ -143,6 +143,20 @@ export async function onRequestPost(context) {
            3. VERIFY TURNSTILE
         -------------------------------- */
 
+        const turnstileSecret =
+            context.env.TURNSTILE_SECRET;
+
+        if (!turnstileSecret) {
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Verification service unavailable."
+                },
+                503
+            );
+        }
+
         const verifyResponse = await fetch(
             "https://challenges.cloudflare.com/turnstile/v0/siteverify",
             {
@@ -154,7 +168,7 @@ export async function onRequestPost(context) {
                 },
 
                 body: new URLSearchParams({
-                    secret: context.env.TURNSTILE_SECRET,
+                    secret: turnstileSecret,
                     response: turnstileToken
                 })
             }
@@ -187,23 +201,6 @@ export async function onRequestPost(context) {
         /* --------------------------------
            4. ATOMIC CLAIM + BALANCE UPDATE
         -------------------------------- */
-
-        /*
-         * IMPORTANT:
-         *
-         * Statement 1:
-         *   Increase balance ONLY if the user
-         *   has not claimed during the last hour.
-         *
-         * Statement 2:
-         *   Create the claim ONLY if statement 1
-         *   actually changed one user row.
-         *
-         * Both statements are inside one D1 batch.
-         *
-         * If either statement fails, the batch
-         * is rolled back.
-         */
 
         const results = await db.batch([
             db.prepare(
@@ -308,15 +305,6 @@ export async function onRequestPost(context) {
             results?.[1]?.meta?.changes ?? 0;
 
         if (claimChanges !== 1) {
-            console.error(
-                "Claim record was not created.",
-                {
-                    userId,
-                    balanceChanges,
-                    claimChanges
-                }
-            );
-
             return jsonResponse(
                 {
                     success: false,
@@ -343,11 +331,6 @@ export async function onRequestPost(context) {
             .first();
 
         if (!updatedUser) {
-            console.error(
-                "Updated balance could not be loaded.",
-                { userId }
-            );
-
             return jsonResponse(
                 {
                     success: false,
@@ -365,14 +348,6 @@ export async function onRequestPost(context) {
             !Number.isFinite(balance) ||
             balance < 0
         ) {
-            console.error(
-                "Invalid balance returned.",
-                {
-                    userId,
-                    balance: updatedUser.balance
-                }
-            );
-
             return jsonResponse(
                 {
                     success: false,
@@ -395,12 +370,7 @@ export async function onRequestPost(context) {
             balance: balance
         });
 
-    } catch (error) {
-        console.error(
-            "Claim error:",
-            error
-        );
-
+    } catch {
         return jsonResponse(
             {
                 success: false,
