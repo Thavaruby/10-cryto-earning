@@ -300,13 +300,10 @@ export async function onRequestGet(context) {
 
     });
 
-  } catch (error) {
+  } catch {
 
-    // Keep technical details in server logs only
-    console.error(
-      "ADMIN STATS ERROR:",
-      error
-    );
+    // Generic server-side log only
+    console.error("ADMIN STATS ERROR.");
 
     return Response.json(
       {
