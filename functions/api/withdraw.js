@@ -335,15 +335,6 @@ export async function onRequestPost(context) {
            7. FRIENDLY DUPLICATE CHECK
            ===================================================== */
 
-        /*
-         * This check is only for a fast user-friendly response.
-         *
-         * It is NOT the real security protection.
-         *
-         * The database trigger remains authoritative and
-         * protects against concurrent requests.
-         */
-
         const existingWithdrawal =
             await db
                 .prepare(
@@ -372,24 +363,6 @@ export async function onRequestPost(context) {
         /* =====================================================
            8. CREATE WITHDRAWAL
            ===================================================== */
-
-        /*
-         * IMPORTANT:
-         *
-         * The database trigger
-         * validate_withdrawal_before_insert
-         * performs the authoritative checks:
-         *
-         * 1. User exists
-         * 2. No pending/processing withdrawal
-         * 3. Balance is sufficient
-         * 4. Balance is deducted
-         *
-         * If a check fails, SQLite aborts the INSERT.
-         *
-         * Therefore the withdrawal creation and balance
-         * deduction are atomic at the database level.
-         */
 
         let withdrawalResult;
 
@@ -421,6 +394,14 @@ export async function onRequestPost(context) {
                 String(
                     error?.message || ""
                 );
+
+            /*
+             * These specific database errors are
+             * intentionally classified internally.
+             *
+             * Their raw error message is NEVER
+             * returned to the user.
+             */
 
             if (
                 message.includes(
@@ -468,8 +449,7 @@ export async function onRequestPost(context) {
             }
 
             console.error(
-                "Withdrawal insert error:",
-                error
+                "Withdrawal insert failed."
             );
 
             return jsonResponse(
@@ -483,50 +463,46 @@ export async function onRequestPost(context) {
         }
 
         /* =====================================================
-   9. VERIFY WITHDRAWAL WAS CREATED
-===================================================== */
+           9. VERIFY WITHDRAWAL WAS CREATED
+        ===================================================== */
 
-const createdWithdrawal =
-    await db
-        .prepare(
-            `SELECT
-                id,
-                amount,
-                currency,
-                status,
-                created_at
-             FROM withdrawals
-             WHERE user_id = ?
-               AND amount = ?
-               AND currency = 'BTC'
-               AND status = 'pending'
-             ORDER BY id DESC
-             LIMIT 1`
-        )
-        .bind(
-            userId,
-            normalizedAmount
-        )
-        .first();
+        const createdWithdrawal =
+            await db
+                .prepare(
+                    `SELECT
+                        id,
+                        amount,
+                        currency,
+                        status,
+                        created_at
+                     FROM withdrawals
+                     WHERE user_id = ?
+                       AND amount = ?
+                       AND currency = 'BTC'
+                       AND status = 'pending'
+                     ORDER BY id DESC
+                     LIMIT 1`
+                )
+                .bind(
+                    userId,
+                    normalizedAmount
+                )
+                .first();
 
-if (!createdWithdrawal) {
-    console.error(
-        "Withdrawal INSERT succeeded but record could not be verified.",
-        {
-            userId,
-            amount: normalizedAmount
+        if (!createdWithdrawal) {
+            console.error(
+                "Withdrawal record verification failed."
+            );
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Your withdrawal may have been submitted. Please check your withdrawal history."
+                },
+                500
+            );
         }
-    );
-
-    return jsonResponse(
-        {
-            success: false,
-            error:
-                "Your withdrawal may have been submitted. Please check your withdrawal history."
-        },
-        500
-    );
-}
 
         /* =====================================================
            10. GET UPDATED BALANCE
@@ -546,19 +522,14 @@ if (!createdWithdrawal) {
 
         if (!updatedUser) {
             /*
-             * IMPORTANT:
-             *
-             * The withdrawal was already created and the
-             * balance was already deducted.
+             * The withdrawal was already created and
+             * the balance was already deducted.
              *
              * Never deduct the balance again here.
              */
 
             console.error(
-                "Withdrawal created but updated balance could not be loaded.",
-                {
-                    userId
-                }
+                "Withdrawal created but updated balance could not be loaded."
             );
 
             return jsonResponse(
@@ -579,11 +550,7 @@ if (!createdWithdrawal) {
             balance < 0
         ) {
             console.error(
-                "Invalid balance returned after withdrawal.",
-                {
-                    userId,
-                    balance: updatedUser.balance
-                }
+                "Invalid balance returned after withdrawal."
             );
 
             return jsonResponse(
@@ -616,10 +583,9 @@ if (!createdWithdrawal) {
             balance
         });
 
-    } catch (error) {
+    } catch {
         console.error(
-            "Withdrawal error:",
-            error
+            "Withdrawal request failed."
         );
 
         return jsonResponse(
