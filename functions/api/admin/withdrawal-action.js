@@ -56,11 +56,6 @@ async function hashSessionToken(token) {
 
 export async function onRequestPost(context) {
 
-    console.log(
-        "WITHDRAWAL ACTION FUNCTION CALLED"
-    );
-
-
     // ========================================
     // D1 SESSION
     // ========================================
@@ -324,10 +319,7 @@ export async function onRequestPost(context) {
             ) {
 
                 console.error(
-                    "Withdrawal rejection failed or already processed:",
-                    {
-                        withdrawalId
-                    }
+                    "WITHDRAWAL REJECTION FAILED."
                 );
 
 
@@ -340,18 +332,6 @@ export async function onRequestPost(context) {
                     { status: 409 }
                 );
             }
-
-
-            console.log(
-                "WITHDRAWAL REJECTED:",
-                JSON.stringify({
-                    withdrawalId,
-                    refunded:
-                        withdrawal.amount,
-                    userId:
-                        withdrawal.user_id
-                })
-            );
 
 
             return Response.json({
@@ -423,7 +403,7 @@ export async function onRequestPost(context) {
         if (!apiKey) {
 
             console.error(
-                "FAUCETPAY_API_KEY is not configured."
+                "FAUCETPAY_API_KEY IS NOT CONFIGURED."
             );
 
 
@@ -470,12 +450,7 @@ export async function onRequestPost(context) {
         ) {
 
             console.error(
-                "Invalid BTC withdrawal amount:",
-                {
-                    withdrawalId,
-                    amount:
-                        withdrawal.amount
-                }
+                "INVALID BTC WITHDRAWAL AMOUNT."
             );
 
 
@@ -514,12 +489,7 @@ export async function onRequestPost(context) {
         ) {
 
             console.error(
-                "Invalid BTC satoshi amount:",
-                {
-                    withdrawalId,
-                    amountBTC,
-                    satoshis
-                }
+                "INVALID BTC SATOSHI AMOUNT."
             );
 
 
@@ -558,22 +528,6 @@ export async function onRequestPost(context) {
            12. FAUCETPAY SEND
         ===================================================== */
 
-        console.log(
-            "SENDING FAUCETPAY PAYMENT:",
-            JSON.stringify({
-                withdrawalId:
-                    withdrawal.id,
-
-                satoshis,
-
-                currency:
-                    "BTC",
-
-                idempotencyKey
-            })
-        );
-
-
         let faucetPayResponse;
 
 
@@ -610,11 +564,10 @@ export async function onRequestPost(context) {
                     }
                 );
 
-        } catch (error) {
+        } catch {
 
             console.error(
-                "FaucetPay network error:",
-                error
+                "FAUCETPAY NETWORK ERROR."
             );
 
 
@@ -663,24 +616,6 @@ export async function onRequestPost(context) {
         }
 
 
-        console.log(
-            "FAUCETPAY HTTP STATUS:",
-            faucetPayResponse.status
-        );
-
-
-        console.log(
-            "FAUCETPAY RESPONSE RECEIVED:",
-            JSON.stringify({
-                withdrawalId,
-                httpStatus:
-                    faucetPayResponse.status,
-                success:
-                    faucetPayResult?.success === true
-            })
-        );
-
-
         /* =====================================================
            14. FAUCETPAY ERROR
         ===================================================== */
@@ -692,14 +627,7 @@ export async function onRequestPost(context) {
         ) {
 
             console.error(
-                "FaucetPay payment failed:",
-                JSON.stringify({
-                    withdrawalId,
-                    httpStatus:
-                        faucetPayResponse.status,
-                    response:
-                        faucetPayResult
-                })
+                "FAUCETPAY PAYMENT FAILED."
             );
 
 
@@ -745,17 +673,6 @@ export async function onRequestPost(context) {
             null;
 
 
-        console.log(
-            "FAUCETPAY PAYMENT SUCCESS:",
-            JSON.stringify({
-                withdrawalId:
-                    withdrawal.id,
-
-                payoutId
-            })
-        );
-
-
         /* =====================================================
            16. MARK APPROVED
            
@@ -795,11 +712,7 @@ export async function onRequestPost(context) {
         ) {
 
             console.error(
-                "DATABASE UPDATE FAILED AFTER PAYMENT:",
-                JSON.stringify({
-                    withdrawalId,
-                    payoutId
-                })
+                "DATABASE UPDATE FAILED AFTER PAYMENT."
             );
 
 
@@ -833,23 +746,6 @@ export async function onRequestPost(context) {
            18. SUCCESS
         ===================================================== */
 
-        console.log(
-            "WITHDRAWAL APPROVED:",
-            JSON.stringify({
-                withdrawalId:
-                    withdrawal.id,
-
-                payoutId,
-
-                amount:
-                    withdrawal.amount,
-
-                currency:
-                    "BTC"
-            })
-        );
-
-
         return Response.json({
 
             success: true,
@@ -869,11 +765,10 @@ export async function onRequestPost(context) {
         });
 
 
-    } catch (error) {
+    } catch {
 
         console.error(
-            "Withdrawal action error:",
-            error
+            "ADMIN WITHDRAWAL ACTION ERROR."
         );
 
 
