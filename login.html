@@ -147,6 +147,10 @@ document.getElementById("loginForm")
             message.innerText =
                 "✅ Login successful!";
 
+            // Redirect to Dashboard
+            window.location.href =
+                "/dashboard.html";
+
         } else {
 
             message.innerText =
@@ -155,7 +159,7 @@ document.getElementById("loginForm")
             button.disabled = false;
         }
 
-    } catch (error) {
+    } catch {
 
         message.innerText =
             "❌ Connection error. Please try again.";
@@ -164,6 +168,7 @@ document.getElementById("loginForm")
     }
 
 });
+
 </script>
 
 </body>
