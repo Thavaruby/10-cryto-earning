@@ -10,74 +10,102 @@
 
 <style>
 
-/* =====================================================
-   GLOBAL
-===================================================== */
-
-* {
+  * {
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html {
+    scroll-behavior: smooth;
 }
 
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
-    text-align: center;
-    color: #172554;
-
-    background:
-        radial-gradient(circle at 20% 20%, rgba(255,180,0,.20), transparent 25%),
-        radial-gradient(circle at 80% 30%, rgba(37,99,235,.25), transparent 30%),
-        radial-gradient(circle at 50% 80%, rgba(249,115,22,.20), transparent 30%),
-        linear-gradient(135deg, #020617, #0f2a55, #07152f);
-
     min-height: 100vh;
     overflow-x: hidden;
+
+    font-family:
+        Inter,
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    color: #e5e7eb;
+    text-align: center;
+
+    background:
+        radial-gradient(
+            circle at 15% 10%,
+            rgba(37,99,235,.28),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 85% 15%,
+            rgba(124,58,237,.25),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 50% 90%,
+            rgba(245,158,11,.12),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            #020617 0%,
+            #07152f 48%,
+            #0b1f45 100%
+        );
 }
 
 
 /* =====================================================
-   ANIMATED BACKGROUND
+   BACKGROUND BITCOINS
 ===================================================== */
 
 .background-coins {
     position: fixed;
     inset: 0;
+
     overflow: hidden;
     pointer-events: none;
+
     z-index: 0;
 }
 
 .coin {
     position: absolute;
 
-    width: 52px;
-    height: 52px;
-
-    border-radius: 50%;
+    width: 48px;
+    height: 48px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    font-size: 27px;
-    font-weight: bold;
+    border-radius: 50%;
 
-    color: white;
+    color: #fff;
+    font-size: 25px;
+    font-weight: 900;
 
     background:
-        radial-gradient(circle at 35% 30%, #fff7b2, #f59e0b 35%, #d97706 75%);
+        radial-gradient(
+            circle at 32% 28%,
+            #fff7b2,
+            #f59e0b 40%,
+            #d97706 78%
+        );
 
-    border: 3px solid #fbbf24;
+    border: 2px solid rgba(251,191,36,.8);
 
     box-shadow:
-        0 0 15px rgba(251,191,36,.8),
-        0 0 35px rgba(245,158,11,.45);
+        0 0 15px rgba(251,191,36,.55),
+        0 0 40px rgba(245,158,11,.18);
 
-    opacity: .85;
+    opacity: .32;
 
     animation:
-        floatCoin 12s linear infinite,
-        spinCoin 4s linear infinite;
+        floatCoin 15s linear infinite;
 }
 
 .coin:nth-child(1) {
@@ -86,43 +114,42 @@ body {
 }
 
 .coin:nth-child(2) {
-    left: 18%;
-    width: 38px;
-    height: 38px;
-    font-size: 20px;
+    left: 20%;
+    width: 32px;
+    height: 32px;
+    font-size: 17px;
     animation-delay: 3s;
 }
 
 .coin:nth-child(3) {
-    left: 35%;
-    width: 45px;
-    height: 45px;
+    left: 38%;
+    width: 42px;
+    height: 42px;
     animation-delay: 6s;
 }
 
 .coin:nth-child(4) {
-    left: 55%;
+    left: 58%;
     animation-delay: 1s;
 }
 
 .coin:nth-child(5) {
-    left: 72%;
-    width: 42px;
-    height: 42px;
-    font-size: 22px;
+    left: 75%;
+    width: 35px;
+    height: 35px;
+    font-size: 18px;
     animation-delay: 5s;
 }
 
 .coin:nth-child(6) {
-    left: 88%;
-    width: 60px;
-    height: 60px;
-    font-size: 30px;
+    left: 90%;
+    width: 55px;
+    height: 55px;
+    font-size: 28px;
     animation-delay: 8s;
 }
 
 @keyframes floatCoin {
-
     0% {
         transform:
             translateY(110vh)
@@ -131,23 +158,8 @@ body {
 
     100% {
         transform:
-            translateY(-120px)
+            translateY(-130px)
             rotate(360deg);
-    }
-}
-
-@keyframes spinCoin {
-
-    0% {
-        filter: brightness(1);
-    }
-
-    50% {
-        filter: brightness(1.35);
-    }
-
-    100% {
-        filter: brightness(1);
     }
 }
 
@@ -156,363 +168,294 @@ body {
    HEADER
 ===================================================== */
 
-header {
-
+.crypto-header {
     position: relative;
     z-index: 2;
 
-    padding: 35px 20px 80px;
+    padding:
+        25px 12px
+        105px;
 
     background:
         linear-gradient(
             180deg,
-            rgba(2,6,23,.95),
-            rgba(15,42,85,.65),
+            rgba(2,6,23,.96),
+            rgba(7,21,47,.80),
             transparent
         );
-
-    color: white;
-}
-
-.header-faucet {
-
-    font-size: 70px;
-
-    display: inline-block;
-
-    animation:
-        faucetFloat 3s ease-in-out infinite;
-
-    filter:
-        drop-shadow(0 0 15px rgba(251,191,36,.9));
-}
-
-@keyframes faucetFloat {
-
-    0%, 100% {
-        transform: translateY(0) rotate(-2deg);
-    }
-
-    50% {
-        transform: translateY(-8px) rotate(2deg);
-    }
-}
-
-header h1 {
-
-    margin: 8px 0;
-
-    font-size: 38px;
-
-    letter-spacing: 1px;
-
-    text-shadow:
-        0 0 15px rgba(255,255,255,.35);
-}
-
-header h1 span {
-    color: #f59e0b;
-}
-
-header p {
-
-    margin: 8px 0;
-
-    font-size: 16px;
-
-    color: #cbd5e1;
-}
-
-/* =========================
-   CRYPTO FAUCET TOP BANNER
-========================= */
-
-.crypto-header {
-    background: linear-gradient(
-        135deg,
-        #071b2a,
-        #102d3d,
-        #071b2a
-    );
-
-    padding: 28px 15px;
-
-    overflow: hidden;
 }
 
 
-/* Main tape */
+/* =====================================================
+   FAUCET HERO
+===================================================== */
 
 .faucet-banner {
-
-    width: 94%;
-    max-width: 1100px;
-
-    height: 180px;
-
-    margin: auto;
-
-    border-radius: 20px;
-
     position: relative;
 
-    overflow: hidden;
+    width: min(94%, 1050px);
+    height: 185px;
+
+    margin: auto;
 
     display: flex;
     align-items: center;
 
+    overflow: hidden;
+
+    border-radius: 28px;
+
+    background:
+        radial-gradient(
+            circle at 20% 50%,
+            rgba(34,197,94,.18),
+            transparent 32%
+        ),
+        linear-gradient(
+            135deg,
+            #03120d,
+            #06251a 55%,
+            #123d29
+        );
+
+    border:
+        1px solid rgba(74,222,128,.20);
+
+    box-shadow:
+        0 25px 70px rgba(0,0,0,.45),
+        inset 0 0 45px rgba(34,197,94,.06);
+}
+
+.faucet-banner::before {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
     background:
         linear-gradient(
             110deg,
-            #02150d 0%,
-            #062015 48%,
-            #4caf50 100%
+            transparent 20%,
+            rgba(255,255,255,.035) 50%,
+            transparent 80%
         );
 
-    box-shadow:
-        0 10px 35px rgba(0,0,0,0.45),
-        inset 0 0 30px rgba(0,255,100,0.08);
-
-    border: 2px solid rgba(255,255,255,0.08);
+    animation: bannerShine 5s ease-in-out infinite;
 }
 
+@keyframes bannerShine {
+    0%, 100% {
+        transform: translateX(-100%);
+    }
 
-/* Diagonal right section */
+    50% {
+        transform: translateX(100%);
+    }
+}
 
 .faucet-banner::after {
-
     content: "";
 
     position: absolute;
 
-    right: -80px;
-    top: -40px;
+    right: -100px;
+    top: -60px;
 
-    width: 55%;
-    height: 280px;
+    width: 52%;
+    height: 310px;
 
     background:
         linear-gradient(
             135deg,
-            rgba(88,200,90,0.95),
-            rgba(40,150,70,0.95)
+            rgba(34,197,94,.85),
+            rgba(21,128,61,.75)
         );
 
     transform: skewX(-22deg);
 
-    z-index: 1;
+    opacity: .75;
 }
 
 
-/* Faucet area */
+/* =====================================================
+   FAUCET
+===================================================== */
 
 .faucet {
-
     position: relative;
 
-    width: 48%;
+    width: 46%;
     height: 100%;
 
     z-index: 5;
 }
 
-
-/* Faucet handle */
-
 .faucet-handle {
-
     position: absolute;
 
-    width: 90px;
-    height: 16px;
+    width: 92px;
+    height: 15px;
 
-    background: #58d66a;
-
-    border-radius: 10px;
-
-    top: 35px;
+    top: 36px;
     left: 50%;
 
     transform: translateX(-50%);
 
-    box-shadow:
-        0 0 12px rgba(80,255,100,0.35);
-}
-
-
-/* Faucet body */
-
-.faucet-body {
-
-    position: absolute;
-
-    width: 70px;
-    height: 65px;
+    border-radius: 20px;
 
     background:
         linear-gradient(
-            135deg,
-            #7bea7d,
-            #42b950
+            90deg,
+            #4ade80,
+            #86efac
         );
 
-    border-radius: 12px;
+    box-shadow:
+        0 0 18px rgba(74,222,128,.35);
+}
+
+.faucet-body {
+    position: absolute;
+
+    width: 72px;
+    height: 67px;
 
     top: 55px;
     left: 50%;
 
     transform: translateX(-50%);
 
+    border-radius: 13px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #86efac,
+            #22c55e
+        );
+
     box-shadow:
-        inset -8px -5px 0 rgba(0,0,0,0.08),
-        0 0 18px rgba(70,220,90,0.25);
+        inset -8px -5px 0 rgba(0,0,0,.08),
+        0 0 22px rgba(34,197,94,.25);
 }
 
-
-/* Faucet neck */
-
 .faucet-neck {
-
     position: absolute;
 
-    width: 22px;
+    width: 23px;
     height: 45px;
-
-    background: #58d866;
 
     top: -35px;
     left: 24px;
 
     border-radius: 8px;
+
+    background: #4ade80;
 }
 
-
-/* Faucet knob */
-
 .faucet-knob {
-
     position: absolute;
 
     width: 25px;
     height: 35px;
 
-    background: #3da94b;
-
     left: -25px;
     top: 15px;
 
     border-radius: 8px;
+
+    background: #16a34a;
 }
 
-
-/* Horizontal pipe */
-
 .faucet-pipe {
-
     position: absolute;
 
-    width: 45px;
+    width: 46px;
     height: 25px;
 
-    background: #62db6a;
-
-    right: -38px;
+    right: -39px;
     top: 25px;
 
     border-radius: 0 15px 15px 0;
+
+    background: #4ade80;
 }
 
-
-/* Faucet spout */
-
 .faucet-spout {
-
     position: absolute;
 
     width: 32px;
-    height: 45px;
-
-    background: #55d863;
+    height: 46px;
 
     left: calc(50% + 42px);
     top: 78px;
 
     border-radius: 0 0 15px 15px;
+
+    background: #4ade80;
 }
 
-
-/* Spout end */
-
 .faucet-spout::after {
-
     content: "";
 
     position: absolute;
 
     width: 42px;
-    height: 12px;
+    height: 11px;
 
-    background: #315d3b;
-
-    bottom: -4px;
     left: -5px;
+    bottom: -4px;
 
-    border-radius: 6px;
+    border-radius: 7px;
+
+    background: #14532d;
 }
 
 
-/* =========================
-   FALLING BITCOIN
-========================= */
+/* =====================================================
+   FALLING BTC
+===================================================== */
 
 .falling-btc {
-
     position: absolute;
 
-    left: calc(50% + 37px);
-
+    left: calc(50% + 38px);
     top: 118px;
 
     width: 46px;
     height: 46px;
 
-    border-radius: 50%;
-
     display: flex;
     align-items: center;
     justify-content: center;
 
-    font-size: 28px;
-    font-weight: bold;
+    border-radius: 50%;
 
     color: white;
+    font-size: 27px;
+    font-weight: 900;
 
     background:
         radial-gradient(
-            circle at 35% 30%,
-            #ffd45a,
-            #f7931a 65%,
-            #d86d00
+            circle at 30% 25%,
+            #fde68a,
+            #f59e0b 55%,
+            #c2410c
         );
 
     box-shadow:
-        0 0 12px #f7931a,
-        0 0 30px rgba(247,147,26,0.6);
-
-    z-index: 10;
+        0 0 18px rgba(245,158,11,.75),
+        0 0 40px rgba(245,158,11,.25);
 
     animation:
         bitcoinDrop 1.8s infinite ease-in;
 }
 
-
 @keyframes bitcoinDrop {
-
     0% {
         transform:
             translateY(-15px)
-            scale(0.75)
-            rotate(-10deg);
+            scale(.7);
 
         opacity: 0;
     }
@@ -528,188 +471,152 @@ header p {
     100% {
         transform:
             translateY(75px)
-            scale(1)
-            rotate(12deg);
+            scale(1);
 
         opacity: 0;
     }
 }
 
 
-/* =========================
-   TEXT
-========================= */
+/* =====================================================
+   HERO TEXT
+===================================================== */
 
 .faucet-text {
-
     position: relative;
 
-    z-index: 5;
+    z-index: 6;
 
-    margin-left: 20px;
-
-    color: white;
+    margin-left: 15px;
 
     text-align: left;
+
+    color: white;
 }
 
-
 .faucet-title {
+    font-size: clamp(21px, 4vw, 32px);
 
-    font-size: 30px;
-
-    font-weight: 800;
+    font-weight: 900;
 
     letter-spacing: 1px;
 
-    text-shadow:
-        0 2px 8px rgba(0,0,0,0.3);
-}
+    color: #f8fafc;
 
+    text-shadow:
+        0 4px 20px rgba(0,0,0,.35);
+}
 
 .faucet-subtitle {
-
     margin-top: 12px;
 
-    font-size: 20px;
+    font-size: 18px;
 
-    font-weight: 600;
+    font-weight: 700;
 
-    color: #eaffea;
+    line-height: 1.6;
+
+    color: #bbf7d0;
 }
 
 
-/* =========================
-   MOBILE
-========================= */
-
-@media (max-width: 600px) {
-
-    .crypto-header {
-        padding: 18px 8px;
-    }
-
-    .faucet-banner {
-
-        height: 145px;
-
-        width: 96%;
-
-        border-radius: 16px;
-    }
-
-    .faucet {
-
-        width: 45%;
-    }
-
-    .faucet-handle {
-        width: 65px;
-        height: 12px;
-        top: 28px;
-    }
-
-    .faucet-body {
-        width: 55px;
-        height: 52px;
-        top: 45px;
-    }
-
-    .faucet-neck {
-        left: 18px;
-        height: 35px;
-        top: -28px;
-    }
-
-    .faucet-pipe {
-        width: 32px;
-        right: -28px;
-        top: 20px;
-    }
-
-    .faucet-spout {
-        left: calc(50% + 30px);
-        top: 62px;
-        width: 26px;
-        height: 38px;
-    }
-
-    .faucet-spout::after {
-        width: 34px;
-    }
-
-    .falling-btc {
-
-        left: calc(50% + 27px);
-
-        top: 98px;
-
-        width: 38px;
-        height: 38px;
-
-        font-size: 23px;
-    }
-
-    .faucet-title {
-        font-size: 18px;
-    }
-
-    .faucet-subtitle {
-        font-size: 14px;
-        margin-top: 7px;
-    }
-   }
 /* =====================================================
-   MAIN CARD
+   MAIN DASHBOARD
 ===================================================== */
 
 .container {
-
     position: relative;
-    z-index: 3;
+    z-index: 5;
 
-    width: 92%;
-    max-width: 520px;
+    width: min(94%, 560px);
 
-    margin: -45px auto 40px;
+    margin:
+        -65px auto
+        55px;
 
-    padding: 30px;
+    padding:
+        28px 22px
+        32px;
+
+    border-radius: 30px;
 
     background:
-        rgba(255,255,255,.96);
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.98),
+            rgba(241,245,249,.96)
+        );
 
-    border-radius: 24px;
+    border:
+        1px solid rgba(255,255,255,.8);
 
     box-shadow:
-        0 20px 60px rgba(0,0,0,.45),
-        0 0 30px rgba(59,130,246,.25);
+        0 30px 90px rgba(0,0,0,.45),
+        0 10px 35px rgba(37,99,235,.14);
 
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(20px);
 }
 
 .container h2 {
+    margin:
+        0 0 5px;
 
-    margin-top: 0;
+    font-size: 27px;
+    font-weight: 900;
 
-    font-size: 28px;
+    color: #0f172a;
+
+    letter-spacing: -.5px;
 }
 
 
 /* =====================================================
-   NOTIFICATION
+   EMAIL
+===================================================== */
+
+.email {
+    display: inline-block;
+
+    max-width: 100%;
+
+    margin:
+        5px auto
+        20px;
+
+    padding:
+        7px 14px;
+
+    border-radius: 999px;
+
+    background:
+        #eff6ff;
+
+    color:
+        #475569;
+
+    font-size: 12px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* =====================================================
+   TOP NOTIFICATION
 ===================================================== */
 
 #topNotification {
-
     display: none;
 
-    margin: 15px 0;
+    margin: 12px 0;
 
-    padding: 12px;
+    padding: 12px 14px;
 
-    border-radius: 10px;
+    border-radius: 13px;
 
-    font-weight: bold;
+    font-size: 13px;
+    font-weight: 700;
 
     word-break: break-word;
 }
@@ -731,857 +638,7 @@ header p {
 
 
 /* =====================================================
-   EMAIL
-===================================================== */
-
-.email {
-
-    color: #64748b;
-
-    margin-bottom: 18px;
-
-    font-size: 14px;
-}
-
-/* =========================
-   CRYPTO AD SLIDER
-========================= */
-
-.crypto-ad-slider {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    margin: 18px auto 5px;
-}
-
-.crypto-ad-window {
-    width: 100%;
-    overflow: hidden;
-    border-radius: 16px;
-}
-
-.crypto-ad-track {
-    display: flex;
-    width: 900%;
-    transition: transform 0.55s ease-in-out;
-}
-
-.crypto-ad-slide {
-    width: 11.111111%;
-    flex-shrink: 0;
-    text-decoration: none;
-    box-sizing: border-box;
-    padding: 2px;
-}
-
-.crypto-ad {
-    height: 120px;
-    width: 100%;
-    border-radius: 16px;
-
-    display: flex;
-    align-items: center;
-
-    position: relative;
-    overflow: hidden;
-
-    padding: 14px;
-
-    color: white;
-
-    box-sizing: border-box;
-
-    box-shadow:
-        0 5px 18px rgba(0,0,0,0.20);
-}
-
-.crypto-ad::before {
-    content: "";
-
-    position: absolute;
-
-    width: 170px;
-    height: 170px;
-
-    right: -60px;
-    top: -65px;
-
-    border-radius: 50%;
-
-    background: rgba(255,255,255,0.12);
-
-    animation: adGlow 4s ease-in-out infinite;
-}
-
-@keyframes adGlow {
-
-    0%, 100% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.3);
-    }
-}
-
-
-/* COIN */
-
-.crypto-coin {
-    width: 55px;
-    height: 55px;
-
-    min-width: 55px;
-
-    border-radius: 50%;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    font-size: 28px;
-    font-weight: bold;
-
-    background: rgba(255,255,255,0.18);
-
-    border: 2px solid rgba(255,255,255,0.55);
-
-    z-index: 2;
-
-    animation: coinFloat 2.5s ease-in-out infinite;
-}
-
-@keyframes coinFloat {
-
-    0%, 100% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(-5px);
-    }
-}
-
-
-/* TEXT */
-
-.crypto-ad-text {
-    margin-left: 12px;
-    text-align: left;
-    z-index: 3;
-}
-
-.crypto-ad-text strong {
-    display: block;
-    font-size: 15px;
-    letter-spacing: 0.5px;
-}
-
-.crypto-ad-text span {
-    display: block;
-    font-size: 18px;
-    font-weight: bold;
-    margin-top: 5px;
-}
-
-.crypto-ad-text small {
-    display: block;
-    font-size: 11px;
-    margin-top: 5px;
-}
-
-
-/* LARGE SYMBOL */
-
-.crypto-symbol {
-    position: absolute;
-
-    right: 10px;
-    bottom: -12px;
-
-    font-size: 58px;
-    font-weight: 900;
-
-    opacity: 0.14;
-
-    transform: rotate(-8deg);
-}
-
-
-/* COLORS */
-
-.ltc-ad {
-    background: linear-gradient(135deg,#263238,#607d8b,#90a4ae);
-}
-
-.bnb-ad {
-    background: linear-gradient(135deg,#604b00,#d8a900,#f5c842);
-}
-
-.doge-ad {
-    background: linear-gradient(135deg,#665c1e,#a89020,#d6c15a);
-}
-
-.sui-ad {
-    background: linear-gradient(135deg,#064e68,#0891b2,#38bdf8);
-}
-
-.tron-ad {
-    background: linear-gradient(135deg,#650b0b,#dc2626,#ef4444);
-}
-
-.ton-ad {
-    background: linear-gradient(135deg,#075985,#0284c7,#38bdf8);
-}
-
-.sol-ad {
-    background: linear-gradient(135deg,#312e81,#7c3aed,#db2777);
-}
-
-.pol-ad {
-    background: linear-gradient(135deg,#3b0764,#7e22ce,#a855f7);
-}
-
-.bch-ad {
-    background: linear-gradient(135deg,#064e3b,#059669,#34d399);
-}
-
-
-/* ARROWS */
-
-.ad-arrow {
-    width: 30px;
-    height: 42px;
-
-    min-width: 30px;
-
-    padding: 0;
-    margin: 0;
-
-    border-radius: 8px;
-
-    background: rgba(37,99,235,0.9);
-
-    font-size: 17px;
-
-    z-index: 10;
-}
-
-.ad-arrow:hover {
-    background: #1d4ed8;
-}
-
-
-/* DOTS */
-
-.crypto-ad-dots {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    gap: 7px;
-
-    margin: 8px 0 18px;
-}
-
-.crypto-dot {
-    width: 8px;
-    height: 8px;
-
-    min-width: 8px;
-
-    padding: 0;
-    margin: 0;
-
-    border: 0;
-    border-radius: 50%;
-
-    background: #b8bec8;
-
-    cursor: pointer;
-}
-
-.crypto-dot.active {
-    width: 11px;
-    height: 11px;
-
-    min-width: 11px;
-
-    background: #2563eb;
-
-    box-shadow:
-        0 0 8px rgba(37,99,235,0.5);
-}
-
-
-/* MOBILE */
-
-@media (max-width: 500px) {
-
-    .crypto-ad {
-        height: 105px;
-        padding: 11px;
-    }
-
-    .crypto-coin {
-        width: 46px;
-        height: 46px;
-        min-width: 46px;
-        font-size: 23px;
-    }
-
-    .crypto-ad-text {
-        margin-left: 9px;
-    }
-
-    .crypto-ad-text strong {
-        font-size: 13px;
-    }
-
-    .crypto-ad-text span {
-        font-size: 15px;
-    }
-
-    .crypto-ad-text small {
-        font-size: 9px;
-    }
-
-    .crypto-symbol {
-        font-size: 44px;
-    }
-
-    .ad-arrow {
-        width: 27px;
-        min-width: 27px;
-        font-size: 14px;
-    }
-}
-/* =====================================================
-   CLAIM
-===================================================== */
-
-#claimButton {
-
-    width: 90%;
-    max-width: 370px;
-
-    padding: 15px;
-
-    font-size: 17px;
-
-    font-weight: bold;
-
-    background:
-        linear-gradient(
-            135deg,
-            #2563eb,
-            #1d4ed8
-        );
-
-    box-shadow:
-        0 7px 20px rgba(37,99,235,.35);
-}
-
-#claimButton:hover {
-    transform: translateY(-2px);
-}
-
-#claimButton:disabled {
-    transform: none;
-}
-
-.action-notification {
-
-    display: none;
-
-    width: 90%;
-    max-width: 370px;
-
-    margin: 10px auto 12px;
-
-    padding: 12px;
-
-    border-radius: 9px;
-
-    font-weight: bold;
-
-    word-break: break-word;
-}
-
-.action-notification.success {
-
-    display: block;
-
-    background: #dcfce7;
-
-    color: #166534;
-}
-
-.action-notification.error {
-
-    display: block;
-
-    background: #fee2e2;
-
-    color: #991b1b;
-}
-
-.action-notification.info {
-
-    display: block;
-
-    background: #dbeafe;
-
-    color: #1e40af;
-}
-
-#claimCooldown {
-
-    margin: 8px 0 20px;
-
-    font-weight: bold;
-
-    color: #2563eb;
-}
-
-
-/* =====================================================
-   WITHDRAW
-===================================================== */
-
-.withdraw-section {
-
-    margin-top: 25px;
-
-    padding: 20px;
-
-    border-radius: 18px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #fff7ed,
-            #ffedd5
-        );
-
-    border: 1px solid #fdba74;
-}
-
-.withdraw-section h3 {
-
-    margin-top: 0;
-
-    color: #7c2d12;
-
-    font-size: 23px;
-}
-
-
-/* Amount label */
-
-.amount-row {
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    width: 90%;
-
-    max-width: 370px;
-
-    margin: 0 auto 8px;
-
-    text-align: left;
-}
-
-.amount-label {
-
-    font-weight: bold;
-
-    color: #172554;
-}
-
-.amount-label small {
-
-    color: #64748b;
-
-    font-weight: normal;
-
-    font-size: 12px;
-}
-
-
-/* MAX */
-
-.max-button {
-
-    margin: 0;
-
-    padding: 7px 13px;
-
-    font-size: 13px;
-
-    font-weight: bold;
-
-    background:
-        linear-gradient(
-            135deg,
-            #f59e0b,
-            #ea580c
-        );
-}
-
-
-/* Inputs */
-
-input,
-select {
-
-    width: 90%;
-
-    max-width: 370px;
-
-    padding: 13px;
-
-    font-size: 15px;
-
-    border: 1px solid #cbd5e1;
-
-    border-radius: 9px;
-
-    background: white;
-
-    outline: none;
-}
-
-input:focus,
-select:focus {
-
-    border-color: #2563eb;
-
-    box-shadow:
-        0 0 0 3px rgba(37,99,235,.12);
-}
-
-
-/* Withdraw button */
-
-#withdrawButton {
-
-    width: 90%;
-
-    max-width: 370px;
-
-    padding: 15px;
-
-    font-size: 16px;
-
-    font-weight: bold;
-
-    background:
-        linear-gradient(
-            135deg,
-            #f97316,
-            #ea580c
-        );
-
-    box-shadow:
-        0 7px 20px rgba(234,88,12,.30);
-}
-
-
-/* =====================================================
-   HR
-===================================================== */
-
-hr {
-
-    margin: 28px 0;
-
-    border: 0;
-
-    border-top: 1px solid #e2e8f0;
-}
-
-
-/* =====================================================
-   HISTORY BUTTONS
-===================================================== */
-
-.history-buttons {
-
-    display: flex;
-
-    gap: 8px;
-
-    justify-content: center;
-
-    flex-wrap: wrap;
-}
-
-.history-buttons button {
-
-    flex: 1;
-
-    min-width: 170px;
-
-    font-size: 14px;
-
-    padding: 12px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #4f46e5,
-            #2563eb
-        );
-}
-
-
-/* =====================================================
-   LOGOUT
-===================================================== */
-
-.logout-button {
-
-    margin-top: 22px;
-
-    width: 70%;
-
-    background: #374151;
-}
-
-
-/* =====================================================
-   MODAL
-===================================================== */
-
-.modal {
-
-    display: none;
-
-    position: fixed;
-
-    z-index: 1000;
-
-    left: 0;
-    top: 0;
-
-    width: 100%;
-    height: 100%;
-
-    background:
-        rgba(0,0,0,.65);
-}
-
-.modal-content {
-
-    background: white;
-
-    width: 90%;
-
-    max-width: 500px;
-
-    max-height: 80vh;
-
-    overflow-y: auto;
-
-    margin: 8% auto;
-
-    padding: 25px;
-
-    border-radius: 18px;
-
-    position: relative;
-
-    text-align: left;
-}
-
-.closeButton {
-
-    position: absolute;
-
-    right: 10px;
-    top: 10px;
-
-    background: #ef4444;
-
-    padding: 7px 12px;
-
-    margin: 0;
-}
-
-
-/* =====================================================
-   HISTORY ITEM
-===================================================== */
-
-.history-item {
-
-    padding: 14px;
-
-    margin: 10px 0;
-
-    background: #f8fafc;
-
-    border: 1px solid #e2e8f0;
-
-    border-radius: 10px;
-
-    word-break: break-word;
-}
-
-.history-item strong {
-
-    color: #1e3a8a;
-}
-
-
-/* =====================================================
-   STATUS
-===================================================== */
-
-.withdraw-status {
-
-    font-weight: bold;
-}
-
-.withdraw-status.approved {
-    color: #16a34a;
-}
-
-.withdraw-status.rejected {
-    color: #dc2626;
-}
-
-.withdraw-status.pending {
-    color: #ca8a04;
-}
-
-.withdraw-status.processing {
-    color: #2563eb;
-}
-
-.withdraw-status.unknown {
-    color: #6b7280;
-}
-
-
-/* =====================================================
-   MOBILE
-===================================================== */
-
-@media (max-width: 600px) {
-
-    header h1 {
-        font-size: 29px;
-    }
-
-    .header-faucet {
-        font-size: 55px;
-    }
-
-    .container {
-
-        width: 94%;
-
-        padding: 20px;
-
-        margin-top: -35px;
-    }
-
-    .balance {
-        font-size: 24px;
-    }
-
-    .history-buttons {
-        flex-direction: column;
-    }
-
-    .history-buttons button {
-        width: 100%;
-    }
-
-    .logout-button {
-        width: 100%;
-    }
-}
-
-  /* =====================================================
-   🚀 PREMIUM MOBILE UI POLISH
-   UI ONLY — DO NOT CHANGE JAVASCRIPT
-===================================================== */
-
-/* ---------- Main dashboard card ---------- */
-
-.container {
-    width: min(94%, 560px);
-    margin: -55px auto 45px;
-    padding: 26px 22px 30px;
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(255,255,255,.98),
-            rgba(248,250,252,.96)
-        );
-
-    border: 1px solid rgba(255,255,255,.8);
-
-    border-radius: 28px;
-
-    box-shadow:
-        0 25px 70px rgba(0,0,0,.42),
-        0 5px 25px rgba(37,99,235,.12);
-
-    backdrop-filter: blur(16px);
-}
-
-
-/* ---------- Dashboard title ---------- */
-
-.container h2 {
-    margin: 0 0 5px;
-
-    font-size: 28px;
-    font-weight: 800;
-
-    color: #0f172a;
-
-    letter-spacing: -.4px;
-}
-
-
-/* ---------- Email ---------- */
-
-.email {
-    display: inline-block;
-
-    max-width: 100%;
-
-    padding: 7px 13px;
-
-    margin: 4px auto 20px;
-
-    border-radius: 999px;
-
-    background: #eff6ff;
-
-    color: #475569;
-
-    font-size: 12px;
-
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-
-/* =====================================================
-   💰 PREMIUM BALANCE CARD
+   BTC BALANCE CARD
 ===================================================== */
 
 .balance-box {
@@ -1589,33 +646,54 @@ hr {
 
     width: 100%;
 
-    padding: 23px 18px;
+    margin:
+        5px auto
+        22px;
 
-    margin: 5px auto 20px;
-
-    border-radius: 21px;
+    padding:
+        24px 20px;
 
     overflow: hidden;
 
+    text-align: left;
+
+    border-radius: 23px;
+
     background:
         radial-gradient(
-            circle at 90% 20%,
-            rgba(251,191,36,.30),
+            circle at 90% 15%,
+            rgba(251,191,36,.24),
             transparent 30%
         ),
         linear-gradient(
             135deg,
-            #0f172a,
-            #172554 55%,
+            #020617,
+            #111827 48%,
             #1e3a8a
         );
 
-    color: white;
+    border:
+        1px solid rgba(255,255,255,.10);
 
     box-shadow:
-        0 15px 35px rgba(15,23,42,.28);
+        0 18px 40px rgba(15,23,42,.28);
+}
 
-    border: 1px solid rgba(255,255,255,.10);
+.balance-box::before {
+    content: "";
+
+    position: absolute;
+
+    width: 180px;
+    height: 180px;
+
+    right: -90px;
+    top: -90px;
+
+    border-radius: 50%;
+
+    border:
+        25px solid rgba(251,191,36,.06);
 }
 
 .balance-box::after {
@@ -1623,46 +701,43 @@ hr {
 
     position: absolute;
 
-    right: -12px;
-    bottom: -32px;
+    right: -15px;
+    bottom: -48px;
 
-    font-size: 125px;
-
+    font-size: 145px;
     font-weight: 900;
 
-    color: rgba(255,255,255,.045);
+    color: rgba(255,255,255,.035);
 
     transform: rotate(-12deg);
-
-    pointer-events: none;
 }
 
 .balance-title {
     position: relative;
     z-index: 2;
 
-    font-size: 12px;
-
-    text-transform: uppercase;
-
-    letter-spacing: 1.5px;
+    margin-bottom: 8px;
 
     color: #93c5fd;
 
-    margin-bottom: 8px;
+    font-size: 11px;
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1.7px;
 }
 
 .balance {
     position: relative;
     z-index: 2;
 
-    font-size: clamp(25px, 7vw, 36px);
+    font-size:
+        clamp(25px, 7vw, 37px);
 
-    font-weight: 800;
+    font-weight: 900;
 
     color: #f8fafc;
-
-    letter-spacing: .3px;
 
     word-break: break-word;
 }
@@ -1673,41 +748,250 @@ hr {
     margin-right: 3px;
 
     text-shadow:
-        0 0 15px rgba(251,191,36,.45);
+        0 0 18px rgba(251,191,36,.5);
 }
 
 
 /* =====================================================
-   🎯 CAPTCHA
+   CAPTCHA
 ===================================================== */
 
 .cf-turnstile {
     display: flex;
-    justify-content: center;
 
-    margin: 12px auto 17px;
+    justify-content: center;
+    align-items: center;
 
     min-height: 65px;
+
+    margin:
+        10px auto
+        16px;
 }
 
 
 /* =====================================================
-   🎁 CLAIM BUTTON
+   CRYPTO AD SLIDER
 ===================================================== */
 
-#claimButton {
+.crypto-ad-slider {
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+
     width: 100%;
-    max-width: none;
 
-    min-height: 56px;
+    margin:
+        10px auto
+        4px;
+}
 
-    padding: 15px 18px;
+.crypto-ad-window {
+    width: 100%;
 
-    border-radius: 15px;
+    overflow: hidden;
 
-    font-size: 16px;
+    border-radius: 18px;
 
-    letter-spacing: .4px;
+    box-shadow:
+        0 8px 25px rgba(15,23,42,.14);
+}
+
+.crypto-ad-track {
+    display: flex;
+
+    width: 900%;
+
+    transition:
+        transform .55s
+        cubic-bezier(.22,.61,.36,1);
+}
+
+.crypto-ad-slide {
+    width: 11.111111%;
+
+    flex-shrink: 0;
+
+    padding: 2px;
+
+    text-decoration: none;
+}
+
+.crypto-ad {
+    position: relative;
+
+    height: 112px;
+
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    padding: 14px;
+
+    overflow: hidden;
+
+    border-radius: 18px;
+
+    color: white;
+
+    box-shadow:
+        inset 0 0 30px rgba(255,255,255,.05);
+}
+
+.crypto-ad::before {
+    content: "";
+
+    position: absolute;
+
+    width: 180px;
+    height: 180px;
+
+    right: -65px;
+    top: -65px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,255,255,.10);
+}
+
+.crypto-coin {
+    position: relative;
+    z-index: 2;
+
+    width: 53px;
+    height: 53px;
+
+    min-width: 53px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    font-size: 26px;
+    font-weight: 900;
+
+    background:
+        rgba(255,255,255,.17);
+
+    border:
+        1px solid rgba(255,255,255,.45);
+
+    box-shadow:
+        0 8px 18px rgba(0,0,0,.18);
+}
+
+.crypto-ad-text {
+    position: relative;
+    z-index: 3;
+
+    margin-left: 12px;
+
+    text-align: left;
+}
+
+.crypto-ad-text strong {
+    display: block;
+
+    font-size: 13px;
+
+    letter-spacing: .7px;
+}
+
+.crypto-ad-text span {
+    display: block;
+
+    margin-top: 5px;
+
+    font-size: 17px;
+    font-weight: 900;
+}
+
+.crypto-ad-text small {
+    display: block;
+
+    margin-top: 5px;
+
+    font-size: 10px;
+
+    opacity: .85;
+}
+
+.crypto-symbol {
+    position: absolute;
+
+    right: 10px;
+    bottom: -14px;
+
+    font-size: 58px;
+    font-weight: 900;
+
+    opacity: .13;
+
+    transform: rotate(-8deg);
+}
+
+
+/* AD COLORS */
+
+.ltc-ad {
+    background: linear-gradient(135deg,#263238,#546e7a);
+}
+
+.bnb-ad {
+    background: linear-gradient(135deg,#5c4700,#d4a900);
+}
+
+.doge-ad {
+    background: linear-gradient(135deg,#5f551c,#b89e20);
+}
+
+.sui-ad {
+    background: linear-gradient(135deg,#064e68,#0891b2);
+}
+
+.tron-ad {
+    background: linear-gradient(135deg,#650b0b,#dc2626);
+}
+
+.ton-ad {
+    background: linear-gradient(135deg,#075985,#0284c7);
+}
+
+.sol-ad {
+    background: linear-gradient(135deg,#312e81,#7c3aed);
+}
+
+.pol-ad {
+    background: linear-gradient(135deg,#3b0764,#7e22ce);
+}
+
+.bch-ad {
+    background: linear-gradient(135deg,#064e3b,#059669);
+}
+
+
+/* ARROWS */
+
+.ad-arrow {
+    width: 31px;
+    height: 43px;
+
+    min-width: 31px;
+
+    padding: 0;
+
+    border: 0;
+
+    border-radius: 10px;
+
+    color: white;
 
     background:
         linear-gradient(
@@ -1716,8 +1000,101 @@ hr {
             #4f46e5
         );
 
+    font-size: 15px;
+
     box-shadow:
-        0 10px 25px rgba(37,99,235,.30);
+        0 7px 18px rgba(37,99,235,.25);
+
+    cursor: pointer;
+}
+
+.ad-arrow:active {
+    transform: scale(.94);
+}
+
+
+/* DOTS */
+
+.crypto-ad-dots {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    gap: 6px;
+
+    margin:
+        9px 0
+        19px;
+}
+
+.crypto-dot {
+    width: 7px;
+    height: 7px;
+
+    min-width: 7px;
+
+    padding: 0;
+
+    border: 0;
+
+    border-radius: 50%;
+
+    background: #cbd5e1;
+
+    cursor: pointer;
+}
+
+.crypto-dot.active {
+    width: 10px;
+    height: 10px;
+
+    min-width: 10px;
+
+    background: #2563eb;
+
+    box-shadow:
+        0 0 9px rgba(37,99,235,.55);
+}
+
+
+/* =====================================================
+   CLAIM AREA
+===================================================== */
+
+#claimButton {
+    position: relative;
+
+    width: 100%;
+    max-width: none;
+
+    min-height: 58px;
+
+    padding: 16px 20px;
+
+    border: 0;
+
+    border-radius: 16px;
+
+    color: white;
+
+    font-size: 16px;
+    font-weight: 900;
+
+    letter-spacing: .3px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #4f46e5,
+            #7c3aed
+        );
+
+    box-shadow:
+        0 12px 28px rgba(37,99,235,.32);
+
+    cursor: pointer;
 
     transition:
         transform .2s ease,
@@ -1725,31 +1102,74 @@ hr {
         opacity .2s ease;
 }
 
+#claimButton::before {
+    content: "";
+
+    position: absolute;
+
+    inset: 1px;
+
+    border-radius: 15px;
+
+    background:
+        linear-gradient(
+            120deg,
+            transparent,
+            rgba(255,255,255,.12),
+            transparent
+        );
+
+    pointer-events: none;
+}
+
 #claimButton:hover:not(:disabled) {
     transform: translateY(-2px);
 
     box-shadow:
-        0 14px 30px rgba(37,99,235,.38);
+        0 17px 35px rgba(37,99,235,.40);
 }
 
 #claimButton:active:not(:disabled) {
-    transform: scale(.98);
+    transform: scale(.985);
+}
+
+#claimButton:disabled {
+    opacity: .58;
+
+    cursor: not-allowed;
+
+    box-shadow:
+        none;
 }
 
 
-/* ---------- Claim notification ---------- */
+/* =====================================================
+   CLAIM NOTIFICATION
+===================================================== */
 
 .action-notification {
+    display: none;
+
     width: 100%;
-    max-width: none;
+
+    margin:
+        10px auto
+        12px;
+
+    padding:
+        12px 14px;
 
     border-radius: 12px;
 
     font-size: 13px;
+    font-weight: 700;
 
     line-height: 1.45;
 
-    animation: notificationIn .25s ease-out;
+    word-break: break-word;
+
+    animation:
+        notificationIn .25s ease;
 }
 
 @keyframes notificationIn {
@@ -1764,125 +1184,198 @@ hr {
     }
 }
 
-#claimCooldown {
-    min-height: 22px;
+.action-notification.success {
+    background: #dcfce7;
+    color: #166534;
+}
 
-    margin: 11px 0 20px;
+.action-notification.error {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.action-notification.info {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+#claimCooldown {
+    min-height: 23px;
+
+    margin:
+        10px 0
+        20px;
+
+    color: #2563eb;
 
     font-size: 13px;
+    font-weight: 800;
 }
 
 
 /* =====================================================
-   📢 CRYPTO SLIDER
-===================================================== */
-
-.crypto-ad-slider {
-    margin: 18px auto 4px;
-
-    gap: 5px;
-}
-
-.crypto-ad-window {
-    border-radius: 18px;
-
-    box-shadow:
-        0 7px 22px rgba(0,0,0,.12);
-}
-
-.crypto-ad {
-    height: 112px;
-
-    border-radius: 18px;
-
-    padding: 13px;
-}
-
-.crypto-coin {
-    box-shadow:
-        0 5px 15px rgba(0,0,0,.18);
-}
-
-.ad-arrow {
-    border-radius: 10px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #2563eb,
-            #4f46e5
-        );
-
-    box-shadow:
-        0 5px 15px rgba(37,99,235,.25);
-}
-
-
-/* =====================================================
-   💸 WITHDRAW CARD
+   WITHDRAWAL CARD
 ===================================================== */
 
 .withdraw-section {
+    position: relative;
+
     margin-top: 25px;
 
-    padding: 20px 15px 22px;
+    padding:
+        22px 16px
+        24px;
 
-    border-radius: 21px;
+    overflow: hidden;
+
+    border-radius: 23px;
 
     background:
         linear-gradient(
             145deg,
-            #fff7ed,
+            #fffaf5,
             #ffedd5
         );
 
-    border: 1px solid #fed7aa;
+    border:
+        1px solid #fed7aa;
 
     box-shadow:
-        0 8px 25px rgba(234,88,12,.08);
+        0 12px 30px rgba(234,88,12,.10);
+
+    text-align: center;
+}
+
+.withdraw-section::before {
+    content: "₿";
+
+    position: absolute;
+
+    right: -20px;
+    top: -40px;
+
+    font-size: 140px;
+    font-weight: 900;
+
+    color: rgba(234,88,12,.045);
+
+    transform: rotate(12deg);
+
+    pointer-events: none;
 }
 
 .withdraw-section h3 {
-    margin-bottom: 20px;
+    position: relative;
+    z-index: 2;
 
-    font-size: 21px;
+    margin:
+        0 0
+        20px;
+
+    color: #7c2d12;
+
+    font-size: 22px;
+    font-weight: 900;
 }
 
 
-/* ---------- Amount row ---------- */
+/* =====================================================
+   AMOUNT
+===================================================== */
 
 .amount-row {
-    width: 100%;
-    max-width: none;
+    position: relative;
+    z-index: 2;
 
-    margin-bottom: 9px;
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    width: 100%;
+
+    margin:
+        0 auto
+        8px;
+
+    text-align: left;
 }
 
 .amount-label {
+    color: #172554;
+
     font-size: 13px;
+    font-weight: 800;
 }
 
 .amount-label small {
     display: block;
 
     margin-top: 3px;
+
+    color: #64748b;
+
+    font-size: 10px;
+    font-weight: 500;
+}
+
+.max-button {
+    min-height: 38px;
+
+    padding:
+        7px 13px;
+
+    border: 0;
+
+    border-radius: 9px;
+
+    color: white;
+
+    font-size: 12px;
+    font-weight: 900;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f59e0b,
+            #ea580c
+        );
+
+    box-shadow:
+        0 6px 15px rgba(234,88,12,.22);
+
+    cursor: pointer;
 }
 
 
-/* ---------- Inputs ---------- */
+/* =====================================================
+   INPUTS
+===================================================== */
 
 input,
 select {
-    width: 100%;
-    max-width: none;
+    position: relative;
+    z-index: 2;
 
-    min-height: 51px;
+    width: 100%;
+
+    min-height: 52px;
+
+    padding:
+        13px 14px;
+
+    border:
+        1px solid #cbd5e1;
 
     border-radius: 12px;
 
-    border: 1px solid #cbd5e1;
+    outline: none;
 
-    padding: 13px 14px;
+    background: rgba(255,255,255,.96);
+
+    color: #0f172a;
+
+    font-family: inherit;
 
     font-size: 16px;
 
@@ -1891,362 +1384,150 @@ select {
         box-shadow .2s ease;
 }
 
+input::placeholder {
+    color: #94a3b8;
+}
+
 input:focus,
 select:focus {
     border-color: #2563eb;
 
     box-shadow:
-        0 0 0 4px rgba(37,99,235,.10);
-}
-
-
-/* ---------- MAX ---------- */
-
-.max-button {
-    min-height: 38px;
-
-    padding: 7px 13px;
-
-    border-radius: 9px;
-
-    box-shadow:
-        0 5px 12px rgba(234,88,12,.20);
-}
-
-
-/* ---------- Withdrawal button ---------- */
-
-#withdrawButton {
-    width: 100%;
-    max-width: none;
-
-    min-height: 55px;
-
-    border-radius: 14px;
-
-    font-size: 15px;
-
-    box-shadow:
-        0 10px 23px rgba(234,88,12,.25);
-}
-
-#withdrawButton:active {
-    transform: scale(.98);
+        0 0 0 4px
+        rgba(37,99,235,.10);
 }
 
 
 /* =====================================================
-   📜 HISTORY
+   WITHDRAW BUTTON
+===================================================== */
+
+#withdrawButton {
+    position: relative;
+    z-index: 2;
+
+    width: 100%;
+
+    min-height: 57px;
+
+    padding: 15px;
+
+    border: 0;
+
+    border-radius: 15px;
+
+    color: white;
+
+    font-size: 15px;
+    font-weight: 900;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f97316,
+            #ea580c,
+            #c2410c
+        );
+
+    box-shadow:
+        0 12px 27px rgba(234,88,12,.28);
+
+    cursor: pointer;
+
+    transition:
+        transform .2s ease,
+        opacity .2s ease;
+}
+
+#withdrawButton:hover:not(:disabled) {
+    transform: translateY(-2px);
+}
+
+#withdrawButton:disabled {
+    opacity: .55;
+}
+
+
+/* =====================================================
+   SEPARATOR
 ===================================================== */
 
 hr {
-    margin: 28px 0 22px;
+    margin:
+        30px 0
+        22px;
+
+    border: 0;
 
     border-top:
         1px solid #e2e8f0;
 }
 
+
+/* =====================================================
+   HISTORY BUTTONS
+===================================================== */
+
 .history-buttons {
     display: grid;
 
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns:
+        1fr 1fr;
 
     gap: 10px;
 }
 
 .history-buttons button {
     width: 100%;
-    min-width: 0;
 
-    min-height: 50px;
+    min-height: 52px;
 
-    padding: 11px 8px;
+    padding:
+        11px 8px;
 
-    border-radius: 13px;
+    border: 0;
+
+    border-radius: 14px;
+
+    color: white;
 
     font-size: 12px;
+    font-weight: 800;
 
-    line-height: 1.3;
+    background:
+        linear-gradient(
+            135deg,
+            #4f46e5,
+            #2563eb
+        );
 
     box-shadow:
-        0 7px 18px rgba(37,99,235,.16);
+        0 8px 19px rgba(37,99,235,.18);
+
+    cursor: pointer;
+
+    transition:
+        transform .2s ease;
+}
+
+.history-buttons button:hover {
+    transform: translateY(-2px);
 }
 
 
 /* =====================================================
-   🚪 LOGOUT
+   LOGOUT
 ===================================================== */
 
 .logout-button {
     width: 100%;
 
-    min-height: 48px;
+    min-height: 49px;
 
     margin-top: 18px;
 
-    border-radius: 13px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #374151,
-            #1f2937
-        );
-
-    box-shadow:
-        0 7px 18px rgba(15,23,42,.18);
-}
-
-
-/* =====================================================
-   📜 MODAL
-===================================================== */
-
-.modal {
-    padding: 15px;
-
-    background:
-        rgba(2,6,23,.72);
-
-    backdrop-filter: blur(5px);
-}
-
-.modal-content {
-    width: 100%;
-    max-width: 520px;
-
-    max-height: 85vh;
-
-    margin: 7vh auto;
-
-    padding: 24px 17px 20px;
-
-    border-radius: 22px;
-
-    box-shadow:
-        0 25px 70px rgba(0,0,0,.45);
-}
-
-.modal-content h3 {
-    margin-top: 3px;
-    padding-right: 40px;
-
-    font-size: 21px;
-
-    color: #0f172a;
-}
-
-.closeButton {
-    width: 38px;
-    height: 38px;
-
-    padding: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 10px;
-
-    font-size: 18px;
-
-    background: #ef4444;
-}
-
-
-/* =====================================================
-   📋 HISTORY ITEMS
-===================================================== */
-
-.history-item {
-    padding: 15px;
-
-    margin: 10px 0;
-
-    border-radius: 14px;
-
-    background:
-        linear-gradient(
-            145deg,
-            #f8fafc,
-            #eef2ff
-        );
-
-    border: 1px solid #e2e8f0;
-
-    box-shadow:
-        0 4px 12px rgba(15,23,42,.05);
-
-    font-size: 13px;
-
-    line-height: 1.55;
-}
-
-
-/* =====================================================
-   📱 SMALL MOBILE — 480px
-===================================================== */
-
-@media (max-width: 480px) {
-
-    header.crypto-header {
-        padding: 15px 7px 62px;
-    }
-
-    .faucet-banner {
-        height: 135px;
-    }
-
-    .faucet-title {
-        font-size: 17px;
-    }
-
-    .faucet-subtitle {
-        font-size: 13px;
-    }
-
-    .container {
-        width: calc(100% - 20px);
-
-        margin-top: -48px;
-
-        padding: 22px 15px 25px;
-
-        border-radius: 24px;
-    }
-
-    .container h2 {
-        font-size: 24px;
-    }
-
-    .balance-box {
-        padding: 21px 14px;
-    }
-
-    .balance {
-        font-size: 24px;
-    }
-
-    .crypto-ad {
-        height: 102px;
-    }
-
-    .crypto-ad-text strong {
-        font-size: 12px;
-    }
-
-    .crypto-ad-text span {
-        font-size: 14px;
-    }
-
-    .crypto-ad-text small {
-        font-size: 9px;
-    }
-
-    .crypto-coin {
-        width: 44px;
-        height: 44px;
-        min-width: 44px;
-
-        font-size: 21px;
-    }
-
-    .history-buttons {
-        grid-template-columns: 1fr;
-    }
-
-    .history-buttons button {
-        min-height: 49px;
-
-        font-size: 13px;
-    }
-
-    .withdraw-section {
-        padding: 18px 12px 20px;
-    }
-
-    .amount-row {
-        align-items: center;
-    }
-
-    .amount-label small {
-        font-size: 10px;
-    }
-
-}
-
-
-/* =====================================================
-   📱 VERY SMALL PHONES — 360px
-===================================================== */
-
-@media (max-width: 360px) {
-
-    .container {
-        width: calc(100% - 12px);
-
-        padding-left: 11px;
-        padding-right: 11px;
-    }
-
-    .balance {
-        font-size: 21px;
-    }
-
-    .faucet-title {
-        font-size: 15px;
-    }
-
-    .faucet-subtitle {
-        font-size: 11px;
-    }
-
-    .crypto-ad-text span {
-        font-size: 13px;
-    }
-
-    .crypto-ad-text small {
-        font-size: 8px;
-    }
-
-    .ad-arrow {
-        width: 25px;
-        min-width: 25px;
-    }
-}
-
-
-/* =====================================================
-   ✨ TOUCH FRIENDLY
-===================================================== */
-
-button,
-select,
-input {
-    -webkit-tap-highlight-color: transparent;
-}
-
-button {
-    touch-action: manipulation;
-}
-
-
-/* =====================================================
-   ♿ REDUCE MOTION
-===================================================== */
-
-@media (prefers-reduced-motion: reduce) {
-
-    *,
-    *::before,
-    *::after {
-        animation-duration: .01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: .01ms !important;
-        scroll-behavior: auto !important;
-    }
-} 
-
+    border: 1px solid #334 
+        
 </style>
 
 <script
