@@ -168,7 +168,7 @@ export async function onRequestPost(context) {
                 body: JSON.stringify({
 
                     from:
-                        "My Crypto Faucet <onboarding@resend.dev>",
+    "My Crypto Faucet <noreply@myfaucetcrypto.com>",
 
                     to: [email],
 
