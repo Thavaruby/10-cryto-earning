@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Verify Code - My Crypto Faucet</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-family: Arial, sans-serif;
+    color: white;
+
+    background:
+        radial-gradient(circle at 20% 20%, #172554, transparent 40%),
+        radial-gradient(circle at 80% 80%, #3b0764, transparent 40%),
+        #020617;
+
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 430px;
+}
+
+.card {
+    padding: 35px 28px;
+
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 24px;
+
+    background: rgba(15,23,42,0.72);
+    backdrop-filter: blur(18px);
+
+    box-shadow:
+        0 25px 60px rgba(0,0,0,0.45),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+
+    text-align: center;
+}
+
+.logo {
+    width: 72px;
+    height: 72px;
+
+    margin: 0 auto 15px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(145deg, #ffd84d, #d89500);
+
+    color: #111827;
+
+    font-size: 42px;
+    font-weight: bold;
+
+    box-shadow:
+        0 8px 25px rgba(245,158,11,0.35);
+}
+
+.brand {
+    font-size: 25px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.subtitle {
+    color: #94a3b8;
+    font-size: 14px;
+    margin-bottom: 28px;
+}
+
+.icon {
+    font-size: 42px;
+    margin-bottom: 10px;
+}
+
+h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.description {
+    color: #94a3b8;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.email-display {
+    margin-bottom: 20px;
+    padding: 12px;
+
+    border-radius: 10px;
+
+    background: rgba(255,255,255,0.06);
+
+    color: #fbbf24;
+
+    font-size: 14px;
+
+    word-break: break-word;
+}
+
+input {
+    width: 100%;
+
+    padding: 15px;
+
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.12);
+
+    background: rgba(255,255,255,0.06);
+
+    color: white;
+
+    font-size: 24px;
+    font-weight: bold;
+
+    text-align: center;
+    letter-spacing: 8px;
+
+    outline: none;
+
+    margin-bottom: 18px;
+}
+
+input:focus {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 3px rgba(139,92,246,0.15);
+}
+
+button {
+    width: 100%;
+
+    padding: 15px;
+
+    border: none;
+    border-radius: 12px;
+
+    background:
+        linear-gradient(135deg, #2563eb, #7c3aed);
+
+    color: white;
+
+    font-size: 15px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 25px rgba(99,102,241,0.3);
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.message {
+    min-height: 22px;
+    margin-top: 18px;
+
+    font-size: 14px;
+}
+
+.security {
+    margin-top: 25px;
+
+    padding: 12px;
+
+    border-radius: 10px;
+
+    background: rgba(255,255,255,0.04);
+
+    color: #94a3b8;
+
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.back {
+    display: inline-block;
+
+    margin-top: 22px;
+
+    color: #93c5fd;
+    text-decoration: none;
+
+    font-size: 14px;
+}
+
+.back:hover {
+    text-decoration: underline;
+}
+
+.footer {
+    text-align: center;
+
+    margin-top: 18px;
+
+    color: #64748b;
+    font-size: 11px;
+}
+
+@media (max-width: 480px) {
+
+    .card {
+        padding: 30px 20px;
+    }
+
+    .brand {
+        font-size: 22px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <div class="logo">₿</div>
+
+        <div class="brand">
+            My Crypto Faucet
+        </div>
+
+        <div class="subtitle">
+            Earn Bitcoin • Claim Hourly • Withdraw
+        </div>
+
+        <div class="icon">
+            🔐
+        </div>
+
+        <h1>
+            Verify Your Email
+        </h1>
+
+        <p class="description">
+            Enter the 6-digit verification code
+            sent to your email address.
+        </p>
+
+        <div class="email-display" id="emailDisplay">
+            Loading email...
+        </div>
+
+        <form id="verifyForm">
+
+            <input
+                type="text"
+                id="code"
+                inputmode="numeric"
+                autocomplete="one-time-code"
+                maxlength="6"
+                placeholder="000000"
+                required
+            >
+
+            <button type="submit">
+                VERIFY CODE
+            </button>
+
+        </form>
+
+        <div
+            class="message"
+            id="message">
+        </div>
+
+        <div class="security">
+            🔒 Your verification code expires
+            after 10 minutes.
+        </div>
+
+        <a
+            href="/forgot-password.html"
+            class="back">
+            ← Back to Forgot Password
+        </a>
+
+    </div>
+
+    <div class="footer">
+        © My Crypto Faucet
+    </div>
+
+</div>
+
+<script>
+
+const params =
+    new URLSearchParams(window.location.search);
+
+const email =
+    params.get("email");
+
+const emailDisplay =
+    document.getElementById("emailDisplay");
+
+const form =
+    document.getElementById("verifyForm");
+
+const codeInput =
+    document.getElementById("code");
+
+const message =
+    document.getElementById("message");
+
+const button =
+    form.querySelector("button");
+
+
+if (email) {
+
+    emailDisplay.textContent =
+        email;
+
+} else {
+
+    emailDisplay.textContent =
+        "Email address not found";
+
+}
+
+
+/*
+ * Allow only numbers
+ */
+codeInput.addEventListener("input", () => {
+
+    codeInput.value =
+        codeInput.value
+            .replace(/\D/g, "")
+            .slice(0, 6);
+
+});
+
+
+form.addEventListener("submit", async (e) => {
+
+    e.preventDefault();
+
+    const code =
+        codeInput.value.trim();
+
+    if (!email) {
+
+        message.textContent =
+            "❌ Email address is missing.";
+
+        message.style.color =
+            "#ff6b6b";
+
+        return;
+    }
+
+    if (!/^\d{6}$/.test(code)) {
+
+        message.textContent =
+            "Please enter the 6-digit code.";
+
+        message.style.color =
+            "#ff6b6b";
+
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = "VERIFYING...";
+
+    message.textContent =
+        "⏳ Verifying your code...";
+
+    message.style.color =
+        "#aaa";
+
+    /*
+     * Verification API will be connected
+     * in the next step.
+     */
+
+    setTimeout(() => {
+
+        message.textContent =
+            "Verification system is being connected.";
+
+        message.style.color =
+            "#fbbf24";
+
+        button.disabled = false;
+        button.textContent =
+            "VERIFY CODE";
+
+    }, 800);
+
+});
+
+</script>
+
+</body>
+</html>
