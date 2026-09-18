@@ -314,7 +314,6 @@ button:disabled {
 </div>
 
 <script>
-
 const params =
     new URLSearchParams(window.location.search);
 
@@ -339,8 +338,7 @@ const button =
 
 if (email) {
 
-    emailDisplay.textContent =
-        email;
+    emailDisplay.textContent = email;
 
 } else {
 
@@ -351,7 +349,7 @@ if (email) {
 
 
 /*
- * Allow only numbers
+ * Allow numbers only
  */
 codeInput.addEventListener("input", () => {
 
@@ -401,27 +399,90 @@ form.addEventListener("submit", async (e) => {
     message.style.color =
         "#aaa";
 
-    /*
-     * Verification API will be connected
-     * in the next step.
-     */
+    try {
 
-    setTimeout(() => {
+        const response =
+            await fetch(
+                "/api/verify-reset-code",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        email: email,
+                        code: code
+                    })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (
+            response.ok &&
+            data.success &&
+            data.reset_token
+        ) {
+
+            message.textContent =
+                "✅ Code verified successfully!";
+
+            message.style.color =
+                "#4ade80";
+
+            /*
+             * Pass the temporary reset token
+             * to the password reset page.
+             */
+            setTimeout(() => {
+
+                window.location.href =
+                    "/reset-password.html?email=" +
+                    encodeURIComponent(email) +
+                    "&token=" +
+                    encodeURIComponent(
+                        data.reset_token
+                    );
+
+            }, 800);
+
+        } else {
+
+            message.textContent =
+                data.error ||
+                "Invalid verification code.";
+
+            message.style.color =
+                "#ff6b6b";
+
+            button.disabled = false;
+            button.textContent =
+                "VERIFY CODE";
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Verification error:",
+            error
+        );
 
         message.textContent =
-            "Verification system is being connected.";
+            "❌ Something went wrong. Please try again.";
 
         message.style.color =
-            "#fbbf24";
+            "#ff6b6b";
 
         button.disabled = false;
         button.textContent =
             "VERIFY CODE";
-
-    }, 800);
+    }
 
 });
-
 </script>
 
 </body>
