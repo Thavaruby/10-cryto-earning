@@ -88,6 +88,32 @@ export async function onRequestPost(context) {
             });
         }
 
+const now = Math.floor(Date.now() / 1000);
+
+const recentReset = await db
+    .prepare(`
+        SELECT created_at
+        FROM password_resets
+        WHERE user_id = ?
+        ORDER BY created_at DESC
+        LIMIT 1
+    `)
+    .bind(user.id)
+    .first();
+
+if (
+    recentReset &&
+    now - Number(recentReset.created_at) < 60
+) {
+    return Response.json(
+        {
+            success: true,
+            message:
+                "If this email is registered, a verification code has been sent."
+        }
+    );
+}
+    
         // Remove previous unused reset codes
         await db
             .prepare(
