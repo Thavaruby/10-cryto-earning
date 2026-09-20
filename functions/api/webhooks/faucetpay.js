@@ -1,3 +1,9 @@
+// ========================================
+// FAUCETPAY WEBHOOK
+// payout.sent / payout.failed
+// ========================================
+
+
 async function verifySignature(rawBody, signature, secret) {
 
     if (!signature || !secret) {
@@ -37,25 +43,45 @@ async function verifySignature(rawBody, signature, secret) {
 }
 
 
+// ========================================
+// WEBHOOK
+// ========================================
+
 export async function onRequestPost(context) {
+
+    // ========================================
+    // D1 SESSION
+    // ========================================
+
+    const db =
+        context.env.DB.withSession(
+            "first-primary"
+        );
+
 
     try {
 
+        /* =========================
+           1. READ RAW BODY
+        ========================= */
+
         const rawBody =
             await context.request.text();
+
 
         const signature =
             context.request.headers.get(
                 "X-FaucetPay-Signature"
             );
 
+
         const secret =
             context.env.FAUCETPAY_WEBHOOK_SECRET;
 
 
-        /* =========================================
-           CHECK SECRET
-        ========================================= */
+        /* =========================
+           2. CHECK SECRET
+        ========================= */
 
         if (!secret) {
 
@@ -70,9 +96,9 @@ export async function onRequestPost(context) {
         }
 
 
-        /* =========================================
-           VERIFY SIGNATURE
-        ========================================= */
+        /* =========================
+           3. VERIFY SIGNATURE
+        ========================= */
 
         const valid =
             await verifySignature(
@@ -95,15 +121,33 @@ export async function onRequestPost(context) {
         }
 
 
-        /* =========================================
-           PARSE EVENT
-        ========================================= */
+        /* =========================
+           4. PARSE EVENT
+        ========================= */
 
-        const event =
-            JSON.parse(rawBody);
+        let event;
+
+        try {
+
+            event =
+                JSON.parse(rawBody);
+
+        } catch {
+
+            console.error(
+                "Invalid FaucetPay webhook JSON"
+            );
+
+            return new Response(
+                "Invalid JSON",
+                { status: 400 }
+            );
+        }
+
 
         const eventId =
             event.id ?? null;
+
 
         const eventType =
             event.event ?? null;
@@ -122,158 +166,185 @@ export async function onRequestPost(context) {
         }
 
 
-        console.log(
-            "FAUCETPAY WEBHOOK EVENT:",
-            JSON.stringify(
-                event,
-                null,
-                2
+        /* =========================
+           5. ONLY PAYOUT EVENTS
+        ========================= */
+
+        if (
+            eventType !== "payout.sent" &&
+            eventType !== "payout.failed"
+        ) {
+
+            return new Response(
+                "OK",
+                { status: 200 }
+            );
+        }
+
+
+        /* =========================
+           6. READ PAYOUT DATA
+        ========================= */
+
+        const payoutId =
+            event.data?.payout_id ?? null;
+
+
+        const currency =
+            event.data?.currency ?? null;
+
+
+        const amount =
+            event.data?.amount ?? null;
+
+
+        const walletAddress =
+            event.data?.to ?? null;
+
+
+        if (!payoutId) {
+
+            console.error(
+                "Webhook payout_id is missing"
+            );
+
+            return new Response(
+                "Missing payout_id",
+                { status: 400 }
+            );
+        }
+
+
+        /* =========================
+           7. DUPLICATE EVENT CHECK
+        ========================= */
+
+        const existingEvent =
+            await db
+                .prepare(`
+                    SELECT id
+                    FROM faucetpay_webhook_events
+                    WHERE event_id = ?
+                    LIMIT 1
+                `)
+                .bind(
+                    String(eventId)
+                )
+                .first();
+
+
+        if (existingEvent) {
+
+            console.log(
+                "Duplicate FaucetPay webhook:",
+                eventId
+            );
+
+            return new Response(
+                "OK",
+                { status: 200 }
+            );
+        }
+
+
+        /* =========================
+           8. BTC ONLY
+        ========================= */
+
+        if (
+            currency &&
+            String(currency).toUpperCase() !== "BTC"
+        ) {
+
+            console.error(
+                "Non-BTC FaucetPay webhook:",
+                currency
+            );
+
+            return new Response(
+                "Unsupported currency",
+                { status: 400 }
+            );
+        }
+
+
+        /* =========================
+           9. FIND WITHDRAWAL
+        ========================= */
+
+        const withdrawal =
+            await db
+                .prepare(`
+                    SELECT
+                        id,
+                        user_id,
+                        amount,
+                        wallet_address,
+                        currency,
+                        status,
+                        payout_id,
+                        txid
+                    FROM withdrawals
+                    WHERE payout_id = ?
+                    LIMIT 1
+                `)
+                .bind(
+                    String(payoutId)
+                )
+                .first();
+
+
+        /* =========================
+           10. WITHDRAWAL NOT FOUND
+        ========================= */
+
+        if (!withdrawal) {
+
+            console.warn(
+                "No withdrawal found for payout_id:",
+                payoutId
+            );
+
+            return new Response(
+                "OK",
+                { status: 200 }
+            );
+        }
+
+
+        /* =========================
+           11. SAVE WEBHOOK EVENT
+        ========================= */
+
+        await db
+            .prepare(`
+                INSERT INTO faucetpay_webhook_events
+                (
+                    event_id,
+                    event_type,
+                    payout_id
+                )
+                VALUES (?, ?, ?)
+            `)
+            .bind(
+                String(eventId),
+                String(eventType),
+                String(payoutId)
             )
-        );
+            .run();
 
 
-        /* =========================================
-           ONLY PROCESS payout.sent
-        ========================================= */
+        /* =================================================
+           12. PAYOUT SENT
+        ================================================= */
 
         if (
             eventType === "payout.sent"
         ) {
 
-            const payoutId =
-                event.data?.payout_id ?? null;
-
-            const currency =
-                event.data?.currency ?? null;
-
-            const amount =
-                event.data?.amount ?? null;
-
-            const walletAddress =
-                event.data?.to ?? null;
-
-
-            console.log(
-                "FAUCETPAY PAYOUT SENT:",
-                JSON.stringify({
-                    payoutId,
-                    currency,
-                    amount,
-                    walletAddress
-                })
-            );
-
-
-            if (!payoutId) {
-
-                console.error(
-                    "Webhook payout_id is missing"
-                );
-
-                return new Response(
-                    "Missing payout_id",
-                    { status: 400 }
-                );
-            }
-
-
-            /* =====================================
-               DUPLICATE EVENT CHECK
-            ===================================== */
-
-            const existingEvent =
-                await context.env.DB
-                    .prepare(`
-                        SELECT id
-                        FROM faucetpay_webhook_events
-                        WHERE event_id = ?
-                        LIMIT 1
-                    `)
-                    .bind(
-                        String(eventId)
-                    )
-                    .first();
-
-
-            if (existingEvent) {
-
-                console.log(
-                    "Duplicate FaucetPay webhook:",
-                    eventId
-                );
-
-                return new Response(
-                    "OK",
-                    { status: 200 }
-                );
-            }
-
-
-            /* =====================================
-               FIND WITHDRAWAL
-            ===================================== */
-
-            const withdrawal =
-                await context.env.DB
-                    .prepare(`
-                        SELECT
-                            id,
-                            status,
-                            payout_id,
-                            txid
-                        FROM withdrawals
-                        WHERE payout_id = ?
-                        LIMIT 1
-                    `)
-                    .bind(
-                        String(payoutId)
-                    )
-                    .first();
-
-
-            /* =====================================
-               WITHDRAWAL NOT FOUND
-            ===================================== */
-
-            if (!withdrawal) {
-
-                console.warn(
-                    "No withdrawal found for payout_id:",
-                    payoutId
-                );
-
-                return new Response(
-                    "OK",
-                    { status: 200 }
-                );
-            }
-
-
-            /* =====================================
-               SAVE WEBHOOK EVENT
-            ===================================== */
-
-            await context.env.DB
-                .prepare(`
-                    INSERT INTO faucetpay_webhook_events
-                    (
-                        event_id,
-                        event_type,
-                        payout_id
-                    )
-                    VALUES (?, ?, ?)
-                `)
-                .bind(
-                    String(eventId),
-                    String(eventType),
-                    String(payoutId)
-                )
-                .run();
-
-
-            /* =====================================
+            /* =========================
                ALREADY APPROVED
-            ===================================== */
+            ========================= */
 
             if (
                 withdrawal.status === "approved"
@@ -291,26 +362,66 @@ export async function onRequestPost(context) {
             }
 
 
-            /* =====================================
-               UPDATE WITHDRAWAL
-            ===================================== */
+            /* =========================
+               ONLY PROCESS PROCESSING
+            ========================= */
 
-            await context.env.DB
-                .prepare(`
-                    UPDATE withdrawals
-                    SET
-                        status = 'approved',
-                        processed_at = CURRENT_TIMESTAMP
-                    WHERE id = ?
-                `)
-                .bind(
+            if (
+                withdrawal.status !== "processing"
+            ) {
+
+                console.warn(
+                    "Ignoring payout.sent for withdrawal status:",
+                    withdrawal.status
+                );
+
+                return new Response(
+                    "OK",
+                    { status: 200 }
+                );
+            }
+
+
+            /* =========================
+               APPROVE WITHDRAWAL
+            ========================= */
+
+            const result =
+                await db
+                    .prepare(`
+                        UPDATE withdrawals
+                        SET
+                            status = 'approved',
+                            processed_at = CURRENT_TIMESTAMP
+                        WHERE id = ?
+                          AND status = 'processing'
+                          AND payout_id = ?
+                    `)
+                    .bind(
+                        withdrawal.id,
+                        String(payoutId)
+                    )
+                    .run();
+
+
+            if (
+                result.meta.changes !== 1
+            ) {
+
+                console.warn(
+                    "Withdrawal was not updated:",
                     withdrawal.id
-                )
-                .run();
+                );
+
+                return new Response(
+                    "OK",
+                    { status: 200 }
+                );
+            }
 
 
             console.log(
-                "WITHDRAWAL UPDATED:",
+                "WITHDRAWAL APPROVED BY WEBHOOK:",
                 JSON.stringify({
                     withdrawalId:
                         withdrawal.id,
@@ -318,16 +429,158 @@ export async function onRequestPost(context) {
                     payoutId:
                         payoutId,
 
-                    txid:
-                        withdrawal.txid
+                    amount:
+                        amount,
+
+                    walletAddress:
+                        walletAddress
                 })
             );
         }
 
 
-        /* =========================================
+        /* =================================================
+           13. PAYOUT FAILED
+        ================================================= */
+
+        if (
+            eventType === "payout.failed"
+        ) {
+
+            /* =========================
+               ONLY PROCESS PROCESSING
+            ========================= */
+
+            if (
+                withdrawal.status !== "processing"
+            ) {
+
+                console.warn(
+                    "Ignoring payout.failed for withdrawal status:",
+                    withdrawal.status
+                );
+
+                return new Response(
+                    "OK",
+                    { status: 200 }
+                );
+            }
+
+
+            /* =========================
+               SAFELY REFUND + REJECT
+            ========================= */
+
+            const results =
+                await db.batch([
+
+                    db.prepare(`
+                        UPDATE users
+                        SET balance =
+                            balance + (
+                                SELECT amount
+                                FROM withdrawals
+                                WHERE id = ?
+                                  AND status = 'processing'
+                                  AND payout_id = ?
+                            )
+                        WHERE id = (
+                            SELECT user_id
+                            FROM withdrawals
+                            WHERE id = ?
+                              AND status = 'processing'
+                              AND payout_id = ?
+                        )
+                    `).bind(
+                        withdrawal.id,
+                        String(payoutId),
+                        withdrawal.id,
+                        String(payoutId)
+                    ),
+
+                    db.prepare(`
+                        UPDATE withdrawals
+                        SET
+                            status = 'rejected',
+                            processed_at = CURRENT_TIMESTAMP
+                        WHERE id = ?
+                          AND status = 'processing'
+                          AND payout_id = ?
+                    `).bind(
+                        withdrawal.id,
+                        String(payoutId)
+                    )
+                ]);
+
+
+            const refundChanges =
+                results[0]?.meta?.changes || 0;
+
+
+            const withdrawalChanges =
+                results[1]?.meta?.changes || 0;
+
+
+            /* =========================
+               VERIFY BOTH OPERATIONS
+            ========================= */
+
+            if (
+                refundChanges !== 1 ||
+                withdrawalChanges !== 1
+            ) {
+
+                console.error(
+                    "PAYOUT FAILED REFUND/REJECT FAILED:",
+                    JSON.stringify({
+                        withdrawalId:
+                            withdrawal.id,
+
+                        payoutId:
+                            payoutId,
+
+                        refundChanges:
+                            refundChanges,
+
+                        withdrawalChanges:
+                            withdrawalChanges
+                    })
+                );
+
+                /*
+                 * D1 batch is transactional.
+                 * If the batch failed, changes are rolled back.
+                 */
+
+                return new Response(
+                    "Webhook processing error",
+                    { status: 500 }
+                );
+            }
+
+
+            console.log(
+                "WITHDRAWAL REJECTED AND REFUNDED:",
+                JSON.stringify({
+                    withdrawalId:
+                        withdrawal.id,
+
+                    payoutId:
+                        payoutId,
+
+                    amount:
+                        withdrawal.amount,
+
+                    userId:
+                        withdrawal.user_id
+                })
+            );
+        }
+
+
+        /* =========================
            SUCCESS
-        ========================================= */
+        ========================= */
 
         return new Response(
             "OK",
