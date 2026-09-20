@@ -145,7 +145,9 @@ export async function onRequestPost(context) {
             );
         }
 
-        const db = context.env.DB;
+        // Use the primary session for consistent reads/writes.
+        const db =
+            context.env.DB.withSession("first-primary");
 
         const user =
             await db
@@ -234,7 +236,7 @@ export async function onRequestPost(context) {
         /*
          * Code expires after 10 minutes.
          */
-        if (now > Number(reset.expires_at)) {
+        if (now >= Number(reset.expires_at)) {
 
             return Response.json(
                 {
@@ -261,7 +263,9 @@ export async function onRequestPost(context) {
                 .prepare(
                     `UPDATE password_resets
                      SET attempts = attempts + 1
-                     WHERE id = ?`
+                     WHERE id = ?
+                       AND used = 0
+                       AND attempts < 5`
                 )
                 .bind(reset.id)
                 .run();
@@ -305,23 +309,49 @@ export async function onRequestPost(context) {
             `pbkdf2$${ITERATIONS}$${toBase64(tokenSalt)}$${toBase64(tokenHash)}`;
 
         /*
-         * Mark verification code as used
-         * and store the reset token hash.
+         * Atomically consume the verification code.
+         *
+         * This prevents two simultaneous correct requests
+         * from both successfully using the same code.
          */
-        await db
-            .prepare(
-                `UPDATE password_resets
-                 SET used = 1,
-                     verified_at = ?,
-                     reset_token_hash = ?
-                 WHERE id = ?`
-            )
-            .bind(
-                now,
-                storedTokenHash,
-                reset.id
-            )
-            .run();
+        const consumeResult =
+            await db
+                .prepare(
+                    `UPDATE password_resets
+                     SET used = 1,
+                         verified_at = ?,
+                         reset_token_hash = ?
+                     WHERE id = ?
+                       AND used = 0
+                       AND attempts < 5
+                       AND expires_at > ?`
+                )
+                .bind(
+                    now,
+                    storedTokenHash,
+                    reset.id,
+                    now
+                )
+                .run();
+
+        /*
+         * If another request already consumed the code,
+         * this request must not receive a reset token.
+         */
+        if (
+            !consumeResult.meta ||
+            Number(consumeResult.meta.changes) !== 1
+        ) {
+
+            return Response.json(
+                {
+                    success: false,
+                    error:
+                        "This verification code is no longer valid. Please request a new code."
+                },
+                { status: 400 }
+            );
+        }
 
         return Response.json({
 
@@ -352,3 +382,17 @@ export async function onRequestPost(context) {
         );
     }
 }
+
+What changed
+
+Only the security-critical parts:
+
+- ✅ "DB.withSession("first-primary")"
+- ✅ Expiry check changed to ">="
+- ✅ Failed-attempt increment is protected by "attempts < 5"
+- ✅ Atomic one-time code consumption
+- ✅ A second simultaneous request cannot receive another reset token
+- ✅ No D1 schema change
+- ✅ Your PBKDF2/100,000-iteration system remains unchanged
+
+Next step: deploy this "verify-code.js", then test the normal flow: Forgot password → email code → enter correct code → verification successful → reset-password page.
