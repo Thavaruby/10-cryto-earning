@@ -1173,4 +1173,266 @@ export async function onRequestPost(context) {
            8. CREATE WITHDRAWAL
            ================================================= */
 
-        let withdrawalResult
+        let withdrawalResult;
+
+
+        try {
+
+            withdrawalResult =
+                await db
+                    .prepare(
+                        `INSERT INTO withdrawals
+                        (
+                            user_id,
+                            amount,
+                            wallet_address,
+                            currency,
+                            status
+                        )
+                        VALUES
+                        (?, ?, ?, ?, 'pending')`
+                    )
+                    .bind(
+                        userId,
+                        normalizedAmount,
+                        walletAddress,
+                        currency
+                    )
+                    .run();
+
+
+        } catch (error) {
+
+            const message =
+                String(
+                    error?.message || ""
+                );
+
+
+            /*
+             * Raw database errors are
+             * NEVER returned to the user.
+             */
+
+            if (
+                message.includes(
+                    "INSUFFICIENT_BALANCE"
+                )
+            ) {
+
+                return jsonResponse(
+                    {
+                        success: false,
+                        error:
+                            "Insufficient BTC balance."
+                    },
+                    400
+                );
+            }
+
+
+            if (
+                message.includes(
+                    "WITHDRAWAL_ALREADY_PENDING"
+                )
+            ) {
+
+                return jsonResponse(
+                    {
+                        success: false,
+                        error:
+                            "You already have a withdrawal being processed."
+                    },
+                    409
+                );
+            }
+
+
+            if (
+                message.includes(
+                    "USER_NOT_FOUND"
+                )
+            ) {
+
+                return jsonResponse(
+                    {
+                        success: false,
+                        error:
+                            "User account not found."
+                    },
+                    404
+                );
+            }
+
+
+            console.error(
+                "Withdrawal insert failed."
+            );
+
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Unable to process withdrawal request."
+                },
+                500
+            );
+        }
+
+
+        /* =================================================
+           9. VERIFY WITHDRAWAL WAS CREATED
+           ================================================= */
+
+        const createdWithdrawal =
+            await db
+                .prepare(
+                    `SELECT
+                        id,
+                        amount,
+                        currency,
+                        status,
+                        created_at
+                     FROM withdrawals
+                     WHERE user_id = ?
+                       AND amount = ?
+                       AND currency = 'BTC'
+                       AND status = 'pending'
+                     ORDER BY id DESC
+                     LIMIT 1`
+                )
+                .bind(
+                    userId,
+                    normalizedAmount
+                )
+                .first();
+
+
+        if (!createdWithdrawal) {
+
+            console.error(
+                "Withdrawal record verification failed."
+            );
+
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Your withdrawal may have been submitted. Please check your withdrawal history."
+                },
+                500
+            );
+        }
+
+
+        /* =================================================
+           10. GET UPDATED BALANCE
+           ================================================= */
+
+        const updatedUser =
+            await db
+                .prepare(
+                    `SELECT
+                        balance
+                     FROM users
+                     WHERE id = ?
+                     LIMIT 1`
+                )
+                .bind(userId)
+                .first();
+
+
+        if (!updatedUser) {
+
+            /*
+             * Withdrawal was already created.
+             *
+             * Never deduct balance again.
+             */
+
+            console.error(
+                "Withdrawal created but updated balance could not be loaded."
+            );
+
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Your withdrawal was submitted successfully. Please check your balance again shortly."
+                },
+                500
+            );
+        }
+
+
+        const balance =
+            Number(
+                updatedUser.balance
+            );
+
+
+        if (
+            !Number.isFinite(balance) ||
+            balance < 0
+        ) {
+
+            console.error(
+                "Invalid balance returned after withdrawal."
+            );
+
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Your withdrawal was submitted successfully. Please check your balance again shortly."
+                },
+                500
+            );
+        }
+
+
+        /* =================================================
+           11. SUCCESS
+           ================================================= */
+
+        return jsonResponse({
+
+            success: true,
+
+            message:
+                "Withdrawal request submitted successfully.",
+
+            status:
+                "pending",
+
+            amount:
+                normalizedAmount,
+
+            currency:
+                "BTC",
+
+            balance
+        });
+
+
+    } catch {
+
+        console.error(
+            "Withdrawal request failed."
+        );
+
+
+        return jsonResponse(
+            {
+                success: false,
+                error:
+                    "Unable to process withdrawal request."
+            },
+            500
+        );
+    }
+}
