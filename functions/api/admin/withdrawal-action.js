@@ -290,9 +290,6 @@ export async function onRequestPost(context) {
 
            Existing D1 trigger refunds the reserved
            withdrawal amount.
-
-           The UPDATE only succeeds when status
-           is still pending.
         ===================================================== */
 
         if (action === "reject") {
@@ -572,19 +569,12 @@ export async function onRequestPost(context) {
 
 
             /*
-             * IMPORTANT:
+             * We do NOT know whether FaucetPay
+             * received or processed the request.
              *
-             * We cannot know whether FaucetPay
-             * received/processed the request.
+             * Keep PROCESSING.
              *
-             * Therefore DO NOT automatically
-             * return this withdrawal to pending.
-             *
-             * Keep it in PROCESSING so it cannot
-             * accidentally be paid twice.
-             *
-             * The same idempotency key can be used
-             * later for reconciliation/retry.
+             * DO NOT retry automatically.
              */
 
             return Response.json(
@@ -617,12 +607,42 @@ export async function onRequestPost(context) {
 
 
         /* =====================================================
-           14. FAUCETPAY ERROR
+           14. INVALID / UNCERTAIN RESPONSE
+        ===================================================== */
+
+        if (
+            !faucetPayResult
+        ) {
+
+            console.error(
+                "FAUCETPAY RETURNED INVALID RESPONSE."
+            );
+
+
+            /*
+             * We cannot safely determine whether
+             * the payment was processed.
+             *
+             * Keep PROCESSING.
+             */
+
+            return Response.json(
+                {
+                    success: false,
+                    error:
+                        "FaucetPay returned an invalid response. Withdrawal remains processing and requires reconciliation."
+                },
+                { status: 502 }
+            );
+        }
+
+
+        /* =====================================================
+           15. FAUCETPAY EXPLICIT FAILURE
         ===================================================== */
 
         if (
             !faucetPayResponse.ok ||
-            !faucetPayResult ||
             faucetPayResult.success !== true
         ) {
 
@@ -632,12 +652,9 @@ export async function onRequestPost(context) {
 
 
             /*
-             * Here FaucetPay explicitly returned
-             * a failed HTTP/API response.
+             * FaucetPay explicitly rejected the request.
              *
-             * Payment was not confirmed.
-             *
-             * Safe to return to pending.
+             * Restore PENDING.
              */
 
             await db
@@ -664,7 +681,7 @@ export async function onRequestPost(context) {
 
 
         /* =====================================================
-           15. GET PAYOUT ID
+           16. GET PAYOUT ID
         ===================================================== */
 
         const payoutId =
@@ -674,7 +691,42 @@ export async function onRequestPost(context) {
 
 
         /* =====================================================
-           16. MARK APPROVED
+           17. PAYOUT ID REQUIRED
+        ===================================================== */
+
+        if (!payoutId) {
+
+            console.error(
+                "FAUCETPAY SUCCESS WITHOUT PAYOUT ID."
+            );
+
+
+            /*
+             * FaucetPay reported success, but we do not
+             * have the payout identifier required for
+             * reliable reconciliation.
+             *
+             * DO NOT:
+             * - retry payment
+             * - return to pending
+             * - mark rejected
+             *
+             * Keep PROCESSING.
+             */
+
+            return Response.json(
+                {
+                    success: false,
+                    error:
+                        "FaucetPay reported success but no payout ID was returned. Withdrawal remains processing and requires reconciliation."
+                },
+                { status: 500 }
+            );
+        }
+
+
+        /* =====================================================
+           18. MARK APPROVED
            
            PROCESSING → APPROVED
         ===================================================== */
@@ -692,17 +744,14 @@ export async function onRequestPost(context) {
                        AND status = 'processing'`
                 )
                 .bind(
-                    payoutId
-                        ? String(payoutId)
-                        : null,
-
+                    String(payoutId),
                     withdrawalId
                 )
                 .run();
 
 
         /* =====================================================
-           17. DATABASE UPDATE FAILURE
+           19. DATABASE UPDATE FAILURE
         ===================================================== */
 
         if (
@@ -735,7 +784,7 @@ export async function onRequestPost(context) {
                         "Payment was sent by FaucetPay, but the database update failed. Do not retry automatically.",
 
                     payout_id:
-                        payoutId
+                        String(payoutId)
                 },
                 { status: 500 }
             );
@@ -743,7 +792,7 @@ export async function onRequestPost(context) {
 
 
         /* =====================================================
-           18. SUCCESS
+           20. SUCCESS
         ===================================================== */
 
         return Response.json({
@@ -760,7 +809,7 @@ export async function onRequestPost(context) {
                 "BTC",
 
             payout_id:
-                payoutId
+                String(payoutId)
 
         });
 
@@ -773,15 +822,22 @@ export async function onRequestPost(context) {
 
 
         /*
-         * Do not expose internal error
-         * details to the browser.
+         * IMPORTANT:
+         *
+         * If an unexpected error happens after
+         * FaucetPay may have been contacted, we
+         * must NOT automatically return the
+         * withdrawal to pending.
+         *
+         * The existing PROCESSING state prevents
+         * accidental duplicate payment.
          */
 
         return Response.json(
             {
                 success: false,
                 error:
-                    "Unable to process withdrawal."
+                    "Unable to process withdrawal. If payment may have been sent, the withdrawal remains processing and requires reconciliation."
             },
             { status: 500 }
         );
