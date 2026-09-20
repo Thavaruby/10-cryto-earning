@@ -145,7 +145,8 @@ export async function onRequestPost(context) {
             );
         }
 
-        const db = context.env.DB;
+        const db =
+            context.env.DB.withSession("first-primary");
 
         const user =
             await db
@@ -209,19 +210,18 @@ export async function onRequestPost(context) {
             );
         }
 
-        /*
-         * Reset token is valid for 10 minutes
-         * after successful code verification.
-         */
         const now =
             Math.floor(Date.now() / 1000);
 
         const verifiedAt =
             Number(reset.verified_at);
 
+        /*
+         * Reset token expires after 10 minutes.
+         */
         if (
             !verifiedAt ||
-            now > verifiedAt + (10 * 60)
+            now >= verifiedAt + (10 * 60)
         ) {
 
             await db
@@ -263,9 +263,8 @@ export async function onRequestPost(context) {
         }
 
         /*
-         * Create a new random salt.
-         * This uses the SAME PBKDF2 format
-         * as register-secure.js.
+         * Create a new random salt
+         * for the new password.
          */
         const salt =
             crypto.getRandomValues(
@@ -282,21 +281,60 @@ export async function onRequestPost(context) {
             `pbkdf2$${ITERATIONS}$${toBase64(salt)}$${toBase64(passwordHash)}`;
 
         /*
-         * Update the user's password.
+         * Atomically consume the reset session
+         * while updating the password.
+         *
+         * The reset token hash must still match.
+         * This prevents two simultaneous requests
+         * from both resetting the password.
          */
-        await db
-            .prepare(
-                "UPDATE users SET password_hash = ? WHERE id = ?"
-            )
-            .bind(
-                storedHash,
-                user.id
-            )
-            .run();
+        const updateResult =
+            await db
+                .prepare(
+                    `UPDATE users
+                     SET password_hash = ?
+                     WHERE id = ?
+                       AND EXISTS (
+                           SELECT 1
+                           FROM password_resets
+                           WHERE id = ?
+                             AND reset_token_hash = ?
+                             AND verified_at IS NOT NULL
+                             AND verified_at > ?
+                       )`
+                )
+                .bind(
+                    storedHash,
+                    user.id,
+                    reset.id,
+                    reset.reset_token_hash,
+                    now - (10 * 60)
+                )
+                .run();
 
         /*
-         * Delete the reset record.
-         * This makes the reset process one-time use.
+         * Password was not changed.
+         * This means the reset session may have
+         * already been consumed or expired.
+         */
+        if (
+            !updateResult.meta ||
+            Number(updateResult.meta.changes) !== 1
+        ) {
+
+            return Response.json(
+                {
+                    success: false,
+                    error:
+                        "Your password reset session is no longer valid."
+                },
+                { status: 400 }
+            );
+        }
+
+        /*
+         * Delete the reset record only after
+         * the password update succeeds.
          */
         await db
             .prepare(
@@ -331,3 +369,11 @@ export async function onRequestPost(context) {
         );
     }
 }
+
+இந்த version-ஐ deploy செய்து test செய்யுங்கள்.
+
+Test flow:
+
+Forgot Password → email code → Verify Code → New Password → Reset Password → login with new password
+
+எல்லாம் successful என்றால், Forgot Password security flow முழுவதும் முடிந்தது. அடுத்த Phase 2 security task-க்கு போகலாம்.
