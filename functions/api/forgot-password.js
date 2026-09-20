@@ -66,6 +66,7 @@ export async function onRequestPost(context) {
             );
         }
 
+        // Use D1 session for consistent reads
         const db = context.env.DB.withSession("first-primary");
 
         // Find user
@@ -83,39 +84,46 @@ export async function onRequestPost(context) {
         if (!user) {
             return Response.json({
                 success: true,
+                cooldown: false,
                 message:
                     "If this email is registered, a verification code has been sent."
             });
         }
 
-        
-const now = Math.floor(Date.now() / 1000);
+        // Current Unix time
+        const now = Math.floor(Date.now() / 1000);
 
-const recentReset = await db
-    .prepare(`
-        SELECT created_at
-        FROM password_resets
-        WHERE user_id = ?
-        ORDER BY created_at DESC
-        LIMIT 1
-    `)
-    .bind(user.id)
-    .first();
+        // Check previous reset request
+        const recentReset = await db
+            .prepare(`
+                SELECT created_at
+                FROM password_resets
+                WHERE user_id = ?
+                ORDER BY created_at DESC
+                LIMIT 1
+            `)
+            .bind(user.id)
+            .first();
 
-if (
-    recentReset &&
-    now - Number(recentReset.created_at) < 60
-) {
-    return Response.json(
-        {
-            success: true,
-            message:
-                "If this email is registered, a verification code has been sent."
+        /*
+         * 10-minute cooldown.
+         *
+         * Do not send another email while the previous
+         * reset request is still within the 10-minute window.
+         */
+        if (
+            recentReset &&
+            now - Number(recentReset.created_at) < 600
+        ) {
+            return Response.json({
+                success: true,
+                cooldown: true,
+                message:
+                    "Please wait before requesting another verification code."
+            });
         }
-    );
-}
-    
-        // Remove previous unused reset codes
+
+        // Remove previous reset codes
         await db
             .prepare(
                 "DELETE FROM password_resets WHERE user_id = ?"
@@ -137,11 +145,9 @@ if (
             `pbkdf2$${ITERATIONS}$${toBase64(salt)}$${toBase64(codeHash)}`;
 
         // 10-minute expiry
-        const expiresAt =
-            Math.floor(Date.now() / 1000) + (10 * 60);
+        const expiresAt = now + (10 * 60);
 
-        const createdAt =
-            Math.floor(Date.now() / 1000);
+        const createdAt = now;
 
         // Store hashed code
         await db
@@ -195,7 +201,7 @@ if (
                 body: JSON.stringify({
 
                     from:
-    "My Crypto Faucet <noreply@myfaucetcrypto.com>",
+                        "My Crypto Faucet <noreply@myfaucetcrypto.com>",
 
                     to: [email],
 
@@ -286,6 +292,7 @@ if (
         return Response.json({
 
             success: true,
+            cooldown: false,
 
             message:
                 "If this email is registered, a verification code has been sent."
