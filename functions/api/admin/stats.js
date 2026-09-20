@@ -197,6 +197,7 @@ export async function onRequestGet(context) {
 
     // ========================================
     // TODAY'S CLAIMS
+    // UTC DATE
     // ========================================
 
     const todayClaims = await db.prepare(`
@@ -208,7 +209,8 @@ export async function onRequestGet(context) {
     `).first();
 
     // ========================================
-    // TODAY'S WITHDRAWALS
+    // TODAY'S APPROVED WITHDRAWALS
+    // UTC DATE
     // ========================================
 
     const todayWithdrawals = await db.prepare(`
@@ -217,7 +219,8 @@ export async function onRequestGet(context) {
         COALESCE(SUM(amount), 0) AS amount
       FROM withdrawals
       WHERE currency = 'BTC'
-        AND date(created_at) = date('now')
+        AND status = 'approved'
+        AND date(processed_at) = date('now')
     `).first();
 
     // ========================================
