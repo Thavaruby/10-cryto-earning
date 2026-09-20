@@ -88,6 +88,7 @@ export async function onRequestPost(context) {
             });
         }
 
+        
 const now = Math.floor(Date.now() / 1000);
 
 const recentReset = await db
