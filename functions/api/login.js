@@ -2,6 +2,7 @@ const ITERATIONS = 100000;
 
 function fromBase64(base64) {
     const binary = atob(base64);
+
     return Uint8Array.from(
         binary,
         char => char.charCodeAt(0)
@@ -9,7 +10,6 @@ function fromBase64(base64) {
 }
 
 async function hashPassword(password, salt) {
-
     const encoder = new TextEncoder();
 
     const keyMaterial =
@@ -37,7 +37,6 @@ async function hashPassword(password, salt) {
 }
 
 function constantTimeEqual(a, b) {
-
     if (a.length !== b.length) {
         return false;
     }
@@ -52,7 +51,6 @@ function constantTimeEqual(a, b) {
 }
 
 async function hashSessionToken(token) {
-
     const data =
         new TextEncoder().encode(token);
 
@@ -65,82 +63,146 @@ async function hashSessionToken(token) {
     return Array.from(
         new Uint8Array(hash)
     )
-    .map(byte =>
-        byte.toString(16).padStart(2, "0")
-    )
-    .join("");
+        .map(byte =>
+            byte.toString(16).padStart(2, "0")
+        )
+        .join("");
+}
+
+function jsonResponse(data, status = 200, extraHeaders = {}) {
+    return new Response(
+        JSON.stringify(data),
+        {
+            status,
+            headers: {
+                "Content-Type": "application/json",
+                "Cache-Control": "no-store",
+                ...extraHeaders
+            }
+        }
+    );
 }
 
 export async function onRequestPost(context) {
 
     try {
 
-        const data =
-            await context.request.json();
+        let data;
+
+        try {
+            data = await context.request.json();
+        } catch {
+            return jsonResponse(
+                {
+                    success: false,
+                    error: "Invalid request"
+                },
+                400
+            );
+        }
 
         const email =
-            String(data.email || "")
+            String(data?.email || "")
                 .trim()
                 .toLowerCase();
 
         const password =
-            String(data.password || "");
+            String(data?.password || "");
 
         if (!email || !password) {
-
-            return Response.json(
+            return jsonResponse(
                 {
                     success: false,
                     error: "Email and password are required"
                 },
-                { status: 400 }
+                400
             );
         }
 
+        const db =
+            context.env.DB.withSession("first-primary");
+
         const user =
-            await context.env.DB
+            await db
                 .prepare(
-                    "SELECT id, email, password_hash, balance FROM users WHERE email = ?"
+                    `SELECT
+                        id,
+                        email,
+                        password_hash,
+                        balance
+                     FROM users
+                     WHERE email = ?`
                 )
                 .bind(email)
                 .first();
 
         if (!user || !user.password_hash) {
-
-            return Response.json(
+            return jsonResponse(
                 {
                     success: false,
                     error: "Invalid email or password"
                 },
-                { status: 401 }
+                401
             );
         }
 
-        const parts =
-            user.password_hash.split("$");
+        let parts;
+        let salt;
+        let storedHash;
 
-        if (parts.length !== 4) {
+        try {
 
-            return Response.json(
+            parts =
+                String(user.password_hash).split("$");
+
+            if (parts.length !== 4) {
+                throw new Error("Invalid password hash format");
+            }
+
+            salt =
+                fromBase64(parts[2]);
+
+            storedHash =
+                fromBase64(parts[3]);
+
+            if (
+                salt.length === 0 ||
+                storedHash.length === 0
+            ) {
+                throw new Error("Invalid password hash data");
+            }
+
+        } catch {
+
+            return jsonResponse(
                 {
                     success: false,
                     error: "Invalid email or password"
                 },
-                { status: 500 }
+                401
             );
         }
 
-        const salt =
-            fromBase64(parts[2]);
+        let calculatedHash;
 
-        const storedHash =
-            fromBase64(parts[3]);
+        try {
 
-        const calculatedHash =
-            await hashPassword(
-                password,
-                salt
+            calculatedHash =
+                await hashPassword(
+                    password,
+                    salt
+                );
+
+        } catch {
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error: "Invalid email or password"
+                },
+                401
             );
+        }
 
         if (
             !constantTimeEqual(
@@ -148,16 +210,17 @@ export async function onRequestPost(context) {
                 storedHash
             )
         ) {
-
-            return Response.json(
+            return jsonResponse(
                 {
                     success: false,
                     error: "Invalid email or password"
                 },
-                { status: 401 }
+                401
             );
         }
 
+        // Generate a cryptographically secure
+        // 32-byte session token.
         const randomBytes =
             crypto.getRandomValues(
                 new Uint8Array(32)
@@ -170,6 +233,7 @@ export async function onRequestPost(context) {
                 )
                 .join("");
 
+        // Only the SHA-256 hash is stored in DB.
         const tokenHash =
             await hashSessionToken(
                 sessionToken
@@ -181,7 +245,7 @@ export async function onRequestPost(context) {
                 7 * 24 * 60 * 60 * 1000
             ).toISOString();
 
-        await context.env.DB
+        await db
             .prepare(
                 `INSERT INTO sessions
                 (user_id, token_hash, expires_at)
@@ -194,31 +258,33 @@ export async function onRequestPost(context) {
             )
             .run();
 
-        return new Response(
-            JSON.stringify({
+        return jsonResponse(
+            {
                 success: true,
                 message: "Login successful!"
-            }),
+            },
+            200,
             {
-                headers: {
-                    "Content-Type":
-                        "application/json",
-
-                    "Set-Cookie":
-                        `session=${sessionToken}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=604800`
-                }
+                "Set-Cookie":
+                    `session=${sessionToken}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=604800`
             }
         );
 
     } catch (error) {
-    console.error("LOGIN ERROR:", error);
 
-    return Response.json(
-        {
-            success: false,
-            error: "Internal server error"
-        },
-        { status: 500 }
-    );
-}
+        console.error(
+            "LOGIN ERROR:",
+            error instanceof Error
+                ? error.message
+                : "Unknown error"
+        );
+
+        return jsonResponse(
+            {
+                success: false,
+                error: "Internal server error"
+            },
+            500
+        );
+    }
 }
