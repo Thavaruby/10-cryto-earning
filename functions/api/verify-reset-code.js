@@ -382,17 +382,3 @@ export async function onRequestPost(context) {
         );
     }
 }
-
-What changed
-
-Only the security-critical parts:
-
-- ✅ "DB.withSession("first-primary")"
-- ✅ Expiry check changed to ">="
-- ✅ Failed-attempt increment is protected by "attempts < 5"
-- ✅ Atomic one-time code consumption
-- ✅ A second simultaneous request cannot receive another reset token
-- ✅ No D1 schema change
-- ✅ Your PBKDF2/100,000-iteration system remains unchanged
-
-Next step: deploy this "verify-code.js", then test the normal flow: Forgot password → email code → enter correct code → verification successful → reset-password page.
