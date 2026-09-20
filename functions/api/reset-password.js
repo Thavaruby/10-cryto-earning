@@ -369,11 +369,3 @@ export async function onRequestPost(context) {
         );
     }
 }
-
-இந்த version-ஐ deploy செய்து test செய்யுங்கள்.
-
-Test flow:
-
-Forgot Password → email code → Verify Code → New Password → Reset Password → login with new password
-
-எல்லாம் successful என்றால், Forgot Password security flow முழுவதும் முடிந்தது. அடுத்த Phase 2 security task-க்கு போகலாம்.
