@@ -66,7 +66,7 @@ export async function onRequestPost(context) {
             );
         }
 
-        const db = context.env.DB;
+        const db = context.env.DB.withSession("first-primary");
 
         // Find user
         const user = await db
