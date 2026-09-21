@@ -1,148 +1,1217 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="My Crypto Faucet - Earn free crypto rewards every hour and withdraw through FaucetPay.">
+<title>My Crypto Faucet — Earn Crypto Every Hour</title>
 
-    <title>My Crypto Faucet</title>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f2f4f7;
-            text-align: center;
-            margin: 0;
-        }
+html {
+    scroll-behavior: smooth;
+}
 
-        header {
-            background: #1f2937;
-            color: white;
-            padding: 25px;
-        }
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #06101f;
+    color: #ffffff;
+    overflow-x: hidden;
+}
 
-        .container {
-            max-width: 500px;
-            margin: 40px auto;
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
+/* =========================
+   BACKGROUND
+========================= */
 
-        .balance {
-            font-size: 22px;
-            margin: 20px;
-        }
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(circle at 15% 20%, rgba(245, 190, 55, 0.08), transparent 28%),
+        radial-gradient(circle at 85% 25%, rgba(0, 130, 255, 0.10), transparent 30%),
+        radial-gradient(circle at 50% 90%, rgba(245, 190, 55, 0.06), transparent 30%);
+    pointer-events: none;
+    z-index: -1;
+}
 
-        .reward {
-            font-size: 18px;
-            margin: 20px;
-        }
+/* =========================
+   HEADER
+========================= */
 
-        button {
-            background: #2563eb;
-            color: white;
-            border: none;
-            padding: 15px 35px;
-            font-size: 18px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 72px;
+    background: rgba(4, 12, 25, 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 193, 7, 0.15);
+    z-index: 1000;
+}
 
-        button:hover {
-            background: #1d4ed8;
-        }
+.navbar {
+    max-width: 1200px;
+    height: 100%;
+    margin: auto;
+    padding: 0 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
 
-        #timer {
-            margin-top: 20px;
-            font-weight: bold;
-        }
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #f5c542;
+    font-size: 21px;
+    font-weight: 800;
+    text-decoration: none;
+    white-space: nowrap;
+}
 
-        footer {
-            margin-top: 40px;
-            padding: 20px;
-            color: #666;
-        }
-    </style>
+.logo-icon {
+    width: 39px;
+    height: 39px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(145deg, #ffd75a, #d99a00);
+    color: #101010;
+    font-size: 23px;
+    font-weight: 900;
+    box-shadow: 0 0 18px rgba(245, 194, 66, 0.35);
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+}
+
+.nav-links a {
+    color: #d8e1ed;
+    text-decoration: none;
+    font-size: 14px;
+    transition: 0.25s;
+}
+
+.nav-links a:hover {
+    color: #f5c542;
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-login,
+.btn-register {
+    padding: 10px 18px;
+    border-radius: 9px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    transition: 0.25s;
+}
+
+.btn-login {
+    border: 1px solid rgba(245, 197, 66, 0.45);
+    color: #f5c542;
+}
+
+.btn-login:hover {
+    background: rgba(245, 197, 66, 0.1);
+}
+
+.btn-register {
+    background: linear-gradient(135deg, #ffd75a, #e3a914);
+    color: #101010;
+    box-shadow: 0 5px 20px rgba(245, 190, 55, 0.18);
+}
+
+.btn-register:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(245, 190, 55, 0.28);
+}
+
+/* =========================
+   HERO
+========================= */
+
+.hero {
+    min-height: 760px;
+    padding: 140px 22px 90px;
+    display: flex;
+    align-items: center;
+}
+
+.hero-inner {
+    width: 100%;
+    max-width: 1200px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 60px;
+    align-items: center;
+}
+
+.hero-content {
+    animation: fadeUp 0.8s ease;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 30px;
+    background: rgba(245, 197, 66, 0.08);
+    border: 1px solid rgba(245, 197, 66, 0.25);
+    color: #f5c542;
+    font-size: 13px;
+    margin-bottom: 22px;
+}
+
+.hero h1 {
+    font-size: clamp(42px, 6vw, 72px);
+    line-height: 1.04;
+    letter-spacing: -2px;
+    margin-bottom: 24px;
+}
+
+.hero h1 span {
+    color: #f5c542;
+}
+
+.hero-text {
+    max-width: 610px;
+    color: #aebdce;
+    font-size: 18px;
+    line-height: 1.7;
+    margin-bottom: 32px;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.hero-primary,
+.hero-secondary {
+    padding: 14px 25px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 800;
+    transition: 0.25s;
+}
+
+.hero-primary {
+    background: linear-gradient(135deg, #ffd75a, #dfa510);
+    color: #111;
+}
+
+.hero-secondary {
+    border: 1px solid #31455f;
+    color: white;
+    background: rgba(255,255,255,0.02);
+}
+
+.hero-primary:hover,
+.hero-secondary:hover {
+    transform: translateY(-3px);
+}
+
+/* =========================
+   BITCOIN VISUAL
+========================= */
+
+.hero-visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 430px;
+    position: relative;
+}
+
+.coin-glow {
+    position: absolute;
+    width: 340px;
+    height: 340px;
+    border-radius: 50%;
+    background: rgba(245, 190, 55, 0.10);
+    filter: blur(35px);
+}
+
+.bitcoin {
+    width: 245px;
+    height: 245px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #ffe27a, #e5a915);
+    border: 8px solid rgba(255,255,255,0.16);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #151515;
+    font-size: 130px;
+    font-weight: 900;
+    box-shadow:
+        0 0 35px rgba(245, 190, 55, 0.32),
+        0 25px 60px rgba(0,0,0,0.35);
+    animation: floatCoin 4s ease-in-out infinite;
+    z-index: 2;
+}
+
+.bitcoin::after {
+    content: "₿";
+}
+
+.floating-coin {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #ffd75a, #d89d0a);
+    color: #171717;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    box-shadow: 0 0 20px rgba(245,190,55,0.25);
+}
+
+.coin-1 {
+    top: 55px;
+    right: 70px;
+    animation: floatSmall 3.5s ease-in-out infinite;
+}
+
+.coin-2 {
+    bottom: 65px;
+    left: 50px;
+    animation: floatSmall 4.2s ease-in-out infinite reverse;
+}
+
+.coin-3 {
+    top: 150px;
+    left: 20px;
+    width: 34px;
+    height: 34px;
+    font-size: 13px;
+    animation: floatSmall 3s ease-in-out infinite;
+}
+
+/* =========================
+   STATS
+========================= */
+
+.stats {
+    max-width: 1100px;
+    margin: -20px auto 0;
+    padding: 0 22px 90px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+}
+
+.stat-card {
+    background: rgba(11, 27, 47, 0.82);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 15px;
+    padding: 25px 18px;
+    text-align: center;
+}
+
+.stat-number {
+    color: #f5c542;
+    font-size: 27px;
+    font-weight: 800;
+    margin-bottom: 7px;
+}
+
+.stat-label {
+    color: #8fa2b8;
+    font-size: 13px;
+}
+
+/* =========================
+   GENERAL SECTION
+========================= */
+
+section {
+    padding: 95px 22px;
+}
+
+.section-inner {
+    max-width: 1100px;
+    margin: auto;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 55px;
+}
+
+.section-title h2 {
+    font-size: 38px;
+    margin-bottom: 12px;
+}
+
+.section-title h2 span {
+    color: #f5c542;
+}
+
+.section-title p {
+    color: #8fa2b8;
+    max-width: 600px;
+    margin: auto;
+    line-height: 1.7;
+}
+
+/* =========================
+   SUPPORTED COINS
+========================= */
+
+.coins {
+    background: rgba(3, 11, 22, 0.35);
+}
+
+.coin-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+}
+
+.coin-card {
+    background: #0b1b2f;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 23px 12px;
+    text-align: center;
+    transition: 0.25s;
+}
+
+.coin-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(245,197,66,0.3);
+}
+
+.coin-symbol {
+    width: 48px;
+    height: 48px;
+    margin: auto auto 12px;
+    border-radius: 50%;
+    background: rgba(245,197,66,0.10);
+    color: #f5c542;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 21px;
+    font-weight: 900;
+}
+
+.coin-name {
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.coin-code {
+    color: #71859d;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+/* =========================
+   HOW IT WORKS
+========================= */
+
+.steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.step {
+    position: relative;
+    padding: 30px 20px;
+    background: #0b1b2f;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    text-align: center;
+}
+
+.step-number {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #ffd75a, #dca30d);
+    color: #121212;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 18px;
+}
+
+.step h3 {
+    margin-bottom: 10px;
+}
+
+.step p {
+    color: #879bb1;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* =========================
+   WHY US
+========================= */
+
+.why {
+    background: rgba(3, 11, 22, 0.35);
+}
+
+.features {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+.feature {
+    display: flex;
+    gap: 17px;
+    padding: 25px;
+    background: #0b1b2f;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 15px;
+}
+
+.feature-icon {
+    min-width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(245,197,66,0.10);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f5c542;
+    font-size: 21px;
+}
+
+.feature h3 {
+    margin-bottom: 7px;
+}
+
+.feature p {
+    color: #879bb1;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* =========================
+   CTA
+========================= */
+
+.cta {
+    padding: 80px 22px;
+}
+
+.cta-box {
+    max-width: 1000px;
+    margin: auto;
+    padding: 60px 30px;
+    text-align: center;
+    border-radius: 24px;
+    border: 1px solid rgba(245,197,66,0.2);
+    background:
+        radial-gradient(circle at center, rgba(245,197,66,0.10), transparent 55%),
+        #0a192c;
+}
+
+.cta-box h2 {
+    font-size: 38px;
+    margin-bottom: 15px;
+}
+
+.cta-box p {
+    color: #9aadc2;
+    margin-bottom: 28px;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+footer {
+    border-top: 1px solid rgba(255,255,255,0.07);
+    background: #040c17;
+    padding: 45px 22px 25px;
+}
+
+.footer-inner {
+    max-width: 1100px;
+    margin: auto;
+}
+
+.footer-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+    padding-bottom: 30px;
+}
+
+.footer-description {
+    max-width: 360px;
+    color: #74879d;
+    font-size: 14px;
+    line-height: 1.7;
+    margin-top: 15px;
+}
+
+.footer-links {
+    display: flex;
+    gap: 22px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.footer-links a {
+    color: #8da0b5;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.footer-links a:hover {
+    color: #f5c542;
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding-top: 22px;
+    color: #596d83;
+    font-size: 12px;
+    text-align: center;
+}
+
+/* =========================
+   ANIMATIONS
+========================= */
+
+@keyframes floatCoin {
+    0%,100% {
+        transform: translateY(0) rotate(-2deg);
+    }
+    50% {
+        transform: translateY(-15px) rotate(2deg);
+    }
+}
+
+@keyframes floatSmall {
+    0%,100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-12px);
+    }
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 900px) {
+
+    .nav-links {
+        display: none;
+    }
+
+    .hero-inner {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .hero-text {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .hero-buttons {
+        justify-content: center;
+    }
+
+    .hero-visual {
+        min-height: 340px;
+        order: -1;
+    }
+
+    .bitcoin {
+        width: 190px;
+        height: 190px;
+        font-size: 100px;
+    }
+
+    .coin-glow {
+        width: 270px;
+        height: 270px;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .coin-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .steps {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+
+    header {
+        height: 64px;
+    }
+
+    .navbar {
+        padding: 0 14px;
+    }
+
+    .logo {
+        font-size: 17px;
+    }
+
+    .logo-icon {
+        width: 34px;
+        height: 34px;
+        font-size: 19px;
+    }
+
+    .btn-login,
+    .btn-register {
+        padding: 8px 11px;
+        font-size: 12px;
+    }
+
+    .hero {
+        min-height: auto;
+        padding: 115px 18px 65px;
+    }
+
+    .hero h1 {
+        font-size: 42px;
+        letter-spacing: -1.5px;
+    }
+
+    .hero-text {
+        font-size: 15px;
+    }
+
+    .hero-visual {
+        min-height: 260px;
+    }
+
+    .bitcoin {
+        width: 155px;
+        height: 155px;
+        font-size: 78px;
+        border-width: 6px;
+    }
+
+    .coin-glow {
+        width: 220px;
+        height: 220px;
+    }
+
+    .coin-1 {
+        right: 25px;
+        top: 25px;
+    }
+
+    .coin-2 {
+        left: 25px;
+        bottom: 25px;
+    }
+
+    .stats {
+        padding-bottom: 55px;
+    }
+
+    .stats-grid {
+        gap: 10px;
+    }
+
+    .stat-card {
+        padding: 18px 10px;
+    }
+
+    .stat-number {
+        font-size: 21px;
+    }
+
+    section {
+        padding: 70px 18px;
+    }
+
+    .section-title {
+        margin-bottom: 35px;
+    }
+
+    .section-title h2 {
+        font-size: 30px;
+    }
+
+    .coin-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .steps {
+        grid-template-columns: 1fr;
+    }
+
+    .features {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-top {
+        flex-direction: column;
+    }
+
+    .footer-links {
+        gap: 15px;
+    }
+
+    .cta-box {
+        padding: 45px 20px;
+    }
+
+    .cta-box h2 {
+        font-size: 30px;
+    }
+}
+</style>
 </head>
 
 <body>
 
+<!-- =========================
+     HEADER
+========================= -->
+
 <header>
-    <h1>🎁 My Crypto Faucet</h1>
-    <p>Claim free crypto rewards</p>
+    <nav class="navbar">
+
+        <a href="/" class="logo">
+            <span class="logo-icon">₿</span>
+            My Crypto Faucet
+        </a>
+
+        <div class="nav-links">
+            <a href="#how-it-works">How It Works</a>
+            <a href="#coins">Supported Coins</a>
+            <a href="#why-us">Why Us</a>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="/login.html" class="btn-login">Login</a>
+            <a href="/register.html" class="btn-register">Register</a>
+        </div>
+
+    </nav>
 </header>
 
-<div class="container">
 
-    <h2>🪙 Crypto Faucet</h2>
+<!-- =========================
+     HERO
+========================= -->
 
-    <div class="balance">
-        Balance: <strong>0.00000000</strong>
+<main>
+
+<section class="hero">
+
+    <div class="hero-inner">
+
+        <div class="hero-content">
+
+            <div class="badge">
+                ⚡ Free Crypto Rewards
+            </div>
+
+            <h1>
+                Earn Crypto<br>
+                <span>Every Hour.</span>
+            </h1>
+
+            <p class="hero-text">
+                Claim crypto rewards every hour, build your balance,
+                and withdraw your earnings through FaucetPay.
+                Simple, secure and available worldwide.
+            </p>
+
+            <div class="hero-buttons">
+                <a href="/register.html" class="hero-primary">
+                    🚀 Start Earning
+                </a>
+
+                <a href="/login.html" class="hero-secondary">
+                    Login to Account
+                </a>
+            </div>
+
+        </div>
+
+
+        <div class="hero-visual">
+
+            <div class="coin-glow"></div>
+
+            <div class="floating-coin coin-1">₿</div>
+            <div class="floating-coin coin-2">₿</div>
+            <div class="floating-coin coin-3">₿</div>
+
+            <div class="bitcoin"></div>
+
+        </div>
+
     </div>
 
-    <div class="reward">
-        🎁 Reward: <strong>0.00000100 BTC</strong>
+</section>
+
+
+<!-- =========================
+     STATS
+========================= -->
+
+<section class="stats">
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+            <div class="stat-number">24/7</div>
+            <div class="stat-label">Platform Access</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-number">1 Hour</div>
+            <div class="stat-label">Claim Interval</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-number">10+</div>
+            <div class="stat-label">Crypto Options</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-number">Worldwide</div>
+            <div class="stat-label">Users Welcome</div>
+        </div>
+
     </div>
 
-    <button onclick="claimReward()">
-        CLAIM NOW
-    </button>
+</section>
 
-    <div id="timer"></div>
 
-</div>
+<!-- =========================
+     SUPPORTED COINS
+========================= -->
+
+<section class="coins" id="coins">
+
+    <div class="section-inner">
+
+        <div class="section-title">
+            <h2>Supported <span>Crypto</span></h2>
+            <p>
+                Explore the cryptocurrencies available on
+                My Crypto Faucet.
+            </p>
+        </div>
+
+        <div class="coin-grid">
+
+            <div class="coin-card">
+                <div class="coin-symbol">₿</div>
+                <div class="coin-name">Bitcoin</div>
+                <div class="coin-code">BTC</div>
+            </div>
+
+            <div class="coin-card">
+                <div class="coin-symbol">Ł</div>
+                <div class="coin-name">Litecoin</div>
+                <div class="coin-code">LTC</div>
+            </div>
+
+            <div class="coin-card">
+                <div class="coin-symbol">◆</div>
+                <div class="coin-name">BNB</div>
+                <div class="coin-code">BNB</div>
+            </div>
+
+            <div class="coin-card">
+                <div class="coin-symbol">Ð</div>
+                <div class="coin-name">Dogecoin</div>
+                <div class="coin-code">DOGE</div>
+            </div>
+
+            <div class="coin-card">
+                <div class="coin-symbol">S</div>
+                <div class="coin-name">Sui</div>
+                <div class="coin-code">SUI</div>
+            </div>
+
+            <div class="coin-card">
+                <div class="coin-symbol">T</div>
+                <div class="coin-name">TRON</div>
+                <div class="coin-code">TRX</div>
+            </div>
+
+            <div class="coin-card">
+                <div class="coin-symbol">T</div>
+                <div class="coin-name">Toncoin</div>
+                <div class="coin-code">TON</div>
+            </div>
+
+            <div class="coin-card">
+                <div class="coin-symbol">S</div>
+                <div class="coin-name">Solana</div>
+                <div class="coin-code">SOL</div>
+            </div>
+
+            <div class="coin-card">
+                <div class="coin-symbol">P</div>
+                <div class="coin-name">Polygon</div>
+                <div class="coin-code">POL</div>
+            </div>
+
+            <div class="coin-card">
+                <div class="coin-symbol">₿</div>
+                <div class="coin-name">Bitcoin Cash</div>
+                <div class="coin-code">BCH</div>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     HOW IT WORKS
+========================= -->
+
+<section id="how-it-works">
+
+    <div class="section-inner">
+
+        <div class="section-title">
+            <h2>How It <span>Works</span></h2>
+            <p>
+                Start earning crypto in just a few simple steps.
+            </p>
+        </div>
+
+        <div class="steps">
+
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Register</h3>
+                <p>
+                    Create your free My Crypto Faucet account.
+                </p>
+            </div>
+
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>Claim</h3>
+                <p>
+                    Complete the security check and claim your reward.
+                </p>
+            </div>
+
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Earn</h3>
+                <p>
+                    Return every hour and continue building your balance.
+                </p>
+            </div>
+
+            <div class="step">
+                <div class="step-number">4</div>
+                <h3>Withdraw</h3>
+                <p>
+                    Withdraw eligible earnings through FaucetPay.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     WHY US
+========================= -->
+
+<section class="why" id="why-us">
+
+    <div class="section-inner">
+
+        <div class="section-title">
+            <h2>Why <span>My Crypto Faucet?</span></h2>
+            <p>
+                Built with a simple goal: make crypto faucet
+                earning straightforward and accessible.
+            </p>
+        </div>
+
+        <div class="features">
+
+            <div class="feature">
+                <div class="feature-icon">⏱</div>
+                <div>
+                    <h3>Hourly Rewards</h3>
+                    <p>
+                        Claim your available faucet reward once every hour.
+                    </p>
+                </div>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">🔐</div>
+                <div>
+                    <h3>Secure Accounts</h3>
+                    <p>
+                        Account authentication and security protections
+                        help protect your account.
+                    </p>
+                </div>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">💰</div>
+                <div>
+                    <h3>Crypto Withdrawals</h3>
+                    <p>
+                        Eligible balances can be requested for withdrawal
+                        through FaucetPay.
+                    </p>
+                </div>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">🌍</div>
+                <div>
+                    <h3>Worldwide Access</h3>
+                    <p>
+                        The platform is designed for users from around
+                        the world.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     CTA
+========================= -->
+
+<section class="cta">
+
+    <div class="cta-box">
+
+        <h2>Ready to Start Earning?</h2>
+
+        <p>
+            Create your free account and make your first crypto claim.
+        </p>
+
+        <a href="/register.html" class="hero-primary">
+            🚀 Create Free Account
+        </a>
+
+    </div>
+
+</section>
+
+</main>
+
+
+<!-- =========================
+     FOOTER
+========================= -->
 
 <footer>
-    © 2026 My Crypto Faucet
+
+    <div class="footer-inner">
+
+        <div class="footer-top">
+
+            <div>
+
+                <a href="/" class="logo">
+                    <span class="logo-icon">₿</span>
+                    My Crypto Faucet
+                </a>
+
+                <p class="footer-description">
+                    A simple crypto faucet platform for earning
+                    cryptocurrency rewards.
+                </p>
+
+            </div>
+
+            <div class="footer-links">
+                <a href="#how-it-works">How It Works</a>
+                <a href="#coins">Supported Coins</a>
+                <a href="/login.html">Login</a>
+                <a href="/register.html">Register</a>
+                <a href="/terms.html">Terms</a>
+                <a href="/privacy.html">Privacy</a>
+            </div>
+
+        </div>
+
+        <div class="footer-bottom">
+            © 2026 My Crypto Faucet. All rights reserved.
+        </div>
+
+    </div>
+
 </footer>
 
-<script>
-    let cooldown = 60 * 60; // 60 minutes
-let timerInterval;
-
-function claimReward() {
-
-    const button = document.querySelector("button");
-
-    button.disabled = true;
-
-    document.getElementById("timer").innerText =
-        "✅ Claim recorded in TEST MODE!";
-
-    startTimer();
-}
-
-function startTimer() {
-
-    let remaining = cooldown;
-
-    timerInterval = setInterval(function () {
-
-        let minutes = Math.floor(remaining / 60);
-        let seconds = remaining % 60;
-
-        document.getElementById("timer").innerText =
-            "⏳ Next claim in: " +
-            minutes + "m " +
-            seconds + "s";
-
-        remaining--;
-
-        if (remaining < 0) {
-
-            clearInterval(timerInterval);
-
-            document.getElementById("timer").innerText =
-                "🎉 You can claim again!";
-
-            document.querySelector("button").disabled = false;
-        }
-
-    }, 1000);
-}
-
-</script>
-
 </body>
-        </html>
+</html>
