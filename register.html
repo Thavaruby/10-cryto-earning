@@ -20,10 +20,25 @@
 
         body {
             font-family: Arial, Helvetica, sans-serif;
+
             background:
-                radial-gradient(circle at 20% 20%, rgba(37, 99, 235, 0.25), transparent 35%),
-                radial-gradient(circle at 80% 80%, rgba(124, 58, 237, 0.22), transparent 35%),
-                linear-gradient(135deg, #07111f, #0d1b2f 45%, #111827);
+                radial-gradient(
+                    circle at 20% 20%,
+                    rgba(37, 99, 235, 0.25),
+                    transparent 35%
+                ),
+                radial-gradient(
+                    circle at 80% 80%,
+                    rgba(124, 58, 237, 0.22),
+                    transparent 35%
+                ),
+                linear-gradient(
+                    135deg,
+                    #07111f,
+                    #0d1b2f 45%,
+                    #111827
+                );
+
             color: white;
             min-height: 100vh;
             overflow-x: hidden;
@@ -32,34 +47,54 @@
 
         body::before {
             content: "";
+
             position: fixed;
+
             width: 280px;
             height: 280px;
+
             background: rgba(37, 99, 235, 0.15);
+
             filter: blur(70px);
+
             border-radius: 50%;
+
             top: 10%;
             left: -100px;
-            animation: floatGlow 7s ease-in-out infinite;
+
+            animation:
+                floatGlow 7s ease-in-out infinite;
+
             pointer-events: none;
         }
 
         body::after {
             content: "";
+
             position: fixed;
+
             width: 300px;
             height: 300px;
+
             background: rgba(168, 85, 247, 0.13);
+
             filter: blur(80px);
+
             border-radius: 50%;
+
             bottom: -100px;
             right: -80px;
-            animation: floatGlow 8s ease-in-out infinite reverse;
+
+            animation:
+                floatGlow 8s ease-in-out infinite reverse;
+
             pointer-events: none;
         }
 
         @keyframes floatGlow {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: translate(0, 0);
             }
 
@@ -68,42 +103,65 @@
             }
         }
 
+        /* Header */
+
         header {
             padding: 28px 20px 20px;
+
             text-align: center;
+
             position: relative;
+
             z-index: 2;
         }
 
         .logo {
             display: inline-flex;
+
             align-items: center;
+
             justify-content: center;
+
             gap: 10px;
         }
 
         .logo-coin {
             width: 48px;
             height: 48px;
+
             border-radius: 50%;
+
             display: flex;
+
             align-items: center;
+
             justify-content: center;
 
-            background: linear-gradient(145deg, #fbbf24, #f59e0b);
+            background:
+                linear-gradient(
+                    145deg,
+                    #fbbf24,
+                    #f59e0b
+                );
+
             color: #111827;
+
             font-size: 25px;
+
             font-weight: bold;
 
             box-shadow:
                 0 0 0 4px rgba(251, 191, 36, 0.12),
                 0 0 25px rgba(251, 191, 36, 0.35);
 
-            animation: coinPulse 2.5s ease-in-out infinite;
+            animation:
+                coinPulse 2.5s ease-in-out infinite;
         }
 
         @keyframes coinPulse {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: scale(1);
             }
 
@@ -114,32 +172,49 @@
 
         header h1 {
             margin: 0;
+
             font-size: 27px;
+
             letter-spacing: 0.3px;
         }
 
         .brand-subtitle {
             margin: 8px 0 0;
+
             color: #94a3b8;
+
             font-size: 13px;
         }
 
+        /* Main */
+
         .page {
             min-height: calc(100vh - 115px);
+
             display: flex;
+
             justify-content: center;
+
             align-items: center;
+
             padding: 25px 18px 50px;
+
             position: relative;
+
             z-index: 2;
         }
 
         .container {
             width: 100%;
+
             max-width: 430px;
 
-            background: rgba(15, 23, 42, 0.78);
-            border: 1px solid rgba(255, 255, 255, 0.10);
+            background:
+                rgba(15, 23, 42, 0.78);
+
+            border:
+                1px solid rgba(255, 255, 255, 0.10);
+
             border-radius: 24px;
 
             padding: 34px 30px 30px;
@@ -149,43 +224,59 @@
                 inset 0 1px 0 rgba(255, 255, 255, 0.06);
 
             backdrop-filter: blur(18px);
+
             -webkit-backdrop-filter: blur(18px);
 
-            animation: cardAppear 0.65s ease-out;
+            animation:
+                cardAppear 0.65s ease-out;
         }
 
         @keyframes cardAppear {
+
             from {
                 opacity: 0;
-                transform: translateY(25px) scale(0.97);
+
+                transform:
+                    translateY(25px)
+                    scale(0.97);
             }
 
             to {
                 opacity: 1;
-                transform: translateY(0) scale(1);
+
+                transform:
+                    translateY(0)
+                    scale(1);
             }
         }
+
+        /* Register Icon */
 
         .register-icon {
             width: 70px;
             height: 70px;
+
             margin: 0 auto 18px;
 
             border-radius: 20px;
 
             display: flex;
+
             align-items: center;
+
             justify-content: center;
 
             font-size: 32px;
 
-            background: linear-gradient(
-                145deg,
-                rgba(37, 99, 235, 0.25),
-                rgba(124, 58, 237, 0.25)
-            );
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(37, 99, 235, 0.25),
+                    rgba(124, 58, 237, 0.25)
+                );
 
-            border: 1px solid rgba(96, 165, 250, 0.25);
+            border:
+                1px solid rgba(96, 165, 250, 0.25);
 
             box-shadow:
                 0 10px 30px rgba(37, 99, 235, 0.18),
@@ -194,28 +285,41 @@
 
         .container h2 {
             text-align: center;
+
             margin: 0;
+
             font-size: 25px;
+
             letter-spacing: 0.2px;
         }
 
         .welcome {
             text-align: center;
+
             color: #94a3b8;
+
             font-size: 14px;
+
             margin: 9px 0 27px;
         }
 
+        /* Form */
+
         .field {
             text-align: left;
+
             margin-bottom: 17px;
         }
 
         .field label {
             display: block;
+
             color: #cbd5e1;
+
             font-size: 13px;
+
             font-weight: bold;
+
             margin-bottom: 8px;
         }
 
@@ -225,28 +329,43 @@
 
         .input-icon {
             position: absolute;
+
             left: 15px;
+
             top: 50%;
-            transform: translateY(-50%);
+
+            transform:
+                translateY(-50%);
+
             font-size: 17px;
+
             opacity: 0.75;
+
             pointer-events: none;
+
             z-index: 2;
         }
 
         input {
             width: 100%;
+
             height: 52px;
 
-            padding: 0 48px 0 45px;
+            padding:
+                0 48px 0 45px;
 
-            border: 1px solid rgba(148, 163, 184, 0.20);
+            border:
+                1px solid rgba(148, 163, 184, 0.20);
+
             border-radius: 12px;
 
-            background: rgba(2, 6, 23, 0.55);
+            background:
+                rgba(2, 6, 23, 0.55);
+
             color: white;
 
             font-size: 15px;
+
             outline: none;
 
             transition:
@@ -262,7 +381,8 @@
         input:focus {
             border-color: #3b82f6;
 
-            background: rgba(2, 6, 23, 0.75);
+            background:
+                rgba(2, 6, 23, 0.75);
 
             box-shadow:
                 0 0 0 3px rgba(59, 130, 246, 0.12),
@@ -270,11 +390,16 @@
         }
 
         /* Password Show / Hide */
+
         .password-toggle {
             position: absolute;
+
             right: 13px;
+
             top: 50%;
-            transform: translateY(-50%);
+
+            transform:
+                translateY(-50%);
 
             width: 34px;
             height: 34px;
@@ -283,16 +408,21 @@
             margin: 0;
 
             display: flex;
+
             align-items: center;
+
             justify-content: center;
 
             border: none;
+
             border-radius: 8px;
 
             background: transparent;
+
             color: #94a3b8;
 
             font-size: 18px;
+
             line-height: 1;
 
             cursor: pointer;
@@ -306,39 +436,51 @@
 
         .password-toggle:hover {
             color: #60a5fa;
-            background: rgba(59, 130, 246, 0.10);
 
-            transform: translateY(-50%);
+            background:
+                rgba(59, 130, 246, 0.10);
+
+            transform:
+                translateY(-50%);
+
             box-shadow: none;
         }
 
         .password-toggle:active {
-            transform: translateY(-50%);
+            transform:
+                translateY(-50%);
         }
 
         .password-toggle:focus {
             outline: none;
         }
 
+        /* Register Button */
+
         button#registerButton {
             width: 100%;
+
             height: 53px;
 
             margin-top: 8px;
 
             border: none;
+
             border-radius: 13px;
 
-            background: linear-gradient(
-                135deg,
-                #2563eb,
-                #4f46e5
-            );
+            background:
+                linear-gradient(
+                    135deg,
+                    #2563eb,
+                    #4f46e5
+                );
 
             color: white;
 
             font-size: 15px;
+
             font-weight: bold;
+
             letter-spacing: 0.8px;
 
             cursor: pointer;
@@ -353,51 +495,73 @@
         }
 
         button#registerButton:hover:not(:disabled) {
-            transform: translateY(-2px);
+            transform:
+                translateY(-2px);
 
             box-shadow:
                 0 14px 32px rgba(37, 99, 235, 0.35);
         }
 
         button#registerButton:active:not(:disabled) {
-            transform: translateY(0);
+            transform:
+                translateY(0);
         }
 
         button#registerButton:disabled {
             opacity: 0.65;
+
             cursor: not-allowed;
         }
 
+        /* Security */
+
         .security-note {
             display: flex;
+
             justify-content: center;
+
             align-items: center;
+
             gap: 7px;
 
             margin-top: 19px;
 
             color: #64748b;
+
             font-size: 12px;
         }
 
+        /* Message */
+
         #message {
             min-height: 22px;
+
             margin-top: 17px;
+
             text-align: center;
+
             font-size: 14px;
+
             font-weight: bold;
         }
 
+        /* Login Link */
+
         .login-link {
             text-align: center;
+
             margin-top: 22px;
+
             color: #64748b;
+
             font-size: 13px;
         }
 
         .login-link a {
             color: #60a5fa;
+
             text-decoration: none;
+
             font-weight: bold;
         }
 
@@ -405,10 +569,15 @@
             text-decoration: underline;
         }
 
+        /* Bottom */
+
         .bottom-text {
             text-align: center;
+
             margin-top: 20px;
+
             color: #64748b;
+
             font-size: 12px;
         }
 
@@ -416,10 +585,13 @@
             color: #fbbf24;
         }
 
+        /* Mobile */
+
         @media (max-width: 520px) {
 
             header {
-                padding: 22px 15px 12px;
+                padding:
+                    22px 15px 12px;
             }
 
             header h1 {
@@ -429,24 +601,33 @@
             .logo-coin {
                 width: 42px;
                 height: 42px;
+
                 font-size: 21px;
             }
 
             .page {
-                min-height: calc(100vh - 95px);
-                padding: 18px 14px 35px;
+                min-height:
+                    calc(100vh - 95px);
+
+                padding:
+                    18px 14px 35px;
+
                 align-items: flex-start;
             }
 
             .container {
                 margin-top: 10px;
-                padding: 29px 21px 25px;
+
+                padding:
+                    29px 21px 25px;
+
                 border-radius: 21px;
             }
 
             .register-icon {
                 width: 62px;
                 height: 62px;
+
                 font-size: 28px;
             }
 
@@ -484,7 +665,9 @@
         </div>
 
         <div>
-            <h1>My Crypto Faucet</h1>
+            <h1>
+                My Crypto Faucet
+            </h1>
         </div>
 
     </div>
@@ -504,7 +687,9 @@
             🎁
         </div>
 
-        <h2>Create Account</h2>
+        <h2>
+            Create Account
+        </h2>
 
         <p class="welcome">
             Create your account and start earning Bitcoin
@@ -512,6 +697,8 @@
 
 
         <form id="registerForm">
+
+            <!-- Email -->
 
             <div class="field">
 
@@ -538,6 +725,8 @@
             </div>
 
 
+            <!-- Password -->
+
             <div class="field">
 
                 <label for="password">
@@ -559,20 +748,22 @@
                         required
                     >
 
+                    <!-- One toggle -->
+
                     <button
                         type="button"
                         class="password-toggle"
                         id="passwordToggle"
                         aria-label="Show password"
                         title="Show password"
-                    >
-                        👁️
-                    </button>
+                    >😑</button>
 
                 </div>
 
             </div>
 
+
+            <!-- Register -->
 
             <button
                 type="submit"
@@ -593,15 +784,22 @@
 
 
         <div class="login-link">
+
             Already have an account?
+
             <a href="/login.html">
                 Login
             </a>
+
         </div>
 
 
         <div class="bottom-text">
-            Start earning <span>₿ Bitcoin</span> every hour
+
+            Start earning
+            <span>₿ Bitcoin</span>
+            every hour
+
         </div>
 
     </div>
@@ -613,8 +811,9 @@
 
 /* ==============================
    PASSWORD SHOW / HIDE
-   Eye visible = SHOW
-   Eye hidden = HIDE
+
+   😑 = HIDDEN
+   😳 = VISIBLE
 ================================ */
 
 const passwordInput =
@@ -623,42 +822,51 @@ const passwordInput =
 const passwordToggle =
     document.getElementById("passwordToggle");
 
-passwordToggle.addEventListener("click", function () {
 
-    if (passwordInput.type === "password") {
+passwordToggle.addEventListener(
+    "click",
+    function () {
 
-        passwordInput.type = "text";
+        if (passwordInput.type === "password") {
 
-        passwordToggle.innerText = "👁️";
+            /* SHOW PASSWORD */
 
-        passwordToggle.setAttribute(
-            "aria-label",
-            "Hide password"
-        );
+            passwordInput.type = "text";
 
-        passwordToggle.setAttribute(
-            "title",
-            "Hide password"
-        );
+            passwordToggle.innerText = "😳";
 
-    } else {
+            passwordToggle.setAttribute(
+                "aria-label",
+                "Hide password"
+            );
 
-        passwordInput.type = "password";
+            passwordToggle.setAttribute(
+                "title",
+                "Hide password"
+            );
 
-        passwordToggle.innerText = "👁️‍🗨️";
+        } else {
 
-        passwordToggle.setAttribute(
-            "aria-label",
-            "Show password"
-        );
+            /* HIDE PASSWORD */
 
-        passwordToggle.setAttribute(
-            "title",
-            "Show password"
-        );
+            passwordInput.type = "password";
+
+            passwordToggle.innerText = "😑";
+
+            passwordToggle.setAttribute(
+                "aria-label",
+                "Show password"
+            );
+
+            passwordToggle.setAttribute(
+                "title",
+                "Show password"
+            );
+
+        }
+
     }
-
-});
+);
 
 
 /* ==============================
@@ -667,102 +875,123 @@ passwordToggle.addEventListener("click", function () {
 
 document
     .getElementById("registerForm")
-    .addEventListener("submit", async function(event) {
+    .addEventListener(
+        "submit",
+        async function(event) {
 
-        event.preventDefault();
-
-        const email =
-            document
-                .getElementById("email")
-                .value
-                .trim();
-
-        const password =
-            document
-                .getElementById("password")
-                .value;
-
-        const message =
-            document.getElementById("message");
-
-        const button =
-            document.getElementById("registerButton");
+            event.preventDefault();
 
 
-        button.disabled = true;
-
-        message.innerText =
-            "⏳ Creating secure account...";
-
-
-        try {
-
-            const response =
-                await fetch(
-                    "/api/register-secure",
-                    {
-                        method: "POST",
-
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-
-                        body: JSON.stringify({
-                            email: email,
-                            password: password
-                        })
-                    }
-                );
-
-
-            const result =
-                await response.json();
-
-
-            if (result.success) {
-
-                message.innerText =
-                    "✅ Account created successfully!";
-
+            const email =
                 document
-                    .getElementById("registerForm")
-                    .reset();
-
-                /* Reset password to HIDDEN */
-                passwordInput.type = "password";
-
-                passwordToggle.innerText = "👁️‍🗨️";
-
-                passwordToggle.setAttribute(
-                    "aria-label",
-                    "Show password"
-                );
-
-                passwordToggle.setAttribute(
-                    "title",
-                    "Show password"
-                );
-
-                button.disabled = false;
-
-            } else {
-
-                message.innerText =
-                    "❌ " + result.error;
-
-                button.disabled = false;
-            }
+                    .getElementById("email")
+                    .value
+                    .trim();
 
 
-        } catch (error) {
+            const password =
+                document
+                    .getElementById("password")
+                    .value;
+
+
+            const message =
+                document
+                    .getElementById("message");
+
+
+            const button =
+                document
+                    .getElementById("registerButton");
+
+
+            button.disabled = true;
+
 
             message.innerText =
-                "❌ Connection error. Please try again.";
+                "⏳ Creating secure account...";
 
-            button.disabled = false;
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/api/register-secure",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify({
+                                    email: email,
+                                    password: password
+                                })
+                        }
+                    );
+
+
+                const result =
+                    await response.json();
+
+
+                if (result.success) {
+
+                    message.innerText =
+                        "✅ Account created successfully!";
+
+
+                    document
+                        .getElementById("registerForm")
+                        .reset();
+
+
+                    /* Reset to HIDDEN */
+
+                    passwordInput.type =
+                        "password";
+
+                    passwordToggle.innerText =
+                        "😑";
+
+                    passwordToggle.setAttribute(
+                        "aria-label",
+                        "Show password"
+                    );
+
+                    passwordToggle.setAttribute(
+                        "title",
+                        "Show password"
+                    );
+
+
+                    button.disabled = false;
+
+                } else {
+
+                    message.innerText =
+                        "❌ " +
+                        result.error;
+
+                    button.disabled = false;
+
+                }
+
+
+            } catch (error) {
+
+                message.innerText =
+                    "❌ Connection error. Please try again.";
+
+                button.disabled = false;
+
+            }
+
         }
-
-    });
+    );
 
 </script>
 
