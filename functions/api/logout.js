@@ -31,9 +31,25 @@ function getCookie(request, name) {
     return null;
 }
 
+function jsonResponse(data, status = 200, extraHeaders = {}) {
+    return new Response(
+        JSON.stringify(data),
+        {
+            status,
+            headers: {
+                "Content-Type": "application/json",
+                "Cache-Control": "no-store",
+                ...extraHeaders
+            }
+        }
+    );
+}
+
 export async function onRequestPost(context) {
     try {
         const { request, env } = context;
+
+        const db = env.DB.withSession("first-primary");
 
         const sessionToken = getCookie(
             request,
@@ -44,7 +60,7 @@ export async function onRequestPost(context) {
             const tokenHash =
                 await hashSessionToken(sessionToken);
 
-            await env.DB.prepare(`
+            await db.prepare(`
                 DELETE FROM sessions
                 WHERE token_hash = ?
             `)
@@ -52,34 +68,31 @@ export async function onRequestPost(context) {
                 .run();
         }
 
-        return new Response(
-            JSON.stringify({
-                success: true
-            }),
+        return jsonResponse(
             {
-                status: 200,
-                headers: {
-                    "Content-Type": "application/json",
-                    "Set-Cookie":
-                        "session=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0"
-                }
+                success: true
+            },
+            200,
+            {
+                "Set-Cookie":
+                    "session=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0"
             }
         );
 
     } catch (error) {
-        console.error("Logout error:", error);
+        console.error(
+            "LOGOUT ERROR:",
+            error instanceof Error
+                ? error.message
+                : "Unknown error"
+        );
 
-        return new Response(
-            JSON.stringify({
+        return jsonResponse(
+            {
                 success: false,
                 error: "Internal server error"
-            }),
-            {
-                status: 500,
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            }
+            },
+            500
         );
     }
 }
