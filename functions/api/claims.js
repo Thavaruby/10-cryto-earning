@@ -17,7 +17,9 @@ function getCookie(request, name) {
             cookie.trim().split("=");
 
         if (key === name) {
-            return value.join("=");
+            return decodeURIComponent(
+                value.join("=")
+            );
         }
     }
 
@@ -54,6 +56,37 @@ async function hashSessionToken(token) {
 
 
 /* =====================================================
+   JSON RESPONSE
+===================================================== */
+
+function jsonResponse(
+    data,
+    status = 200
+) {
+
+    return new Response(
+        JSON.stringify(data),
+        {
+            status,
+            headers: {
+                "Content-Type":
+                    "application/json",
+
+                "Cache-Control":
+                    "no-store, no-cache, must-revalidate, max-age=0",
+
+                "Pragma":
+                    "no-cache",
+
+                "Expires":
+                    "0"
+            }
+        }
+    );
+}
+
+
+/* =====================================================
    CLAIM HISTORY
 ===================================================== */
 
@@ -84,18 +117,13 @@ export async function onRequestGet(context) {
 
         if (!sessionToken) {
 
-            return Response.json(
+            return jsonResponse(
                 {
                     success: false,
                     error:
                         "Please login first"
                 },
-                {
-                    status: 401,
-                    headers: {
-                        "Cache-Control": "no-store"
-                    }
-                }
+                401
             );
         }
 
@@ -126,18 +154,13 @@ export async function onRequestGet(context) {
 
         if (!session) {
 
-            return Response.json(
+            return jsonResponse(
                 {
                     success: false,
                     error:
                         "Invalid session"
                 },
-                {
-                    status: 401,
-                    headers: {
-                        "Cache-Control": "no-store"
-                    }
-                }
+                401
             );
         }
 
@@ -151,18 +174,22 @@ export async function onRequestGet(context) {
             new Date()
         ) {
 
-            return Response.json(
+            await db
+                .prepare(
+                    `DELETE FROM sessions
+                     WHERE token_hash = ?`
+                )
+                .bind(tokenHash)
+                .run();
+
+
+            return jsonResponse(
                 {
                     success: false,
                     error:
                         "Session expired"
                 },
-                {
-                    status: 401,
-                    headers: {
-                        "Cache-Control": "no-store"
-                    }
-                }
+                401
             );
         }
 
@@ -191,41 +218,29 @@ export async function onRequestGet(context) {
            RESPONSE
         ================================================= */
 
-        return Response.json(
-            {
-                success: true,
-                claims:
-                    claims.results || []
-            },
-            {
-                headers: {
-                    "Cache-Control":
-                        "no-store, no-cache, must-revalidate, max-age=0",
+        return jsonResponse({
+            success: true,
+            claims:
+                claims.results || []
+        });
 
-                    "Pragma":
-                        "no-cache",
 
-                    "Expires":
-                        "0"
-                }
-            }
+    } catch (error) {
+
+        console.error(
+            "CLAIM HISTORY ERROR:",
+            error instanceof Error
+                ? error.message
+                : "Unknown error"
         );
 
-
-    } catch {
-
-        return Response.json(
+        return jsonResponse(
             {
                 success: false,
                 error:
                     "Unable to load claim history."
             },
-            {
-                status: 500,
-                headers: {
-                    "Cache-Control": "no-store"
-                }
-            }
+            500
         );
     }
 }
