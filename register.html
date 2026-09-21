@@ -748,8 +748,6 @@
                         required
                     >
 
-                    <!-- One toggle -->
-
                     <button
                         type="button"
                         class="password-toggle"
@@ -949,7 +947,7 @@ document
                         .reset();
 
 
-                    /* Reset to HIDDEN */
+                    /* Reset password to HIDDEN */
 
                     passwordInput.type =
                         "password";
@@ -968,13 +966,22 @@ document
                     );
 
 
-                    button.disabled = false;
+                    /* Redirect to Login */
+
+                    setTimeout(() => {
+
+                        window.location.href =
+                            "/login.html";
+
+                    }, 1200);
+
 
                 } else {
 
                     message.innerText =
                         "❌ " +
-                        result.error;
+                        (result.error ||
+                            "Unable to create account.");
 
                     button.disabled = false;
 
