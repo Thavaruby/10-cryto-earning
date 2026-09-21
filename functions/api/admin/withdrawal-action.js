@@ -87,7 +87,12 @@ export async function onRequestPost(context) {
                     error:
                         "Invalid request."
                 },
-                { status: 400 }
+                {
+                    status: 400,
+                    headers: {
+                        "Cache-Control": "no-store"
+                    }
+                }
             );
         }
 
@@ -117,7 +122,12 @@ export async function onRequestPost(context) {
                     error:
                         "Invalid withdrawal ID."
                 },
-                { status: 400 }
+                {
+                    status: 400,
+                    headers: {
+                        "Cache-Control": "no-store"
+                    }
+                }
             );
         }
 
@@ -133,7 +143,12 @@ export async function onRequestPost(context) {
                     error:
                         "Invalid action."
                 },
-                { status: 400 }
+                {
+                    status: 400,
+                    headers: {
+                        "Cache-Control": "no-store"
+                    }
+                }
             );
         }
 
@@ -157,7 +172,12 @@ export async function onRequestPost(context) {
                     error:
                         "Please login first."
                 },
-                { status: 401 }
+                {
+                    status: 401,
+                    headers: {
+                        "Cache-Control": "no-store"
+                    }
+                }
             );
         }
 
@@ -168,6 +188,14 @@ export async function onRequestPost(context) {
             );
 
 
+        /*
+         * IMPORTANT:
+         *
+         * login.js stores expires_at as an ISO timestamp.
+         * Compare against the same ISO format instead of
+         * SQLite CURRENT_TIMESTAMP text format.
+         */
+
         const session =
             await db
                 .prepare(
@@ -176,10 +204,13 @@ export async function onRequestPost(context) {
                         expires_at
                      FROM sessions
                      WHERE token_hash = ?
-                       AND expires_at > CURRENT_TIMESTAMP
+                       AND expires_at > ?
                      LIMIT 1`
                 )
-                .bind(tokenHash)
+                .bind(
+                    tokenHash,
+                    new Date().toISOString()
+                )
                 .first();
 
 
@@ -191,7 +222,12 @@ export async function onRequestPost(context) {
                     error:
                         "Invalid or expired session."
                 },
-                { status: 401 }
+                {
+                    status: 401,
+                    headers: {
+                        "Cache-Control": "no-store"
+                    }
+                }
             );
         }
 
@@ -221,7 +257,12 @@ export async function onRequestPost(context) {
                     error:
                         "Admin access required."
                 },
-                { status: 403 }
+                {
+                    status: 403,
+                    headers: {
+                        "Cache-Control": "no-store"
+                    }
+                }
             );
         }
 
@@ -258,7 +299,12 @@ export async function onRequestPost(context) {
                     error:
                         "Withdrawal not found."
                 },
-                { status: 404 }
+                {
+                    status: 404,
+                    headers: {
+                        "Cache-Control": "no-store"
+                    }
+                }
             );
         }
 
@@ -278,7 +324,12 @@ export async function onRequestPost(context) {
                     error:
                         "Only BTC withdrawals are supported."
                 },
-                { status: 400 }
+                {
+                    status: 400,
+                    headers: {
+                        "Cache-Control": "no-store"
+                    }
+                }
             );
         }
 
@@ -326,25 +377,29 @@ export async function onRequestPost(context) {
                         error:
                             "Withdrawal was already processed or is being processed."
                     },
-                    { status: 409 }
+                    {
+                        status: 409,
+                        headers: {
+                            "Cache-Control": "no-store"
+                        }
+                    }
                 );
             }
 
 
-            return Response.json({
-
-                success: true,
-
-                status:
-                    "rejected",
-
-                refunded:
-                    withdrawal.amount,
-
-                currency:
-                    "BTC"
-
-            });
+            return Response.json(
+                {
+                    success: true,
+                    status: "rejected",
+                    refunded: withdrawal.amount,
+                    currency: "BTC"
+                },
+                {
+                    headers: {
+                        "Cache-Control": "no-store"
+                    }
+                }
+            );
         }
 
 
@@ -384,7 +439,12 @@ export async function onRequestPost(context) {
                     error:
                         "This withdrawal is already being processed or has already been processed."
                 },
-                { status: 409 }
+                {
+                    status: 409,
+                    headers: {
+                        "Cache-Control": "no-store"
+                    }
+                }
             );
         }
 
@@ -428,7 +488,12 @@ export async function onRequestPost(context) {
                     error:
                         "FaucetPay API key is not configured."
                 },
-                { status: 500 }
+                {
+                    status: 500,
+                    headers: {
+                        "Cache-Control": "no-store"
+                    }
+                }
             );
         }
 
@@ -469,7 +534,12 @@ export async function onRequestPost(context) {
                     error:
                         "Invalid BTC withdrawal amount."
                 },
-                { status: 400 }
+                {
+                    status: 400,
+                    headers: {
+                        "Cache-Control": "no-store"
+                    }
+                }
             );
         }
 
@@ -508,7 +578,12 @@ export async function onRequestPost(context) {
                     error:
                         "Invalid BTC withdrawal amount."
                 },
-                { status: 400 }
+                {
+                    status: 400,
+                    headers: {
+                        "Cache-Control": "no-store"
+                    }
+                }
             );
         }
 
@@ -583,7 +658,12 @@ export async function onRequestPost(context) {
                     error:
                         "FaucetPay could not be reached. Withdrawal remains processing and requires reconciliation."
                 },
-                { status: 502 }
+                {
+                    status: 502,
+                    headers: {
+                        "Cache-Control": "no-store"
+                    }
+                }
             );
         }
 
@@ -610,9 +690,7 @@ export async function onRequestPost(context) {
            14. INVALID / UNCERTAIN RESPONSE
         ===================================================== */
 
-        if (
-            !faucetPayResult
-        ) {
+        if (!faucetPayResult) {
 
             console.error(
                 "FAUCETPAY RETURNED INVALID RESPONSE."
@@ -632,19 +710,33 @@ export async function onRequestPost(context) {
                     error:
                         "FaucetPay returned an invalid response. Withdrawal remains processing and requires reconciliation."
                 },
-                { status: 502 }
+                {
+                    status: 502,
+                    headers: {
+                        "Cache-Control": "no-store"
+                    }
+                }
             );
         }
 
 
         /* =====================================================
-           15. FAUCETPAY EXPLICIT FAILURE
+           15. EXPLICIT FAUCETPAY FAILURE
         ===================================================== */
 
-        if (
-            !faucetPayResponse.ok ||
-            faucetPayResult.success !== true
-        ) {
+        /*
+         * Only a valid explicit failure response is treated
+         * as a failed payout.
+         *
+         * If the response is incomplete/ambiguous, we keep
+         * PROCESSING instead of risking a duplicate payout.
+         */
+
+        const faucetPayExplicitFailure =
+            faucetPayResult.success === false;
+
+
+        if (faucetPayExplicitFailure) {
 
             console.error(
                 "FAUCETPAY PAYMENT FAILED."
@@ -675,7 +767,12 @@ export async function onRequestPost(context) {
                     error:
                         "FaucetPay payment failed. Withdrawal remains pending."
                 },
-                { status: 502 }
+                {
+                    status: 502,
+                    headers: {
+                        "Cache-Control": "no-store"
+                    }
+                }
             );
         }
 
@@ -702,9 +799,8 @@ export async function onRequestPost(context) {
 
 
             /*
-             * FaucetPay reported success, but we do not
-             * have the payout identifier required for
-             * reliable reconciliation.
+             * FaucetPay response is not sufficiently
+             * complete for reliable reconciliation.
              *
              * DO NOT:
              * - retry payment
@@ -718,17 +814,89 @@ export async function onRequestPost(context) {
                 {
                     success: false,
                     error:
-                        "FaucetPay reported success but no payout ID was returned. Withdrawal remains processing and requires reconciliation."
+                        "FaucetPay response did not contain a payout ID. Withdrawal remains processing and requires reconciliation."
                 },
-                { status: 500 }
+                {
+                    status: 500,
+                    headers: {
+                        "Cache-Control": "no-store"
+                    }
+                }
             );
         }
 
 
         /* =====================================================
-           18. MARK APPROVED
+           18. SAVE PAYOUT ID FIRST
+           
+           IMPORTANT:
+           
+           FaucetPay has already confirmed the payout.
+           
+           Save payout_id while the withdrawal is still
+           PROCESSING so reconciliation can identify the
+           payment even if the following status update fails.
+        ===================================================== */
+
+        const payoutSaveResult =
+            await db
+                .prepare(
+                    `UPDATE withdrawals
+                     SET
+                        payout_id = ?
+                     WHERE id = ?
+                       AND status = 'processing'
+                       AND (payout_id IS NULL OR payout_id = '')`
+                )
+                .bind(
+                    String(payoutId),
+                    withdrawalId
+                )
+                .run();
+
+
+        if (
+            !payoutSaveResult ||
+            !payoutSaveResult.meta
+        ) {
+
+            console.error(
+                "PAYOUT ID SAVE FAILED AFTER PAYMENT."
+            );
+
+
+            /*
+             * Payment already happened.
+             *
+             * DO NOT retry.
+             * DO NOT return to pending.
+             * Keep PROCESSING.
+             */
+
+            return Response.json(
+                {
+                    success: false,
+                    error:
+                        "Payment was sent by FaucetPay, but the payout ID could not be saved. Do not retry automatically.",
+                    payout_id:
+                        String(payoutId)
+                },
+                {
+                    status: 500,
+                    headers: {
+                        "Cache-Control": "no-store"
+                    }
+                }
+            );
+        }
+
+
+        /* =====================================================
+           19. MARK APPROVED
            
            PROCESSING → APPROVED
+           
+           payout_id has already been persisted.
         ===================================================== */
 
         const updateResult =
@@ -738,20 +906,20 @@ export async function onRequestPost(context) {
                      SET
                         status = 'approved',
                         processed_at =
-                            CURRENT_TIMESTAMP,
-                        payout_id = ?
+                            CURRENT_TIMESTAMP
                      WHERE id = ?
-                       AND status = 'processing'`
+                       AND status = 'processing'
+                       AND payout_id = ?`
                 )
                 .bind(
-                    String(payoutId),
-                    withdrawalId
+                    withdrawalId,
+                    String(payoutId)
                 )
                 .run();
 
 
         /* =====================================================
-           19. DATABASE UPDATE FAILURE
+           20. DATABASE UPDATE FAILURE
         ===================================================== */
 
         if (
@@ -761,12 +929,14 @@ export async function onRequestPost(context) {
         ) {
 
             console.error(
-                "DATABASE UPDATE FAILED AFTER PAYMENT."
+                "DATABASE STATUS UPDATE FAILED AFTER PAYMENT."
             );
 
 
             /*
              * FaucetPay already confirmed payment.
+             *
+             * payout_id is already stored.
              *
              * DO NOT:
              * - retry payment
@@ -781,37 +951,47 @@ export async function onRequestPost(context) {
                     success: false,
 
                     error:
-                        "Payment was sent by FaucetPay, but the database update failed. Do not retry automatically.",
+                        "Payment was sent by FaucetPay, but the database status update failed. Do not retry automatically.",
 
                     payout_id:
                         String(payoutId)
                 },
-                { status: 500 }
+                {
+                    status: 500,
+                    headers: {
+                        "Cache-Control": "no-store"
+                    }
+                }
             );
         }
 
 
         /* =====================================================
-           20. SUCCESS
+           21. SUCCESS
         ===================================================== */
 
-        return Response.json({
+        return Response.json(
+            {
+                success: true,
 
-            success: true,
+                status:
+                    "approved",
 
-            status:
-                "approved",
+                amount:
+                    withdrawal.amount,
 
-            amount:
-                withdrawal.amount,
+                currency:
+                    "BTC",
 
-            currency:
-                "BTC",
-
-            payout_id:
-                String(payoutId)
-
-        });
+                payout_id:
+                    String(payoutId)
+            },
+            {
+                headers: {
+                    "Cache-Control": "no-store"
+                }
+            }
+        );
 
 
     } catch {
@@ -829,8 +1009,8 @@ export async function onRequestPost(context) {
          * must NOT automatically return the
          * withdrawal to pending.
          *
-         * The existing PROCESSING state prevents
-         * accidental duplicate payment.
+         * The PROCESSING state prevents accidental
+         * duplicate payment.
          */
 
         return Response.json(
@@ -839,7 +1019,12 @@ export async function onRequestPost(context) {
                 error:
                     "Unable to process withdrawal. If payment may have been sent, the withdrawal remains processing and requires reconciliation."
             },
-            { status: 500 }
+            {
+                status: 500,
+                headers: {
+                    "Cache-Control": "no-store"
+                }
+            }
         );
     }
 }
