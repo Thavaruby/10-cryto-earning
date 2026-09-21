@@ -30,7 +30,6 @@
             position: relative;
         }
 
-        /* Animated background glow */
         body::before {
             content: "";
             position: fixed;
@@ -69,7 +68,6 @@
             }
         }
 
-        /* Header */
         header {
             padding: 28px 20px 20px;
             text-align: center;
@@ -126,7 +124,6 @@
             font-size: 13px;
         }
 
-        /* Main */
         .page {
             min-height: calc(100vh - 115px);
             display: flex;
@@ -137,7 +134,6 @@
             z-index: 2;
         }
 
-        /* Glass Card */
         .container {
             width: 100%;
             max-width: 430px;
@@ -170,7 +166,6 @@
             }
         }
 
-        /* Register Icon */
         .register-icon {
             width: 70px;
             height: 70px;
@@ -211,7 +206,6 @@
             margin: 9px 0 27px;
         }
 
-        /* Form */
         .field {
             text-align: left;
             margin-bottom: 17px;
@@ -237,13 +231,14 @@
             font-size: 17px;
             opacity: 0.75;
             pointer-events: none;
+            z-index: 2;
         }
 
         input {
             width: 100%;
             height: 52px;
 
-            padding: 0 15px 0 45px;
+            padding: 0 48px 0 45px;
 
             border: 1px solid rgba(148, 163, 184, 0.20);
             border-radius: 12px;
@@ -274,8 +269,58 @@
                 0 0 20px rgba(37, 99, 235, 0.10);
         }
 
-        /* Register Button */
-        button {
+        /* Password Show / Hide */
+        .password-toggle {
+            position: absolute;
+            right: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+
+            width: 34px;
+            height: 34px;
+
+            padding: 0;
+            margin: 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: none;
+            border-radius: 8px;
+
+            background: transparent;
+            color: #94a3b8;
+
+            font-size: 18px;
+            line-height: 1;
+
+            cursor: pointer;
+
+            box-shadow: none;
+
+            transition:
+                color 0.2s ease,
+                background 0.2s ease;
+        }
+
+        .password-toggle:hover {
+            color: #60a5fa;
+            background: rgba(59, 130, 246, 0.10);
+
+            transform: translateY(-50%);
+            box-shadow: none;
+        }
+
+        .password-toggle:active {
+            transform: translateY(-50%);
+        }
+
+        .password-toggle:focus {
+            outline: none;
+        }
+
+        button#registerButton {
             width: 100%;
             height: 53px;
 
@@ -307,23 +352,22 @@
                 opacity 0.18s ease;
         }
 
-        button:hover:not(:disabled) {
+        button#registerButton:hover:not(:disabled) {
             transform: translateY(-2px);
 
             box-shadow:
                 0 14px 32px rgba(37, 99, 235, 0.35);
         }
 
-        button:active:not(:disabled) {
+        button#registerButton:active:not(:disabled) {
             transform: translateY(0);
         }
 
-        button:disabled {
+        button#registerButton:disabled {
             opacity: 0.65;
             cursor: not-allowed;
         }
 
-        /* Security Message */
         .security-note {
             display: flex;
             justify-content: center;
@@ -336,7 +380,6 @@
             font-size: 12px;
         }
 
-        /* Register Message */
         #message {
             min-height: 22px;
             margin-top: 17px;
@@ -345,7 +388,6 @@
             font-weight: bold;
         }
 
-        /* Login Link */
         .login-link {
             text-align: center;
             margin-top: 22px;
@@ -363,7 +405,6 @@
             text-decoration: underline;
         }
 
-        /* Bottom Branding */
         .bottom-text {
             text-align: center;
             margin-top: 20px;
@@ -375,7 +416,6 @@
             color: #fbbf24;
         }
 
-        /* Mobile */
         @media (max-width: 520px) {
 
             header {
@@ -415,7 +455,7 @@
             }
 
             input,
-            button {
+            button#registerButton {
                 height: 51px;
             }
         }
@@ -519,6 +559,16 @@
                         required
                     >
 
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        id="passwordToggle"
+                        aria-label="Show password"
+                        title="Show password"
+                    >
+                        👁️
+                    </button>
+
                 </div>
 
             </div>
@@ -561,6 +611,60 @@
 
 <script>
 
+/* ==============================
+   PASSWORD SHOW / HIDE
+   Eye visible = SHOW
+   Eye hidden = HIDE
+================================ */
+
+const passwordInput =
+    document.getElementById("password");
+
+const passwordToggle =
+    document.getElementById("passwordToggle");
+
+passwordToggle.addEventListener("click", function () {
+
+    if (passwordInput.type === "password") {
+
+        passwordInput.type = "text";
+
+        passwordToggle.innerText = "👁️";
+
+        passwordToggle.setAttribute(
+            "aria-label",
+            "Hide password"
+        );
+
+        passwordToggle.setAttribute(
+            "title",
+            "Hide password"
+        );
+
+    } else {
+
+        passwordInput.type = "password";
+
+        passwordToggle.innerText = "👁️‍🗨️";
+
+        passwordToggle.setAttribute(
+            "aria-label",
+            "Show password"
+        );
+
+        passwordToggle.setAttribute(
+            "title",
+            "Show password"
+        );
+    }
+
+});
+
+
+/* ==============================
+   REGISTER
+================================ */
+
 document
     .getElementById("registerForm")
     .addEventListener("submit", async function(event) {
@@ -568,10 +672,15 @@ document
         event.preventDefault();
 
         const email =
-            document.getElementById("email").value.trim();
+            document
+                .getElementById("email")
+                .value
+                .trim();
 
         const password =
-            document.getElementById("password").value;
+            document
+                .getElementById("password")
+                .value;
 
         const message =
             document.getElementById("message");
@@ -618,6 +727,21 @@ document
                 document
                     .getElementById("registerForm")
                     .reset();
+
+                /* Reset password to HIDDEN */
+                passwordInput.type = "password";
+
+                passwordToggle.innerText = "👁️‍🗨️";
+
+                passwordToggle.setAttribute(
+                    "aria-label",
+                    "Show password"
+                );
+
+                passwordToggle.setAttribute(
+                    "title",
+                    "Show password"
+                );
 
                 button.disabled = false;
 
