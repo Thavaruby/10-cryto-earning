@@ -33,8 +33,6 @@ body{
     position:relative;
 }
 
-/* BACKGROUND GLOW */
-
 body::before{
     content:"";
     position:fixed;
@@ -190,8 +188,6 @@ body::after{
     );
 }
 
-/* Same Bitcoin coin style as LOGIN */
-
 .bitcoin-hero-coin{
     position:relative;
     z-index:2;
@@ -236,7 +232,7 @@ body::after{
         0 0 65px rgba(245,158,11,.14);
 }
 
-    .bitcoin-hero-coin img{
+.bitcoin-hero-coin img{
     width:100%;
     height:100%;
     object-fit:cover;
@@ -789,6 +785,58 @@ body::after{
     background:linear-gradient(135deg,#06402f,#087c58);
 }
 
+/* COMING SOON SLIDES */
+
+.coming-soon-slide{
+    cursor:default;
+}
+
+.coming-soon-slide .crypto-ad{
+    opacity:.82;
+}
+
+.coming-soon-badge{
+    display:inline-block;
+
+    margin-top:5px;
+
+    padding:3px 7px;
+
+    border-radius:999px;
+
+    background:rgba(15,23,42,.42);
+
+    color:#cbd5e1;
+
+    font-size:8px;
+
+    font-weight:900;
+
+    letter-spacing:.8px;
+}
+
+.btc-available-badge{
+    display:inline-block;
+
+    margin-top:5px;
+
+    padding:3px 7px;
+
+    border-radius:999px;
+
+    background:rgba(22,163,74,.22);
+
+    border:1px solid rgba(74,222,128,.20);
+
+    color:#86efac;
+
+    font-size:8px;
+
+    font-weight:900;
+
+    letter-spacing:.8px;
+}
+
 .ad-arrow{
     width:31px;
     height:43px;
@@ -806,6 +854,10 @@ body::after{
     font-size:14px;
 
     cursor:pointer;
+}
+
+.ad-arrow:hover{
+    background:rgba(37,99,235,.50);
 }
 
 .crypto-ad-dots{
@@ -1501,7 +1553,9 @@ hr{
 
 <body>
 
-<!-- HEADER -->
+<!-- =========================================
+     HEADER
+========================================= -->
 
 <header class="crypto-header">
 
@@ -1521,17 +1575,18 @@ hr{
         Earn Bitcoin • Claim Hourly • Withdraw
     </p>
 
-
     <!-- BITCOIN HOURLY CARD -->
 
     <div class="faucet-banner">
 
         <div class="bitcoin-hero-coin">
-             <img
-            src="btc-coin-login.png"
-            class="hero-btc"
-            alt="Bitcoin"
-        >
+
+            <img
+                src="btc-coin-login.png"
+                class="hero-btc"
+                alt="Bitcoin"
+            >
+
         </div>
 
         <div class="faucet-text">
@@ -1559,10 +1614,11 @@ hr{
 </header>
 
 
-<!-- MAIN DASHBOARD -->
+<!-- =========================================
+     MAIN DASHBOARD
+========================================= -->
 
 <div class="container">
-
 
     <div class="dashboard-heading">
 
@@ -1619,7 +1675,9 @@ hr{
     </div>
 
 
-    <!-- CRYPTO AD SLIDER -->
+    <!-- =====================================
+         CRYPTO SLIDER
+    ====================================== -->
 
     <div
         class="crypto-ad-slider"
@@ -1628,7 +1686,9 @@ hr{
 
         <button
             class="ad-arrow ad-prev"
+            type="button"
             onclick="manualPrevAd()"
+            aria-label="Previous cryptocurrency"
         >
             ❮
         </button>
@@ -1641,319 +1701,11 @@ hr{
                 id="cryptoAdTrack"
             >
 
+                <!-- BTC / AVAILABLE NOW -->
 
-                <a
-                    href="YOUR_LTC_LINK"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="crypto-ad-slide"
-                >
+                <div class="crypto-ad-slide">
 
-                    <div class="crypto-ad ltc-ad">
-
-                        <div class="crypto-coin">
-                            Ł
-                        </div>
-
-                        <div class="crypto-ad-text">
-
-                            <strong>
-                                HOURLY FAUCET
-                            </strong>
-
-                            <span>
-                                Claim Free LTC
-                            </span>
-
-                            <small>
-                                High Commission Share • 25%
-                            </small>
-
-                        </div>
-
-                        <div class="crypto-symbol">
-                            LTC
-                        </div>
-
-                    </div>
-
-                </a>
-
-
-                <a
-                    href="YOUR_BNB_LINK"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="crypto-ad-slide"
-                >
-
-                    <div class="crypto-ad bnb-ad">
-
-                        <div class="crypto-coin">
-                            ◆
-                        </div>
-
-                        <div class="crypto-ad-text">
-
-                            <strong>
-                                HOURLY FAUCET
-                            </strong>
-
-                            <span>
-                                Claim Free BNB
-                            </span>
-
-                            <small>
-                                High Commission Share • 25%
-                            </small>
-
-                        </div>
-
-                        <div class="crypto-symbol">
-                            BNB
-                        </div>
-
-                    </div>
-
-                </a>
-
-
-                <a
-                    href="YOUR_DOGE_LINK"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="crypto-ad-slide"
-                >
-
-                    <div class="crypto-ad doge-ad">
-
-                        <div class="crypto-coin">
-                            Ð
-                        </div>
-
-                        <div class="crypto-ad-text">
-
-                            <strong>
-                                HOURLY FAUCET
-                            </strong>
-
-                            <span>
-                                Claim Free DOGE
-                            </span>
-
-                            <small>
-                                High Commission Share • 25%
-                            </small>
-
-                        </div>
-
-                        <div class="crypto-symbol">
-                            DOGE
-                        </div>
-
-                    </div>
-
-                </a>
-
-
-                <a
-                    href="YOUR_SUI_LINK"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="crypto-ad-slide"
-                >
-
-                    <div class="crypto-ad sui-ad">
-
-                        <div class="crypto-coin">
-                            S
-                        </div>
-
-                        <div class="crypto-ad-text">
-
-                            <strong>
-                                HOURLY FAUCET
-                            </strong>
-
-                            <span>
-                                Claim Free SUI
-                            </span>
-
-                            <small>
-                                High Commission Share • 25%
-                            </small>
-
-                        </div>
-
-                        <div class="crypto-symbol">
-                            SUI
-                        </div>
-
-                    </div>
-
-                </a>
-
-
-                <a
-                    href="YOUR_TRON_LINK"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="crypto-ad-slide"
-                >
-
-                    <div class="crypto-ad tron-ad">
-
-                        <div class="crypto-coin">
-                            T
-                        </div>
-
-                        <div class="crypto-ad-text">
-
-                            <strong>
-                                HOURLY FAUCET
-                            </strong>
-
-                            <span>
-                                Claim Free TRON
-                            </span>
-
-                            <small>
-                                High Commission Share • 25%
-                            </small>
-
-                        </div>
-
-                        <div class="crypto-symbol">
-                            TRX
-                        </div>
-
-                    </div>
-
-                </a>
-
-
-                <a
-                    href="YOUR_TON_LINK"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="crypto-ad-slide"
-                >
-
-                    <div class="crypto-ad ton-ad">
-
-                        <div class="crypto-coin">
-                            💎
-                        </div>
-
-                        <div class="crypto-ad-text">
-
-                            <strong>
-                                HOURLY FAUCET
-                            </strong>
-
-                            <span>
-                                Claim Free TON
-                            </span>
-
-                            <small>
-                                High Commission Share • 25%
-                            </small>
-
-                        </div>
-
-                        <div class="crypto-symbol">
-                            TON
-                        </div>
-
-                    </div>
-
-                </a>
-
-
-                <a
-                    href="YOUR_SOL_LINK"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="crypto-ad-slide"
-                >
-
-                    <div class="crypto-ad sol-ad">
-
-                        <div class="crypto-coin">
-                            ≋
-                        </div>
-
-                        <div class="crypto-ad-text">
-
-                            <strong>
-                                HOURLY FAUCET
-                            </strong>
-
-                            <span>
-                                Claim Free SOL
-                            </span>
-
-                            <small>
-                                High Commission Share • 25%
-                            </small>
-
-                        </div>
-
-                        <div class="crypto-symbol">
-                            SOL
-                        </div>
-
-                    </div>
-
-                </a>
-
-
-                <a
-                    href="YOUR_POL_LINK"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="crypto-ad-slide"
-                >
-
-                    <div class="crypto-ad pol-ad">
-
-                        <div class="crypto-coin">
-                            ⬡
-                        </div>
-
-                        <div class="crypto-ad-text">
-
-                            <strong>
-                                HOURLY FAUCET
-                            </strong>
-
-                            <span>
-                                Claim Free POL
-                            </span>
-
-                            <small>
-                                High Commission Share • 25%
-                            </small>
-
-                        </div>
-
-                        <div class="crypto-symbol">
-                            POL
-                        </div>
-
-                    </div>
-
-                </a>
-
-
-                <a
-                    href="YOUR_BCH_LINK"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="crypto-ad-slide"
-                >
-
-                    <div class="crypto-ad bch-ad">
+                    <div class="crypto-ad btc-ad">
 
                         <div class="crypto-coin">
                             ₿
@@ -1966,11 +1718,326 @@ hr{
                             </strong>
 
                             <span>
+                                Claim Free BTC
+                            </span>
+
+                            <small class="btc-available-badge">
+                                AVAILABLE NOW
+                            </small>
+
+                        </div>
+
+                        <div class="crypto-symbol">
+                            BTC
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- LTC / COMING SOON -->
+
+                <div class="crypto-ad-slide coming-soon-slide">
+
+                    <div class="crypto-ad ltc-ad">
+
+                        <div class="crypto-coin">
+                            Ł
+                        </div>
+
+                        <div class="crypto-ad-text">
+
+                            <strong>
+                                FUTURE FAUCET
+                            </strong>
+
+                            <span>
+                                Claim Free LTC
+                            </span>
+
+                            <small class="coming-soon-badge">
+                                COMING SOON
+                            </small>
+
+                        </div>
+
+                        <div class="crypto-symbol">
+                            LTC
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- BNB / COMING SOON -->
+
+                <div class="crypto-ad-slide coming-soon-slide">
+
+                    <div class="crypto-ad bnb-ad">
+
+                        <div class="crypto-coin">
+                            ◆
+                        </div>
+
+                        <div class="crypto-ad-text">
+
+                            <strong>
+                                FUTURE FAUCET
+                            </strong>
+
+                            <span>
+                                Claim Free BNB
+                            </span>
+
+                            <small class="coming-soon-badge">
+                                COMING SOON
+                            </small>
+
+                        </div>
+
+                        <div class="crypto-symbol">
+                            BNB
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- DOGE / COMING SOON -->
+
+                <div class="crypto-ad-slide coming-soon-slide">
+
+                    <div class="crypto-ad doge-ad">
+
+                        <div class="crypto-coin">
+                            Ð
+                        </div>
+
+                        <div class="crypto-ad-text">
+
+                            <strong>
+                                FUTURE FAUCET
+                            </strong>
+
+                            <span>
+                                Claim Free DOGE
+                            </span>
+
+                            <small class="coming-soon-badge">
+                                COMING SOON
+                            </small>
+
+                        </div>
+
+                        <div class="crypto-symbol">
+                            DOGE
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SUI / COMING SOON -->
+
+                <div class="crypto-ad-slide coming-soon-slide">
+
+                    <div class="crypto-ad sui-ad">
+
+                        <div class="crypto-coin">
+                            S
+                        </div>
+
+                        <div class="crypto-ad-text">
+
+                            <strong>
+                                FUTURE FAUCET
+                            </strong>
+
+                            <span>
+                                Claim Free SUI
+                            </span>
+
+                            <small class="coming-soon-badge">
+                                COMING SOON
+                            </small>
+
+                        </div>
+
+                        <div class="crypto-symbol">
+                            SUI
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- TRON / COMING SOON -->
+
+                <div class="crypto-ad-slide coming-soon-slide">
+
+                    <div class="crypto-ad tron-ad">
+
+                        <div class="crypto-coin">
+                            T
+                        </div>
+
+                        <div class="crypto-ad-text">
+
+                            <strong>
+                                FUTURE FAUCET
+                            </strong>
+
+                            <span>
+                                Claim Free TRON
+                            </span>
+
+                            <small class="coming-soon-badge">
+                                COMING SOON
+                            </small>
+
+                        </div>
+
+                        <div class="crypto-symbol">
+                            TRX
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- TON / COMING SOON -->
+
+                <div class="crypto-ad-slide coming-soon-slide">
+
+                    <div class="crypto-ad ton-ad">
+
+                        <div class="crypto-coin">
+                            💎
+                        </div>
+
+                        <div class="crypto-ad-text">
+
+                            <strong>
+                                FUTURE FAUCET
+                            </strong>
+
+                            <span>
+                                Claim Free TON
+                            </span>
+
+                            <small class="coming-soon-badge">
+                                COMING SOON
+                            </small>
+
+                        </div>
+
+                        <div class="crypto-symbol">
+                            TON
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SOL / COMING SOON -->
+
+                <div class="crypto-ad-slide coming-soon-slide">
+
+                    <div class="crypto-ad sol-ad">
+
+                        <div class="crypto-coin">
+                            ≋
+                        </div>
+
+                        <div class="crypto-ad-text">
+
+                            <strong>
+                                FUTURE FAUCET
+                            </strong>
+
+                            <span>
+                                Claim Free SOL
+                            </span>
+
+                            <small class="coming-soon-badge">
+                                COMING SOON
+                            </small>
+
+                        </div>
+
+                        <div class="crypto-symbol">
+                            SOL
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- POL / COMING SOON -->
+
+                <div class="crypto-ad-slide coming-soon-slide">
+
+                    <div class="crypto-ad pol-ad">
+
+                        <div class="crypto-coin">
+                            ⬡
+                        </div>
+
+                        <div class="crypto-ad-text">
+
+                            <strong>
+                                FUTURE FAUCET
+                            </strong>
+
+                            <span>
+                                Claim Free POL
+                            </span>
+
+                            <small class="coming-soon-badge">
+                                COMING SOON
+                            </small>
+
+                        </div>
+
+                        <div class="crypto-symbol">
+                            POL
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- BCH / COMING SOON -->
+
+                <div class="crypto-ad-slide coming-soon-slide">
+
+                    <div class="crypto-ad bch-ad">
+
+                        <div class="crypto-coin">
+                            ₿
+                        </div>
+
+                        <div class="crypto-ad-text">
+
+                            <strong>
+                                FUTURE FAUCET
+                            </strong>
+
+                            <span>
                                 Claim Free BCH
                             </span>
 
-                            <small>
-                                High Commission Share • 25%
+                            <small class="coming-soon-badge">
+                                COMING SOON
                             </small>
 
                         </div>
@@ -1981,8 +2048,7 @@ hr{
 
                     </div>
 
-                </a>
-
+                </div>
 
             </div>
 
@@ -1991,7 +2057,9 @@ hr{
 
         <button
             class="ad-arrow ad-next"
+            type="button"
             onclick="manualNextAd()"
+            aria-label="Next cryptocurrency"
         >
             ❯
         </button>
@@ -2001,15 +2069,68 @@ hr{
 
     <div class="crypto-ad-dots">
 
-        <button class="crypto-dot active" onclick="goToCryptoAd(0)"></button>
-        <button class="crypto-dot" onclick="goToCryptoAd(1)"></button>
-        <button class="crypto-dot" onclick="goToCryptoAd(2)"></button>
-        <button class="crypto-dot" onclick="goToCryptoAd(3)"></button>
-        <button class="crypto-dot" onclick="goToCryptoAd(4)"></button>
-        <button class="crypto-dot" onclick="goToCryptoAd(5)"></button>
-        <button class="crypto-dot" onclick="goToCryptoAd(6)"></button>
-        <button class="crypto-dot" onclick="goToCryptoAd(7)"></button>
-        <button class="crypto-dot" onclick="goToCryptoAd(8)"></button>
+        <button
+            type="button"
+            class="crypto-dot active"
+            onclick="goToCryptoAd(0)"
+            aria-label="Bitcoin"
+        ></button>
+
+        <button
+            type="button"
+            class="crypto-dot"
+            onclick="goToCryptoAd(1)"
+            aria-label="Litecoin"
+        ></button>
+
+        <button
+            type="button"
+            class="crypto-dot"
+            onclick="goToCryptoAd(2)"
+            aria-label="BNB"
+        ></button>
+
+        <button
+            type="button"
+            class="crypto-dot"
+            onclick="goToCryptoAd(3)"
+            aria-label="Dogecoin"
+        ></button>
+
+        <button
+            type="button"
+            class="crypto-dot"
+            onclick="goToCryptoAd(4)"
+            aria-label="SUI"
+        ></button>
+
+        <button
+            type="button"
+            class="crypto-dot"
+            onclick="goToCryptoAd(5)"
+            aria-label="TRON"
+        ></button>
+
+        <button
+            type="button"
+            class="crypto-dot"
+            onclick="goToCryptoAd(6)"
+            aria-label="TON"
+        ></button>
+
+        <button
+            type="button"
+            class="crypto-dot"
+            onclick="goToCryptoAd(7)"
+            aria-label="SOL"
+        ></button>
+
+        <button
+            type="button"
+            class="crypto-dot"
+            onclick="goToCryptoAd(8)"
+            aria-label="POL"
+        ></button>
 
     </div>
 
@@ -2018,6 +2139,7 @@ hr{
 
     <button
         id="claimButton"
+        type="button"
         onclick="claimReward()"
     >
         🎁 CLAIM REWARD
@@ -2033,7 +2155,9 @@ hr{
     <div id="claimCooldown"></div>
 
 
-    <!-- WITHDRAW -->
+    <!-- =====================================
+         WITHDRAW
+    ====================================== -->
 
     <div class="withdraw-section">
 
@@ -2075,6 +2199,7 @@ hr{
             placeholder="Amount BTC"
             step="0.00000001"
             min="0.0000001"
+            inputmode="decimal"
         >
 
 
@@ -2097,6 +2222,8 @@ hr{
             type="text"
             id="walletAddress"
             placeholder="Your Bitcoin wallet address"
+            autocomplete="off"
+            spellcheck="false"
         >
 
 
@@ -2105,6 +2232,7 @@ hr{
 
         <button
             id="withdrawButton"
+            type="button"
             onclick="submitWithdrawal()"
         >
             💸 REQUEST WITHDRAWAL
@@ -2126,11 +2254,17 @@ hr{
 
     <div class="history-buttons">
 
-        <button onclick="openClaimHistory()">
+        <button
+            type="button"
+            onclick="openClaimHistory()"
+        >
             📜 CLAIM HISTORY
         </button>
 
-        <button onclick="openWithdrawalHistory()">
+        <button
+            type="button"
+            onclick="openWithdrawalHistory()"
+        >
             💸 WITHDRAWAL HISTORY
         </button>
 
@@ -2141,6 +2275,7 @@ hr{
 
     <button
         class="logout-button"
+        type="button"
         onclick="logout()"
     >
         🚪 LOGOUT
@@ -2149,7 +2284,9 @@ hr{
 </div>
 
 
-<!-- HISTORY POPUP -->
+<!-- =========================================
+     HISTORY POPUP
+========================================= -->
 
 <div
     id="historyModal"
@@ -2160,7 +2297,9 @@ hr{
 
         <button
             class="closeButton"
+            type="button"
             onclick="closeHistory()"
+            aria-label="Close"
         >
             ✕
         </button>
@@ -2180,9 +2319,12 @@ hr{
 
 <script>
 
-/* FORMAT BTC */
+/* =========================================
+   FORMAT BTC
+========================================= */
 
 function formatBTC(value){
+
     const number=Number(value);
 
     if(!Number.isFinite(number))
@@ -2192,7 +2334,46 @@ function formatBTC(value){
 }
 
 
-/* TOP NOTIFICATION */
+/* =========================================
+   ESCAPE HTML
+   Frontend safety for API-provided text
+========================================= */
+
+function escapeHtml(value){
+
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+}
+
+
+/* =========================================
+   SAFE DATE
+========================================= */
+
+function formatHistoryDate(value){
+
+    const text=String(value ?? "");
+
+    const date=new Date(
+        text.endsWith("Z")
+            ? text
+            : text+"Z"
+    );
+
+    if(Number.isNaN(date.getTime()))
+        return "Unknown date";
+
+    return date.toLocaleString();
+}
+
+
+/* =========================================
+   TOP NOTIFICATION
+========================================= */
 
 function showNotification(message,type="info"){
 
@@ -2211,7 +2392,9 @@ function showNotification(message,type="info"){
 }
 
 
-/* ACTION NOTIFICATION */
+/* =========================================
+   ACTION NOTIFICATION
+========================================= */
 
 function showActionNotification(
     id,
@@ -2241,7 +2424,9 @@ function showActionNotification(
 }
 
 
-/* LOAD USER */
+/* =========================================
+   LOAD USER
+========================================= */
 
 async function loadUser(){
 
@@ -2285,7 +2470,9 @@ async function loadUser(){
 }
 
 
-/* COOLDOWN */
+/* =========================================
+   COOLDOWN
+========================================= */
 
 let cooldownTimer=null;
 
@@ -2357,7 +2544,9 @@ function startClaimCountdown(seconds){
 }
 
 
-/* LOAD COOLDOWN */
+/* =========================================
+   LOAD COOLDOWN
+========================================= */
 
 async function loadClaimCooldown(){
 
@@ -2419,7 +2608,9 @@ async function loadClaimCooldown(){
 }
 
 
-/* LOGOUT */
+/* =========================================
+   LOGOUT
+========================================= */
 
 async function logout(){
 
@@ -2464,7 +2655,9 @@ async function logout(){
 }
 
 
-/* CLAIM */
+/* =========================================
+   CLAIM
+========================================= */
 
 let claimInProgress=false;
 
@@ -2731,7 +2924,9 @@ async function claimReward(){
 }
 
 
-/* WITHDRAW */
+/* =========================================
+   WITHDRAW
+========================================= */
 
 async function submitWithdrawal(){
 
@@ -2848,7 +3043,11 @@ async function submitWithdrawal(){
 
             showActionNotification(
                 "withdrawNotification",
-                "❌ "+result.error,
+                "❌ "+
+                (
+                    result.error ||
+                    "Unable to submit withdrawal."
+                ),
                 "error"
             );
         }
@@ -2874,7 +3073,9 @@ async function submitWithdrawal(){
 }
 
 
-/* MAX */
+/* =========================================
+   MAX
+========================================= */
 
 function setMaxWithdrawal(){
 
@@ -2907,6 +3108,17 @@ function setMaxWithdrawal(){
         return;
     }
 
+    if(balance<0.0000001){
+
+        showActionNotification(
+            "withdrawNotification",
+            "❌ Your BTC balance is below the minimum withdrawal of 0.00000010 BTC.",
+            "error"
+        );
+
+        return;
+    }
+
     amountInput.value=
         formatBTC(balance);
 
@@ -2918,7 +3130,9 @@ function setMaxWithdrawal(){
 }
 
 
-/* CLAIM HISTORY — UNCHANGED */
+/* =========================================
+   CLAIM HISTORY
+========================================= */
 
 async function openClaimHistory(){
 
@@ -2950,7 +3164,11 @@ async function openClaimHistory(){
 
         const response=
             await fetch(
-                "/api/claims"
+                "/api/claims",
+                {
+                    method:"GET",
+                    cache:"no-store"
+                }
             );
 
         const result=
@@ -2959,7 +3177,11 @@ async function openClaimHistory(){
         if(!result.success){
 
             content.innerText=
-                "❌ "+result.error;
+                "❌ "+
+                (
+                    result.error ||
+                    "Unable to load claim history."
+                );
 
             return;
         }
@@ -2988,14 +3210,18 @@ async function openClaimHistory(){
                     <br><br>
 
                     💰 Reward:
-                    ${formatBTC(claim.reward)} BTC
+                    ${escapeHtml(
+                        formatBTC(claim.reward)
+                    )} BTC
 
                     <br>
 
                     🕐 Date:
-                    ${new Date(
-                        claim.claimed_at+"Z"
-                    ).toLocaleString()}
+                    ${escapeHtml(
+                        formatHistoryDate(
+                            claim.claimed_at
+                        )
+                    )}
 
                 </div>
 
@@ -3015,7 +3241,9 @@ async function openClaimHistory(){
 }
 
 
-/* WITHDRAWAL HISTORY — UNCHANGED */
+/* =========================================
+   WITHDRAWAL HISTORY
+========================================= */
 
 async function openWithdrawalHistory(){
 
@@ -3047,7 +3275,11 @@ async function openWithdrawalHistory(){
 
         const response=
             await fetch(
-                "/api/withdrawals"
+                "/api/withdrawals",
+                {
+                    method:"GET",
+                    cache:"no-store"
+                }
             );
 
         const result=
@@ -3056,7 +3288,11 @@ async function openWithdrawalHistory(){
         if(!result.success){
 
             content.innerText=
-                "❌ "+result.error;
+                "❌ "+
+                (
+                    result.error ||
+                    "Unable to load withdrawal history."
+                );
 
             return;
         }
@@ -3127,6 +3363,7 @@ async function openWithdrawalHistory(){
                         "processing";
                 }
 
+
                 const refundText=
                     withdrawal.status===
                     "rejected"
@@ -3138,6 +3375,7 @@ async function openWithdrawalHistory(){
                       `
                     : "";
 
+
                 const payoutText=
                     withdrawal.status===
                         "approved" &&
@@ -3145,9 +3383,14 @@ async function openWithdrawalHistory(){
                     ? `
                         <br>
                         🔖 FaucetPay Payout ID:
-                        <strong>${withdrawal.payout_id}</strong>
+                        <strong>
+                            ${escapeHtml(
+                                withdrawal.payout_id
+                            )}
+                        </strong>
                       `
                     : "";
+
 
                 const txidText=
                     withdrawal.txid
@@ -3155,10 +3398,13 @@ async function openWithdrawalHistory(){
                         <br>
                         🔗 Transaction ID:
                         <strong style="word-break:break-all;">
-                            ${withdrawal.txid}
+                            ${escapeHtml(
+                                withdrawal.txid
+                            )}
                         </strong>
                       `
                     : "";
+
 
                 return `
 
@@ -3171,21 +3417,25 @@ async function openWithdrawalHistory(){
                         <br><br>
 
                         💰 Amount:
-                        ${formatBTC(
-                            withdrawal.amount
+                        ${escapeHtml(
+                            formatBTC(
+                                withdrawal.amount
+                            )
                         )} BTC
 
                         <br>
 
                         🏦 Wallet:
-                        ${withdrawal.wallet_address}
+                        ${escapeHtml(
+                            withdrawal.wallet_address
+                        )}
 
                         <br>
 
                         📌 Status:
 
-                        <span class="withdraw-status ${statusClass}">
-                            ${statusText}
+                        <span class="withdraw-status ${escapeHtml(statusClass)}">
+                            ${escapeHtml(statusText)}
                         </span>
 
                         ${refundText}
@@ -3197,13 +3447,16 @@ async function openWithdrawalHistory(){
                         <br>
 
                         🕐 Date:
-                        ${new Date(
-                            withdrawal.created_at+"Z"
-                        ).toLocaleString()}
+                        ${escapeHtml(
+                            formatHistoryDate(
+                                withdrawal.created_at
+                            )
+                        )}
 
                     </div>
 
                 `;
+
             }).join("");
 
     }catch(error){
@@ -3219,7 +3472,9 @@ async function openWithdrawalHistory(){
 }
 
 
-/* CLOSE HISTORY */
+/* =========================================
+   CLOSE HISTORY
+========================================= */
 
 function closeHistory(){
 
@@ -3245,14 +3500,36 @@ window.onclick=function(event){
 };
 
 
-/* INITIAL LOAD */
+/* =========================================
+   ESCAPE KEY
+========================================= */
+
+document.addEventListener(
+    "keydown",
+    function(event){
+
+        if(event.key==="Escape"){
+
+            closeHistory();
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   INITIAL LOAD
+========================================= */
 
 loadUser();
 
 loadClaimCooldown();
 
 
-/* CRYPTO SLIDER */
+/* =========================================
+   CRYPTO SLIDER
+========================================= */
 
 let currentCryptoAd=0;
 
@@ -3327,6 +3604,14 @@ function manualPrevAd(){
 
 function goToCryptoAd(index){
 
+    if(
+        !Number.isInteger(index) ||
+        index<0 ||
+        index>=totalCryptoAds
+    ){
+        return;
+    }
+
     showCryptoAd(index);
 
     restartCryptoAdTimer();
@@ -3376,9 +3661,13 @@ if(adSlider){
         "touchstart",
         function(){
 
-            clearInterval(
-                cryptoAdTimer
-            );
+            if(cryptoAdTimer){
+
+                clearInterval(
+                    cryptoAdTimer
+                );
+
+            }
 
         }
     );
