@@ -111,10 +111,13 @@ export async function onRequestPost(context) {
                     expires_at
                  FROM sessions
                  WHERE token_hash = ?
-                   AND expires_at > CURRENT_TIMESTAMP
+                   AND expires_at > ?
                  LIMIT 1`
             )
-            .bind(tokenHash)
+            .bind(
+                tokenHash,
+                new Date().toISOString()
+            )
             .first();
 
         if (!session) {
