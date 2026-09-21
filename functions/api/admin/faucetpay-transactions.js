@@ -2,229 +2,292 @@
 
 async function sha256Hex(text) {
     const data = new TextEncoder().encode(text);
-    const hash = await crypto.subtle.digest("SHA-256", data);
+
+    const hash =
+        await crypto.subtle.digest(
+            "SHA-256",
+            data
+        );
 
     return [...new Uint8Array(hash)]
-        .map(b => b.toString(16).padStart(2, "0"))
+        .map(
+            b =>
+                b.toString(16).padStart(2, "0")
+        )
         .join("");
 }
 
 function getCookie(request, name) {
-    const cookieHeader = request.headers.get("Cookie") || "";
 
-    const cookies = cookieHeader.split(";");
+    const cookieHeader =
+        request.headers.get("Cookie") || "";
 
-    for (const cookie of cookies) {
-        const [key, ...valueParts] = cookie.trim().split("=");
+    for (const cookie of cookieHeader.split(";")) {
+
+        const [key, ...valueParts] =
+            cookie.trim().split("=");
 
         if (key === name) {
-            return decodeURIComponent(valueParts.join("="));
+            return decodeURIComponent(
+                valueParts.join("=")
+            );
         }
     }
 
     return null;
 }
 
+function jsonResponse(
+    data,
+    status = 200
+) {
+    return new Response(
+        JSON.stringify(data),
+        {
+            status,
+            headers: {
+                "Content-Type":
+                    "application/json",
+
+                "Cache-Control":
+                    "no-store"
+            }
+        }
+    );
+}
+
 export async function onRequestGet(context) {
+
     try {
+
         const { request, env } = context;
 
         // --------------------------------------------------
         // 1. Database session
         // --------------------------------------------------
 
-        const db = env.DB.withSession("first-primary");
+        const db =
+            env.DB.withSession(
+                "first-primary"
+            );
 
         // --------------------------------------------------
         // 2. Check login session
         // --------------------------------------------------
 
-        const sessionToken = getCookie(request, "session");
+        const sessionToken =
+            getCookie(
+                request,
+                "session"
+            );
 
         if (!sessionToken) {
-            return Response.json(
+
+            return jsonResponse(
                 {
                     success: false,
                     error: "Unauthorized."
                 },
-                {
-                    status: 401,
-                    headers: {
-                        "Cache-Control": "no-store"
-                    }
-                }
+                401
             );
         }
 
-        const tokenHash = await sha256Hex(sessionToken);
+        const tokenHash =
+            await sha256Hex(
+                sessionToken
+            );
 
-        const session = await db
-            .prepare(`
-                SELECT user_id
-                FROM sessions
-                WHERE token_hash = ?
-                  AND expires_at > CURRENT_TIMESTAMP
-                LIMIT 1
-            `)
-            .bind(tokenHash)
-            .first();
+        const session =
+            await db
+                .prepare(
+                    `SELECT
+                        user_id,
+                        expires_at
+                     FROM sessions
+                     WHERE token_hash = ?
+                     LIMIT 1`
+                )
+                .bind(tokenHash)
+                .first();
 
         if (!session) {
-            return Response.json(
+
+            return jsonResponse(
                 {
                     success: false,
                     error: "Unauthorized."
                 },
-                {
-                    status: 401,
-                    headers: {
-                        "Cache-Control": "no-store"
-                    }
-                }
+                401
             );
         }
 
         // --------------------------------------------------
-        // 3. Check admin
+        // 3. Check session expiry
         // --------------------------------------------------
 
-        const admin = await db
-            .prepare(`
-                SELECT user_id
-                FROM admins
-                WHERE user_id = ?
-                LIMIT 1
-            `)
-            .bind(session.user_id)
-            .first();
+        if (
+            new Date(session.expires_at) <=
+            new Date()
+        ) {
+
+            await db
+                .prepare(
+                    `DELETE FROM sessions
+                     WHERE token_hash = ?`
+                )
+                .bind(tokenHash)
+                .run();
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error: "Unauthorized."
+                },
+                401
+            );
+        }
+
+        // --------------------------------------------------
+        // 4. Check admin
+        // --------------------------------------------------
+
+        const admin =
+            await db
+                .prepare(
+                    `SELECT user_id
+                     FROM admins
+                     WHERE user_id = ?
+                     LIMIT 1`
+                )
+                .bind(session.user_id)
+                .first();
 
         if (!admin) {
-            return Response.json(
+
+            return jsonResponse(
                 {
                     success: false,
                     error: "Forbidden."
                 },
-                {
-                    status: 403,
-                    headers: {
-                        "Cache-Control": "no-store"
-                    }
-                }
+                403
             );
         }
 
         // --------------------------------------------------
-        // 4. Check FaucetPay API key
+        // 5. Check FaucetPay API key
         // --------------------------------------------------
 
-        const apiKey = env.FAUCETPAY_API_KEY;
+        const apiKey =
+            env.FAUCETPAY_API_KEY;
 
         if (!apiKey) {
+
             console.error(
                 "FaucetPay transactions: API key is missing."
             );
 
-            return Response.json(
+            return jsonResponse(
                 {
                     success: false,
-                    error: "FaucetPay service is not configured."
+                    error:
+                        "FaucetPay service is not configured."
                 },
-                {
-                    status: 500,
-                    headers: {
-                        "Cache-Control": "no-store"
-                    }
-                }
+                500
             );
         }
 
         // --------------------------------------------------
-        // 5. Request FaucetPay transactions
+        // 6. Request FaucetPay transactions
         // --------------------------------------------------
 
-        const response = await fetch(
-            "https://faucetpay.io/api/v2/transactions",
-            {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${apiKey}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    coin: "BTC",
-                    page: 1
-                })
-            }
-        );
+        const response =
+            await fetch(
+                "https://faucetpay.io/api/v2/transactions",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Authorization":
+                            `Bearer ${apiKey}`,
+
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        coin: "BTC",
+                        page: 1
+                    })
+                }
+            );
 
         let result;
 
         try {
-            result = await response.json();
+            result =
+                await response.json();
         } catch {
             result = null;
         }
 
-        // Do NOT log the full FaucetPay response.
         console.log(
             "FaucetPay transactions HTTP status:",
             response.status
         );
 
         // --------------------------------------------------
-        // 6. Handle FaucetPay failure
+        // 7. Handle FaucetPay failure
         // --------------------------------------------------
 
-        if (!response.ok || !result || result.success !== true) {
-            return Response.json(
+        if (
+            !response.ok ||
+            !result ||
+            result.success !== true
+        ) {
+
+            return jsonResponse(
                 {
                     success: false,
-                    error: "Unable to load FaucetPay transactions.",
-                    http_status: response.status
+                    error:
+                        "Unable to load FaucetPay transactions.",
+                    http_status:
+                        response.status
                 },
-                {
-                    status: 502,
-                    headers: {
-                        "Cache-Control": "no-store"
-                    }
-                }
+                502
             );
         }
 
         // --------------------------------------------------
-        // 7. Success
+        // 8. Success
         // --------------------------------------------------
 
-        return Response.json(
+        return jsonResponse(
             {
                 success: true,
-                http_status: response.status,
-                faucetpay: result
+                http_status:
+                    response.status,
+                faucetpay:
+                    result
             },
-            {
-                status: 200,
-                headers: {
-                    "Cache-Control": "no-store"
-                }
-            }
+            200
         );
 
     } catch (error) {
+
         console.error(
-            "FaucetPay transactions endpoint error."
+            "FAUCETPAY TRANSACTIONS ERROR:",
+            error instanceof Error
+                ? error.message
+                : "Unknown error"
         );
 
-        return Response.json(
+        return jsonResponse(
             {
                 success: false,
-                error: "Unable to load FaucetPay transactions."
+                error:
+                    "Unable to load FaucetPay transactions."
             },
-            {
-                status: 500,
-                headers: {
-                    "Cache-Control": "no-store"
-                }
-            }
+            500
         );
     }
 }
