@@ -718,6 +718,21 @@ async function isValidBitcoinAddress(address) {
 
 
     /*
+     * Security limit:
+     *
+     * Prevent excessively long input
+     * from causing unnecessary Base58
+     * BigInt processing.
+     */
+
+    if (
+        value.length > 90
+    ) {
+        return false;
+    }
+
+
+    /*
      * Legacy / P2SH
      */
 
@@ -1065,10 +1080,13 @@ export async function onRequestPost(context) {
                         expires_at
                      FROM sessions
                      WHERE token_hash = ?
-                       AND expires_at > CURRENT_TIMESTAMP
+                       AND expires_at > ?
                      LIMIT 1`
                 )
-                .bind(tokenHash)
+                .bind(
+                    tokenHash,
+                    new Date().toISOString()
+                )
                 .first();
 
 
