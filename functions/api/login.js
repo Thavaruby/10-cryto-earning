@@ -1,5 +1,9 @@
 const ITERATIONS = 100000;
 
+const MAX_FAILED_ATTEMPTS = 5;
+const LOCKOUT_MINUTES = 15;
+const LOCKOUT_MS = LOCKOUT_MINUTES * 60 * 1000;
+
 function fromBase64(base64) {
     const binary = atob(base64);
 
@@ -119,8 +123,67 @@ export async function onRequestPost(context) {
             );
         }
 
+        // Prevent excessively large input.
+        if (email.length > 254 || password.length > 1024) {
+            return jsonResponse(
+                {
+                    success: false,
+                    error: "Invalid email or password"
+                },
+                401
+            );
+        }
+
         const db =
             context.env.DB.withSession("first-primary");
+
+        const now = Date.now();
+
+        // ---------------------------------------------------------
+        // LOGIN LOCKOUT CHECK
+        // ---------------------------------------------------------
+
+        const attemptRecord =
+            await db
+                .prepare(
+                    `SELECT
+                        email,
+                        failed_attempts,
+                        locked_until
+                     FROM login_attempts
+                     WHERE email = ?`
+                )
+                .bind(email)
+                .first();
+
+        if (
+            attemptRecord &&
+            Number(attemptRecord.locked_until || 0) > now
+        ) {
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error: "Too many failed login attempts. Please try again later."
+                },
+                429,
+                {
+                    "Retry-After":
+                        String(
+                            Math.ceil(
+                                (
+                                    Number(attemptRecord.locked_until) -
+                                    now
+                                ) / 1000
+                            )
+                        )
+                }
+            );
+        }
+
+        // ---------------------------------------------------------
+        // FIND USER
+        // ---------------------------------------------------------
 
         const user =
             await db
@@ -136,7 +199,18 @@ export async function onRequestPost(context) {
                 .bind(email)
                 .first();
 
+        // ---------------------------------------------------------
+        // INVALID USER
+        // ---------------------------------------------------------
+
         if (!user || !user.password_hash) {
+
+            await recordFailedLogin(
+                db,
+                email,
+                now
+            );
+
             return jsonResponse(
                 {
                     success: false,
@@ -145,6 +219,10 @@ export async function onRequestPost(context) {
                 401
             );
         }
+
+        // ---------------------------------------------------------
+        // PASSWORD HASH PARSING
+        // ---------------------------------------------------------
 
         let parts;
         let salt;
@@ -156,7 +234,9 @@ export async function onRequestPost(context) {
                 String(user.password_hash).split("$");
 
             if (parts.length !== 4) {
-                throw new Error("Invalid password hash format");
+                throw new Error(
+                    "Invalid password hash format"
+                );
             }
 
             salt =
@@ -169,10 +249,18 @@ export async function onRequestPost(context) {
                 salt.length === 0 ||
                 storedHash.length === 0
             ) {
-                throw new Error("Invalid password hash data");
+                throw new Error(
+                    "Invalid password hash data"
+                );
             }
 
         } catch {
+
+            await recordFailedLogin(
+                db,
+                email,
+                now
+            );
 
             return jsonResponse(
                 {
@@ -182,6 +270,10 @@ export async function onRequestPost(context) {
                 401
             );
         }
+
+        // ---------------------------------------------------------
+        // PASSWORD VERIFICATION
+        // ---------------------------------------------------------
 
         let calculatedHash;
 
@@ -194,6 +286,12 @@ export async function onRequestPost(context) {
                 );
 
         } catch {
+
+            await recordFailedLogin(
+                db,
+                email,
+                now
+            );
 
             return jsonResponse(
                 {
@@ -210,6 +308,13 @@ export async function onRequestPost(context) {
                 storedHash
             )
         ) {
+
+            await recordFailedLogin(
+                db,
+                email,
+                now
+            );
+
             return jsonResponse(
                 {
                     success: false,
@@ -219,8 +324,23 @@ export async function onRequestPost(context) {
             );
         }
 
-        // Generate a cryptographically secure
-        // 32-byte session token.
+        // ---------------------------------------------------------
+        // SUCCESSFUL LOGIN
+        // ---------------------------------------------------------
+
+        // Clear failed login attempts after successful login.
+        await db
+            .prepare(
+                `DELETE FROM login_attempts
+                 WHERE email = ?`
+            )
+            .bind(email)
+            .run();
+
+        // ---------------------------------------------------------
+        // GENERATE SECURE SESSION TOKEN
+        // ---------------------------------------------------------
+
         const randomBytes =
             crypto.getRandomValues(
                 new Uint8Array(32)
@@ -287,4 +407,71 @@ export async function onRequestPost(context) {
             500
         );
     }
+}
+
+
+// =============================================================
+// FAILED LOGIN TRACKING
+// =============================================================
+
+async function recordFailedLogin(db, email, now) {
+
+    const existing =
+        await db
+            .prepare(
+                `SELECT
+                    failed_attempts,
+                    locked_until
+                 FROM login_attempts
+                 WHERE email = ?`
+            )
+            .bind(email)
+            .first();
+
+    let failedAttempts =
+        Number(
+            existing?.failed_attempts || 0
+        );
+
+    let lockedUntil =
+        Number(
+            existing?.locked_until || 0
+        );
+
+    // If an old lock has expired, start a fresh counter.
+    if (lockedUntil > 0 && lockedUntil <= now) {
+        failedAttempts = 0;
+        lockedUntil = 0;
+    }
+
+    failedAttempts++;
+
+    if (failedAttempts >= MAX_FAILED_ATTEMPTS) {
+        lockedUntil =
+            now + LOCKOUT_MS;
+    }
+
+    await db
+        .prepare(
+            `INSERT INTO login_attempts
+                (
+                    email,
+                    failed_attempts,
+                    locked_until,
+                    updated_at
+                )
+             VALUES (?, ?, ?, ?)
+             ON CONFLICT(email)
+             DO UPDATE SET
+                failed_attempts = excluded.failed_attempts,
+                locked_until = excluded.locked_until,
+                updated_at = excluded.updated_at`
+        )
+        .bind(
+            email,
+            failedAttempts,
+            lockedUntil,
+            now
+        )
+        .run();
 }
