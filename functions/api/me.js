@@ -22,7 +22,11 @@ function getCookie(request, name) {
         const [key, ...value] = cookie.trim().split("=");
 
         if (key === name) {
-            return decodeURIComponent(value.join("="));
+            try {
+                return decodeURIComponent(value.join("="));
+            } catch {
+                return null;
+            }
         }
     }
 
@@ -43,9 +47,7 @@ function jsonResponse(data, status = 200) {
 }
 
 export async function onRequestGet(context) {
-
     try {
-
         const db =
             context.env.DB.withSession("first-primary");
 
@@ -56,7 +58,6 @@ export async function onRequestGet(context) {
             );
 
         if (!sessionToken) {
-
             return jsonResponse(
                 {
                     success: false,
@@ -89,7 +90,6 @@ export async function onRequestGet(context) {
                 .first();
 
         if (!session) {
-
             return jsonResponse(
                 {
                     success: false,
@@ -99,11 +99,13 @@ export async function onRequestGet(context) {
             );
         }
 
-        if (
-            new Date(session.expires_at) <=
-            new Date()
-        ) {
+        const expiresAt =
+            new Date(session.expires_at);
 
+        if (
+            Number.isNaN(expiresAt.getTime()) ||
+            expiresAt <= new Date()
+        ) {
             await db
                 .prepare(
                     `DELETE FROM sessions
@@ -131,7 +133,6 @@ export async function onRequestGet(context) {
         });
 
     } catch (error) {
-
         console.error(
             "ME ENDPOINT ERROR:",
             error instanceof Error
