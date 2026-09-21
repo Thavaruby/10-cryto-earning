@@ -10,184 +10,210 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Admin - Crypto Faucet</title>
+    <title>Admin Dashboard - My Crypto Faucet</title>
 
     <style>
+
+        /* =========================================================
+           RESET
+        ========================================================= */
 
         * {
             box-sizing: border-box;
         }
 
-        body {
-            font-family: Arial, sans-serif;
-            background: #f2f4f7;
-            margin: 0;
-            color: #111827;
+        html {
+            scroll-behavior: smooth;
         }
+
+        body {
+            margin: 0;
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Arial,
+                sans-serif;
+            background: #f4f6f8;
+            color: #172033;
+        }
+
+        button,
+        input {
+            font-family: inherit;
+        }
+
+        button {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+
+        /* =========================================================
+           HEADER
+        ========================================================= */
 
         header {
             background: #111827;
-            color: white;
-            padding: 20px;
-            text-align: center;
+            color: #ffffff;
+            border-bottom: 1px solid #273244;
+            padding: 17px 22px;
         }
 
-        header h1 {
-            margin: 0;
-            font-size: 24px;
+        .header-inner {
+            width: 100%;
+            max-width: 1250px;
+            margin: 0 auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 20px;
         }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 8px;
+
+            font-size: 20px;
+        }
+
+        .brand-text h1 {
+            margin: 0;
+
+            font-size: 19px;
+            font-weight: 600;
+            letter-spacing: 0.1px;
+        }
+
+        .brand-text p {
+            margin: 4px 0 0;
+
+            color: #9ca3af;
+            font-size: 11px;
+        }
+
+        .admin-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+
+            padding: 7px 10px;
+
+            border: 1px solid #374151;
+            border-radius: 6px;
+
+            color: #d1d5db;
+            background: #1f2937;
+
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+
+        /* =========================================================
+           MAIN CONTAINER
+        ========================================================= */
 
         .container {
             width: calc(100% - 30px);
-            max-width: 1200px;
-            margin: 30px auto;
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+            max-width: 1250px;
+
+            margin: 25px auto 45px;
         }
 
-        /* =========================
-           STATISTICS
-        ========================= */
+
+        /* =========================================================
+           SECTION
+        ========================================================= */
 
         .stats-section {
-            margin-bottom: 30px;
+            margin-bottom: 28px;
         }
 
         .stats-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+
             gap: 15px;
             flex-wrap: wrap;
-            margin-bottom: 15px;
+
+            margin-bottom: 14px;
         }
 
-        .stats-header h2 {
-            margin: 0;
-        }
-
-        .stats-refresh {
-            background: #2563eb;
-            color: white;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-        }
-
-        .stat-card {
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 18px;
-            min-height: 120px;
-        }
-
-        .stat-icon {
-            font-size: 25px;
-            margin-bottom: 8px;
-        }
-
-        .stat-title {
-            color: #6b7280;
-            font-size: 13px;
-            font-weight: bold;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-        }
-
-        .stat-value {
-            font-size: 21px;
-            font-weight: bold;
-            color: #111827;
-            word-break: break-word;
-        }
-
-        .stat-sub {
-            margin-top: 7px;
-            color: #6b7280;
-            font-size: 12px;
-        }
-
-        .today-section {
-            margin-top: 15px;
-        }
-
-        .today-card {
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 18px;
-        }
-
-        .today-card h3 {
-            margin: 0 0 15px 0;
-        }
-
-        .today-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-        }
-
-        .today-item {
-            background: white;
-            border-radius: 8px;
-            padding: 12px;
-            border: 1px solid #e5e7eb;
-        }
-
-        .today-item-title {
-            color: #6b7280;
-            font-size: 12px;
-            margin-bottom: 5px;
-        }
-
-        .today-item-value {
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        #statsMessage {
-            min-height: 18px;
-            margin-bottom: 10px;
-            font-size: 13px;
-            color: #6b7280;
-        }
-
-        /* =========================
-           WITHDRAWALS
-        ========================= */
-
-        .withdrawal-section {
-            border-top: 1px solid #e5e7eb;
-            padding-top: 25px;
-        }
-
-        .top-bar {
+        .section-heading {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
+            gap: 10px;
         }
 
+        .section-heading-icon {
+            width: 32px;
+            height: 32px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #e9eef5;
+            border: 1px solid #dce3ec;
+            border-radius: 7px;
+
+            font-size: 15px;
+        }
+
+        .stats-header h2,
         .top-bar h2 {
             margin: 0;
+
+            color: #172033;
+            font-size: 17px;
+            font-weight: 600;
         }
 
+        .section-description {
+            margin-top: 3px;
+
+            color: #7b8494;
+            font-size: 11px;
+        }
+
+
+        /* =========================================================
+           BUTTONS
+        ========================================================= */
+
         button {
-            border: none;
-            border-radius: 7px;
-            padding: 10px 16px;
+            border: 0;
+            border-radius: 6px;
+
+            padding: 9px 14px;
+
             cursor: pointer;
-            font-weight: bold;
-            font-size: 14px;
+
+            font-size: 12px;
+            font-weight: 600;
+
+            transition:
+                background-color 0.15s ease,
+                border-color 0.15s ease,
+                opacity 0.15s ease;
         }
 
         button:disabled {
@@ -195,128 +221,413 @@
             cursor: not-allowed;
         }
 
+        .stats-refresh,
         .refresh {
-            background: #2563eb;
-            color: white;
+            background: #1f4f8f;
+            color: #ffffff;
+
+            border: 1px solid #1f4f8f;
         }
+
+        .stats-refresh:hover,
+        .refresh:hover {
+            background: #1a4278;
+            border-color: #1a4278;
+        }
+
+
+        /* =========================================================
+           STATISTICS MESSAGE
+        ========================================================= */
+
+        #statsMessage {
+            min-height: 18px;
+
+            margin-bottom: 11px;
+
+            color: #7b8494;
+            font-size: 12px;
+        }
+
+
+        /* =========================================================
+           STATISTICS GRID
+        ========================================================= */
+
+        .stats-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+
+            gap: 13px;
+        }
+
+        .stat-card {
+            background: #ffffff;
+
+            border: 1px solid #e1e6ec;
+            border-radius: 8px;
+
+            padding: 16px;
+
+            min-height: 116px;
+        }
+
+        .stat-card:hover {
+            border-color: #d5dce5;
+        }
+
+        .stat-icon {
+            width: 30px;
+            height: 30px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            margin-bottom: 11px;
+
+            background: #f1f4f8;
+            border: 1px solid #e5e9ef;
+            border-radius: 6px;
+
+            font-size: 14px;
+        }
+
+        .stat-title {
+            margin-bottom: 7px;
+
+            color: #707988;
+
+            font-size: 10px;
+            font-weight: 700;
+
+            text-transform: uppercase;
+            letter-spacing: 0.045em;
+        }
+
+        .stat-value {
+            color: #172033;
+
+            font-size: 20px;
+            font-weight: 650;
+
+            line-height: 1.2;
+
+            word-break: break-word;
+        }
+
+        .stat-sub {
+            margin-top: 5px;
+
+            color: #8b94a3;
+
+            font-size: 11px;
+        }
+
+
+        /* =========================================================
+           TODAY ACTIVITY
+        ========================================================= */
+
+        .today-section {
+            margin-top: 14px;
+        }
+
+        .today-card {
+            background: #ffffff;
+
+            border: 1px solid #e1e6ec;
+            border-radius: 8px;
+
+            padding: 17px;
+        }
+
+        .today-card h3 {
+            margin: 0 0 14px;
+
+            color: #303b4d;
+
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .today-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+
+            gap: 12px;
+        }
+
+        .today-item {
+            background: #f8fafc;
+
+            border: 1px solid #e7ebf0;
+            border-radius: 7px;
+
+            padding: 13px;
+        }
+
+        .today-item-title {
+            margin-bottom: 6px;
+
+            color: #7b8494;
+            font-size: 11px;
+        }
+
+        .today-item-value {
+            color: #263247;
+
+            font-size: 16px;
+            font-weight: 650;
+        }
+
+
+        /* =========================================================
+           WITHDRAWAL SECTION
+        ========================================================= */
+
+        .withdrawal-section {
+            border-top: 1px solid #dde3ea;
+
+            padding-top: 25px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            gap: 15px;
+            flex-wrap: wrap;
+
+            margin-bottom: 17px;
+        }
+
+        .withdrawal-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .withdrawal-icon {
+            width: 32px;
+            height: 32px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #e9eef5;
+            border: 1px solid #dce3ec;
+            border-radius: 7px;
+
+            font-size: 15px;
+        }
+
+
+        /* =========================================================
+           TABS
+        ========================================================= */
 
         .tabs {
             display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 12px;
+            align-items: center;
+
+            gap: 5px;
+
+            margin-bottom: 16px;
+
+            padding: 5px;
+
+            background: #e9edf2;
+
+            border: 1px solid #dce2e9;
+            border-radius: 7px;
+
+            width: fit-content;
         }
 
         .tab {
-            background: #e5e7eb;
-            color: #374151;
+            background: transparent;
+            color: #626d7d;
+
+            border: 1px solid transparent;
+
+            padding: 8px 13px;
+
+            border-radius: 5px;
+
+            font-size: 11px;
+            font-weight: 650;
+        }
+
+        .tab:hover {
+            background: #f8fafc;
+            color: #263247;
         }
 
         .tab.active {
-            background: #111827;
-            color: white;
+            background: #ffffff;
+            color: #172033;
+
+            border-color: #d8dee7;
+
+            box-shadow:
+                0 1px 2px rgba(0, 0, 0, 0.04);
         }
 
         .tab.pending.active {
-            background: #d97706;
-        }
-
-        .tab.approved.active {
-            background: #16a34a;
-        }
-
-        .tab.rejected.active {
-            background: #dc2626;
+            color: #9a5b08;
         }
 
         .tab.processing.active {
-    background: #2563eb;
-}
+            color: #1d4f91;
+        }
 
-.status.processing {
-    background: #dbeafe;
-    color: #1d4ed8;
-}
+        .tab.approved.active {
+            color: #267342;
+        }
+
+        .tab.rejected.active {
+            color: #a33434;
+        }
+
+
+        /* =========================================================
+           MESSAGE
+        ========================================================= */
 
         #message {
-            margin: 15px 0;
-            font-weight: bold;
             min-height: 20px;
+
+            margin: 10px 0;
+
+            color: #697586;
+
+            font-size: 12px;
+            font-weight: 500;
         }
+
+
+        /* =========================================================
+           TABLE
+        ========================================================= */
 
         .table-wrapper {
             width: 100%;
+
             overflow-x: auto;
-            border: 1px solid #e5e7eb;
-            border-radius: 10px;
+
+            background: #ffffff;
+
+            border: 1px solid #dde3ea;
+            border-radius: 8px;
         }
 
         table {
             width: 100%;
+
             border-collapse: collapse;
-            min-width: 1000px;
+
+            min-width: 1080px;
         }
 
         th,
         td {
-            padding: 13px 12px;
-            border-bottom: 1px solid #e5e7eb;
+            padding: 12px 12px;
+
+            border-bottom: 1px solid #edf0f3;
+
             text-align: left;
             vertical-align: middle;
-            font-size: 14px;
+
+            font-size: 12px;
         }
 
         th {
-            background: #f9fafb;
-            font-size: 13px;
+            background: #f7f9fb;
+
+            color: #697586;
+
+            font-size: 10px;
+            font-weight: 700;
+
             text-transform: uppercase;
-            color: #4b5563;
+            letter-spacing: 0.035em;
+
+            white-space: nowrap;
+        }
+
+        td {
+            color: #3f4b5d;
+        }
+
+        tbody tr:hover {
+            background: #fafbfd;
         }
 
         tr:last-child td {
             border-bottom: none;
         }
 
-        .status {
-            display: inline-block;
-            padding: 5px 9px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
+        td strong {
+            color: #263247;
         }
 
-        .status.pending {
-            background: #fef3c7;
-            color: #92400e;
+        td small {
+            color: #8993a2;
+            font-size: 10px;
         }
 
-        .status.approved {
-            background: #dcfce7;
-            color: #166534;
-        }
 
-        .status.rejected {
-            background: #fee2e2;
-            color: #991b1b;
-        }
+        /* =========================================================
+           TABLE DATA
+        ========================================================= */
 
         .wallet {
-            max-width: 180px;
+            max-width: 185px;
+
             word-break: break-all;
-            font-family: monospace;
-            font-size: 12px;
+
+            font-family:
+                "SFMono-Regular",
+                Consolas,
+                "Liberation Mono",
+                monospace;
+
+            font-size: 10px;
+
+            color: #566275;
+            line-height: 1.45;
         }
 
         .id-text {
-            font-family: monospace;
-            font-size: 12px;
+            max-width: 120px;
+
+            display: inline-block;
+
             word-break: break-all;
+
+            font-family:
+                "SFMono-Regular",
+                Consolas,
+                "Liberation Mono",
+                monospace;
+
+            font-size: 10px;
+
+            color: #697586;
         }
 
         .amount {
-            font-weight: bold;
+            color: #172033;
+
+            font-weight: 650;
+
             white-space: nowrap;
         }
 
@@ -324,54 +635,160 @@
             white-space: nowrap;
         }
 
+
+        /* =========================================================
+           STATUS
+        ========================================================= */
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+
+            padding: 4px 8px;
+
+            border-radius: 5px;
+
+            font-size: 9px;
+            font-weight: 700;
+
+            letter-spacing: 0.035em;
+        }
+
+        .status.pending {
+            background: #fff6df;
+            color: #986008;
+
+            border: 1px solid #f1dfaf;
+        }
+
+        .status.processing {
+            background: #edf5ff;
+            color: #1d5595;
+
+            border: 1px solid #cfe1f6;
+        }
+
+        .status.approved {
+            background: #edf8f0;
+            color: #287344;
+
+            border: 1px solid #cde8d4;
+        }
+
+        .status.rejected {
+            background: #fff0f0;
+            color: #a23838;
+
+            border: 1px solid #f0cece;
+        }
+
+
+        /* =========================================================
+           ACTION BUTTONS
+        ========================================================= */
+
+        .actions button {
+            padding: 6px 9px;
+
+            font-size: 10px;
+            font-weight: 650;
+        }
+
         .approve {
-            background: #16a34a;
-            color: white;
+            background: #267342;
+            color: #ffffff;
+
             margin-right: 4px;
         }
 
-        .reject {
-            background: #dc2626;
-            color: white;
+        .approve:hover {
+            background: #205f37;
         }
 
-        .empty {
-            padding: 35px 20px;
-            text-align: center;
-            color: #6b7280;
-            font-size: 15px;
+        .reject {
+            background: #a33434;
+            color: #ffffff;
         }
+
+        .reject:hover {
+            background: #8f2d2d;
+        }
+
+
+        /* =========================================================
+           EMPTY STATE
+        ========================================================= */
+
+        .empty {
+            padding: 42px 20px;
+
+            text-align: center;
+
+            color: #7d8796;
+
+            font-size: 13px;
+        }
+
+
+        /* =========================================================
+           PAGINATION
+        ========================================================= */
 
         .pagination {
             display: flex;
             justify-content: center;
             align-items: center;
+
             gap: 12px;
-            margin-top: 20px;
+
+            margin-top: 17px;
         }
 
         .page-button {
-            background: #111827;
-            color: white;
+            background: #ffffff;
+            color: #394558;
+
+            border: 1px solid #d5dce5;
+
+            padding: 8px 12px;
+
+            font-size: 11px;
+        }
+
+        .page-button:hover:not(:disabled) {
+            background: #f7f9fb;
+            border-color: #c3ccd8;
         }
 
         .page-info {
-            font-weight: bold;
-            color: #4b5563;
+            min-width: 95px;
+
+            text-align: center;
+
+            color: #697586;
+
+            font-size: 11px;
+            font-weight: 600;
         }
 
-        /* =========================
+
+        /* =========================================================
            MODAL
-        ========================= */
+        ========================================================= */
 
         .modal-overlay {
             display: none;
+
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.55);
+
+            background: rgba(15, 23, 42, 0.55);
+
             z-index: 1000;
+
             align-items: center;
             justify-content: center;
+
             padding: 20px;
         }
 
@@ -381,93 +798,210 @@
 
         .modal {
             width: 100%;
-            max-width: 450px;
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            max-width: 430px;
+
+            background: #ffffff;
+
+            border: 1px solid #dce2e9;
+            border-radius: 9px;
+
+            padding: 0;
+
+            box-shadow:
+                0 18px 45px rgba(15, 23, 42, 0.20);
+
+            overflow: hidden;
         }
 
         .modal h3 {
-            margin-top: 0;
+            margin: 0;
+
+            padding: 17px 19px;
+
+            color: #172033;
+
+            font-size: 16px;
+            font-weight: 650;
+
+            border-bottom: 1px solid #e5e9ee;
         }
 
         .modal-text {
-            color: #4b5563;
-            line-height: 1.6;
+            padding: 18px 19px;
+
+            color: #5e6979;
+
+            font-size: 13px;
+            line-height: 1.65;
+        }
+
+        .modal-text strong {
+            color: #263247;
         }
 
         .modal-actions {
             display: flex;
             justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
+
+            gap: 8px;
+
+            padding: 13px 19px;
+
+            background: #f8fafc;
+
+            border-top: 1px solid #e5e9ee;
         }
 
         .cancel-button {
-            background: #e5e7eb;
-            color: #111827;
+            background: #ffffff;
+            color: #4b5563;
+
+            border: 1px solid #d1d7df;
+        }
+
+        .cancel-button:hover {
+            background: #f4f6f8;
         }
 
         .confirm-button {
-            background: #111827;
-            color: white;
+            background: #1f4f8f;
+            color: #ffffff;
+        }
+
+        .confirm-button:hover {
+            background: #1a4278;
         }
 
         .confirm-button.approve-confirm {
-            background: #16a34a;
+            background: #267342;
+        }
+
+        .confirm-button.approve-confirm:hover {
+            background: #205f37;
         }
 
         .confirm-button.reject-confirm {
-            background: #dc2626;
+            background: #a33434;
         }
 
-        /* =========================
-           MOBILE
-        ========================= */
+        .confirm-button.reject-confirm:hover {
+            background: #8f2d2d;
+        }
 
-        @media (max-width: 900px) {
+
+        /* =========================================================
+           FOOTER
+        ========================================================= */
+
+        footer {
+            text-align: center;
+
+            padding: 0 15px 30px;
+
+            color: #9aa3b1;
+
+            font-size: 10px;
+        }
+
+
+        /* =========================================================
+           MOBILE
+        ========================================================= */
+
+        @media (max-width: 1000px) {
 
             .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns:
+                    repeat(3, minmax(0, 1fr));
+            }
+
+        }
+
+
+        @media (max-width: 850px) {
+
+            .stats-grid {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
             }
 
             .today-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
             }
 
         }
+
 
         @media (max-width: 600px) {
 
+            header {
+                padding: 14px 15px;
+            }
+
+            .header-inner {
+                align-items: flex-start;
+            }
+
+            .brand-icon {
+                width: 38px;
+                height: 38px;
+
+                font-size: 18px;
+            }
+
+            .brand-text h1 {
+                font-size: 17px;
+            }
+
+            .admin-badge {
+                display: none;
+            }
+
             .container {
                 width: calc(100% - 16px);
-                margin: 15px auto;
-                padding: 15px;
+
+                margin: 16px auto 35px;
             }
 
-            header {
-                padding: 16px;
+            .stats-header {
+                align-items: stretch;
             }
 
-            header h1 {
-                font-size: 20px;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .today-grid {
-                grid-template-columns: 1fr;
+            .stats-header h2 {
+                font-size: 16px;
             }
 
             .stats-refresh {
                 width: 100%;
             }
 
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .today-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card {
+                min-height: 105px;
+            }
+
+            .today-card {
+                padding: 14px;
+            }
+
             .top-bar {
                 align-items: stretch;
+            }
+
+            .withdrawal-title {
+                align-items: center;
+            }
+
+            .top-bar h2 {
+                font-size: 16px;
             }
 
             .refresh {
@@ -475,12 +1009,48 @@
             }
 
             .tabs {
+                width: 100%;
+
                 display: grid;
-                grid-template-columns: 1fr;
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+                gap: 5px;
             }
 
             .tab {
                 width: 100%;
+
+                padding: 9px 6px;
+
+                text-align: center;
+            }
+
+            .modal {
+                max-width: 100%;
+            }
+
+            .modal-actions {
+                flex-direction: column;
+            }
+
+            .cancel-button,
+            .confirm-button {
+                width: 100%;
+            }
+
+        }
+
+
+        @media (max-width: 380px) {
+
+            .tabs {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-value {
+                font-size: 19px;
             }
 
         }
@@ -489,28 +1059,88 @@
 
 </head>
 
+
 <body>
 
 
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
 <header>
 
-    <h1>🔐 Admin Dashboard</h1>
+    <div class="header-inner">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                🔐
+            </div>
+
+            <div class="brand-text">
+
+                <h1>
+                    Admin Dashboard
+                </h1>
+
+                <p>
+                    My Crypto Faucet · Administration
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="admin-badge">
+            🛡️ ADMIN PANEL
+        </div>
+
+    </div>
 
 </header>
 
 
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
 <div class="container">
 
 
-    <!-- =========================
+    <!-- =====================================================
          ADMIN STATISTICS
-    ========================== -->
+    ====================================================== -->
 
     <section class="stats-section">
 
+
         <div class="stats-header">
 
-            <h2>📊 Statistics</h2>
+            <div>
+
+                <div class="section-heading">
+
+                    <div class="section-heading-icon">
+                        📊
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Statistics
+                        </h2>
+
+                        <div class="section-description">
+                            Platform overview and withdrawal activity
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
 
             <button
                 class="stats-refresh"
@@ -518,7 +1148,7 @@
                 onclick="loadStats()"
                 type="button"
             >
-                🔄 REFRESH STATS
+                🔄 Refresh Stats
             </button>
 
         </div>
@@ -637,31 +1267,32 @@
 
             <!-- PROCESSING -->
 
-<div class="stat-card">
+            <div class="stat-card">
 
-    <div class="stat-icon">
-        🔵
-    </div>
+                <div class="stat-icon">
+                    🔵
+                </div>
 
-    <div class="stat-title">
-        Processing Withdrawals
-    </div>
+                <div class="stat-title">
+                    Processing Withdrawals
+                </div>
 
-    <div
-        class="stat-value"
-        id="processingWithdrawals"
-    >
-        —
-    </div>
+                <div
+                    class="stat-value"
+                    id="processingWithdrawals"
+                >
+                    —
+                </div>
 
-    <div
-        class="stat-sub"
-        id="processingAmount"
-    >
-        —
-    </div>
+                <div
+                    class="stat-sub"
+                    id="processingAmount"
+                >
+                    —
+                </div>
 
-</div>
+            </div>
+
 
             <!-- APPROVED -->
 
@@ -729,7 +1360,7 @@
             </div>
 
 
-            <!-- TOTAL CLAIM COUNT -->
+            <!-- TOTAL CLAIMS -->
 
             <div class="stat-card">
 
@@ -753,9 +1384,9 @@
         </div>
 
 
-        <!-- =========================
+        <!-- =================================================
              TODAY
-        ========================== -->
+        ================================================== -->
 
         <div class="today-section">
 
@@ -763,6 +1394,15 @@
 
                 <h3>
                     📅 Today's Activity
+                    <span
+                        style="
+                            color:#9aa3b1;
+                            font-size:10px;
+                            font-weight:400;
+                        "
+                    >
+                        UTC
+                    </span>
                 </h3>
 
 
@@ -842,16 +1482,35 @@
     </section>
 
 
-    <!-- =========================
+    <!-- =====================================================
          WITHDRAWAL MANAGEMENT
-    ========================== -->
+    ====================================================== -->
 
     <section class="withdrawal-section">
 
 
         <div class="top-bar">
 
-            <h2>💸 BTC Withdrawals</h2>
+            <div class="withdrawal-title">
+
+                <div class="withdrawal-icon">
+                    💸
+                </div>
+
+                <div>
+
+                    <h2>
+                        BTC Withdrawals
+                    </h2>
+
+                    <div class="section-description">
+                        Review and manage user withdrawal requests
+                    </div>
+
+                </div>
+
+            </div>
+
 
             <button
                 class="refresh"
@@ -859,51 +1518,58 @@
                 onclick="loadWithdrawals()"
                 type="button"
             >
-                🔄 REFRESH
+                🔄 Refresh
             </button>
 
         </div>
 
 
-        <!-- TABS -->
+        <!-- =================================================
+             TABS
+        ================================================== -->
 
         <div class="tabs">
 
+
             <button
-    class="tab pending active"
-    data-status="pending"
-    onclick="changeTab('pending')"
-    type="button"
->
-    🟠 PENDING
-</button>
+                class="tab pending active"
+                data-status="pending"
+                onclick="changeTab('pending')"
+                type="button"
+            >
+                🟠 Pending
+            </button>
 
-<button
-    class="tab processing"
-    data-status="processing"
-    onclick="changeTab('processing')"
-    type="button"
->
-    🔵 PROCESSING
-</button>
 
-<button
-    class="tab approved"
-    data-status="approved"
-    onclick="changeTab('approved')"
-    type="button"
->
-    🟢 APPROVED
-</button>
+            <button
+                class="tab processing"
+                data-status="processing"
+                onclick="changeTab('processing')"
+                type="button"
+            >
+                🔵 Processing
+            </button>
 
-<button
-    class="tab rejected"
-    data-status="rejected"
-    onclick="changeTab('rejected')"
-    type="button"
->
-    🔴 REJECTED
-</button>
+
+            <button
+                class="tab approved"
+                data-status="approved"
+                onclick="changeTab('approved')"
+                type="button"
+            >
+                🟢 Approved
+            </button>
+
+
+            <button
+                class="tab rejected"
+                data-status="rejected"
+                onclick="changeTab('rejected')"
+                type="button"
+            >
+                🔴 Rejected
+            </button>
+
 
         </div>
 
@@ -916,7 +1582,9 @@
         <div id="withdrawals"></div>
 
 
-        <!-- PAGINATION -->
+        <!-- =================================================
+             PAGINATION
+        ================================================== -->
 
         <div
             class="pagination"
@@ -933,12 +1601,14 @@
                 ← Previous
             </button>
 
+
             <span
                 class="page-info"
                 id="pageInfo"
             >
                 Page 1
             </span>
+
 
             <button
                 class="page-button"
@@ -951,14 +1621,27 @@
 
         </div>
 
+
     </section>
+
 
 </div>
 
 
-<!-- =========================
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+
+<footer>
+
+    My Crypto Faucet · Secure Administration Panel
+
+</footer>
+
+
+<!-- =========================================================
      CONFIRMATION MODAL
-========================== -->
+========================================================= -->
 
 <div
     class="modal-overlay"
@@ -971,6 +1654,7 @@
             Confirm Action
         </h3>
 
+
         <div
             class="modal-text"
             id="modalText"
@@ -978,7 +1662,9 @@
             Are you sure?
         </div>
 
+
         <div class="modal-actions">
+
 
             <button
                 class="cancel-button"
@@ -988,6 +1674,7 @@
                 Cancel
             </button>
 
+
             <button
                 class="confirm-button"
                 id="confirmActionButton"
@@ -996,6 +1683,7 @@
             >
                 Confirm
             </button>
+
 
         </div>
 
@@ -1161,20 +1849,21 @@ async function loadStats() {
             ) + " BTC pending";
 
 
-    document.getElementById(
-    "processingWithdrawals"
-).innerText =
-    Number(
-        result.withdrawals?.processing || 0
-    ).toLocaleString();
+        document.getElementById(
+            "processingWithdrawals"
+        ).innerText =
+            Number(
+                result.withdrawals?.processing || 0
+            ).toLocaleString();
 
 
-document.getElementById(
-    "processingAmount"
-).innerText =
-    formatBTC(
-        result.withdrawals?.processingAmount
-    ) + " BTC processing";
+        document.getElementById(
+            "processingAmount"
+        ).innerText =
+            formatBTC(
+                result.withdrawals?.processingAmount
+            ) + " BTC processing";
+
 
         document.getElementById(
             "approvedWithdrawals"
@@ -1354,19 +2043,20 @@ async function loadWithdrawals() {
             message.innerText =
                 `0 ${currentStatus} BTC withdrawal(s)`;
 
+
             container.innerHTML = `
-    <div class="empty">
-        ${
-            currentStatus === "pending"
-                ? "✅ No pending BTC withdrawals."
-                : currentStatus === "processing"
-                    ? "🔵 No processing BTC withdrawals."
-                    : currentStatus === "approved"
-                        ? "📭 No approved BTC withdrawals."
-                        : "📭 No rejected BTC withdrawals."
-        }
-    </div>
-`;
+                <div class="empty">
+                    ${
+                        currentStatus === "pending"
+                            ? "No pending BTC withdrawals."
+                            : currentStatus === "processing"
+                                ? "No processing BTC withdrawals."
+                                : currentStatus === "approved"
+                                    ? "No approved BTC withdrawals."
+                                    : "No rejected BTC withdrawals."
+                    }
+                </div>
+            `;
 
             return;
         }
@@ -1681,7 +2371,7 @@ function createWithdrawalRow(item) {
                             )"
                             type="button"
                         >
-                            ✅ Approve
+                            ✓ Approve
                         </button>
 
                         <button
@@ -1692,7 +2382,7 @@ function createWithdrawalRow(item) {
                             )"
                             type="button"
                         >
-                            ❌ Reject
+                            ✕ Reject
                         </button>
 
                     </td>
@@ -1753,12 +2443,15 @@ function openConfirmation(
         title.innerText =
             "Approve Withdrawal?";
 
+
         text.innerHTML =
             `Are you sure you want to approve withdrawal <strong>#${id}</strong>?<br><br>
              This will send the BTC payout through FaucetPay.`;
 
+
         confirmButton.innerText =
-            "✅ Approve";
+            "✓ Approve";
+
 
         confirmButton.className =
             "confirm-button approve-confirm";
@@ -1768,12 +2461,15 @@ function openConfirmation(
         title.innerText =
             "Reject Withdrawal?";
 
+
         text.innerHTML =
             `Are you sure you want to reject withdrawal <strong>#${id}</strong>?<br><br>
              The reserved BTC will be refunded to the user.`;
 
+
         confirmButton.innerText =
-            "❌ Reject";
+            "✕ Reject";
+
 
         confirmButton.className =
             "confirm-button reject-confirm";
@@ -1804,6 +2500,7 @@ function closeModal() {
     selectedAction = null;
 
 }
+
 
 /* =========================================================
    CONFIRM WITHDRAWAL ACTION
@@ -1910,11 +2607,7 @@ async function confirmWithdrawalAction() {
         }
 
 
-        /* Reload withdrawals */
-
         await loadWithdrawals();
-
-        /* Also refresh statistics */
 
         await loadStats();
 
@@ -2093,6 +2786,7 @@ loadStats();
 loadWithdrawals();
 
 </script>
+
 
 </body>
 
