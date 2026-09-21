@@ -1,6 +1,12 @@
 const ITERATIONS = 100000;
 
+
+/* =========================================================
+   Uint8Array → Base64
+========================================================= */
+
 function toBase64(bytes) {
+
     let binary = "";
 
     for (const byte of bytes) {
@@ -10,8 +16,15 @@ function toBase64(bytes) {
     return btoa(binary);
 }
 
+
+/* =========================================================
+   Base64 → Uint8Array
+========================================================= */
+
 function fromBase64(base64) {
-    const binary = atob(base64);
+
+    const binary =
+        atob(base64);
 
     return Uint8Array.from(
         binary,
@@ -19,9 +32,15 @@ function fromBase64(base64) {
     );
 }
 
+
+/* =========================================================
+   PBKDF2 HASH
+========================================================= */
+
 async function hashValue(value, salt) {
 
-    const encoder = new TextEncoder();
+    const encoder =
+        new TextEncoder();
 
     const keyMaterial =
         await crypto.subtle.importKey(
@@ -44,22 +63,43 @@ async function hashValue(value, salt) {
             256
         );
 
-    return new Uint8Array(derivedBits);
+    return new Uint8Array(
+        derivedBits
+    );
 }
 
-async function verifyHash(value, storedHash) {
+
+/* =========================================================
+   VERIFY PBKDF2 HASH
+========================================================= */
+
+async function verifyHash(
+    value,
+    storedHash
+) {
 
     try {
 
         const parts =
             storedHash.split("$");
 
+
         if (parts.length !== 4) {
             return false;
         }
 
-        const algorithm = parts[0];
-        const iterations = Number(parts[1]);
+
+        const algorithm =
+            parts[0];
+
+        const iterations =
+            Number(parts[1]);
+
+
+        /*
+         * Strictly require our expected
+         * password-hash format.
+         */
 
         if (
             algorithm !== "pbkdf2" ||
@@ -68,14 +108,33 @@ async function verifyHash(value, storedHash) {
             return false;
         }
 
+
         const salt =
             fromBase64(parts[2]);
 
         const expectedHash =
             fromBase64(parts[3]);
 
+
+        /*
+         * Expected PBKDF2-SHA256 output:
+         * 256 bits = 32 bytes.
+         */
+
+        if (
+            salt.length !== 16 ||
+            expectedHash.length !== 32
+        ) {
+            return false;
+        }
+
+
         const actualHash =
-            await hashValue(value, salt);
+            await hashValue(
+                value,
+                salt
+            );
+
 
         if (
             actualHash.length !==
@@ -84,16 +143,25 @@ async function verifyHash(value, storedHash) {
             return false;
         }
 
+
+        /*
+         * Constant-time comparison.
+         */
+
         let difference = 0;
+
 
         for (
             let i = 0;
             i < actualHash.length;
             i++
         ) {
+
             difference |=
-                actualHash[i] ^ expectedHash[i];
+                actualHash[i] ^
+                expectedHash[i];
         }
+
 
         return difference === 0;
 
@@ -103,25 +171,67 @@ async function verifyHash(value, storedHash) {
     }
 }
 
-export async function onRequestPost(context) {
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+export async function onRequestPost(
+    context
+) {
 
     try {
+
+        /* -------------------------------------------------
+           Parse request
+        ------------------------------------------------- */
 
         const data =
             await context.request.json();
 
+
+        /* -------------------------------------------------
+           Normalize email
+        ------------------------------------------------- */
+
         const email =
-            String(data.email || "")
+            String(
+                data.email || ""
+            )
                 .trim()
                 .toLowerCase();
 
+
+        /* -------------------------------------------------
+           Reset token
+        ------------------------------------------------- */
+
         const token =
-            String(data.token || "").trim();
+            String(
+                data.token || ""
+            )
+                .trim();
+
+
+        /* -------------------------------------------------
+           New password
+        ------------------------------------------------- */
 
         const password =
-            String(data.password || "");
+            String(
+                data.password || ""
+            );
 
-        if (!email || !token || !password) {
+
+        /* -------------------------------------------------
+           Basic validation
+        ------------------------------------------------- */
+
+        if (
+            !email ||
+            !token ||
+            !password
+        ) {
 
             return Response.json(
                 {
@@ -129,11 +239,47 @@ export async function onRequestPost(context) {
                     error:
                         "Invalid password reset request."
                 },
-                { status: 400 }
+                {
+                    status: 400,
+                    headers: {
+                        "Cache-Control":
+                            "no-store"
+                    }
+                }
             );
         }
 
-        if (password.length < 8) {
+
+        /* -------------------------------------------------
+           Email length protection
+        ------------------------------------------------- */
+
+        if (email.length > 254) {
+
+            return Response.json(
+                {
+                    success: false,
+                    error:
+                        "Invalid password reset request."
+                },
+                {
+                    status: 400,
+                    headers: {
+                        "Cache-Control":
+                            "no-store"
+                    }
+                }
+            );
+        }
+
+
+        /* -------------------------------------------------
+           Password validation
+        ------------------------------------------------- */
+
+        if (
+            password.length < 8
+        ) {
 
             return Response.json(
                 {
@@ -141,20 +287,51 @@ export async function onRequestPost(context) {
                     error:
                         "Password must contain at least 8 characters."
                 },
-                { status: 400 }
+                {
+                    status: 400,
+                    headers: {
+                        "Cache-Control":
+                            "no-store"
+                    }
+                }
             );
         }
 
+
+        /* -------------------------------------------------
+           D1 primary session
+        ------------------------------------------------- */
+
         const db =
-            context.env.DB.withSession("first-primary");
+            context.env.DB.withSession(
+                "first-primary"
+            );
+
+
+        /* -------------------------------------------------
+           Find user
+        ------------------------------------------------- */
 
         const user =
             await db
                 .prepare(
-                    "SELECT id FROM users WHERE email = ?"
+                    `
+                    SELECT id
+                    FROM users
+                    WHERE email = ?
+                    LIMIT 1
+                    `
                 )
                 .bind(email)
                 .first();
+
+
+        /*
+         * Generic response.
+         *
+         * Do not reveal whether an email
+         * belongs to an account.
+         */
 
         if (!user) {
 
@@ -164,25 +341,48 @@ export async function onRequestPost(context) {
                     error:
                         "Invalid or expired reset session."
                 },
-                { status: 400 }
+                {
+                    status: 400,
+                    headers: {
+                        "Cache-Control":
+                            "no-store"
+                    }
+                }
             );
         }
+
+
+        /* -------------------------------------------------
+           Find latest reset record
+        ------------------------------------------------- */
 
         const reset =
             await db
                 .prepare(
-                    `SELECT id,
-                            reset_token_hash,
-                            verified_at
-                     FROM password_resets
-                     WHERE user_id = ?
-                     ORDER BY id DESC
-                     LIMIT 1`
+                    `
+                    SELECT
+                        id,
+                        reset_token_hash,
+                        verified_at,
+                        used
+                    FROM password_resets
+                    WHERE user_id = ?
+                    ORDER BY id DESC
+                    LIMIT 1
+                    `
                 )
                 .bind(user.id)
                 .first();
 
-        if (!reset || !reset.reset_token_hash) {
+
+        /* -------------------------------------------------
+           Reset record validation
+        ------------------------------------------------- */
+
+        if (
+            !reset ||
+            !reset.reset_token_hash
+        ) {
 
             return Response.json(
                 {
@@ -190,14 +390,21 @@ export async function onRequestPost(context) {
                     error:
                         "Invalid or expired reset session."
                 },
-                { status: 400 }
+                {
+                    status: 400,
+                    headers: {
+                        "Cache-Control":
+                            "no-store"
+                    }
+                }
             );
         }
 
-        /*
-         * Reset token is valid only after
-         * successful verification.
-         */
+
+        /* -------------------------------------------------
+           Verification must be completed first
+        ------------------------------------------------- */
+
         if (!reset.verified_at) {
 
             return Response.json(
@@ -206,30 +413,87 @@ export async function onRequestPost(context) {
                     error:
                         "Please verify your email code first."
                 },
-                { status: 400 }
+                {
+                    status: 400,
+                    headers: {
+                        "Cache-Control":
+                            "no-store"
+                    }
+                }
             );
         }
 
+
+        /* -------------------------------------------------
+           Reset token must not already be consumed
+           
+           used = 1
+           → verification completed
+
+           used = 2
+           → password reset transaction has consumed it
+        ------------------------------------------------- */
+
+        if (
+            Number(reset.used) !== 1
+        ) {
+
+            return Response.json(
+                {
+                    success: false,
+                    error:
+                        "Your password reset session is no longer valid."
+                },
+                {
+                    status: 400,
+                    headers: {
+                        "Cache-Control":
+                            "no-store"
+                    }
+                }
+            );
+        }
+
+
+        /* -------------------------------------------------
+           Current Unix time
+        ------------------------------------------------- */
+
         const now =
-            Math.floor(Date.now() / 1000);
+            Math.floor(
+                Date.now() / 1000
+            );
+
+
+        /* -------------------------------------------------
+           Reset token expires 10 minutes
+           after successful code verification.
+        ------------------------------------------------- */
 
         const verifiedAt =
-            Number(reset.verified_at);
+            Number(
+                reset.verified_at
+            );
 
-        /*
-         * Reset token expires after 10 minutes.
-         */
+
         if (
             !verifiedAt ||
-            now >= verifiedAt + (10 * 60)
+            now >=
+                verifiedAt +
+                (10 * 60)
         ) {
 
             await db
                 .prepare(
-                    "DELETE FROM password_resets WHERE id = ?"
+                    `
+                    DELETE FROM password_resets
+                    WHERE id = ?
+                      AND used = 1
+                    `
                 )
                 .bind(reset.id)
                 .run();
+
 
             return Response.json(
                 {
@@ -237,18 +501,27 @@ export async function onRequestPost(context) {
                     error:
                         "Your password reset session has expired. Please request a new code."
                 },
-                { status: 400 }
+                {
+                    status: 400,
+                    headers: {
+                        "Cache-Control":
+                            "no-store"
+                    }
+                }
             );
         }
 
-        /*
-         * Verify the one-time reset token.
-         */
+
+        /* -------------------------------------------------
+           Verify reset token
+        ------------------------------------------------- */
+
         const validToken =
             await verifyHash(
                 token,
                 reset.reset_token_hash
             );
+
 
         if (!validToken) {
 
@@ -258,18 +531,30 @@ export async function onRequestPost(context) {
                     error:
                         "Invalid or expired reset session."
                 },
-                { status: 400 }
+                {
+                    status: 400,
+                    headers: {
+                        "Cache-Control":
+                            "no-store"
+                    }
+                }
             );
         }
 
-        /*
-         * Create a new random salt
-         * for the new password.
-         */
+
+        /* -------------------------------------------------
+           Create new password salt
+        ------------------------------------------------- */
+
         const salt =
             crypto.getRandomValues(
                 new Uint8Array(16)
             );
+
+
+        /* -------------------------------------------------
+           Hash new password
+        ------------------------------------------------- */
 
         const passwordHash =
             await hashValue(
@@ -277,49 +562,167 @@ export async function onRequestPost(context) {
                 salt
             );
 
+
+        /* -------------------------------------------------
+           Store password hash
+        ------------------------------------------------- */
+
         const storedHash =
             `pbkdf2$${ITERATIONS}$${toBase64(salt)}$${toBase64(passwordHash)}`;
 
+
         /*
-         * Atomically consume the reset session
-         * while updating the password.
+         * =================================================
+         * ATOMIC PASSWORD RESET
+         * =================================================
          *
-         * The reset token hash must still match.
-         * This prevents two simultaneous requests
-         * from both resetting the password.
+         * Step 1:
+         *
+         * Change reset record:
+         *
+         *     used 1 → used 2
+         *
+         * only if it is still valid.
+         *
+         * Step 2:
+         *
+         * Update password.
+         *
+         * Step 3:
+         *
+         * Delete reset record.
+         *
+         * These statements are executed using D1 batch,
+         * which provides transactional behavior.
+         *
+         * A second simultaneous request cannot also change
+         * used = 1 → used = 2.
+         *
+         * Therefore only one request can consume
+         * the reset session.
          */
-        const updateResult =
+
+
+        const resetConsume =
             await db
                 .prepare(
-                    `UPDATE users
-                     SET password_hash = ?
-                     WHERE id = ?
-                       AND EXISTS (
-                           SELECT 1
-                           FROM password_resets
-                           WHERE id = ?
-                             AND reset_token_hash = ?
-                             AND verified_at IS NOT NULL
-                             AND verified_at > ?
-                       )`
+                    `
+                    UPDATE password_resets
+                    SET used = 2
+                    WHERE id = ?
+                      AND user_id = ?
+                      AND used = 1
+                      AND verified_at IS NOT NULL
+                      AND verified_at > ?
+                      AND reset_token_hash = ?
+                    `
+                )
+                .bind(
+                    reset.id,
+                    user.id,
+                    now - (10 * 60),
+                    reset.reset_token_hash
+                );
+
+
+        const updatePassword =
+            await db
+                .prepare(
+                    `
+                    UPDATE users
+                    SET password_hash = ?
+                    WHERE id = ?
+                      AND EXISTS (
+                          SELECT 1
+                          FROM password_resets
+                          WHERE id = ?
+                            AND user_id = ?
+                            AND used = 2
+                            AND verified_at IS NOT NULL
+                            AND verified_at > ?
+                            AND reset_token_hash = ?
+                      )
+                    `
                 )
                 .bind(
                     storedHash,
                     user.id,
                     reset.id,
-                    reset.reset_token_hash,
-                    now - (10 * 60)
+                    user.id,
+                    now - (10 * 60),
+                    reset.reset_token_hash
+                );
+
+
+        const deleteReset =
+            await db
+                .prepare(
+                    `
+                    DELETE FROM password_resets
+                    WHERE id = ?
+                      AND user_id = ?
+                      AND used = 2
+                    `
                 )
-                .run();
+                .bind(
+                    reset.id,
+                    user.id
+                );
+
 
         /*
-         * Password was not changed.
-         * This means the reset session may have
-         * already been consumed or expired.
+         * Execute all three operations as one D1 batch.
          */
+
+        const results =
+            await db.batch(
+                [
+                    resetConsume,
+                    updatePassword,
+                    deleteReset
+                ]
+            );
+
+
+        /* -------------------------------------------------
+           Validate transaction results
+        ------------------------------------------------- */
+
+        const consumeChanges =
+            results[0] &&
+            results[0].meta
+                ? Number(
+                    results[0].meta.changes
+                )
+                : 0;
+
+
+        const passwordChanges =
+            results[1] &&
+            results[1].meta
+                ? Number(
+                    results[1].meta.changes
+                )
+                : 0;
+
+
+        const deleteChanges =
+            results[2] &&
+            results[2].meta
+                ? Number(
+                    results[2].meta.changes
+                )
+                : 0;
+
+
+        /*
+         * All three operations must succeed.
+         */
+
         if (
-            !updateResult.meta ||
-            Number(updateResult.meta.changes) !== 1
+            consumeChanges !== 1 ||
+            passwordChanges !== 1 ||
+            deleteChanges !== 1
         ) {
 
             return Response.json(
@@ -328,29 +731,35 @@ export async function onRequestPost(context) {
                     error:
                         "Your password reset session is no longer valid."
                 },
-                { status: 400 }
+                {
+                    status: 400,
+                    headers: {
+                        "Cache-Control":
+                            "no-store"
+                    }
+                }
             );
         }
 
-        /*
-         * Delete the reset record only after
-         * the password update succeeds.
-         */
-        await db
-            .prepare(
-                "DELETE FROM password_resets WHERE id = ?"
-            )
-            .bind(reset.id)
-            .run();
 
-        return Response.json({
+        /* -------------------------------------------------
+           Success
+        ------------------------------------------------- */
 
-            success: true,
+        return Response.json(
+            {
+                success: true,
+                message:
+                    "Password reset successfully."
+            },
+            {
+                headers: {
+                    "Cache-Control":
+                        "no-store"
+                }
+            }
+        );
 
-            message:
-                "Password reset successfully."
-
-        });
 
     } catch (error) {
 
@@ -359,13 +768,20 @@ export async function onRequestPost(context) {
             error
         );
 
+
         return Response.json(
             {
                 success: false,
                 error:
                     "Unable to reset password."
             },
-            { status: 500 }
+            {
+                status: 500,
+                headers: {
+                    "Cache-Control":
+                        "no-store"
+                }
+            }
         );
     }
 }
