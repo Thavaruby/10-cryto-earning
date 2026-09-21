@@ -7,7 +7,7 @@ function getCookie(request, name) {
         const [key, ...value] = cookie.trim().split("=");
 
         if (key === name) {
-            return value.join("=");
+            return decodeURIComponent(value.join("="));
         }
     }
 
@@ -27,9 +27,27 @@ async function hashSessionToken(token) {
         .join("");
 }
 
+function jsonResponse(data, status = 200) {
+    return new Response(
+        JSON.stringify(data),
+        {
+            status,
+            headers: {
+                "Content-Type": "application/json",
+                "Cache-Control": "no-store"
+            }
+        }
+    );
+}
+
 export async function onRequestGet(context) {
 
     try {
+
+        const db =
+            context.env.DB.withSession(
+                "first-primary"
+            );
 
         const sessionToken =
             getCookie(
@@ -38,12 +56,13 @@ export async function onRequestGet(context) {
             );
 
         if (!sessionToken) {
-            return Response.json(
+
+            return jsonResponse(
                 {
                     success: false,
                     error: "Please login first"
                 },
-                { status: 401 }
+                401
             );
         }
 
@@ -53,9 +72,11 @@ export async function onRequestGet(context) {
             );
 
         const session =
-            await context.env.DB
+            await db
                 .prepare(
-                    `SELECT user_id, expires_at
+                    `SELECT
+                        user_id,
+                        expires_at
                      FROM sessions
                      WHERE token_hash = ?
                      LIMIT 1`
@@ -64,12 +85,13 @@ export async function onRequestGet(context) {
                 .first();
 
         if (!session) {
-            return Response.json(
+
+            return jsonResponse(
                 {
                     success: false,
                     error: "Invalid session"
                 },
-                { status: 401 }
+                401
             );
         }
 
@@ -77,37 +99,46 @@ export async function onRequestGet(context) {
             new Date(session.expires_at) <=
             new Date()
         ) {
-            return Response.json(
+
+            await db
+                .prepare(
+                    `DELETE FROM sessions
+                     WHERE token_hash = ?`
+                )
+                .bind(tokenHash)
+                .run();
+
+            return jsonResponse(
                 {
                     success: false,
                     error: "Session expired"
                 },
-                { status: 401 }
+                401
             );
         }
 
         const withdrawals =
-    await context.env.DB
-        .prepare(
-            `SELECT
-                id,
-                amount,
-                wallet_address,
-                currency,
-                status,
-                created_at,
-                processed_at,
-                payout_id,
-                txid
-             FROM withdrawals
-             WHERE user_id = ?
-             ORDER BY id DESC
-             LIMIT 100`
-        )
-        .bind(session.user_id)
-        .all();
+            await db
+                .prepare(
+                    `SELECT
+                        id,
+                        amount,
+                        wallet_address,
+                        currency,
+                        status,
+                        created_at,
+                        processed_at,
+                        payout_id,
+                        txid
+                     FROM withdrawals
+                     WHERE user_id = ?
+                     ORDER BY id DESC
+                     LIMIT 100`
+                )
+                .bind(session.user_id)
+                .all();
 
-        return Response.json({
+        return jsonResponse({
             success: true,
             withdrawals:
                 withdrawals.results || []
@@ -115,17 +146,20 @@ export async function onRequestGet(context) {
 
     } catch (error) {
 
-    console.error(
-        "Withdrawals history error:",
-        error
-    );
+        console.error(
+            "WITHDRAWALS HISTORY ERROR:",
+            error instanceof Error
+                ? error.message
+                : "Unknown error"
+        );
 
-    return Response.json(
-        {
-            success: false,
-            error: "Unable to load withdrawal history."
-        },
-        { status: 500 }
-    );
-}
+        return jsonResponse(
+            {
+                success: false,
+                error:
+                    "Unable to load withdrawal history."
+            },
+            500
+        );
+    }
 }
