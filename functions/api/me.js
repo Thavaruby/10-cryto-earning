@@ -22,16 +22,32 @@ function getCookie(request, name) {
         const [key, ...value] = cookie.trim().split("=");
 
         if (key === name) {
-            return value.join("=");
+            return decodeURIComponent(value.join("="));
         }
     }
 
     return null;
 }
 
+function jsonResponse(data, status = 200) {
+    return new Response(
+        JSON.stringify(data),
+        {
+            status,
+            headers: {
+                "Content-Type": "application/json",
+                "Cache-Control": "no-store"
+            }
+        }
+    );
+}
+
 export async function onRequestGet(context) {
 
     try {
+
+        const db =
+            context.env.DB.withSession("first-primary");
 
         const sessionToken =
             getCookie(
@@ -41,12 +57,12 @@ export async function onRequestGet(context) {
 
         if (!sessionToken) {
 
-            return Response.json(
+            return jsonResponse(
                 {
                     success: false,
                     error: "Not logged in"
                 },
-                { status: 401 }
+                401
             );
         }
 
@@ -56,7 +72,7 @@ export async function onRequestGet(context) {
             );
 
         const session =
-            await context.env.DB
+            await db
                 .prepare(
                     `SELECT
                         sessions.user_id,
@@ -74,12 +90,12 @@ export async function onRequestGet(context) {
 
         if (!session) {
 
-            return Response.json(
+            return jsonResponse(
                 {
                     success: false,
                     error: "Invalid session"
                 },
-                { status: 401 }
+                401
             );
         }
 
@@ -88,16 +104,24 @@ export async function onRequestGet(context) {
             new Date()
         ) {
 
-            return Response.json(
+            await db
+                .prepare(
+                    `DELETE FROM sessions
+                     WHERE token_hash = ?`
+                )
+                .bind(tokenHash)
+                .run();
+
+            return jsonResponse(
                 {
                     success: false,
                     error: "Session expired"
                 },
-                { status: 401 }
+                401
             );
         }
 
-        return Response.json({
+        return jsonResponse({
             success: true,
             user: {
                 id: session.user_id,
@@ -109,16 +133,18 @@ export async function onRequestGet(context) {
     } catch (error) {
 
         console.error(
-            "Me endpoint error:",
-            error
+            "ME ENDPOINT ERROR:",
+            error instanceof Error
+                ? error.message
+                : "Unknown error"
         );
 
-        return Response.json(
+        return jsonResponse(
             {
                 success: false,
                 error: "Unable to load account."
             },
-            { status: 500 }
+            500
         );
     }
 }
