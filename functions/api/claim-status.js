@@ -12,14 +12,15 @@ function getCookie(request, name) {
 
     if (!cookieHeader) return null;
 
-
     for (const cookie of cookieHeader.split(";")) {
 
         const [key, ...value] =
             cookie.trim().split("=");
 
         if (key === name) {
-            return value.join("=");
+            return decodeURIComponent(
+                value.join("=")
+            );
         }
     }
 
@@ -56,6 +57,34 @@ async function hashSessionToken(token) {
 
 
 /* =====================================================
+   JSON RESPONSE
+===================================================== */
+
+function jsonResponse(
+    data,
+    status = 200,
+    extraHeaders = {}
+) {
+
+    return new Response(
+        JSON.stringify(data),
+        {
+            status,
+            headers: {
+                "Content-Type":
+                    "application/json",
+
+                "Cache-Control":
+                    "no-store",
+
+                ...extraHeaders
+            }
+        }
+    );
+}
+
+
+/* =====================================================
    CLAIM STATUS
 ===================================================== */
 
@@ -82,18 +111,13 @@ export async function onRequestGet(context) {
 
         if (!sessionToken) {
 
-            return Response.json(
+            return jsonResponse(
                 {
                     success: false,
                     error:
                         "Please login first"
                 },
-                {
-                    status: 401,
-                    headers: {
-                        "Cache-Control": "no-store"
-                    }
-                }
+                401
             );
         }
 
@@ -124,18 +148,13 @@ export async function onRequestGet(context) {
 
         if (!session) {
 
-            return Response.json(
+            return jsonResponse(
                 {
                     success: false,
                     error:
                         "Invalid session"
                 },
-                {
-                    status: 401,
-                    headers: {
-                        "Cache-Control": "no-store"
-                    }
-                }
+                401
             );
         }
 
@@ -149,18 +168,22 @@ export async function onRequestGet(context) {
             new Date()
         ) {
 
-            return Response.json(
+            await db
+                .prepare(
+                    `DELETE FROM sessions
+                     WHERE token_hash = ?`
+                )
+                .bind(tokenHash)
+                .run();
+
+
+            return jsonResponse(
                 {
                     success: false,
                     error:
                         "Session expired"
                 },
-                {
-                    status: 401,
-                    headers: {
-                        "Cache-Control": "no-store"
-                    }
-                }
+                401
             );
         }
 
@@ -189,25 +212,11 @@ export async function onRequestGet(context) {
 
         if (!lastClaim) {
 
-            return Response.json(
-                {
-                    success: true,
-                    canClaim: true,
-                    remainingSeconds: 0
-                },
-                {
-                    headers: {
-                        "Cache-Control":
-                            "no-store, no-cache, must-revalidate, max-age=0",
-
-                        "Pragma":
-                            "no-cache",
-
-                        "Expires":
-                            "0"
-                    }
-                }
-            );
+            return jsonResponse({
+                success: true,
+                canClaim: true,
+                remainingSeconds: 0
+            });
         }
 
 
@@ -242,51 +251,34 @@ export async function onRequestGet(context) {
            RESPONSE
         ================================================= */
 
-        return Response.json(
-            {
-                success: true,
+        return jsonResponse({
+            success: true,
 
-                canClaim:
-                    remaining <= 0,
+            canClaim:
+                remaining <= 0,
 
-                remainingSeconds:
-                    remaining
-            },
-            {
-                headers: {
-                    "Cache-Control":
-                        "no-store, no-cache, must-revalidate, max-age=0",
-
-                    "Pragma":
-                        "no-cache",
-
-                    "Expires":
-                        "0"
-                }
-            }
-        );
+            remainingSeconds:
+                remaining
+        });
 
 
     } catch (error) {
 
         console.error(
-            "Claim status error:",
-            error
+            "CLAIM STATUS ERROR:",
+            error instanceof Error
+                ? error.message
+                : "Unknown error"
         );
 
 
-        return Response.json(
+        return jsonResponse(
             {
                 success: false,
                 error:
                     "Unable to check claim status."
             },
-            {
-                status: 500,
-                headers: {
-                    "Cache-Control": "no-store"
-                }
-            }
+            500
         );
     }
 }
