@@ -22,54 +22,124 @@ body{
     margin:0;
     min-height:100vh;
     overflow-x:hidden;
-    font-family:Arial,Helvetica,sans-serif;
-    color:white;
+
+    font-family:
+        Inter,
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    color:#fff;
 
     background:
-        radial-gradient(circle at 20% 20%,rgba(37,99,235,.25),transparent 35%),
-        radial-gradient(circle at 80% 80%,rgba(124,58,237,.22),transparent 35%),
-        linear-gradient(135deg,#07111f,#0d1b2f 45%,#111827);
+        radial-gradient(
+            circle at 10% 10%,
+            rgba(37,99,235,.28),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 90% 20%,
+            rgba(124,58,237,.25),
+            transparent 32%
+        ),
+        radial-gradient(
+            circle at 50% 100%,
+            rgba(59,130,246,.13),
+            transparent 35%
+        ),
+        linear-gradient(
+            135deg,
+            #020617 0%,
+            #071426 45%,
+            #0b1120 100%
+        );
 
     position:relative;
 }
 
+/* =========================================
+   BACKGROUND
+========================================= */
+
 body::before{
     content:"";
+
     position:fixed;
-    width:280px;
-    height:280px;
-    background:rgba(37,99,235,.15);
-    filter:blur(70px);
+
+    width:340px;
+    height:340px;
+
+    left:-150px;
+    top:15%;
+
     border-radius:50%;
-    top:10%;
-    left:-100px;
-    animation:floatGlow 7s ease-in-out infinite;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(37,99,235,.20),
+            transparent 70%
+        );
+
+    filter:blur(35px);
+
+    animation:
+        floatingGlow 9s ease-in-out infinite;
+
     pointer-events:none;
+
     z-index:0;
 }
 
 body::after{
     content:"";
+
     position:fixed;
-    width:300px;
-    height:300px;
-    background:rgba(168,85,247,.13);
-    filter:blur(80px);
-    border-radius:50%;
+
+    width:380px;
+    height:380px;
+
+    right:-170px;
     bottom:-100px;
-    right:-80px;
-    animation:floatGlow 8s ease-in-out infinite reverse;
+
+    border-radius:50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(124,58,237,.18),
+            transparent 70%
+        );
+
+    filter:blur(45px);
+
+    animation:
+        floatingGlowReverse 11s ease-in-out infinite;
+
     pointer-events:none;
+
     z-index:0;
 }
 
-@keyframes floatGlow{
+@keyframes floatingGlow{
+
     0%,100%{
         transform:translate(0,0);
     }
 
     50%{
-        transform:translate(30px,-25px);
+        transform:translate(45px,-35px);
+    }
+}
+
+@keyframes floatingGlowReverse{
+
+    0%,100%{
+        transform:translate(0,0);
+    }
+
+    50%{
+        transform:translate(-40px,25px);
     }
 }
 
@@ -80,40 +150,62 @@ body::after{
 .crypto-header{
     position:relative;
     z-index:2;
-    padding:28px 18px 90px;
+
+    padding:
+        30px
+        15px
+        105px;
+
     text-align:center;
 }
 
 .brand{
     display:inline-flex;
+
     align-items:center;
     justify-content:center;
-    gap:10px;
+
+    gap:12px;
 }
 
 .logo-coin{
-    width:48px;
-    height:48px;
-    border-radius:50%;
+    width:52px;
+    height:52px;
 
     display:flex;
+
     align-items:center;
     justify-content:center;
 
-    background:linear-gradient(145deg,#fbbf24,#f59e0b);
+    border-radius:50%;
+
+    background:
+        radial-gradient(
+            circle at 30% 20%,
+            #fff5b5,
+            #fbbf24 35%,
+            #f59e0b 70%,
+            #b45309
+        );
+
     color:#111827;
 
-    font-size:25px;
-    font-weight:bold;
+    font-size:27px;
+    font-weight:900;
+
+    border:2px solid rgba(255,255,255,.28);
 
     box-shadow:
-        0 0 0 4px rgba(251,191,36,.12),
-        0 0 25px rgba(251,191,36,.35);
+        0 0 0 5px rgba(251,191,36,.08),
+        0 0 35px rgba(251,191,36,.28),
+        inset 4px 4px 10px rgba(255,255,255,.35);
 
-    animation:coinPulse 2.5s ease-in-out infinite;
+    animation:
+        coinPulse 3s ease-in-out infinite;
 }
 
 @keyframes coinPulse{
+
     0%,100%{
         transform:scale(1);
     }
@@ -125,47 +217,76 @@ body::after{
 
 .brand h1{
     margin:0;
-    font-size:27px;
-    letter-spacing:.3px;
+
+    color:#f8fafc;
+
+    font-size:28px;
+    font-weight:900;
+
+    letter-spacing:.2px;
 }
 
 .brand-subtitle{
-    margin:8px 0 0;
+    margin:9px 0 0;
+
     color:#94a3b8;
+
     font-size:13px;
+    font-weight:600;
+
+    letter-spacing:.3px;
 }
 
 /* =========================================
-   BITCOIN HOURLY CARD
+   BITCOIN HERO
 ========================================= */
 
 .faucet-banner{
+
     position:relative;
 
-    width:min(94%,850px);
-    min-height:180px;
+    width:min(94%,900px);
 
-    margin:32px auto 0;
+    min-height:205px;
+
+    margin:35px auto 0;
 
     display:flex;
+
     align-items:center;
 
     overflow:hidden;
 
-    border-radius:24px;
+    border-radius:28px;
 
     background:
-        radial-gradient(circle at 18% 50%,rgba(245,158,11,.16),transparent 32%),
-        radial-gradient(circle at 82% 30%,rgba(37,99,235,.20),transparent 35%),
-        linear-gradient(135deg,#07111f,#0d1b35 48%,#111c36);
+        radial-gradient(
+            circle at 15% 50%,
+            rgba(245,158,11,.20),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 85% 30%,
+            rgba(59,130,246,.22),
+            transparent 35%
+        ),
+        linear-gradient(
+            135deg,
+            rgba(7,17,31,.98),
+            rgba(10,28,55,.95),
+            rgba(17,24,39,.98)
+        );
 
-    border:1px solid rgba(255,255,255,.10);
+    border:
+        1px solid
+        rgba(255,255,255,.11);
 
     box-shadow:
-        0 25px 70px rgba(0,0,0,.45),
-        inset 0 1px 0 rgba(255,255,255,.06);
+        0 30px 90px rgba(0,0,0,.50),
+        inset 0 1px 0 rgba(255,255,255,.08);
 
-    text-align:left;
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
 }
 
 .faucet-banner::before{
@@ -173,144 +294,243 @@ body::after{
 
     position:absolute;
 
-    width:280px;
-    height:280px;
+    width:300px;
+    height:300px;
 
-    left:-130px;
-    top:-50px;
+    left:-150px;
+    top:-45px;
 
     border-radius:50%;
 
-    background:radial-gradient(
-        circle,
-        rgba(245,158,11,.15),
-        transparent 68%
-    );
+    background:
+        radial-gradient(
+            circle,
+            rgba(245,158,11,.20),
+            transparent 68%
+        );
+}
+
+.faucet-banner::after{
+    content:"";
+
+    position:absolute;
+
+    width:180px;
+    height:180px;
+
+    right:-70px;
+    bottom:-90px;
+
+    border-radius:50%;
+
+    border:
+        1px solid
+        rgba(96,165,250,.13);
+
+    box-shadow:
+        0 0 60px rgba(59,130,246,.12);
 }
 
 .bitcoin-hero-coin{
+
     position:relative;
+
     z-index:2;
 
-    width:118px;
-    height:118px;
-    min-width:118px;
+    width:135px;
+    height:135px;
 
-    margin-left:35px;
+    min-width:135px;
+
+    margin-left:42px;
 
     border-radius:50%;
 
+    overflow:hidden;
+
     display:flex;
+
     align-items:center;
     justify-content:center;
 
     background:
         radial-gradient(
-            circle at 30% 22%,
-            #fff8c7 0%,
-            #fbbf24 20%,
-            #f59e0b 52%,
-            #d97706 76%,
-            #92400e 100%
+            circle at 30% 20%,
+            #fff8c7,
+            #fbbf24 22%,
+            #f59e0b 55%,
+            #d97706 78%,
+            #92400e
         );
 
-    border:5px solid #fcd34d;
-
-    color:#fff8d6;
-
-    font-family:Arial,sans-serif;
-    font-size:68px;
-    font-weight:900;
-
-    text-shadow:
-        0 2px 4px rgba(0,0,0,.40);
+    border:
+        5px solid
+        #fcd34d;
 
     box-shadow:
-        inset 7px 7px 15px rgba(255,255,255,.38),
-        inset -10px -12px 20px rgba(120,53,15,.42),
-        0 15px 45px rgba(245,158,11,.28),
-        0 0 65px rgba(245,158,11,.14);
+        inset 8px 8px 16px
+            rgba(255,255,255,.40),
+
+        inset -12px -14px 22px
+            rgba(120,53,15,.42),
+
+        0 20px 55px
+            rgba(245,158,11,.30),
+
+        0 0 80px
+            rgba(245,158,11,.17);
+
+    animation:
+        bitcoinFloat 4s ease-in-out infinite;
+}
+
+@keyframes bitcoinFloat{
+
+    0%,100%{
+        transform:translateY(0);
+    }
+
+    50%{
+        transform:translateY(-7px);
+    }
 }
 
 .bitcoin-hero-coin img{
     width:100%;
     height:100%;
+
     object-fit:cover;
+
     border-radius:50%;
+
     display:block;
 }
 
 .faucet-text{
+
     position:relative;
+
     z-index:3;
 
-    margin-left:28px;
-    padding-right:25px;
+    margin-left:32px;
+
+    padding:
+        20px
+        30px
+        20px
+        0;
+
+    text-align:left;
 }
 
 .faucet-title{
+
     margin:0 0 12px;
 
     color:#f8fafc;
 
-    font-size:clamp(24px,4vw,36px);
-    font-weight:900;
+    font-size:
+        clamp(
+            25px,
+            4vw,
+            39px
+        );
 
-    letter-spacing:-.7px;
+    font-weight:950;
+
+    letter-spacing:-1px;
+
+    text-shadow:
+        0 5px 25px
+        rgba(59,130,246,.15);
 }
 
 .faucet-subtitle{
+
     color:#94a3b8;
 
     font-size:15px;
+
     font-weight:600;
 
-    line-height:1.7;
+    line-height:1.75;
 }
 
 .faucet-subtitle strong{
+
+    display:inline-block;
+
+    margin-top:4px;
+
     color:#fbbf24;
+
+    font-size:16px;
+
+    text-shadow:
+        0 0 18px
+        rgba(251,191,36,.25);
 }
 
 /* =========================================
-   MAIN GLASS CARD
+   MAIN CONTAINER
 ========================================= */
 
 .container{
+
     position:relative;
+
     z-index:5;
 
-    width:min(94%,570px);
+    width:min(94%,590px);
 
-    margin:-55px auto 50px;
+    margin:-60px auto 60px;
 
-    padding:30px 24px 34px;
+    padding:
+        31px
+        25px
+        36px;
 
-    border-radius:24px;
+    border-radius:28px;
 
-    background:rgba(15,23,42,.78);
+    background:
+        linear-gradient(
+            145deg,
+            rgba(15,23,42,.91),
+            rgba(15,23,42,.76)
+        );
 
-    border:1px solid rgba(255,255,255,.10);
+    border:
+        1px solid
+        rgba(255,255,255,.10);
 
     box-shadow:
-        0 25px 70px rgba(0,0,0,.45),
-        inset 0 1px 0 rgba(255,255,255,.06);
+        0 35px 100px
+            rgba(0,0,0,.50),
 
-    backdrop-filter:blur(18px);
-    -webkit-backdrop-filter:blur(18px);
+        inset 0 1px 0
+            rgba(255,255,255,.07);
 
-    animation:cardAppear .65s ease-out;
+    backdrop-filter:blur(22px);
+    -webkit-backdrop-filter:blur(22px);
+
+    animation:
+        cardAppear .65s ease-out;
 }
 
 @keyframes cardAppear{
+
     from{
         opacity:0;
-        transform:translateY(25px) scale(.97);
+        transform:
+            translateY(28px)
+            scale(.97);
     }
 
     to{
         opacity:1;
-        transform:translateY(0) scale(1);
+        transform:
+            translateY(0)
+            scale(1);
     }
 }
 
@@ -319,65 +539,84 @@ body::after{
 ========================================= */
 
 .dashboard-heading{
+
     display:flex;
+
     align-items:center;
-    gap:12px;
+
+    gap:13px;
 
     margin-bottom:7px;
 }
 
 .dashboard-icon{
-    width:48px;
-    height:48px;
 
-    border-radius:14px;
+    width:50px;
+    height:50px;
 
     display:flex;
+
     align-items:center;
     justify-content:center;
+
+    border-radius:15px;
 
     background:
         linear-gradient(
             145deg,
-            rgba(37,99,235,.25),
-            rgba(124,58,237,.25)
+            rgba(37,99,235,.28),
+            rgba(124,58,237,.28)
         );
 
-    border:1px solid rgba(96,165,250,.25);
+    border:
+        1px solid
+        rgba(96,165,250,.28);
 
     box-shadow:
-        0 10px 30px rgba(37,99,235,.18),
-        inset 0 1px 0 rgba(255,255,255,.08);
+        0 12px 30px
+            rgba(37,99,235,.16),
 
-    font-size:23px;
+        inset 0 1px 0
+            rgba(255,255,255,.10);
+
+    font-size:24px;
 }
 
 .container h2{
+
     margin:0;
 
     color:#f8fafc;
 
-    font-size:27px;
-    font-weight:900;
+    font-size:28px;
 
-    letter-spacing:-.6px;
+    font-weight:950;
+
+    letter-spacing:-.7px;
 }
 
 .email{
+
     display:inline-block;
 
     max-width:100%;
 
-    margin:7px 0 22px;
+    margin:
+        7px 0 24px;
 
-    padding:7px 14px;
+    padding:
+        8px 15px;
 
     overflow:hidden;
 
-    border:1px solid rgba(96,165,250,.20);
+    border:
+        1px solid
+        rgba(96,165,250,.20);
+
     border-radius:999px;
 
-    background:rgba(37,99,235,.10);
+    background:
+        rgba(37,99,235,.09);
 
     color:#94a3b8;
 
@@ -385,6 +624,7 @@ body::after{
     font-weight:600;
 
     text-overflow:ellipsis;
+
     white-space:nowrap;
 }
 
@@ -393,71 +633,111 @@ body::after{
 ========================================= */
 
 #topNotification{
+
     display:none;
 
     margin:12px 0;
 
-    padding:12px 14px;
+    padding:13px 15px;
 
-    border-radius:13px;
+    border-radius:14px;
 
     font-size:13px;
     font-weight:700;
 }
 
 .notification-success{
-    background:rgba(22,163,74,.15);
+
+    background:
+        rgba(22,163,74,.14);
+
     color:#86efac;
-    border:1px solid rgba(34,197,94,.20);
+
+    border:
+        1px solid
+        rgba(34,197,94,.20);
 }
 
 .notification-error{
-    background:rgba(220,38,38,.15);
+
+    background:
+        rgba(220,38,38,.14);
+
     color:#fca5a5;
-    border:1px solid rgba(248,113,113,.20);
+
+    border:
+        1px solid
+        rgba(248,113,113,.20);
 }
 
 .notification-info{
-    background:rgba(37,99,235,.15);
+
+    background:
+        rgba(37,99,235,.14);
+
     color:#93c5fd;
-    border:1px solid rgba(96,165,250,.20);
+
+    border:
+        1px solid
+        rgba(96,165,250,.20);
 }
 
 .action-notification{
+
     display:none;
 
     width:100%;
 
-    margin:10px auto 12px;
+    margin:
+        10px auto 13px;
 
-    padding:12px 14px;
+    padding:
+        13px 14px;
 
-    border-radius:12px;
+    border-radius:13px;
 
     font-size:13px;
     font-weight:700;
 
-    line-height:1.45;
+    line-height:1.5;
 
     word-break:break-word;
 }
 
 .action-notification.success{
-    background:rgba(22,163,74,.13);
+
+    background:
+        rgba(22,163,74,.13);
+
     color:#86efac;
-    border:1px solid rgba(34,197,94,.20);
+
+    border:
+        1px solid
+        rgba(34,197,94,.20);
 }
 
 .action-notification.error{
-    background:rgba(220,38,38,.13);
+
+    background:
+        rgba(220,38,38,.13);
+
     color:#fca5a5;
-    border:1px solid rgba(248,113,113,.20);
+
+    border:
+        1px solid
+        rgba(248,113,113,.20);
 }
 
 .action-notification.info{
-    background:rgba(37,99,235,.13);
+
+    background:
+        rgba(37,99,235,.13);
+
     color:#93c5fd;
-    border:1px solid rgba(96,165,250,.20);
+
+    border:
+        1px solid
+        rgba(96,165,250,.20);
 }
 
 /* =========================================
@@ -465,39 +745,53 @@ body::after{
 ========================================= */
 
 .balance-box{
+
     position:relative;
 
     width:100%;
 
-    margin:4px auto 22px;
+    margin:
+        4px auto 23px;
 
-    padding:25px 21px;
+    padding:
+        27px 22px;
 
     overflow:hidden;
 
-    border-radius:20px;
+    border-radius:22px;
 
     background:
         radial-gradient(
-            circle at 85% 20%,
-            rgba(245,158,11,.18),
-            transparent 28%
+            circle at 88% 15%,
+            rgba(245,158,11,.20),
+            transparent 27%
+        ),
+        radial-gradient(
+            circle at 10% 100%,
+            rgba(37,99,235,.16),
+            transparent 35%
         ),
         linear-gradient(
             135deg,
             #020617,
-            #0b1733 55%,
+            #09172f 55%,
             #111827
         );
 
-    border:1px solid rgba(255,255,255,.09);
+    border:
+        1px solid
+        rgba(255,255,255,.09);
 
     box-shadow:
-        0 18px 42px rgba(0,0,0,.30),
-        inset 0 1px 0 rgba(255,255,255,.05);
+        0 20px 45px
+            rgba(0,0,0,.32),
+
+        inset 0 1px 0
+            rgba(255,255,255,.06);
 }
 
 .balance-box::before{
+
     content:"";
 
     position:absolute;
@@ -512,22 +806,26 @@ body::after{
         linear-gradient(
             90deg,
             transparent,
-            #fbbf24,
+            #fbbf24 30%,
+            #3b82f6 70%,
             transparent
         );
 }
 
 .balance-box::after{
+
     content:"₿";
 
     position:absolute;
 
-    right:-20px;
-    bottom:-55px;
+    right:-15px;
+    bottom:-58px;
 
-    color:rgba(251,191,36,.055);
+    color:
+        rgba(251,191,36,.045);
 
-    font-size:170px;
+    font-size:175px;
+
     font-weight:900;
 
     transform:rotate(-10deg);
@@ -536,42 +834,59 @@ body::after{
 }
 
 .balance-title{
+
     position:relative;
+
     z-index:2;
 
-    margin-bottom:8px;
+    margin-bottom:9px;
 
     color:#94a3b8;
 
     font-size:11px;
-    font-weight:800;
 
-    letter-spacing:1.7px;
+    font-weight:900;
+
+    letter-spacing:1.8px;
+
     text-transform:uppercase;
 }
 
 .balance{
+
     position:relative;
+
     z-index:2;
 
     color:#f8fafc;
 
-    font-size:clamp(25px,7vw,38px);
+    font-size:
+        clamp(
+            27px,
+            7vw,
+            40px
+        );
 
-    font-weight:900;
+    font-weight:950;
 
     line-height:1.2;
 
     word-break:break-word;
+
+    text-shadow:
+        0 4px 20px
+        rgba(255,255,255,.06);
 }
 
 .btc-symbol{
+
     color:#fbbf24;
 
-    margin-right:3px;
+    margin-right:4px;
 
     text-shadow:
-        0 0 18px rgba(251,191,36,.38);
+        0 0 22px
+        rgba(251,191,36,.42);
 }
 
 /* =========================================
@@ -579,6 +894,7 @@ body::after{
 ========================================= */
 
 .cf-turnstile{
+
     display:flex;
 
     align-items:center;
@@ -586,14 +902,16 @@ body::after{
 
     min-height:65px;
 
-    margin:10px auto 15px;
+    margin:
+        10px auto 16px;
 }
 
 /* =========================================
-   CRYPTO SLIDER
+   COIN SLIDER
 ========================================= */
 
 .crypto-ad-slider{
+
     display:flex;
 
     align-items:center;
@@ -602,25 +920,35 @@ body::after{
 
     width:100%;
 
-    margin:8px auto 3px;
+    margin:
+        8px auto 3px;
 }
 
 .crypto-ad-window{
+
     width:100%;
+
     overflow:hidden;
-    border-radius:18px;
+
+    border-radius:19px;
 }
 
 .crypto-ad-track{
+
     display:flex;
 
     width:900%;
 
     transition:
-        transform .55s cubic-bezier(.22,.61,.36,1);
+        transform
+        .55s
+        cubic-bezier(
+            .22,.61,.36,1
+        );
 }
 
 .crypto-ad-slide{
+
     width:11.111111%;
 
     flex-shrink:0;
@@ -633,53 +961,101 @@ body::after{
 }
 
 .crypto-ad{
+
     position:relative;
 
-    height:108px;
+    height:116px;
 
     display:flex;
+
     align-items:center;
 
-    padding:14px;
+    padding:15px;
 
     overflow:hidden;
 
-    border-radius:18px;
+    border-radius:19px;
 
     color:white;
 
-    border:1px solid rgba(255,255,255,.10);
+    border:
+        1px solid
+        rgba(255,255,255,.12);
 
     box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.10),
-        0 10px 25px rgba(0,0,0,.18);
+        inset 0 1px 0
+            rgba(255,255,255,.12),
+
+        0 13px 30px
+            rgba(0,0,0,.22);
+
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease;
+}
+
+.crypto-ad-slide:hover .crypto-ad{
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        inset 0 1px 0
+            rgba(255,255,255,.16),
+
+        0 18px 38px
+            rgba(0,0,0,.30);
 }
 
 .crypto-ad::before{
+
     content:"";
 
     position:absolute;
 
-    right:-60px;
-    top:-70px;
+    right:-55px;
+    top:-75px;
 
-    width:190px;
-    height:190px;
+    width:200px;
+    height:200px;
 
     border-radius:50%;
 
-    background:rgba(255,255,255,.08);
+    background:
+        rgba(255,255,255,.09);
+}
+
+.crypto-ad::after{
+
+    content:"";
+
+    position:absolute;
+
+    left:-50px;
+    bottom:-80px;
+
+    width:170px;
+    height:170px;
+
+    border-radius:50%;
+
+    background:
+        rgba(255,255,255,.045);
 }
 
 .crypto-coin{
+
     position:relative;
+
     z-index:2;
 
-    width:51px;
-    height:51px;
-    min-width:51px;
+    width:54px;
+    height:54px;
+
+    min-width:54px;
 
     display:flex;
+
     align-items:center;
     justify-content:center;
 
@@ -687,211 +1063,274 @@ body::after{
 
     color:#fff;
 
-    font-size:24px;
-    font-weight:900;
+    font-size:25px;
 
-    background:rgba(255,255,255,.14);
+    font-weight:950;
 
-    border:1px solid rgba(255,255,255,.32);
+    background:
+        rgba(255,255,255,.15);
+
+    border:
+        1px solid
+        rgba(255,255,255,.34);
+
+    box-shadow:
+        inset 2px 2px 6px
+            rgba(255,255,255,.15),
+
+        0 7px 18px
+            rgba(0,0,0,.16);
 }
 
 .crypto-ad-text{
+
     position:relative;
+
     z-index:3;
 
-    margin-left:12px;
+    margin-left:13px;
 
     text-align:left;
 }
 
 .crypto-ad-text strong{
+
     display:block;
 
-    color:rgba(255,255,255,.72);
+    color:
+        rgba(255,255,255,.70);
 
     font-size:10px;
 
-    letter-spacing:1px;
+    letter-spacing:1.1px;
 }
 
 .crypto-ad-text span{
+
     display:block;
 
-    margin-top:4px;
+    margin-top:5px;
 
     color:#fff;
 
     font-size:16px;
-    font-weight:900;
+
+    font-weight:950;
 }
 
 .crypto-ad-text small{
+
     display:block;
 
     margin-top:5px;
 
-    color:rgba(255,255,255,.72);
+    color:
+        rgba(255,255,255,.72);
 
     font-size:9px;
+
+    font-weight:600;
 }
 
 .crypto-symbol{
+
     position:absolute;
 
     right:12px;
-    bottom:-15px;
+    bottom:-17px;
 
-    color:rgba(255,255,255,.12);
+    color:
+        rgba(255,255,255,.13);
 
-    font-size:58px;
-    font-weight:900;
+    font-size:62px;
+
+    font-weight:950;
 
     transform:rotate(-8deg);
+
+    pointer-events:none;
 }
 
 .ltc-ad{
-    background:linear-gradient(135deg,#263238,#455a64);
+    background:
+        linear-gradient(
+            135deg,
+            #263238,
+            #546e7a
+        );
 }
 
 .bnb-ad{
-    background:linear-gradient(135deg,#4a3a00,#a47b00);
+    background:
+        linear-gradient(
+            135deg,
+            #443600,
+            #b58900
+        );
 }
 
 .doge-ad{
-    background:linear-gradient(135deg,#504719,#8f7c18);
+    background:
+        linear-gradient(
+            135deg,
+            #504719,
+            #a08a1b
+        );
 }
 
 .sui-ad{
-    background:linear-gradient(135deg,#06384b,#087d9b);
+    background:
+        linear-gradient(
+            135deg,
+            #043446,
+            #0784a5
+        );
 }
 
 .tron-ad{
-    background:linear-gradient(135deg,#4b0808,#a91d1d);
+    background:
+        linear-gradient(
+            135deg,
+            #430707,
+            #b51f1f
+        );
 }
 
 .ton-ad{
-    background:linear-gradient(135deg,#064267,#036fa5);
+    background:
+        linear-gradient(
+            135deg,
+            #043955,
+            #087db6
+        );
 }
 
 .sol-ad{
-    background:linear-gradient(135deg,#27205f,#5d2ab0);
+    background:
+        linear-gradient(
+            135deg,
+            #29205f,
+            #652db8
+        );
 }
 
 .pol-ad{
-    background:linear-gradient(135deg,#30064f,#6316a5);
+    background:
+        linear-gradient(
+            135deg,
+            #31064c,
+            #721ab5
+        );
 }
 
 .bch-ad{
-    background:linear-gradient(135deg,#06402f,#087c58);
-}
-
-/* COMING SOON SLIDES */
-
-.coming-soon-slide{
-    cursor:default;
-}
-
-.coming-soon-slide .crypto-ad{
-    opacity:.82;
-}
-
-.coming-soon-badge{
-    display:inline-block;
-
-    margin-top:5px;
-
-    padding:3px 7px;
-
-    border-radius:999px;
-
-    background:rgba(15,23,42,.42);
-
-    color:#cbd5e1;
-
-    font-size:8px;
-
-    font-weight:900;
-
-    letter-spacing:.8px;
-}
-
-.btc-available-badge{
-    display:inline-block;
-
-    margin-top:5px;
-
-    padding:3px 7px;
-
-    border-radius:999px;
-
-    background:rgba(22,163,74,.22);
-
-    border:1px solid rgba(74,222,128,.20);
-
-    color:#86efac;
-
-    font-size:8px;
-
-    font-weight:900;
-
-    letter-spacing:.8px;
+    background:
+        linear-gradient(
+            135deg,
+            #053c2c,
+            #0a865f
+        );
 }
 
 .ad-arrow{
-    width:31px;
-    height:43px;
-    min-width:31px;
+
+    width:33px;
+    height:45px;
+
+    min-width:33px;
 
     padding:0;
 
-    border:1px solid rgba(96,165,250,.20);
-    border-radius:10px;
+    border:
+        1px solid
+        rgba(96,165,250,.24);
+
+    border-radius:11px;
 
     color:#fff;
 
-    background:rgba(37,99,235,.35);
+    background:
+        linear-gradient(
+            145deg,
+            rgba(37,99,235,.45),
+            rgba(79,70,229,.38)
+        );
 
     font-size:14px;
 
     cursor:pointer;
+
+    transition:
+        transform .2s ease,
+        background .2s ease;
 }
 
 .ad-arrow:hover{
-    background:rgba(37,99,235,.50);
+
+    transform:scale(1.05);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(37,99,235,.65),
+            rgba(124,58,237,.55)
+        );
 }
 
 .crypto-ad-dots{
+
     display:flex;
 
     align-items:center;
     justify-content:center;
 
-    gap:6px;
+    gap:7px;
 
-    margin:9px 0 19px;
+    margin:
+        10px 0 20px;
 }
 
 .crypto-dot{
+
     width:7px;
     height:7px;
+
     min-width:7px;
 
     padding:0;
 
     border:0;
+
     border-radius:50%;
 
     background:#475569;
 
     cursor:pointer;
+
+    transition:
+        width .2s ease,
+        background .2s ease;
 }
 
 .crypto-dot.active{
-    width:10px;
-    height:10px;
-    min-width:10px;
 
-    background:#3b82f6;
+    width:20px;
+    height:7px;
+
+    min-width:20px;
+
+    border-radius:99px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #3b82f6,
+            #8b5cf6
+        );
+
+    box-shadow:
+        0 0 12px
+        rgba(59,130,246,.35);
 }
 
 /* =========================================
@@ -899,14 +1338,20 @@ body::after{
 ========================================= */
 
 #claimButton{
+
+    position:relative;
+
     width:100%;
 
-    min-height:58px;
+    min-height:61px;
 
-    padding:16px 20px;
+    padding:17px 20px;
+
+    overflow:hidden;
 
     border:0;
-    border-radius:13px;
+
+    border-radius:15px;
 
     color:white;
 
@@ -914,38 +1359,103 @@ body::after{
         linear-gradient(
             135deg,
             #2563eb,
-            #4f46e5
+            #4f46e5,
+            #7c3aed
         );
 
     box-shadow:
-        0 10px 25px rgba(37,99,235,.25);
+        0 13px 30px
+            rgba(37,99,235,.28);
 
     font-size:15px;
 
-    font-weight:bold;
+    font-weight:950;
 
-    letter-spacing:.8px;
+    letter-spacing:1px;
 
     cursor:pointer;
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+#claimButton::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:0;
+    left:-100%;
+
+    width:70%;
+    height:100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,.18),
+            transparent
+        );
+
+    transform:skewX(-20deg);
+
+    animation:
+        claimShine 4s ease-in-out infinite;
+}
+
+@keyframes claimShine{
+
+    0%,60%{
+        left:-100%;
+    }
+
+    80%,100%{
+        left:140%;
+    }
+}
+
+#claimButton:hover:not(:disabled){
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 18px 40px
+            rgba(37,99,235,.38);
+}
+
+#claimButton:active:not(:disabled){
+
+    transform:
+        translateY(0);
 }
 
 #claimButton:disabled{
+
     opacity:.55;
+
     cursor:not-allowed;
 
     box-shadow:none;
 }
 
 #claimCooldown{
+
     min-height:23px;
 
-    margin:10px 0 20px;
+    margin:
+        11px 0 21px;
 
     color:#60a5fa;
 
     font-size:13px;
 
     font-weight:800;
+
+    text-align:center;
 }
 
 /* =========================================
@@ -953,59 +1463,87 @@ body::after{
 ========================================= */
 
 .withdraw-section{
+
     position:relative;
 
-    margin-top:25px;
+    margin-top:26px;
 
-    padding:23px 16px 24px;
+    padding:
+        25px 17px 26px;
 
     overflow:hidden;
 
-    border-radius:20px;
+    border-radius:22px;
 
     background:
+        radial-gradient(
+            circle at 90% 0%,
+            rgba(245,158,11,.10),
+            transparent 30%
+        ),
         linear-gradient(
             145deg,
-            rgba(15,23,42,.90),
-            rgba(30,41,59,.82)
+            rgba(15,23,42,.94),
+            rgba(30,41,59,.80)
         );
 
-    border:1px solid rgba(251,191,36,.16);
+    border:
+        1px solid
+        rgba(251,191,36,.15);
 
     box-shadow:
-        0 15px 35px rgba(0,0,0,.20);
+        0 18px 40px
+            rgba(0,0,0,.24),
+
+        inset 0 1px 0
+            rgba(255,255,255,.05);
 }
 
 .withdraw-section::before{
+
     content:"₿";
 
     position:absolute;
 
-    right:-20px;
-    top:-50px;
+    right:-22px;
+    top:-58px;
 
-    color:rgba(251,191,36,.045);
+    color:
+        rgba(251,191,36,.045);
 
-    font-size:155px;
-    font-weight:900;
+    font-size:165px;
+
+    font-weight:950;
 
     transform:rotate(10deg);
+
+    pointer-events:none;
 }
 
 .withdraw-section h3{
+
     position:relative;
+
     z-index:2;
 
-    margin:0 0 20px;
+    margin:
+        0 0 21px;
 
     color:#fbbf24;
 
     font-size:21px;
-    font-weight:900;
+
+    font-weight:950;
+
+    text-shadow:
+        0 0 18px
+        rgba(251,191,36,.16);
 }
 
 .amount-row{
+
     position:relative;
+
     z-index:2;
 
     display:flex;
@@ -1016,23 +1554,25 @@ body::after{
 
     gap:10px;
 
-    margin-bottom:8px;
+    margin-bottom:9px;
 
     text-align:left;
 }
 
 .amount-label{
+
     color:#cbd5e1;
 
     font-size:13px;
 
-    font-weight:800;
+    font-weight:850;
 }
 
 .amount-label small{
+
     display:block;
 
-    margin-top:3px;
+    margin-top:4px;
 
     color:#64748b;
 
@@ -1042,13 +1582,15 @@ body::after{
 }
 
 .max-button{
-    min-height:37px;
 
-    padding:7px 13px;
+    min-height:38px;
+
+    padding:
+        7px 14px;
 
     border:0;
 
-    border-radius:9px;
+    border-radius:10px;
 
     color:#fff;
 
@@ -1059,37 +1601,60 @@ body::after{
             #ea580c
         );
 
+    box-shadow:
+        0 7px 18px
+        rgba(234,88,12,.18);
+
     font-size:11px;
 
-    font-weight:900;
+    font-weight:950;
 
     cursor:pointer;
+
+    transition:
+        transform .2s ease;
+}
+
+.max-button:hover{
+
+    transform:
+        translateY(-1px);
 }
 
 input,
 select{
+
     position:relative;
+
     z-index:2;
 
     width:100%;
 
-    min-height:52px;
+    min-height:53px;
 
-    padding:13px 14px;
+    padding:
+        13px 14px;
 
-    border:1px solid rgba(148,163,184,.20);
+    border:
+        1px solid
+        rgba(148,163,184,.20);
 
-    border-radius:12px;
+    border-radius:13px;
 
     outline:none;
 
-    background:rgba(2,6,23,.55);
+    background:
+        rgba(2,6,23,.58);
 
     color:#f8fafc;
 
     font-family:inherit;
 
     font-size:16px;
+
+    transition:
+        border .2s ease,
+        box-shadow .2s ease;
 }
 
 input::placeholder{
@@ -1101,34 +1666,43 @@ select{
 }
 
 select option{
+
     background:#0f172a;
+
     color:#fff;
 }
 
 input:focus,
 select:focus{
+
     border-color:#3b82f6;
 
-    background:rgba(2,6,23,.75);
+    background:
+        rgba(2,6,23,.78);
 
     box-shadow:
-        0 0 0 3px rgba(59,130,246,.12),
-        0 0 20px rgba(37,99,235,.10);
+        0 0 0 3px
+            rgba(59,130,246,.11),
+
+        0 0 24px
+            rgba(37,99,235,.10);
 }
 
 #withdrawButton{
+
     position:relative;
+
     z-index:2;
 
     width:100%;
 
-    min-height:57px;
+    min-height:58px;
 
     padding:15px;
 
     border:0;
 
-    border-radius:13px;
+    border-radius:14px;
 
     color:#fff;
 
@@ -1136,21 +1710,41 @@ select:focus{
         linear-gradient(
             135deg,
             #f97316,
-            #ea580c
+            #ea580c,
+            #c2410c
         );
 
     box-shadow:
-        0 10px 25px rgba(234,88,12,.22);
+        0 12px 28px
+            rgba(234,88,12,.24);
 
     font-size:14px;
 
-    font-weight:900;
+    font-weight:950;
+
+    letter-spacing:.5px;
 
     cursor:pointer;
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+#withdrawButton:hover:not(:disabled){
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 17px 35px
+            rgba(234,88,12,.32);
 }
 
 #withdrawButton:disabled{
+
     opacity:.55;
+
     cursor:not-allowed;
 }
 
@@ -1159,12 +1753,15 @@ select:focus{
 ========================================= */
 
 hr{
-    margin:30px 0 22px;
+
+    margin:
+        31px 0 23px;
 
     border:0;
 
     border-top:
-        1px solid rgba(148,163,184,.13);
+        1px solid
+        rgba(148,163,184,.13);
 }
 
 /* =========================================
@@ -1172,23 +1769,29 @@ hr{
 ========================================= */
 
 .history-buttons{
+
     display:grid;
 
-    grid-template-columns:1fr 1fr;
+    grid-template-columns:
+        1fr 1fr;
 
     gap:10px;
 }
 
 .history-buttons button{
+
     width:100%;
 
-    min-height:52px;
+    min-height:53px;
 
-    padding:11px 8px;
+    padding:
+        11px 8px;
 
-    border:1px solid rgba(96,165,250,.18);
+    border:
+        1px solid
+        rgba(96,165,250,.18);
 
-    border-radius:13px;
+    border-radius:14px;
 
     color:#bfdbfe;
 
@@ -1200,13 +1803,31 @@ hr{
         );
 
     box-shadow:
-        0 8px 20px rgba(0,0,0,.15);
+        0 9px 22px
+            rgba(0,0,0,.16);
 
     font-size:12px;
 
-    font-weight:900;
+    font-weight:950;
 
     cursor:pointer;
+
+    transition:
+        transform .2s ease,
+        background .2s ease;
+}
+
+.history-buttons button:hover{
+
+    transform:
+        translateY(-2px);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(37,99,235,.23),
+            rgba(79,70,229,.22)
+        );
 }
 
 /* =========================================
@@ -1214,25 +1835,45 @@ hr{
 ========================================= */
 
 .logout-button{
+
     width:100%;
 
-    min-height:49px;
+    min-height:50px;
 
     margin-top:18px;
 
-    border:1px solid rgba(148,163,184,.18);
+    border:
+        1px solid
+        rgba(148,163,184,.18);
 
-    border-radius:13px;
+    border-radius:14px;
 
     color:#94a3b8;
 
-    background:rgba(2,6,23,.35);
+    background:
+        rgba(2,6,23,.35);
 
     font-size:13px;
 
-    font-weight:800;
+    font-weight:850;
 
     cursor:pointer;
+
+    transition:
+        color .2s ease,
+        border .2s ease,
+        background .2s ease;
+}
+
+.logout-button:hover{
+
+    color:#fca5a5;
+
+    border-color:
+        rgba(248,113,113,.20);
+
+    background:
+        rgba(220,38,38,.08);
 }
 
 /* =========================================
@@ -1240,6 +1881,7 @@ hr{
 ========================================= */
 
 .modal{
+
     display:none;
 
     position:fixed;
@@ -1252,31 +1894,44 @@ hr{
 
     overflow-y:auto;
 
-    background:rgba(2,6,23,.78);
+    background:
+        rgba(2,6,23,.82);
 
-    backdrop-filter:blur(8px);
-    -webkit-backdrop-filter:blur(8px);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
 }
 
 .modal-content{
+
     position:relative;
 
-    width:min(100%,520px);
+    width:min(100%,530px);
 
-    margin:7vh auto 30px;
+    margin:
+        7vh auto 30px;
 
-    padding:25px 20px;
+    padding:
+        26px 20px;
 
-    border-radius:23px;
+    border-radius:24px;
 
     background:
-        rgba(15,23,42,.96);
+        linear-gradient(
+            145deg,
+            rgba(15,23,42,.98),
+            rgba(15,23,42,.94)
+        );
 
-    border:1px solid rgba(255,255,255,.10);
+    border:
+        1px solid
+        rgba(255,255,255,.11);
 
     box-shadow:
-        0 35px 100px rgba(0,0,0,.55),
-        inset 0 1px 0 rgba(255,255,255,.05);
+        0 40px 110px
+            rgba(0,0,0,.58),
+
+        inset 0 1px 0
+            rgba(255,255,255,.06);
 
     color:#e5e7eb;
 
@@ -1284,47 +1939,70 @@ hr{
 }
 
 .modal-content h3{
-    margin:0 45px 20px 0;
+
+    margin:
+        0 45px 20px 0;
 
     color:#f8fafc;
 
-    font-size:21px;
+    font-size:22px;
 
-    font-weight:900;
+    font-weight:950;
 }
 
 .closeButton{
+
     position:absolute;
 
     right:14px;
     top:14px;
 
-    width:38px;
-    height:38px;
+    width:39px;
+    height:39px;
 
-    border:1px solid rgba(148,163,184,.15);
+    border:
+        1px solid
+        rgba(148,163,184,.15);
 
     border-radius:50%;
 
     color:#cbd5e1;
 
-    background:rgba(255,255,255,.06);
+    background:
+        rgba(255,255,255,.06);
 
     font-size:19px;
 
     cursor:pointer;
+
+    transition:
+        background .2s ease,
+        transform .2s ease;
+}
+
+.closeButton:hover{
+
+    background:
+        rgba(248,113,113,.12);
+
+    transform:
+        rotate(90deg);
 }
 
 .history-item{
+
     margin-bottom:12px;
 
-    padding:15px;
+    padding:16px;
 
-    border:1px solid rgba(148,163,184,.14);
+    border:
+        1px solid
+        rgba(148,163,184,.14);
 
-    border-radius:15px;
+    border-radius:16px;
 
-    background:rgba(2,6,23,.45);
+    background:
+        rgba(2,6,23,.47);
 
     color:#cbd5e1;
 
@@ -1340,11 +2018,12 @@ hr{
 }
 
 .withdraw-status{
+
     display:inline-block;
 
     margin-left:4px;
 
-    font-weight:900;
+    font-weight:950;
 }
 
 .withdraw-status.approved{
@@ -1374,7 +2053,9 @@ hr{
 @media(max-width:600px){
 
     .crypto-header{
-        padding:22px 10px 75px;
+
+        padding:
+            22px 9px 78px;
     }
 
     .brand{
@@ -1382,10 +2063,11 @@ hr{
     }
 
     .logo-coin{
-        width:42px;
-        height:42px;
 
-        font-size:21px;
+        width:43px;
+        height:43px;
+
+        font-size:22px;
     }
 
     .brand h1{
@@ -1393,58 +2075,79 @@ hr{
     }
 
     .brand-subtitle{
-        font-size:12px;
+        font-size:11px;
     }
 
     .faucet-banner{
-        width:94%;
-        min-height:155px;
 
-        margin-top:25px;
-
-        border-radius:22px;
-    }
-
-    .bitcoin-hero-coin{
-        width:82px;
-        height:82px;
-        min-width:82px;
-
-        margin-left:18px;
-
-        border-width:4px;
-
-        font-size:48px;
-    }
-
-    .faucet-text{
-        margin-left:17px;
-        padding-right:12px;
-    }
-
-    .faucet-title{
-        font-size:19px;
-        line-height:1.15;
-    }
-
-    .faucet-subtitle{
-        font-size:12px;
-        line-height:1.55;
-    }
-
-    .container{
         width:94%;
 
-        margin:-45px auto 35px;
+        min-height:160px;
 
-        padding:25px 16px 27px;
+        margin-top:26px;
 
         border-radius:23px;
     }
 
+    .bitcoin-hero-coin{
+
+        width:84px;
+        height:84px;
+
+        min-width:84px;
+
+        margin-left:18px;
+
+        border-width:4px;
+    }
+
+    .faucet-text{
+
+        margin-left:17px;
+
+        padding:
+            15px 12px 15px 0;
+    }
+
+    .faucet-title{
+
+        font-size:19px;
+
+        line-height:1.15;
+
+        letter-spacing:-.4px;
+    }
+
+    .faucet-subtitle{
+
+        font-size:11.5px;
+
+        line-height:1.55;
+    }
+
+    .faucet-subtitle strong{
+
+        font-size:12px;
+    }
+
+    .container{
+
+        width:94%;
+
+        margin:
+            -46px auto 35px;
+
+        padding:
+            25px 16px 29px;
+
+        border-radius:24px;
+    }
+
     .dashboard-icon{
+
         width:44px;
         height:44px;
+
         font-size:21px;
     }
 
@@ -1453,24 +2156,34 @@ hr{
     }
 
     .balance-box{
-        padding:22px 17px;
+
+        padding:
+            23px 17px;
     }
 
     .balance{
-        font-size:26px;
+        font-size:27px;
     }
 
     .crypto-ad{
-        height:101px;
+
+        height:103px;
+
         padding:11px;
     }
 
     .crypto-coin{
-        width:45px;
-        height:45px;
-        min-width:45px;
+
+        width:46px;
+        height:46px;
+
+        min-width:46px;
 
         font-size:21px;
+    }
+
+    .crypto-ad-text{
+        margin-left:10px;
     }
 
     .crypto-ad-text span{
@@ -1482,12 +2195,15 @@ hr{
     }
 
     .crypto-symbol{
-        font-size:45px;
+        font-size:47px;
     }
 
     .ad-arrow{
+
         width:27px;
+
         min-width:27px;
+
         height:40px;
 
         font-size:12px;
@@ -1498,8 +2214,10 @@ hr{
     }
 
     .history-buttons button{
-        min-height:50px;
-        font-size:11px;
+
+        min-height:51px;
+
+        font-size:10.5px;
     }
 
     .modal{
@@ -1507,25 +2225,32 @@ hr{
     }
 
     .modal-content{
+
         margin-top:4vh;
-        padding:23px 15px;
+
+        padding:
+            23px 15px;
     }
 }
 
 @media(max-width:380px){
 
+    .brand h1{
+        font-size:20px;
+    }
+
     .faucet-banner{
-        min-height:140px;
+        min-height:145px;
     }
 
     .bitcoin-hero-coin{
-        width:70px;
-        height:70px;
-        min-width:70px;
+
+        width:72px;
+        height:72px;
+
+        min-width:72px;
 
         margin-left:12px;
-
-        font-size:42px;
     }
 
     .faucet-text{
@@ -1537,25 +2262,34 @@ hr{
     }
 
     .faucet-subtitle{
+        font-size:10.5px;
+    }
+
+    .faucet-subtitle strong{
         font-size:11px;
     }
 
     .container{
-        padding:22px 13px 25px;
+        padding:
+            22px 13px 25px;
     }
 
     .balance{
         font-size:23px;
+    }
+
+    .crypto-ad-text span{
+        font-size:13px;
+    }
+
+    .crypto-ad-text small{
+        font-size:7px;
     }
 }
 </style>
 </head>
 
 <body>
-
-<!-- =========================================
-     HEADER
-========================================= -->
 
 <header class="crypto-header">
 
@@ -1574,8 +2308,6 @@ hr{
     <p class="brand-subtitle">
         Earn Bitcoin • Claim Hourly • Withdraw
     </p>
-
-    <!-- BITCOIN HOURLY CARD -->
 
     <div class="faucet-banner">
 
@@ -1614,10 +2346,6 @@ hr{
 </header>
 
 
-<!-- =========================================
-     MAIN DASHBOARD
-========================================= -->
-
 <div class="container">
 
     <div class="dashboard-heading">
@@ -1632,9 +2360,7 @@ hr{
 
     </div>
 
-
     <div id="topNotification"></div>
-
 
     <div class="email" id="email">
         Loading...
@@ -1675,9 +2401,7 @@ hr{
     </div>
 
 
-    <!-- =====================================
-         CRYPTO SLIDER
-    ====================================== -->
+    <!-- 9 COIN REFERRAL SLIDER -->
 
     <div
         class="crypto-ad-slider"
@@ -1686,9 +2410,7 @@ hr{
 
         <button
             class="ad-arrow ad-prev"
-            type="button"
             onclick="manualPrevAd()"
-            aria-label="Previous cryptocurrency"
         >
             ❮
         </button>
@@ -1701,11 +2423,336 @@ hr{
                 id="cryptoAdTrack"
             >
 
-                <!-- BTC / AVAILABLE NOW -->
+                <!-- LTC -->
 
-                <div class="crypto-ad-slide">
+                <a
+                    href="YOUR_LTC_LINK"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="crypto-ad-slide"
+                >
 
-                    <div class="crypto-ad btc-ad">
+                    <div class="crypto-ad ltc-ad">
+
+                        <div class="crypto-coin">
+                            Ł
+                        </div>
+
+                        <div class="crypto-ad-text">
+
+                            <strong>
+                                HOURLY FAUCET
+                            </strong>
+
+                            <span>
+                                Claim Free LTC
+                            </span>
+
+                            <small>
+                                High Commission Share • 25%
+                            </small>
+
+                        </div>
+
+                        <div class="crypto-symbol">
+                            LTC
+                        </div>
+
+                    </div>
+
+                </a>
+
+
+                <!-- BNB -->
+
+                <a
+                    href="YOUR_BNB_LINK"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="crypto-ad-slide"
+                >
+
+                    <div class="crypto-ad bnb-ad">
+
+                        <div class="crypto-coin">
+                            ◆
+                        </div>
+
+                        <div class="crypto-ad-text">
+
+                            <strong>
+                                HOURLY FAUCET
+                            </strong>
+
+                            <span>
+                                Claim Free BNB
+                            </span>
+
+                            <small>
+                                High Commission Share • 25%
+                            </small>
+
+                        </div>
+
+                        <div class="crypto-symbol">
+                            BNB
+                        </div>
+
+                    </div>
+
+                </a>
+
+
+                <!-- DOGE -->
+
+                <a
+                    href="YOUR_DOGE_LINK"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="crypto-ad-slide"
+                >
+
+                    <div class="crypto-ad doge-ad">
+
+                        <div class="crypto-coin">
+                            Ð
+                        </div>
+
+                        <div class="crypto-ad-text">
+
+                            <strong>
+                                HOURLY FAUCET
+                            </strong>
+
+                            <span>
+                                Claim Free DOGE
+                            </span>
+
+                            <small>
+                                High Commission Share • 25%
+                            </small>
+
+                        </div>
+
+                        <div class="crypto-symbol">
+                            DOGE
+                        </div>
+
+                    </div>
+
+                </a>
+
+
+                <!-- SUI -->
+
+                <a
+                    href="YOUR_SUI_LINK"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="crypto-ad-slide"
+                >
+
+                    <div class="crypto-ad sui-ad">
+
+                        <div class="crypto-coin">
+                            S
+                        </div>
+
+                        <div class="crypto-ad-text">
+
+                            <strong>
+                                HOURLY FAUCET
+                            </strong>
+
+                            <span>
+                                Claim Free SUI
+                            </span>
+
+                            <small>
+                                High Commission Share • 25%
+                            </small>
+
+                        </div>
+
+                        <div class="crypto-symbol">
+                            SUI
+                        </div>
+
+                    </div>
+
+                </a>
+
+
+                <!-- TRON -->
+
+                <a
+                    href="YOUR_TRON_LINK"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="crypto-ad-slide"
+                >
+
+                    <div class="crypto-ad tron-ad">
+
+                        <div class="crypto-coin">
+                            T
+                        </div>
+
+                        <div class="crypto-ad-text">
+
+                            <strong>
+                                HOURLY FAUCET
+                            </strong>
+
+                            <span>
+                                Claim Free TRON
+                            </span>
+
+                            <small>
+                                High Commission Share • 25%
+                            </small>
+
+                        </div>
+
+                        <div class="crypto-symbol">
+                            TRX
+                        </div>
+
+                    </div>
+
+                </a>
+
+
+                <!-- TON -->
+
+                <a
+                    href="YOUR_TON_LINK"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="crypto-ad-slide"
+                >
+
+                    <div class="crypto-ad ton-ad">
+
+                        <div class="crypto-coin">
+                            💎
+                        </div>
+
+                        <div class="crypto-ad-text">
+
+                            <strong>
+                                HOURLY FAUCET
+                            </strong>
+
+                            <span>
+                                Claim Free TON
+                            </span>
+
+                            <small>
+                                High Commission Share • 25%
+                            </small>
+
+                        </div>
+
+                        <div class="crypto-symbol">
+                            TON
+                        </div>
+
+                    </div>
+
+                </a>
+
+
+                <!-- SOL -->
+
+                <a
+                    href="YOUR_SOL_LINK"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="crypto-ad-slide"
+                >
+
+                    <div class="crypto-ad sol-ad">
+
+                        <div class="crypto-coin">
+                            ≋
+                        </div>
+
+                        <div class="crypto-ad-text">
+
+                            <strong>
+                                HOURLY FAUCET
+                            </strong>
+
+                            <span>
+                                Claim Free SOL
+                            </span>
+
+                            <small>
+                                High Commission Share • 25%
+                            </small>
+
+                        </div>
+
+                        <div class="crypto-symbol">
+                            SOL
+                        </div>
+
+                    </div>
+
+                </a>
+
+
+                <!-- POL -->
+
+                <a
+                    href="YOUR_POL_LINK"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="crypto-ad-slide"
+                >
+
+                    <div class="crypto-ad pol-ad">
+
+                        <div class="crypto-coin">
+                            ⬡
+                        </div>
+
+                        <div class="crypto-ad-text">
+
+                            <strong>
+                                HOURLY FAUCET
+                            </strong>
+
+                            <span>
+                                Claim Free POL
+                            </span>
+
+                            <small>
+                                High Commission Share • 25%
+                            </small>
+
+                        </div>
+
+                        <div class="crypto-symbol">
+                            POL
+                        </div>
+
+                    </div>
+
+                </a>
+
+
+                <!-- BCH -->
+
+                <a
+                    href="YOUR_BCH_LINK"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="crypto-ad-slide"
+                >
+
+                    <div class="crypto-ad bch-ad">
 
                         <div class="crypto-coin">
                             ₿
@@ -1718,326 +2765,11 @@ hr{
                             </strong>
 
                             <span>
-                                Claim Free BTC
-                            </span>
-
-                            <small class="btc-available-badge">
-                                AVAILABLE NOW
-                            </small>
-
-                        </div>
-
-                        <div class="crypto-symbol">
-                            BTC
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- LTC / COMING SOON -->
-
-                <div class="crypto-ad-slide coming-soon-slide">
-
-                    <div class="crypto-ad ltc-ad">
-
-                        <div class="crypto-coin">
-                            Ł
-                        </div>
-
-                        <div class="crypto-ad-text">
-
-                            <strong>
-                                FUTURE FAUCET
-                            </strong>
-
-                            <span>
-                                Claim Free LTC
-                            </span>
-
-                            <small class="coming-soon-badge">
-                                COMING SOON
-                            </small>
-
-                        </div>
-
-                        <div class="crypto-symbol">
-                            LTC
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- BNB / COMING SOON -->
-
-                <div class="crypto-ad-slide coming-soon-slide">
-
-                    <div class="crypto-ad bnb-ad">
-
-                        <div class="crypto-coin">
-                            ◆
-                        </div>
-
-                        <div class="crypto-ad-text">
-
-                            <strong>
-                                FUTURE FAUCET
-                            </strong>
-
-                            <span>
-                                Claim Free BNB
-                            </span>
-
-                            <small class="coming-soon-badge">
-                                COMING SOON
-                            </small>
-
-                        </div>
-
-                        <div class="crypto-symbol">
-                            BNB
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- DOGE / COMING SOON -->
-
-                <div class="crypto-ad-slide coming-soon-slide">
-
-                    <div class="crypto-ad doge-ad">
-
-                        <div class="crypto-coin">
-                            Ð
-                        </div>
-
-                        <div class="crypto-ad-text">
-
-                            <strong>
-                                FUTURE FAUCET
-                            </strong>
-
-                            <span>
-                                Claim Free DOGE
-                            </span>
-
-                            <small class="coming-soon-badge">
-                                COMING SOON
-                            </small>
-
-                        </div>
-
-                        <div class="crypto-symbol">
-                            DOGE
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- SUI / COMING SOON -->
-
-                <div class="crypto-ad-slide coming-soon-slide">
-
-                    <div class="crypto-ad sui-ad">
-
-                        <div class="crypto-coin">
-                            S
-                        </div>
-
-                        <div class="crypto-ad-text">
-
-                            <strong>
-                                FUTURE FAUCET
-                            </strong>
-
-                            <span>
-                                Claim Free SUI
-                            </span>
-
-                            <small class="coming-soon-badge">
-                                COMING SOON
-                            </small>
-
-                        </div>
-
-                        <div class="crypto-symbol">
-                            SUI
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- TRON / COMING SOON -->
-
-                <div class="crypto-ad-slide coming-soon-slide">
-
-                    <div class="crypto-ad tron-ad">
-
-                        <div class="crypto-coin">
-                            T
-                        </div>
-
-                        <div class="crypto-ad-text">
-
-                            <strong>
-                                FUTURE FAUCET
-                            </strong>
-
-                            <span>
-                                Claim Free TRON
-                            </span>
-
-                            <small class="coming-soon-badge">
-                                COMING SOON
-                            </small>
-
-                        </div>
-
-                        <div class="crypto-symbol">
-                            TRX
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- TON / COMING SOON -->
-
-                <div class="crypto-ad-slide coming-soon-slide">
-
-                    <div class="crypto-ad ton-ad">
-
-                        <div class="crypto-coin">
-                            💎
-                        </div>
-
-                        <div class="crypto-ad-text">
-
-                            <strong>
-                                FUTURE FAUCET
-                            </strong>
-
-                            <span>
-                                Claim Free TON
-                            </span>
-
-                            <small class="coming-soon-badge">
-                                COMING SOON
-                            </small>
-
-                        </div>
-
-                        <div class="crypto-symbol">
-                            TON
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- SOL / COMING SOON -->
-
-                <div class="crypto-ad-slide coming-soon-slide">
-
-                    <div class="crypto-ad sol-ad">
-
-                        <div class="crypto-coin">
-                            ≋
-                        </div>
-
-                        <div class="crypto-ad-text">
-
-                            <strong>
-                                FUTURE FAUCET
-                            </strong>
-
-                            <span>
-                                Claim Free SOL
-                            </span>
-
-                            <small class="coming-soon-badge">
-                                COMING SOON
-                            </small>
-
-                        </div>
-
-                        <div class="crypto-symbol">
-                            SOL
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- POL / COMING SOON -->
-
-                <div class="crypto-ad-slide coming-soon-slide">
-
-                    <div class="crypto-ad pol-ad">
-
-                        <div class="crypto-coin">
-                            ⬡
-                        </div>
-
-                        <div class="crypto-ad-text">
-
-                            <strong>
-                                FUTURE FAUCET
-                            </strong>
-
-                            <span>
-                                Claim Free POL
-                            </span>
-
-                            <small class="coming-soon-badge">
-                                COMING SOON
-                            </small>
-
-                        </div>
-
-                        <div class="crypto-symbol">
-                            POL
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- BCH / COMING SOON -->
-
-                <div class="crypto-ad-slide coming-soon-slide">
-
-                    <div class="crypto-ad bch-ad">
-
-                        <div class="crypto-coin">
-                            ₿
-                        </div>
-
-                        <div class="crypto-ad-text">
-
-                            <strong>
-                                FUTURE FAUCET
-                            </strong>
-
-                            <span>
                                 Claim Free BCH
                             </span>
 
-                            <small class="coming-soon-badge">
-                                COMING SOON
+                            <small>
+                                High Commission Share • 25%
                             </small>
 
                         </div>
@@ -2048,7 +2780,7 @@ hr{
 
                     </div>
 
-                </div>
+                </a>
 
             </div>
 
@@ -2057,9 +2789,7 @@ hr{
 
         <button
             class="ad-arrow ad-next"
-            type="button"
             onclick="manualNextAd()"
-            aria-label="Next cryptocurrency"
         >
             ❯
         </button>
@@ -2070,67 +2800,49 @@ hr{
     <div class="crypto-ad-dots">
 
         <button
-            type="button"
             class="crypto-dot active"
-            onclick="goToCryptoAd(0)"
-            aria-label="Bitcoin"
-        ></button>
+            onclick="goToCryptoAd(0)">
+        </button>
 
         <button
-            type="button"
             class="crypto-dot"
-            onclick="goToCryptoAd(1)"
-            aria-label="Litecoin"
-        ></button>
+            onclick="goToCryptoAd(1)">
+        </button>
 
         <button
-            type="button"
             class="crypto-dot"
-            onclick="goToCryptoAd(2)"
-            aria-label="BNB"
-        ></button>
+            onclick="goToCryptoAd(2)">
+        </button>
 
         <button
-            type="button"
             class="crypto-dot"
-            onclick="goToCryptoAd(3)"
-            aria-label="Dogecoin"
-        ></button>
+            onclick="goToCryptoAd(3)">
+        </button>
 
         <button
-            type="button"
             class="crypto-dot"
-            onclick="goToCryptoAd(4)"
-            aria-label="SUI"
-        ></button>
+            onclick="goToCryptoAd(4)">
+        </button>
 
         <button
-            type="button"
             class="crypto-dot"
-            onclick="goToCryptoAd(5)"
-            aria-label="TRON"
-        ></button>
+            onclick="goToCryptoAd(5)">
+        </button>
 
         <button
-            type="button"
             class="crypto-dot"
-            onclick="goToCryptoAd(6)"
-            aria-label="TON"
-        ></button>
+            onclick="goToCryptoAd(6)">
+        </button>
 
         <button
-            type="button"
             class="crypto-dot"
-            onclick="goToCryptoAd(7)"
-            aria-label="SOL"
-        ></button>
+            onclick="goToCryptoAd(7)">
+        </button>
 
         <button
-            type="button"
             class="crypto-dot"
-            onclick="goToCryptoAd(8)"
-            aria-label="POL"
-        ></button>
+            onclick="goToCryptoAd(8)">
+        </button>
 
     </div>
 
@@ -2139,32 +2851,26 @@ hr{
 
     <button
         id="claimButton"
-        type="button"
         onclick="claimReward()"
     >
         🎁 CLAIM REWARD
     </button>
 
-
     <div
         id="claimNotification"
-        class="action-notification"
-    ></div>
-
+        class="action-notification">
+    </div>
 
     <div id="claimCooldown"></div>
 
 
-    <!-- =====================================
-         WITHDRAW
-    ====================================== -->
+    <!-- WITHDRAW -->
 
     <div class="withdraw-section">
 
         <h3>
             ₿ Withdraw BTC
         </h3>
-
 
         <div class="amount-row">
 
@@ -2181,7 +2887,6 @@ hr{
 
             </label>
 
-
             <button
                 type="button"
                 class="max-button"
@@ -2192,19 +2897,15 @@ hr{
 
         </div>
 
-
         <input
             type="number"
             id="withdrawAmount"
             placeholder="Amount BTC"
             step="0.00000001"
             min="0.0000001"
-            inputmode="decimal"
         >
 
-
         <br><br>
-
 
         <select id="withdrawCurrency">
 
@@ -2214,35 +2915,27 @@ hr{
 
         </select>
 
-
         <br><br>
-
 
         <input
             type="text"
             id="walletAddress"
             placeholder="Your Bitcoin wallet address"
-            autocomplete="off"
-            spellcheck="false"
         >
-
 
         <br><br>
 
-
         <button
             id="withdrawButton"
-            type="button"
             onclick="submitWithdrawal()"
         >
             💸 REQUEST WITHDRAWAL
         </button>
 
-
         <div
             id="withdrawNotification"
-            class="action-notification"
-        ></div>
+            class="action-notification">
+        </div>
 
     </div>
 
@@ -2250,21 +2943,15 @@ hr{
     <hr>
 
 
-    <!-- HISTORY BUTTONS -->
+    <!-- HISTORY -->
 
     <div class="history-buttons">
 
-        <button
-            type="button"
-            onclick="openClaimHistory()"
-        >
+        <button onclick="openClaimHistory()">
             📜 CLAIM HISTORY
         </button>
 
-        <button
-            type="button"
-            onclick="openWithdrawalHistory()"
-        >
+        <button onclick="openWithdrawalHistory()">
             💸 WITHDRAWAL HISTORY
         </button>
 
@@ -2275,7 +2962,6 @@ hr{
 
     <button
         class="logout-button"
-        type="button"
         onclick="logout()"
     >
         🚪 LOGOUT
@@ -2284,9 +2970,7 @@ hr{
 </div>
 
 
-<!-- =========================================
-     HISTORY POPUP
-========================================= -->
+<!-- HISTORY MODAL -->
 
 <div
     id="historyModal"
@@ -2297,9 +2981,7 @@ hr{
 
         <button
             class="closeButton"
-            type="button"
             onclick="closeHistory()"
-            aria-label="Close"
         >
             ✕
         </button>
@@ -2335,50 +3017,18 @@ function formatBTC(value){
 
 
 /* =========================================
-   ESCAPE HTML
-   Frontend safety for API-provided text
-========================================= */
-
-function escapeHtml(value){
-
-    return String(value ?? "")
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
-}
-
-
-/* =========================================
-   SAFE DATE
-========================================= */
-
-function formatHistoryDate(value){
-
-    const text=String(value ?? "");
-
-    const date=new Date(
-        text.endsWith("Z")
-            ? text
-            : text+"Z"
-    );
-
-    if(Number.isNaN(date.getTime()))
-        return "Unknown date";
-
-    return date.toLocaleString();
-}
-
-
-/* =========================================
    TOP NOTIFICATION
 ========================================= */
 
-function showNotification(message,type="info"){
+function showNotification(
+    message,
+    type="info"
+){
 
     const notification=
-        document.getElementById("topNotification");
+        document.getElementById(
+            "topNotification"
+        );
 
     notification.className="";
 
@@ -2433,10 +3083,13 @@ async function loadUser(){
     try{
 
         const response=
-            await fetch("/api/me",{
-                method:"GET",
-                cache:"no-store"
-            });
+            await fetch(
+                "/api/me",
+                {
+                    method:"GET",
+                    cache:"no-store"
+                }
+            );
 
         const result=
             await response.json();
@@ -2449,11 +3102,17 @@ async function loadUser(){
             return;
         }
 
-        document.getElementById("email").innerText=
+        document.getElementById(
+            "email"
+        ).innerText=
             result.user.email;
 
-        document.getElementById("balance").innerText=
-            formatBTC(result.user.balance);
+        document.getElementById(
+            "balance"
+        ).innerText=
+            formatBTC(
+                result.user.balance
+            );
 
     }catch(error){
 
@@ -2479,10 +3138,14 @@ let cooldownTimer=null;
 function startClaimCountdown(seconds){
 
     const countdown=
-        document.getElementById("claimCooldown");
+        document.getElementById(
+            "claimCooldown"
+        );
 
     const button=
-        document.getElementById("claimButton");
+        document.getElementById(
+            "claimButton"
+        );
 
     if(cooldownTimer){
 
@@ -2513,7 +3176,9 @@ function startClaimCountdown(seconds){
         }
 
         const hours=
-            Math.floor(seconds/3600);
+            Math.floor(
+                seconds/3600
+            );
 
         const minutes=
             Math.floor(
@@ -2819,7 +3484,9 @@ async function claimReward(){
                 "success"
             );
 
-            startClaimCountdown(3600);
+            startClaimCountdown(
+                3600
+            );
 
             if(
                 typeof turnstile!=="undefined" &&
@@ -3043,11 +3710,7 @@ async function submitWithdrawal(){
 
             showActionNotification(
                 "withdrawNotification",
-                "❌ "+
-                (
-                    result.error ||
-                    "Unable to submit withdrawal."
-                ),
+                "❌ "+result.error,
                 "error"
             );
         }
@@ -3108,17 +3771,6 @@ function setMaxWithdrawal(){
         return;
     }
 
-    if(balance<0.0000001){
-
-        showActionNotification(
-            "withdrawNotification",
-            "❌ Your BTC balance is below the minimum withdrawal of 0.00000010 BTC.",
-            "error"
-        );
-
-        return;
-    }
-
     amountInput.value=
         formatBTC(balance);
 
@@ -3164,11 +3816,7 @@ async function openClaimHistory(){
 
         const response=
             await fetch(
-                "/api/claims",
-                {
-                    method:"GET",
-                    cache:"no-store"
-                }
+                "/api/claims"
             );
 
         const result=
@@ -3177,11 +3825,7 @@ async function openClaimHistory(){
         if(!result.success){
 
             content.innerText=
-                "❌ "+
-                (
-                    result.error ||
-                    "Unable to load claim history."
-                );
+                "❌ "+result.error;
 
             return;
         }
@@ -3210,18 +3854,16 @@ async function openClaimHistory(){
                     <br><br>
 
                     💰 Reward:
-                    ${escapeHtml(
-                        formatBTC(claim.reward)
+                    ${formatBTC(
+                        claim.reward
                     )} BTC
 
                     <br>
 
                     🕐 Date:
-                    ${escapeHtml(
-                        formatHistoryDate(
-                            claim.claimed_at
-                        )
-                    )}
+                    ${new Date(
+                        claim.claimed_at+"Z"
+                    ).toLocaleString()}
 
                 </div>
 
@@ -3275,11 +3917,7 @@ async function openWithdrawalHistory(){
 
         const response=
             await fetch(
-                "/api/withdrawals",
-                {
-                    method:"GET",
-                    cache:"no-store"
-                }
+                "/api/withdrawals"
             );
 
         const result=
@@ -3288,11 +3926,7 @@ async function openWithdrawalHistory(){
         if(!result.success){
 
             content.innerText=
-                "❌ "+
-                (
-                    result.error ||
-                    "Unable to load withdrawal history."
-                );
+                "❌ "+result.error;
 
             return;
         }
@@ -3363,7 +3997,6 @@ async function openWithdrawalHistory(){
                         "processing";
                 }
 
-
                 const refundText=
                     withdrawal.status===
                     "rejected"
@@ -3375,7 +4008,6 @@ async function openWithdrawalHistory(){
                       `
                     : "";
 
-
                 const payoutText=
                     withdrawal.status===
                         "approved" &&
@@ -3384,27 +4016,23 @@ async function openWithdrawalHistory(){
                         <br>
                         🔖 FaucetPay Payout ID:
                         <strong>
-                            ${escapeHtml(
-                                withdrawal.payout_id
-                            )}
+                            ${withdrawal.payout_id}
                         </strong>
                       `
                     : "";
-
 
                 const txidText=
                     withdrawal.txid
                     ? `
                         <br>
                         🔗 Transaction ID:
-                        <strong style="word-break:break-all;">
-                            ${escapeHtml(
-                                withdrawal.txid
-                            )}
+                        <strong
+                            style="word-break:break-all;"
+                        >
+                            ${withdrawal.txid}
                         </strong>
                       `
                     : "";
-
 
                 return `
 
@@ -3417,25 +4045,23 @@ async function openWithdrawalHistory(){
                         <br><br>
 
                         💰 Amount:
-                        ${escapeHtml(
-                            formatBTC(
-                                withdrawal.amount
-                            )
+                        ${formatBTC(
+                            withdrawal.amount
                         )} BTC
 
                         <br>
 
                         🏦 Wallet:
-                        ${escapeHtml(
-                            withdrawal.wallet_address
-                        )}
+                        ${withdrawal.wallet_address}
 
                         <br>
 
                         📌 Status:
 
-                        <span class="withdraw-status ${escapeHtml(statusClass)}">
-                            ${escapeHtml(statusText)}
+                        <span
+                            class="withdraw-status ${statusClass}"
+                        >
+                            ${statusText}
                         </span>
 
                         ${refundText}
@@ -3447,16 +4073,13 @@ async function openWithdrawalHistory(){
                         <br>
 
                         🕐 Date:
-                        ${escapeHtml(
-                            formatHistoryDate(
-                                withdrawal.created_at
-                            )
-                        )}
+                        ${new Date(
+                            withdrawal.created_at+"Z"
+                        ).toLocaleString()}
 
                     </div>
 
                 `;
-
             }).join("");
 
     }catch(error){
@@ -3498,24 +4121,6 @@ window.onclick=function(event){
 
     }
 };
-
-
-/* =========================================
-   ESCAPE KEY
-========================================= */
-
-document.addEventListener(
-    "keydown",
-    function(event){
-
-        if(event.key==="Escape"){
-
-            closeHistory();
-
-        }
-
-    }
-);
 
 
 /* =========================================
@@ -3604,14 +4209,6 @@ function manualPrevAd(){
 
 function goToCryptoAd(index){
 
-    if(
-        !Number.isInteger(index) ||
-        index<0 ||
-        index>=totalCryptoAds
-    ){
-        return;
-    }
-
     showCryptoAd(index);
 
     restartCryptoAdTimer();
@@ -3661,13 +4258,9 @@ if(adSlider){
         "touchstart",
         function(){
 
-            if(cryptoAdTimer){
-
-                clearInterval(
-                    cryptoAdTimer
-                );
-
-            }
+            clearInterval(
+                cryptoAdTimer
+            );
 
         }
     );
