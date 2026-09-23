@@ -216,6 +216,8 @@ export async function onRequestGet(context) {
                         withdrawals.user_id,
                         users.email,
                         withdrawals.amount,
+                        withdrawals.balance_before,
+                        users.balance AS current_balance,
                         withdrawals.wallet_address,
                         withdrawals.currency,
                         withdrawals.status,
