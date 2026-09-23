@@ -4,6 +4,11 @@ const MAX_FAILED_ATTEMPTS = 5;
 const LOCKOUT_MINUTES = 15;
 const LOCKOUT_MS = LOCKOUT_MINUTES * 60 * 1000;
 
+const DEVICE_COOKIE_NAME = "mcf_device";
+const DEVICE_TOKEN_BYTES = 32;
+const DEVICE_COOKIE_MAX_AGE = 60 * 60 * 24 * 365 * 2;
+
+
 function fromBase64(base64) {
     const binary = atob(base64);
 
@@ -12,6 +17,26 @@ function fromBase64(base64) {
         char => char.charCodeAt(0)
     );
 }
+
+
+function toBase64(bytes) {
+    let binary = "";
+
+    for (const byte of bytes) {
+        binary += String.fromCharCode(byte);
+    }
+
+    return btoa(binary);
+}
+
+
+function toBase64Url(bytes) {
+    return toBase64(bytes)
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=+$/g, "");
+}
+
 
 async function hashPassword(password, salt) {
     const encoder = new TextEncoder();
@@ -40,6 +65,7 @@ async function hashPassword(password, salt) {
     return new Uint8Array(derivedBits);
 }
 
+
 function constantTimeEqual(a, b) {
     if (a.length !== b.length) {
         return false;
@@ -53,6 +79,7 @@ function constantTimeEqual(a, b) {
 
     return result === 0;
 }
+
 
 async function hashSessionToken(token) {
     const data =
@@ -73,19 +100,94 @@ async function hashSessionToken(token) {
         .join("");
 }
 
-function jsonResponse(data, status = 200, extraHeaders = {}) {
+
+async function hashDeviceToken(token) {
+    const data =
+        new TextEncoder().encode(token);
+
+    const hash =
+        await crypto.subtle.digest(
+            "SHA-256",
+            data
+        );
+
+    return toBase64Url(
+        new Uint8Array(hash)
+    );
+}
+
+
+function createDeviceToken() {
+    return toBase64Url(
+        crypto.getRandomValues(
+            new Uint8Array(DEVICE_TOKEN_BYTES)
+        )
+    );
+}
+
+
+function getCookie(request, name) {
+    const cookieHeader =
+        request.headers.get("Cookie") || "";
+
+    const cookies =
+        cookieHeader.split(";");
+
+    for (const cookie of cookies) {
+
+        const index =
+            cookie.indexOf("=");
+
+        if (index === -1) {
+            continue;
+        }
+
+        const key =
+            cookie.slice(0, index).trim();
+
+        if (key !== name) {
+            continue;
+        }
+
+        try {
+
+            return decodeURIComponent(
+                cookie.slice(index + 1).trim()
+            );
+
+        } catch {
+
+            return null;
+        }
+    }
+
+    return null;
+}
+
+
+function jsonResponse(
+    data,
+    status = 200,
+    extraHeaders = {}
+) {
+    const headers = new Headers({
+        "Content-Type": "application/json",
+        "Cache-Control": "no-store"
+    });
+
+    for (const [key, value] of Object.entries(extraHeaders)) {
+        headers.set(key, value);
+    }
+
     return new Response(
         JSON.stringify(data),
         {
             status,
-            headers: {
-                "Content-Type": "application/json",
-                "Cache-Control": "no-store",
-                ...extraHeaders
-            }
+            headers
         }
     );
 }
+
 
 export async function onRequestPost(context) {
 
@@ -94,8 +196,12 @@ export async function onRequestPost(context) {
         let data;
 
         try {
-            data = await context.request.json();
+
+            data =
+                await context.request.json();
+
         } catch {
+
             return jsonResponse(
                 {
                     success: false,
@@ -105,15 +211,19 @@ export async function onRequestPost(context) {
             );
         }
 
+
         const email =
             String(data?.email || "")
                 .trim()
                 .toLowerCase();
 
+
         const password =
             String(data?.password || "");
 
+
         if (!email || !password) {
+
             return jsonResponse(
                 {
                     success: false,
@@ -123,8 +233,12 @@ export async function onRequestPost(context) {
             );
         }
 
-        // Prevent excessively large input.
-        if (email.length > 254 || password.length > 1024) {
+
+        if (
+            email.length > 254 ||
+            password.length > 1024
+        ) {
+
             return jsonResponse(
                 {
                     success: false,
@@ -134,10 +248,14 @@ export async function onRequestPost(context) {
             );
         }
 
+
         const db =
             context.env.DB.withSession("first-primary");
 
-        const now = Date.now();
+
+        const now =
+            Date.now();
+
 
         // ---------------------------------------------------------
         // LOGIN LOCKOUT CHECK
@@ -156,6 +274,7 @@ export async function onRequestPost(context) {
                 .bind(email)
                 .first();
 
+
         if (
             attemptRecord &&
             Number(attemptRecord.locked_until || 0) > now
@@ -172,14 +291,16 @@ export async function onRequestPost(context) {
                         String(
                             Math.ceil(
                                 (
-                                    Number(attemptRecord.locked_until) -
-                                    now
+                                    Number(
+                                        attemptRecord.locked_until
+                                    ) - now
                                 ) / 1000
                             )
                         )
                 }
             );
         }
+
 
         // ---------------------------------------------------------
         // FIND USER
@@ -199,11 +320,15 @@ export async function onRequestPost(context) {
                 .bind(email)
                 .first();
 
+
         // ---------------------------------------------------------
         // INVALID USER
         // ---------------------------------------------------------
 
-        if (!user || !user.password_hash) {
+        if (
+            !user ||
+            !user.password_hash
+        ) {
 
             await recordFailedLogin(
                 db,
@@ -220,6 +345,7 @@ export async function onRequestPost(context) {
             );
         }
 
+
         // ---------------------------------------------------------
         // PASSWORD HASH PARSING
         // ---------------------------------------------------------
@@ -228,27 +354,35 @@ export async function onRequestPost(context) {
         let salt;
         let storedHash;
 
+
         try {
 
             parts =
-                String(user.password_hash).split("$");
+                String(user.password_hash)
+                    .split("$");
+
 
             if (parts.length !== 4) {
+
                 throw new Error(
                     "Invalid password hash format"
                 );
             }
 
+
             salt =
                 fromBase64(parts[2]);
 
+
             storedHash =
                 fromBase64(parts[3]);
+
 
             if (
                 salt.length === 0 ||
                 storedHash.length === 0
             ) {
+
                 throw new Error(
                     "Invalid password hash data"
                 );
@@ -271,11 +405,13 @@ export async function onRequestPost(context) {
             );
         }
 
+
         // ---------------------------------------------------------
         // PASSWORD VERIFICATION
         // ---------------------------------------------------------
 
         let calculatedHash;
+
 
         try {
 
@@ -302,6 +438,7 @@ export async function onRequestPost(context) {
             );
         }
 
+
         if (
             !constantTimeEqual(
                 calculatedHash,
@@ -324,11 +461,11 @@ export async function onRequestPost(context) {
             );
         }
 
+
         // ---------------------------------------------------------
         // SUCCESSFUL LOGIN
         // ---------------------------------------------------------
 
-        // Clear failed login attempts after successful login.
         await db
             .prepare(
                 `DELETE FROM login_attempts
@@ -336,6 +473,112 @@ export async function onRequestPost(context) {
             )
             .bind(email)
             .run();
+
+
+        // ---------------------------------------------------------
+        // DEVICE BINDING
+        // ---------------------------------------------------------
+
+        let deviceToken =
+            getCookie(
+                context.request,
+                DEVICE_COOKIE_NAME
+            );
+
+
+        let newDeviceCookie = false;
+
+
+        if (
+            !deviceToken ||
+            deviceToken.length < 40 ||
+            deviceToken.length > 200
+        ) {
+
+            deviceToken =
+                createDeviceToken();
+
+            newDeviceCookie = true;
+        }
+
+
+        const deviceIdHash =
+            await hashDeviceToken(
+                deviceToken
+            );
+
+
+        /*
+         * If this browser/device has no device record yet,
+         * bind it to the account that successfully logged in.
+         *
+         * We do NOT block another existing account here.
+         *
+         * Step 1 registration protection is handled by
+         * register-secure.js.
+         *
+         * Step 2 will later add device-level claim protection.
+         */
+        const existingDevice =
+            await db
+                .prepare(
+                    `SELECT
+                        id,
+                        user_id
+                     FROM user_devices
+                     WHERE device_id_hash = ?
+                     LIMIT 1`
+                )
+                .bind(deviceIdHash)
+                .first();
+
+
+        if (!existingDevice) {
+
+            try {
+
+                await db
+                    .prepare(
+                        `INSERT INTO user_devices
+                        (
+                            user_id,
+                            device_id_hash
+                        )
+                        VALUES (?, ?)`
+                    )
+                    .bind(
+                        user.id,
+                        deviceIdHash
+                    )
+                    .run();
+
+            } catch (deviceError) {
+
+                const deviceErrorMessage =
+                    deviceError instanceof Error
+                        ? deviceError.message
+                        : "Unknown device binding error";
+
+                /*
+                 * A concurrent request may have inserted
+                 * the same device between SELECT and INSERT.
+                 *
+                 * Login itself remains successful.
+                 */
+                if (
+                    !deviceErrorMessage
+                        .toLowerCase()
+                        .includes("unique")
+                ) {
+
+                    console.error(
+                        "Device binding error:",
+                        deviceErrorMessage
+                    );
+                }
+            }
+        }
+
 
         // ---------------------------------------------------------
         // GENERATE SECURE SESSION TOKEN
@@ -346,6 +589,7 @@ export async function onRequestPost(context) {
                 new Uint8Array(32)
             );
 
+
         const sessionToken =
             Array.from(randomBytes)
                 .map(byte =>
@@ -353,11 +597,12 @@ export async function onRequestPost(context) {
                 )
                 .join("");
 
-        // Only the SHA-256 hash is stored in DB.
+
         const tokenHash =
             await hashSessionToken(
                 sessionToken
             );
+
 
         const expiresAt =
             new Date(
@@ -365,10 +610,15 @@ export async function onRequestPost(context) {
                 7 * 24 * 60 * 60 * 1000
             ).toISOString();
 
+
         await db
             .prepare(
                 `INSERT INTO sessions
-                (user_id, token_hash, expires_at)
+                (
+                    user_id,
+                    token_hash,
+                    expires_at
+                )
                 VALUES (?, ?, ?)`
             )
             .bind(
@@ -378,17 +628,62 @@ export async function onRequestPost(context) {
             )
             .run();
 
-        return jsonResponse(
+
+        // ---------------------------------------------------------
+        // RESPONSE
+        // ---------------------------------------------------------
+
+        const headers =
+            new Headers();
+
+        headers.set(
+            "Content-Type",
+            "application/json"
+        );
+
+        headers.set(
+            "Cache-Control",
+            "no-store"
+        );
+
+
+        /*
+         * Session cookie.
+         */
+        headers.append(
+            "Set-Cookie",
+            `session=${sessionToken}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=604800`
+        );
+
+
+        /*
+         * Device cookie.
+         *
+         * Only send a new device cookie when the browser
+         * did not already have one.
+         */
+        if (newDeviceCookie) {
+
+            headers.append(
+                "Set-Cookie",
+                `${DEVICE_COOKIE_NAME}=${encodeURIComponent(deviceToken)}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=${DEVICE_COOKIE_MAX_AGE}`
+            );
+        }
+
+
+        return new Response(
+            JSON.stringify(
+                {
+                    success: true,
+                    message: "Login successful!"
+                }
+            ),
             {
-                success: true,
-                message: "Login successful!"
-            },
-            200,
-            {
-                "Set-Cookie":
-                    `session=${sessionToken}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=604800`
+                status: 200,
+                headers
             }
         );
+
 
     } catch (error) {
 
@@ -414,7 +709,11 @@ export async function onRequestPost(context) {
 // FAILED LOGIN TRACKING
 // =============================================================
 
-async function recordFailedLogin(db, email, now) {
+async function recordFailedLogin(
+    db,
+    email,
+    now
+) {
 
     const existing =
         await db
@@ -428,28 +727,41 @@ async function recordFailedLogin(db, email, now) {
             .bind(email)
             .first();
 
+
     let failedAttempts =
         Number(
             existing?.failed_attempts || 0
         );
+
 
     let lockedUntil =
         Number(
             existing?.locked_until || 0
         );
 
-    // If an old lock has expired, start a fresh counter.
-    if (lockedUntil > 0 && lockedUntil <= now) {
+
+    if (
+        lockedUntil > 0 &&
+        lockedUntil <= now
+    ) {
+
         failedAttempts = 0;
         lockedUntil = 0;
     }
 
+
     failedAttempts++;
 
-    if (failedAttempts >= MAX_FAILED_ATTEMPTS) {
+
+    if (
+        failedAttempts >=
+        MAX_FAILED_ATTEMPTS
+    ) {
+
         lockedUntil =
             now + LOCKOUT_MS;
     }
+
 
     await db
         .prepare(
