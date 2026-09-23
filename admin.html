@@ -533,7 +533,7 @@
 
             border-collapse: collapse;
 
-            min-width: 1080px;
+            min-width: 1320px;
         }
 
         th,
@@ -2147,6 +2147,10 @@ function renderWithdrawals() {
 
                         <th>Amount</th>
 
+                        <th>Before Withdrawal Balance</th>
+
+                        <th>Current Balance</th>
+
                         <th>Wallet</th>
 
                         <th>Status</th>
@@ -2254,6 +2258,22 @@ function createWithdrawalRow(item) {
             : "—";
 
 
+    const beforeBalance =
+        item.balance_before === null ||
+        item.balance_before === undefined ||
+        item.balance_before === ""
+            ? "—"
+            : `${formatBTC(item.balance_before)} BTC`;
+
+
+    const currentBalance =
+        item.current_balance === null ||
+        item.current_balance === undefined ||
+        item.current_balance === ""
+            ? "—"
+            : `${formatBTC(item.current_balance)} BTC`;
+
+
     return `
 
         <tr>
@@ -2291,6 +2311,20 @@ function createWithdrawalRow(item) {
 
                 ${formatBTC(item.amount)}
                 BTC
+
+            </td>
+
+
+            <td class="amount">
+
+                ${beforeBalance}
+
+            </td>
+
+
+            <td class="amount">
+
+                ${currentBalance}
 
             </td>
 
