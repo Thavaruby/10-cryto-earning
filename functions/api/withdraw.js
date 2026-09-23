@@ -1205,16 +1205,18 @@ export async function onRequestPost(context) {
                             amount,
                             wallet_address,
                             currency,
-                            status
+                            status,
+                            balance_before
                         )
                         VALUES
-                        (?, ?, ?, ?, 'pending')`
+                        (?, ?, ?, ?, 'pending', ?)`
                     )
                     .bind(
                         userId,
                         normalizedAmount,
                         walletAddress,
-                        currency
+                        currency,
+                        Number(user.balance)
                     )
                     .run();
 
