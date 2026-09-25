@@ -12,13 +12,13 @@
 <meta property="og:description" content="My Crypto Faucet is a free Bitcoin faucet. Claim BTC every hour, build your balance, and withdraw eligible rewards through FaucetPay. Available worldwide.">
 <meta property="og:url" content="https://myfaucetcrypto.com/">
 <meta property="og:site_name" content="My Crypto Faucet">
-      
+
 <meta name="theme-color" content="#07111f">
 
 <title>My Crypto Faucet — Free Bitcoin Faucet & Hourly BTC Rewards</title>
 
 <link rel="canonical" href="https://myfaucetcrypto.com/">
-      
+
 <style>
 * {
     margin: 0;
@@ -509,6 +509,10 @@ section {
     border-radius: 50%;
 }
 
+/* =========================
+   CRYPTO LOGO
+========================= */
+
 .coin-symbol {
     position: relative;
     width: 54px;
@@ -517,13 +521,17 @@ section {
     border-radius: 50%;
     background: var(--coin-bg);
     border: 1px solid var(--coin-border);
-    color: var(--coin-color);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 23px;
-    font-weight: 900;
     box-shadow: 0 0 18px var(--coin-glow);
+}
+
+.coin-symbol img {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+    display: block;
 }
 
 .coin-name {
@@ -1126,8 +1134,12 @@ a:focus-visible {
     .coin-symbol {
         width: 49px;
         height: 49px;
-        font-size: 20px;
         margin-bottom: 10px;
+    }
+
+    .coin-symbol img {
+        width: 27px;
+        height: 27px;
     }
 
     .coin-name {
@@ -1389,7 +1401,14 @@ a:focus-visible {
 
             <div class="coin-card coin-btc">
 
-                <div class="coin-symbol">₿</div>
+                <div class="coin-symbol">
+                    <img
+                        src="/assets/crypto/bitcoin.svg"
+                        alt="Bitcoin logo"
+                        width="30"
+                        height="30"
+                    >
+                </div>
 
                 <div class="coin-name">Bitcoin</div>
 
@@ -1403,7 +1422,14 @@ a:focus-visible {
 
             <div class="coin-card coin-ltc">
 
-                <div class="coin-symbol">Ł</div>
+                <div class="coin-symbol">
+                    <img
+                        src="/assets/crypto/litecoin.svg"
+                        alt="Litecoin logo"
+                        width="30"
+                        height="30"
+                    >
+                </div>
 
                 <div class="coin-name">Litecoin</div>
 
@@ -1417,7 +1443,14 @@ a:focus-visible {
 
             <div class="coin-card coin-bnb">
 
-                <div class="coin-symbol">◆</div>
+                <div class="coin-symbol">
+                    <img
+                        src="/assets/crypto/binance.svg"
+                        alt="BNB logo"
+                        width="30"
+                        height="30"
+                    >
+                </div>
 
                 <div class="coin-name">BNB</div>
 
@@ -1431,7 +1464,14 @@ a:focus-visible {
 
             <div class="coin-card coin-doge">
 
-                <div class="coin-symbol">Ð</div>
+                <div class="coin-symbol">
+                    <img
+                        src="/assets/crypto/dogecoin.svg"
+                        alt="Dogecoin logo"
+                        width="30"
+                        height="30"
+                    >
+                </div>
 
                 <div class="coin-name">Dogecoin</div>
 
@@ -1445,7 +1485,14 @@ a:focus-visible {
 
             <div class="coin-card coin-sui">
 
-                <div class="coin-symbol">S</div>
+                <div class="coin-symbol">
+                    <img
+                        src="/assets/crypto/sui.svg"
+                        alt="Sui logo"
+                        width="30"
+                        height="30"
+                    >
+                </div>
 
                 <div class="coin-name">Sui</div>
 
@@ -1459,7 +1506,14 @@ a:focus-visible {
 
             <div class="coin-card coin-trx">
 
-                <div class="coin-symbol">T</div>
+                <div class="coin-symbol">
+                    <img
+                        src="/assets/crypto/tron.svg"
+                        alt="TRON logo"
+                        width="30"
+                        height="30"
+                    >
+                </div>
 
                 <div class="coin-name">TRON</div>
 
@@ -1473,7 +1527,14 @@ a:focus-visible {
 
             <div class="coin-card coin-ton">
 
-                <div class="coin-symbol">T</div>
+                <div class="coin-symbol">
+                    <img
+                        src="/assets/crypto/ton.svg"
+                        alt="Toncoin logo"
+                        width="30"
+                        height="30"
+                    >
+                </div>
 
                 <div class="coin-name">Toncoin</div>
 
@@ -1487,7 +1548,14 @@ a:focus-visible {
 
             <div class="coin-card coin-sol">
 
-                <div class="coin-symbol">≋</div>
+                <div class="coin-symbol">
+                    <img
+                        src="/assets/crypto/solana.svg"
+                        alt="Solana logo"
+                        width="30"
+                        height="30"
+                    >
+                </div>
 
                 <div class="coin-name">Solana</div>
 
@@ -1501,7 +1569,14 @@ a:focus-visible {
 
             <div class="coin-card coin-pol">
 
-                <div class="coin-symbol">P</div>
+                <div class="coin-symbol">
+                    <img
+                        src="/assets/crypto/polygon.svg"
+                        alt="Polygon logo"
+                        width="30"
+                        height="30"
+                    >
+                </div>
 
                 <div class="coin-name">Polygon</div>
 
@@ -1515,7 +1590,14 @@ a:focus-visible {
 
             <div class="coin-card coin-bch">
 
-                <div class="coin-symbol">₿</div>
+                <div class="coin-symbol">
+                    <img
+                        src="/assets/crypto/bitcoincash.svg"
+                        alt="Bitcoin Cash logo"
+                        width="30"
+                        height="30"
+                    >
+                </div>
 
                 <div class="coin-name">Bitcoin Cash</div>
 
