@@ -837,6 +837,19 @@ body::after{
     filter:brightness(1.08);
 }
 
+.faucetpay-title{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.faucetpay-logo{
+    width:32px;
+    height:32px;
+    object-fit:contain;
+    border-radius:7px;
+}
+               
 input,
 select{
     position:relative;
@@ -1870,79 +1883,86 @@ hr{
 
     <!-- WITHDRAW -->
 
-    <div class="withdraw-section">
+<div class="withdraw-section">
 
-        <h3>₿ Withdraw BTC</h3>
+    <h3 class="faucetpay-title">
+    <img
+        src="https://faucetpay.io/favicon.ico"
+        alt="FaucetPay"
+        class="faucetpay-logo"
+    >
+    FaucetPay
+</h3>
 
-        <div class="amount-row">
+    <div class="amount-row">
 
-            <label
-                class="amount-label"
-                for="withdrawAmount"
-            >
-
-                Amount BTC
-
-                <small>
-                    (Min: 0.00000010 BTC)
-                </small>
-
-            </label>
-
-            <button
-                type="button"
-                class="max-button"
-                onclick="setMaxWithdrawal()"
-            >
-                MAX
-            </button>
-
-        </div>
-
-        <input
-            type="number"
-            id="withdrawAmount"
-            placeholder="Amount BTC"
-            step="0.00000001"
-            min="0.0000001"
-            inputmode="decimal"
+        <label
+            class="amount-label"
+            for="withdrawAmount"
         >
 
-        <div style="height:12px"></div>
+            Amount BTC
 
-        <select id="withdrawCurrency">
+            <small>
+                (Min: 0.00000010 BTC)
+            </small>
 
-            <option value="BTC">
-                BTC
-            </option>
-
-        </select>
-
-        <div style="height:12px"></div>
-
-        <input
-            type="text"
-            id="walletAddress"
-            placeholder="Your Bitcoin wallet address"
-            autocomplete="off"
-            spellcheck="false"
-        >
-
-        <div style="height:12px"></div>
+        </label>
 
         <button
-            id="withdrawButton"
-            onclick="submitWithdrawal()"
+            type="button"
+            class="max-button"
+            onclick="setMaxWithdrawal()"
         >
-            💸 REQUEST WITHDRAWAL
+            MAX
         </button>
 
-        <div
-            id="withdrawNotification"
-            class="action-notification">
-        </div>
-
     </div>
+
+    <input
+        type="number"
+        id="withdrawAmount"
+        placeholder="Amount BTC"
+        step="0.00000001"
+        min="0.0000001"
+        inputmode="decimal"
+    >
+
+    <div style="height:12px"></div>
+
+    <select id="withdrawCurrency">
+
+        <option value="BTC">
+            Enter BTC
+        </option>
+
+    </select>
+
+    <div style="height:12px"></div>
+
+    <input
+        type="text"
+        id="walletAddress"
+        placeholder="FaucetPay BTC address only"
+        autocomplete="off"
+        spellcheck="false"
+    >
+
+    <div style="height:12px"></div>
+
+    <button
+        id="withdrawButton"
+        onclick="submitWithdrawal()"
+    >
+        💸 REQUEST WITHDRAWAL
+    </button>
+
+    <div
+        id="withdrawNotification"
+        class="action-notification">
+    </div>
+
+</div>
 
 
     <hr>
