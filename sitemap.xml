@@ -7,22 +7,4 @@
         <priority>1.0</priority>
     </url>
 
-    <url>
-        <loc>https://myfaucetcrypto.com/register.html</loc>
-        <changefreq>monthly</changefreq>
-        <priority>0.6</priority>
-    </url>
-
-    <url>
-        <loc>https://myfaucetcrypto.com/login.html</loc>
-        <changefreq>monthly</changefreq>
-        <priority>0.5</priority>
-    </url>
-
-    <url>
-        <loc>https://myfaucetcrypto.com/forgot-password.html</loc>
-        <changefreq>monthly</changefreq>
-        <priority>0.3</priority>
-    </url>
-
 </urlset>
