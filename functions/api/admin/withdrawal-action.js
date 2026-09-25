@@ -721,60 +721,69 @@ export async function onRequestPost(context) {
 
 
         /* =====================================================
-           15. EXPLICIT FAUCETPAY FAILURE
-        ===================================================== */
+   15. EXPLICIT FAUCETPAY FAILURE
+===================================================== */
 
-        /*
-         * Only a valid explicit failure response is treated
-         * as a failed payout.
-         *
-         * If the response is incomplete/ambiguous, we keep
-         * PROCESSING instead of risking a duplicate payout.
-         */
-
-        const faucetPayExplicitFailure =
-            faucetPayResult.success === false;
+const faucetPayExplicitFailure =
+    faucetPayResult.success === false;
 
 
-        if (faucetPayExplicitFailure) {
+if (faucetPayExplicitFailure) {
 
-            console.error(
-                "FAUCETPAY PAYMENT FAILED."
-            );
-
-
-            /*
-             * FaucetPay explicitly rejected the request.
-             *
-             * Restore PENDING.
-             */
-
-            await db
-                .prepare(
-                    `UPDATE withdrawals
-                     SET
-                        status = 'pending'
-                     WHERE id = ?
-                       AND status = 'processing'`
-                )
-                .bind(withdrawalId)
-                .run();
+    console.error(
+        "FAUCETPAY PAYMENT FAILED:",
+        JSON.stringify(faucetPayResult)
+    );
 
 
-            return Response.json(
-                {
-                    success: false,
-                    error:
-                        "FaucetPay payment failed. Withdrawal remains pending."
-                },
-                {
-                    status: 502,
-                    headers: {
-                        "Cache-Control": "no-store"
-                    }
-                }
-            );
+    /*
+     * FaucetPay explicitly rejected the request.
+     *
+     * Restore PENDING.
+     */
+
+    await db
+        .prepare(
+            `UPDATE withdrawals
+             SET
+                status = 'pending'
+             WHERE id = ?
+               AND status = 'processing'`
+        )
+        .bind(withdrawalId)
+        .run();
+
+
+    /* TEMPORARY DIAGNOSTIC:
+       Show FaucetPay's actual error message
+       so we can identify why the normal BTC
+       wallet address was rejected.
+    */
+
+    const faucetPayError =
+        faucetPayResult?.message ||
+        faucetPayResult?.error ||
+        faucetPayResult?.data?.message ||
+        faucetPayResult?.data?.error ||
+        "Unknown FaucetPay error.";
+
+
+    return Response.json(
+        {
+            success: false,
+            error:
+                `FaucetPay payment failed: ${faucetPayError}`,
+            faucetpay_response:
+                faucetPayResult
+        },
+        {
+            status: 502,
+            headers: {
+                "Cache-Control": "no-store"
+            }
         }
+    );
+}
 
 
         /* =====================================================
