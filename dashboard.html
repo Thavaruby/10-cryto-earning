@@ -1004,6 +1004,91 @@ hr{
 }
 
 /* =========================================
+   CONTACT & SUPPORT
+========================================= */
+
+.support-section{
+    position:relative;
+    margin-top:25px;
+    padding:24px 18px;
+    overflow:hidden;
+    border-radius:23px;
+    background:
+        radial-gradient(circle at 90% 0%,rgba(59,130,246,.12),transparent 30%),
+        linear-gradient(145deg,rgba(15,23,42,.96),rgba(30,41,59,.81));
+    border:1px solid rgba(96,165,250,.17);
+    box-shadow:
+        0 19px 43px rgba(0,0,0,.25),
+        inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+.support-section::after{
+    content:"💬";
+    position:absolute;
+    right:-12px;
+    bottom:-45px;
+    font-size:125px;
+    opacity:.035;
+    pointer-events:none;
+}
+
+.support-section h3{
+    position:relative;
+    z-index:2;
+    margin:0 0 8px;
+    color:#60a5fa;
+    font-size:21px;
+    font-weight:950;
+}
+
+.support-subtitle{
+    position:relative;
+    z-index:2;
+    margin:0 0 18px;
+    color:#94a3b8;
+    font-size:12px;
+    line-height:1.6;
+}
+
+.support-button{
+    position:relative;
+    z-index:2;
+    width:100%;
+    min-height:55px;
+    border:1px solid rgba(96,165,250,.24);
+    border-radius:15px;
+    color:#dbeafe;
+    background:
+        linear-gradient(
+            135deg,
+            rgba(37,99,235,.28),
+            rgba(79,70,229,.25)
+        );
+    box-shadow:
+        0 11px 26px rgba(0,0,0,.18),
+        inset 0 1px 0 rgba(255,255,255,.08);
+    font-size:13px;
+    font-weight:950;
+    cursor:pointer;
+    transition:
+        transform .2s ease,
+        background .2s ease,
+        box-shadow .2s ease;
+}
+
+.support-button:hover{
+    transform:translateY(-2px);
+    background:
+        linear-gradient(
+            135deg,
+            rgba(37,99,235,.40),
+            rgba(79,70,229,.36)
+        );
+    box-shadow:
+        0 16px 32px rgba(37,99,235,.18);
+}
+        
+/* =========================================
    MODAL
 ========================================= */
 
@@ -2017,7 +2102,50 @@ hr{
 
     </div>
 
+<div class="history-buttons">
 
+    <button onclick="openClaimHistory()">
+        📜 CLAIM HISTORY
+    </button>
+
+    <button onclick="openWithdrawalHistory()">
+        💸 WITHDRAWAL HISTORY
+    </button>
+
+</div>
+
+
+<!-- CONTACT & SUPPORT -->
+
+<div class="support-section">
+
+    <h3>
+        📩 Contact & Support
+    </h3>
+
+    <p class="support-subtitle">
+        Need help with your account, claim or withdrawal?
+        Contact our support team.
+    </p>
+
+    <button
+        type="button"
+        class="support-button"
+        onclick="openSupport()"
+    >
+        💬 CONTACT SUPPORT
+    </button>
+
+</div>
+
+
+<button
+    class="logout-button"
+    onclick="logout()"
+>
+    🚪 LOGOUT
+</button>
+    
     <button
         class="logout-button"
         onclick="logout()"
