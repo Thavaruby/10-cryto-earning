@@ -2708,12 +2708,18 @@ async function submitWithdrawal(){
 
         }else{
 
-            showActionNotification(
-                "withdrawNotification",
-                "❌ "+result.error,
-                "error"
-            );
-        }
+    showActionNotification(
+        "withdrawNotification",
+        "❌ "+
+        (
+            result.errorMessage ||
+            result.error ||
+            result.message ||
+            "Withdrawal request failed. Please try again."
+        ),
+        "error"
+    );
+}
 
     }catch(error){
 
