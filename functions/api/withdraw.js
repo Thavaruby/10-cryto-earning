@@ -766,6 +766,79 @@ async function isValidBitcoinAddress(address) {
 
 
 /* =====================================================
+   FAUCETPAY ADDRESS VERIFICATION
+   ===================================================== */
+
+async function isFaucetPayAddress(
+    address,
+    apiKey
+) {
+
+    if (!apiKey) {
+
+        throw new Error(
+            "FAUCETPAY_API_KEY is not configured."
+        );
+    }
+
+
+    const body =
+        new URLSearchParams();
+
+
+    body.append(
+        "api_key",
+        apiKey
+    );
+
+
+    body.append(
+        "address",
+        address
+    );
+
+
+    body.append(
+        "currency",
+        "BTC"
+    );
+
+
+    const response =
+        await fetch(
+            "https://faucetpay.io/api/v1/checkaddress",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/x-www-form-urlencoded"
+                },
+
+                body
+            }
+        );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "FaucetPay address verification request failed."
+        );
+    }
+
+
+    const result =
+        await response.json();
+
+
+    return (
+        Number(result.status) === 200
+    );
+}
+
+
+/* =====================================================
    GET COOKIE VALUE
    ===================================================== */
 
@@ -1034,6 +1107,54 @@ export async function onRequestPost(context) {
                         "Invalid Bitcoin wallet address."
                 },
                 400
+            );
+        }
+
+
+        /* =================================================
+           3B. VERIFY FAUCETPAY USER ADDRESS
+           ================================================= */
+
+        const faucetPayApiKey =
+            context.env.FAUCETPAY_API_KEY;
+
+
+        try {
+
+            const faucetPayAddress =
+                await isFaucetPayAddress(
+                    walletAddress,
+                    faucetPayApiKey
+                );
+
+
+            if (!faucetPayAddress) {
+
+                return jsonResponse(
+                    {
+                        success: false,
+                        error:
+                            "This BTC address is not registered with FaucetPay. Please enter your FaucetPay BTC address."
+                    },
+                    400
+                );
+            }
+
+
+        } catch (error) {
+
+            console.error(
+                "FaucetPay address verification failed."
+            );
+
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Unable to verify the FaucetPay BTC address. Please try again."
+                },
+                503
             );
         }
 
