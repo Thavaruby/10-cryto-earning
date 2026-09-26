@@ -1,111 +1,216 @@
-export async function onRequest(context) {
+async function hashSessionToken(token) {
 
-    const {
-        request,
-        env
-    } = context;
+    const data =
+        new TextEncoder().encode(token);
+
+    const hash =
+        await crypto.subtle.digest(
+            "SHA-256",
+            data
+        );
+
+    return Array.from(
+        new Uint8Array(hash)
+    )
+        .map(
+            byte =>
+                byte
+                    .toString(16)
+                    .padStart(2, "0")
+        )
+        .join("");
+}
 
 
-    /* =================================================
-       RESPONSE HELPER
-    ================================================= */
+function getCookie(request, name) {
 
-    function jsonResponse(data, status = 200) {
+    const cookieHeader =
+        request.headers.get("Cookie");
 
-        return new Response(
-            JSON.stringify(data),
-            {
-                status,
+    if (!cookieHeader) return null;
 
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                }
+    const cookies =
+        cookieHeader.split(";");
+
+    for (const cookie of cookies) {
+
+        const [
+            key,
+            ...value
+        ] =
+            cookie.trim().split("=");
+
+        if (key === name) {
+
+            try {
+
+                return decodeURIComponent(
+                    value.join("=")
+                );
+
+            } catch {
+
+                return null;
             }
-        );
+        }
     }
 
-
-    /* =================================================
-       METHOD
-    ================================================= */
-
-    if (
-        request.method !== "GET" &&
-        request.method !== "POST"
-    ) {
-
-        return jsonResponse(
-            {
-                success: false,
-                errorMessage:
-                    "Method not allowed."
-            },
-            405
-        );
-    }
+    return null;
+}
 
 
-    /* =================================================
-       SESSION
-    ================================================= */
+function jsonResponse(
+    data,
+    status = 200
+) {
 
-    const session =
-        await env.DB
-            .prepare(`
-                SELECT
-                    user_id
-                FROM sessions
-                WHERE token = ?
-                  AND expires_at > datetime('now')
-                LIMIT 1
-            `)
-            .bind(
-                request.headers
-                    .get("Cookie")
-                    ?.match(
-                        /session_token=([^;]+)/
-                    )?.[1] || ""
-            )
-            .first();
+    return new Response(
+        JSON.stringify(data),
+        {
+            status,
+
+            headers: {
+                "Content-Type":
+                    "application/json",
+
+                "Cache-Control":
+                    "no-store"
+            }
+        }
+    );
+}
 
 
-    if (!session) {
+/* =================================================
+   GET SUPPORT TICKETS
+================================================= */
 
-        return jsonResponse(
-            {
-                success: false,
-                errorMessage:
-                    "Please log in first."
-            },
-            401
-        );
-    }
+export async function onRequestGet(
+    context
+) {
+
+    try {
+
+        const db =
+            context.env.DB
+                .withSession(
+                    "first-primary"
+                );
 
 
-    const userId =
-        Number(session.user_id);
+        /* =========================================
+           SESSION
+        ========================================= */
+
+        const sessionToken =
+            getCookie(
+                context.request,
+                "session"
+            );
 
 
-    /* =================================================
-       GET SUPPORT TICKETS
-    ================================================= */
+        if (!sessionToken) {
 
-    if (request.method === "GET") {
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Not logged in"
+                },
+                401
+            );
+        }
+
+
+        const tokenHash =
+            await hashSessionToken(
+                sessionToken
+            );
+
+
+        const session =
+            await db
+                .prepare(
+                    `SELECT
+                        sessions.user_id,
+                        sessions.expires_at
+                     FROM sessions
+                     WHERE sessions.token_hash = ?
+                     LIMIT 1`
+                )
+                .bind(tokenHash)
+                .first();
+
+
+        if (!session) {
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Invalid session"
+                },
+                401
+            );
+        }
+
+
+        const expiresAt =
+            new Date(
+                session.expires_at
+            );
+
+
+        if (
+            Number.isNaN(
+                expiresAt.getTime()
+            ) ||
+            expiresAt <= new Date()
+        ) {
+
+            await db
+                .prepare(
+                    `DELETE FROM sessions
+                     WHERE token_hash = ?`
+                )
+                .bind(tokenHash)
+                .run();
+
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Session expired"
+                },
+                401
+            );
+        }
+
+
+        const userId =
+            Number(
+                session.user_id
+            );
+
+
+        /* =========================================
+           LOAD USER'S TICKETS
+        ========================================= */
 
         const tickets =
-            await env.DB
-                .prepare(`
-                    SELECT
+            await db
+                .prepare(
+                    `SELECT
                         id,
                         subject,
                         status,
                         created_at,
                         updated_at
-                    FROM support_tickets
-                    WHERE user_id = ?
-                    ORDER BY updated_at DESC
-                `)
+                     FROM support_tickets
+                     WHERE user_id = ?
+                     ORDER BY updated_at DESC`
+                )
                 .bind(userId)
                 .all();
 
@@ -114,24 +219,28 @@ export async function onRequest(context) {
             tickets.results || [];
 
 
+        /* =========================================
+           LOAD MESSAGES
+        ========================================= */
+
         for (
             const ticket
             of ticketList
         ) {
 
             const messages =
-                await env.DB
-                    .prepare(`
-                        SELECT
+                await db
+                    .prepare(
+                        `SELECT
                             id,
                             sender_type,
                             message,
                             is_read,
                             created_at
-                        FROM support_messages
-                        WHERE ticket_id = ?
-                        ORDER BY id ASC
-                    `)
+                         FROM support_messages
+                         WHERE ticket_id = ?
+                         ORDER BY id ASC`
+                    )
                     .bind(ticket.id)
                     .all();
 
@@ -148,179 +257,336 @@ export async function onRequest(context) {
                     ticketList
             }
         );
-    }
 
 
-    /* =================================================
-       POST NEW SUPPORT TICKET
-    ================================================= */
-
-    let body;
-
-    try {
-
-        body =
-            await request.json();
-
-    } catch {
-
-        return jsonResponse(
-            {
-                success: false,
-                errorMessage:
-                    "Invalid request."
-            },
-            400
-        );
-    }
-
-
-    const subject =
-        String(
-            body.subject || ""
-        ).trim();
-
-    const message =
-        String(
-            body.message || ""
-        ).trim();
-
-
-    /* =================================================
-       VALIDATION
-    ================================================= */
-
-    if (!subject) {
-
-        return jsonResponse(
-            {
-                success: false,
-                errorMessage:
-                    "Please enter a subject."
-            },
-            400
-        );
-    }
-
-
-    if (subject.length > 100) {
-
-        return jsonResponse(
-            {
-                success: false,
-                errorMessage:
-                    "Subject is too long."
-            },
-            400
-        );
-    }
-
-
-    if (!message) {
-
-        return jsonResponse(
-            {
-                success: false,
-                errorMessage:
-                    "Please enter your message."
-            },
-            400
-        );
-    }
-
-
-    if (message.length > 3000) {
-
-        return jsonResponse(
-            {
-                success: false,
-                errorMessage:
-                    "Message is too long. Maximum 3000 characters."
-            },
-            400
-        );
-    }
-
-
-    /* =================================================
-       CREATE TICKET
-    ================================================= */
-
-    const ticketResult =
-        await env.DB
-            .prepare(`
-                INSERT INTO support_tickets
-                (
-                    user_id,
-                    subject,
-                    status
-                )
-                VALUES (?, ?, 'open')
-            `)
-            .bind(
-                userId,
-                subject
-            )
-            .run();
-
-
-    const ticketId =
-        ticketResult.meta
-            ?.last_row_id;
-
-
-    if (!ticketId) {
+    } catch (error) {
 
         console.error(
-            "SUPPORT TICKET INSERT FAILED."
+            "SUPPORT GET ERROR:",
+            error instanceof Error
+                ? error.message
+                : "Unknown error"
         );
+
 
         return jsonResponse(
             {
                 success: false,
-                errorMessage:
-                    "Unable to create support request."
+                error:
+                    "Unable to load support messages."
             },
             500
         );
     }
+}
 
 
-    /* =================================================
-       SAVE USER MESSAGE
-    ================================================= */
+/* =================================================
+   CREATE SUPPORT TICKET
+================================================= */
 
-    await env.DB
-        .prepare(`
-            INSERT INTO support_messages
-            (
-                ticket_id,
-                sender_type,
-                message,
-                is_read
-            )
-            VALUES (?, 'user', ?, 0)
-        `)
-        .bind(
-            ticketId,
-            message
-        )
-        .run();
+export async function onRequestPost(
+    context
+) {
+
+    try {
+
+        const db =
+            context.env.DB
+                .withSession(
+                    "first-primary"
+                );
 
 
-    /* =================================================
-       RESPONSE
-    ================================================= */
+        /* =========================================
+           SESSION
+        ========================================= */
 
-    return jsonResponse(
-        {
-            success: true,
+        const sessionToken =
+            getCookie(
+                context.request,
+                "session"
+            );
 
-            message:
-                "Your support request has been sent.",
 
-            ticket_id:
-                ticketId
+        if (!sessionToken) {
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Not logged in"
+                },
+                401
+            );
         }
-    );
+
+
+        const tokenHash =
+            await hashSessionToken(
+                sessionToken
+            );
+
+
+        const session =
+            await db
+                .prepare(
+                    `SELECT
+                        sessions.user_id,
+                        sessions.expires_at
+                     FROM sessions
+                     WHERE sessions.token_hash = ?
+                     LIMIT 1`
+                )
+                .bind(tokenHash)
+                .first();
+
+
+        if (!session) {
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Invalid session"
+                },
+                401
+            );
+        }
+
+
+        const expiresAt =
+            new Date(
+                session.expires_at
+            );
+
+
+        if (
+            Number.isNaN(
+                expiresAt.getTime()
+            ) ||
+            expiresAt <= new Date()
+        ) {
+
+            await db
+                .prepare(
+                    `DELETE FROM sessions
+                     WHERE token_hash = ?`
+                )
+                .bind(tokenHash)
+                .run();
+
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Session expired"
+                },
+                401
+            );
+        }
+
+
+        const userId =
+            Number(
+                session.user_id
+            );
+
+
+        /* =========================================
+           REQUEST BODY
+        ========================================= */
+
+        let body;
+
+        try {
+
+            body =
+                await context.request.json();
+
+        } catch {
+
+            return jsonResponse(
+                {
+                    success: false,
+                    errorMessage:
+                        "Invalid request."
+                },
+                400
+            );
+        }
+
+
+        const subject =
+            String(
+                body.subject || ""
+            ).trim();
+
+
+        const message =
+            String(
+                body.message || ""
+            ).trim();
+
+
+        /* =========================================
+           VALIDATION
+        ========================================= */
+
+        if (!subject) {
+
+            return jsonResponse(
+                {
+                    success: false,
+                    errorMessage:
+                        "Please enter a subject."
+                },
+                400
+            );
+        }
+
+
+        if (subject.length > 100) {
+
+            return jsonResponse(
+                {
+                    success: false,
+                    errorMessage:
+                        "Subject is too long."
+                },
+                400
+            );
+        }
+
+
+        if (!message) {
+
+            return jsonResponse(
+                {
+                    success: false,
+                    errorMessage:
+                        "Please enter your message."
+                },
+                400
+            );
+        }
+
+
+        if (message.length > 3000) {
+
+            return jsonResponse(
+                {
+                    success: false,
+                    errorMessage:
+                        "Message is too long. Maximum 3000 characters."
+                },
+                400
+            );
+        }
+
+
+        /* =========================================
+           CREATE TICKET
+        ========================================= */
+
+        const ticketResult =
+            await db
+                .prepare(
+                    `INSERT INTO support_tickets
+                    (
+                        user_id,
+                        subject,
+                        status
+                    )
+                    VALUES (?, ?, 'open')`
+                )
+                .bind(
+                    userId,
+                    subject
+                )
+                .run();
+
+
+        const ticketId =
+            ticketResult.meta
+                ?.last_row_id;
+
+
+        if (!ticketId) {
+
+            console.error(
+                "SUPPORT TICKET INSERT FAILED."
+            );
+
+
+            return jsonResponse(
+                {
+                    success: false,
+                    errorMessage:
+                        "Unable to create support request."
+                },
+                500
+            );
+        }
+
+
+        /* =========================================
+           SAVE USER MESSAGE
+        ========================================= */
+
+        await db
+            .prepare(
+                `INSERT INTO support_messages
+                (
+                    ticket_id,
+                    sender_type,
+                    message,
+                    is_read
+                )
+                VALUES (?, 'user', ?, 0)`
+            )
+            .bind(
+                ticketId,
+                message
+            )
+            .run();
+
+
+        /* =========================================
+           SUCCESS
+        ========================================= */
+
+        return jsonResponse(
+            {
+                success: true,
+
+                message:
+                    "Your support request has been sent.",
+
+                ticket_id:
+                    ticketId
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "SUPPORT POST ERROR:",
+            error instanceof Error
+                ? error.message
+                : "Unknown error"
+        );
+
+
+        return jsonResponse(
+            {
+                success: false,
+                errorMessage:
+                    "Unable to send support request."
+            },
+            500
+        );
+    }
 }
