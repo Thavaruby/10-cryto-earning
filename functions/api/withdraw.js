@@ -1265,15 +1265,20 @@ if (!faucetPayAddressResult) {
    ADDRESS NOT REGISTERED WITH FAUCETPAY
    ================================================= */
 
-if (
-    faucetPayAddressResult.success !== true
-) {
+if (faucetPayAddressResult.success !== true) {
+
+    const faucetPayMessage =
+        faucetPayAddressResult.message ||
+        faucetPayAddressResult.error ||
+        "This is not a FaucetPay BTC address. Please enter your FaucetPay BTC address.";
 
     return jsonResponse(
         {
             success: false,
             errorMessage:
-                "This is not a FaucetPay BTC address. Please enter your FaucetPay BTC address."
+                "This is not a FaucetPay BTC address. Please enter your FaucetPay BTC address.",
+            message:
+                faucetPayMessage
         },
         400
     );
