@@ -78,8 +78,13 @@ function jsonResponse(data, status = 200) {
 
 /* CLAIM */
 export async function onRequestPost(context) {
+
     try {
-        const db = context.env.DB.withSession("first-primary");
+
+        const db =
+            context.env.DB.withSession(
+                "first-primary"
+            );
 
         /* --------------------------------
            1. READ REQUEST
@@ -88,26 +93,34 @@ export async function onRequestPost(context) {
         let data;
 
         try {
-            data = await context.request.json();
+
+            data =
+                await context.request.json();
+
         } catch {
+
             return jsonResponse(
                 {
                     success: false,
-                    error: "Invalid request."
+                    error:
+                        "Invalid request."
                 },
                 400
             );
         }
 
-        const turnstileToken = String(
-            data.turnstileToken || ""
-        );
+        const turnstileToken =
+            String(
+                data.turnstileToken || ""
+            );
 
         if (!turnstileToken) {
+
             return jsonResponse(
                 {
                     success: false,
-                    error: "Please complete verification."
+                    error:
+                        "Please complete verification."
                 },
                 400
             );
@@ -117,57 +130,73 @@ export async function onRequestPost(context) {
            2. CHECK SESSION
         -------------------------------- */
 
-        const sessionToken = getCookie(
-            context.request,
-            "session"
-        );
+        const sessionToken =
+            getCookie(
+                context.request,
+                "session"
+            );
 
         if (!sessionToken) {
+
             return jsonResponse(
                 {
                     success: false,
-                    error: "Please login first."
+                    error:
+                        "Please login first."
                 },
                 401
             );
         }
 
         const tokenHash =
-            await hashSessionToken(sessionToken);
+            await hashSessionToken(
+                sessionToken
+            );
 
-        const session = await db
-            .prepare(
-                `SELECT
-                    user_id,
-                    expires_at
-                 FROM sessions
-                 WHERE token_hash = ?
-                   AND expires_at > ?
-                 LIMIT 1`
-            )
-            .bind(
-                tokenHash,
-                new Date().toISOString()
-            )
-            .first();
+        const session =
+            await db
+                .prepare(
+                    `SELECT
+                        user_id,
+                        expires_at
+                     FROM sessions
+                     WHERE token_hash = ?
+                       AND expires_at > ?
+                     LIMIT 1`
+                )
+                .bind(
+                    tokenHash,
+                    new Date().toISOString()
+                )
+                .first();
 
         if (!session) {
+
             return jsonResponse(
                 {
                     success: false,
-                    error: "Invalid or expired session."
+                    error:
+                        "Invalid or expired session."
                 },
                 401
             );
         }
 
-        const userId = Number(session.user_id);
+        const userId =
+            Number(
+                session.user_id
+            );
 
-        if (!Number.isInteger(userId) || userId <= 0) {
+        if (
+            !Number.isInteger(userId) ||
+            userId <= 0
+        ) {
+
             return jsonResponse(
                 {
                     success: false,
-                    error: "Invalid user session."
+                    error:
+                        "Invalid user session."
                 },
                 401
             );
@@ -177,12 +206,14 @@ export async function onRequestPost(context) {
            3. CHECK DEVICE
         -------------------------------- */
 
-        const deviceToken = getCookie(
-            context.request,
-            DEVICE_COOKIE_NAME
-        );
+        const deviceToken =
+            getCookie(
+                context.request,
+                DEVICE_COOKIE_NAME
+            );
 
         if (!deviceToken) {
+
             return jsonResponse(
                 {
                     success: false,
@@ -194,22 +225,28 @@ export async function onRequestPost(context) {
         }
 
         const deviceIdHash =
-            await hashDeviceToken(deviceToken);
+            await hashDeviceToken(
+                deviceToken
+            );
 
-        const device = await db
-            .prepare(
-                `SELECT
-                    id,
-                    user_id,
-                    last_claim_at
-                 FROM user_devices
-                 WHERE device_id_hash = ?
-                 LIMIT 1`
-            )
-            .bind(deviceIdHash)
-            .first();
+        const device =
+            await db
+                .prepare(
+                    `SELECT
+                        id,
+                        user_id,
+                        last_claim_at
+                     FROM user_devices
+                     WHERE device_id_hash = ?
+                     LIMIT 1`
+                )
+                .bind(
+                    deviceIdHash
+                )
+                .first();
 
         if (!device) {
+
             return jsonResponse(
                 {
                     success: false,
@@ -223,55 +260,12 @@ export async function onRequestPost(context) {
         /*
          * The device must already be bound to an account.
          *
-         * We intentionally do not block login switching here.
-         * Device-level claim protection is enforced at claim time.
+         * Device-level claim cooldown is intentionally
+         * NOT enforced here.
+         *
+         * Same-device / multiple-account protection
+         * will be handled as a separate final security task.
          */
-        const deviceLastClaimAt =
-            device.last_claim_at
-                ? new Date(
-                    device.last_claim_at
-                ).getTime()
-                : 0;
-
-        if (
-            deviceLastClaimAt > 0 &&
-            Number.isFinite(deviceLastClaimAt)
-        ) {
-            const nowMs = Date.now();
-
-            const elapsed =
-                Math.floor(
-                    (nowMs - deviceLastClaimAt) / 1000
-                );
-
-            const remainingSeconds =
-                Math.max(
-                    0,
-                    COOLDOWN_SECONDS - elapsed
-                );
-
-            if (remainingSeconds > 0) {
-                const hours = Math.floor(
-                    remainingSeconds / 3600
-                );
-
-                const minutes = Math.floor(
-                    (remainingSeconds % 3600) / 60
-                );
-
-                const seconds =
-                    remainingSeconds % 60;
-
-                return jsonResponse(
-                    {
-                        success: false,
-                        error:
-                            `Please wait ${hours}h ${minutes}m ${seconds}s before claiming again on this device.`
-                    },
-                    429
-                );
-            }
-        }
 
         /* --------------------------------
            4. VERIFY TURNSTILE
@@ -281,6 +275,7 @@ export async function onRequestPost(context) {
             context.env.TURNSTILE_SECRET;
 
         if (!turnstileSecret) {
+
             return jsonResponse(
                 {
                     success: false,
@@ -291,24 +286,30 @@ export async function onRequestPost(context) {
             );
         }
 
-        const verifyResponse = await fetch(
-            "https://challenges.cloudflare.com/turnstile/v0/siteverify",
-            {
-                method: "POST",
+        const verifyResponse =
+            await fetch(
+                "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+                {
+                    method: "POST",
 
-                headers: {
-                    "Content-Type":
-                        "application/x-www-form-urlencoded"
-                },
+                    headers: {
+                        "Content-Type":
+                            "application/x-www-form-urlencoded"
+                    },
 
-                body: new URLSearchParams({
-                    secret: turnstileSecret,
-                    response: turnstileToken
-                })
-            }
-        );
+                    body:
+                        new URLSearchParams({
+                            secret:
+                                turnstileSecret,
+
+                            response:
+                                turnstileToken
+                        })
+                }
+            );
 
         if (!verifyResponse.ok) {
+
             return jsonResponse(
                 {
                     success: false,
@@ -323,10 +324,12 @@ export async function onRequestPost(context) {
             await verifyResponse.json();
 
         if (!verifyResult.success) {
+
             return jsonResponse(
                 {
                     success: false,
-                    error: "Verification failed."
+                    error:
+                        "Verification failed."
                 },
                 400
             );
@@ -336,63 +339,53 @@ export async function onRequestPost(context) {
            5. ATOMIC CLAIM + BALANCE UPDATE
         -------------------------------- */
 
-        const results = await db.batch([
-            db.prepare(
-                `UPDATE users
-                 SET balance = balance + ?
-                 WHERE id = ?
-                   AND NOT EXISTS (
-                       SELECT 1
-                       FROM claims
-                       WHERE user_id = ?
-                         AND claimed_at >
-                             datetime('now', ?)
-                   )
-                   AND EXISTS (
-                       SELECT 1
-                       FROM user_devices
-                       WHERE device_id_hash = ?
-                         AND (
-                             last_claim_at IS NULL
-                             OR last_claim_at <=
+        const results =
+            await db.batch([
+
+                db.prepare(
+                    `UPDATE users
+                     SET balance = balance + ?
+                     WHERE id = ?
+                       AND NOT EXISTS (
+                           SELECT 1
+                           FROM claims
+                           WHERE user_id = ?
+                             AND claimed_at >
                                  datetime('now', ?)
-                         )
-                   )`
-            ).bind(
-                REWARD,
-                userId,
-                userId,
-                `-${COOLDOWN_SECONDS} seconds`,
-                deviceIdHash,
-                `-${COOLDOWN_SECONDS} seconds`
-            ),
+                       )`
+                ).bind(
+                    REWARD,
+                    userId,
+                    userId,
+                    `-${COOLDOWN_SECONDS} seconds`
+                ),
 
-            db.prepare(
-                `INSERT INTO claims
-                (
-                    user_id,
-                    reward
+                db.prepare(
+                    `INSERT INTO claims
+                    (
+                        user_id,
+                        reward
+                    )
+                    SELECT
+                        ?,
+                        ?
+                    WHERE changes() = 1`
+                ).bind(
+                    userId,
+                    REWARD
+                ),
+
+                db.prepare(
+                    `UPDATE user_devices
+                     SET last_claim_at = ?
+                     WHERE device_id_hash = ?
+                       AND user_id = ?`
+                ).bind(
+                    new Date().toISOString(),
+                    deviceIdHash,
+                    userId
                 )
-                SELECT
-                    ?,
-                    ?
-                WHERE changes() = 1`
-            ).bind(
-                userId,
-                REWARD
-            ),
-
-            db.prepare(
-                `UPDATE user_devices
-                 SET last_claim_at = ?
-                 WHERE device_id_hash = ?
-                   AND user_id = ?`
-            ).bind(
-                new Date().toISOString(),
-                deviceIdHash,
-                userId
-            )
-        ]);
+            ]);
 
         /* --------------------------------
            6. CHECK BALANCE UPDATE
@@ -403,76 +396,39 @@ export async function onRequestPost(context) {
 
         if (balanceChanges !== 1) {
 
-            const lastClaim = await db
-                .prepare(
-                    `SELECT
-                        claimed_at
-                     FROM claims
-                     WHERE user_id = ?
-                     ORDER BY claimed_at DESC
-                     LIMIT 1`
-                )
-                .bind(userId)
-                .first();
-
-            const deviceStatus = await db
-                .prepare(
-                    `SELECT
-                        last_claim_at
-                     FROM user_devices
-                     WHERE device_id_hash = ?
-                     LIMIT 1`
-                )
-                .bind(deviceIdHash)
-                .first();
+            const lastClaim =
+                await db
+                    .prepare(
+                        `SELECT
+                            claimed_at
+                         FROM claims
+                         WHERE user_id = ?
+                         ORDER BY claimed_at DESC
+                         LIMIT 1`
+                    )
+                    .bind(
+                        userId
+                    )
+                    .first();
 
             let remainingSeconds =
                 COOLDOWN_SECONDS;
 
             /*
-             * First check device-level cooldown.
+             * Check the user's own claim cooldown.
              */
-            if (deviceStatus?.last_claim_at) {
-
-                const lastDeviceTime =
-                    new Date(
-                        deviceStatus.last_claim_at
-                    ).getTime();
-
-                if (Number.isFinite(lastDeviceTime)) {
-
-                    const elapsed =
-                        Math.floor(
-                            (
-                                Date.now() -
-                                lastDeviceTime
-                            ) / 1000
-                        );
-
-                    remainingSeconds =
-                        Math.max(
-                            0,
-                            COOLDOWN_SECONDS -
-                            elapsed
-                        );
-                }
-            }
-
-            /*
-             * If device cooldown has expired,
-             * check the user's own claim cooldown.
-             */
-            if (
-                remainingSeconds <= 0 &&
-                lastClaim?.claimed_at
-            ) {
+            if (lastClaim?.claimed_at) {
 
                 const lastTime =
                     new Date(
                         lastClaim.claimed_at
                     ).getTime();
 
-                if (Number.isFinite(lastTime)) {
+                if (
+                    Number.isFinite(
+                        lastTime
+                    )
+                ) {
 
                     const elapsed =
                         Math.floor(
@@ -491,13 +447,17 @@ export async function onRequestPost(context) {
                 }
             }
 
-            const hours = Math.floor(
-                remainingSeconds / 3600
-            );
+            const hours =
+                Math.floor(
+                    remainingSeconds / 3600
+                );
 
-            const minutes = Math.floor(
-                (remainingSeconds % 3600) / 60
-            );
+            const minutes =
+                Math.floor(
+                    (
+                        remainingSeconds % 3600
+                    ) / 60
+                );
 
             const seconds =
                 remainingSeconds % 60;
@@ -520,6 +480,7 @@ export async function onRequestPost(context) {
             results?.[1]?.meta?.changes ?? 0;
 
         if (claimChanges !== 1) {
+
             return jsonResponse(
                 {
                     success: false,
@@ -538,6 +499,7 @@ export async function onRequestPost(context) {
             results?.[2]?.meta?.changes ?? 0;
 
         if (deviceChanges !== 1) {
+
             console.error(
                 "DEVICE CLAIM TIMESTAMP UPDATE FAILED"
             );
@@ -556,18 +518,22 @@ export async function onRequestPost(context) {
            9. LOAD UPDATED BALANCE
         -------------------------------- */
 
-        const updatedUser = await db
-            .prepare(
-                `SELECT
-                    balance
-                 FROM users
-                 WHERE id = ?
-                 LIMIT 1`
-            )
-            .bind(userId)
-            .first();
+        const updatedUser =
+            await db
+                .prepare(
+                    `SELECT
+                        balance
+                     FROM users
+                     WHERE id = ?
+                     LIMIT 1`
+                )
+                .bind(
+                    userId
+                )
+                .first();
 
         if (!updatedUser) {
+
             return jsonResponse(
                 {
                     success: false,
@@ -579,12 +545,15 @@ export async function onRequestPost(context) {
         }
 
         const balance =
-            Number(updatedUser.balance);
+            Number(
+                updatedUser.balance
+            );
 
         if (
             !Number.isFinite(balance) ||
             balance < 0
         ) {
+
             return jsonResponse(
                 {
                     success: false,
@@ -600,11 +569,17 @@ export async function onRequestPost(context) {
         -------------------------------- */
 
         return jsonResponse({
+
             success: true,
+
             message:
                 "Reward claimed successfully!",
-            reward: REWARD,
-            balance: balance
+
+            reward:
+                REWARD,
+
+            balance:
+                balance
         });
 
     } catch (error) {
