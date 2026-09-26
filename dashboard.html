@@ -2163,6 +2163,74 @@ hr{
 
 </div>
 
+   <!-- CONTACT & SUPPORT MODAL -->
+
+<div
+    id="supportModal"
+    class="modal"
+>
+
+    <div class="modal-content">
+
+        <span
+            class="close"
+            onclick="closeSupport()"
+        >
+            &times;
+        </span>
+
+        <h2>
+            💬 Contact Support
+        </h2>
+
+        <p>
+            Need help with your account,
+            claim or withdrawal?
+        </p>
+
+        <input
+            type="text"
+            id="supportSubject"
+            maxlength="100"
+            placeholder="Subject"
+        >
+
+        <textarea
+            id="supportMessage"
+            maxlength="3000"
+            rows="6"
+            placeholder="Describe your problem..."
+        ></textarea>
+
+        <button
+            type="button"
+            onclick="sendSupportMessage()"
+        >
+            📩 SEND MESSAGE
+        </button>
+
+        <div
+            id="supportNotification"
+            class="notification"
+        ></div>
+
+        <hr>
+
+        <button
+            type="button"
+            onclick="loadSupportMessages()"
+        >
+            📬 MY SUPPORT MESSAGES
+        </button>
+
+        <div
+            id="supportMessages"
+            style="margin-top:15px;"
+        ></div>
+
+    </div>
+
+</div> 
 
 <script>
 
@@ -3219,7 +3287,331 @@ window.onclick=function(event){
     }
 };
 
+/* =================================================
+   CONTACT & SUPPORT
+================================================= */
 
+function openSupport(){
+
+    document.getElementById(
+        "supportModal"
+    ).style.display = "block";
+
+}
+
+
+function closeSupport(){
+
+    document.getElementById(
+        "supportModal"
+    ).style.display = "none";
+
+}
+
+
+/* =================================================
+   SEND SUPPORT MESSAGE
+================================================= */
+
+async function sendSupportMessage(){
+
+    const subject =
+        document.getElementById(
+            "supportSubject"
+        ).value.trim();
+
+    const message =
+        document.getElementById(
+            "supportMessage"
+        ).value.trim();
+
+
+    const notification =
+        document.getElementById(
+            "supportNotification"
+        );
+
+
+    if(!subject){
+
+        notification.innerText =
+            "❌ Please enter a subject.";
+
+        notification.style.display =
+            "block";
+
+        return;
+    }
+
+
+    if(!message){
+
+        notification.innerText =
+            "❌ Please enter your message.";
+
+        notification.style.display =
+            "block";
+
+        return;
+    }
+
+
+    notification.innerText =
+        "⏳ Sending message...";
+
+    notification.style.display =
+        "block";
+
+
+    try{
+
+        const response =
+            await fetch(
+                "/api/support",
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:JSON.stringify({
+                        subject:
+                            subject,
+
+                        message:
+                            message
+                    })
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if(result.success){
+
+            notification.innerText =
+                "✅ Your support request has been sent.";
+
+            document.getElementById(
+                "supportSubject"
+            ).value = "";
+
+            document.getElementById(
+                "supportMessage"
+            ).value = "";
+
+            loadSupportMessages();
+
+        }else{
+
+            notification.innerText =
+                "❌ " +
+                (
+                    result.errorMessage ||
+                    "Unable to send support request."
+                );
+
+        }
+
+    }catch(error){
+
+        console.error(
+            "Support error:",
+            error
+        );
+
+        notification.innerText =
+            "❌ Connection error.";
+
+    }
+
+}
+
+
+/* =================================================
+   LOAD SUPPORT MESSAGES
+================================================= */
+
+async function loadSupportMessages(){
+
+    const container =
+        document.getElementById(
+            "supportMessages"
+        );
+
+
+    container.innerHTML =
+        "⏳ Loading support messages...";
+
+
+    try{
+
+        const response =
+            await fetch(
+                "/api/support"
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if(!result.success){
+
+            container.innerHTML =
+                "❌ " +
+                (
+                    result.errorMessage ||
+                    "Unable to load messages."
+                );
+
+            return;
+        }
+
+
+        if(
+            !result.tickets ||
+            result.tickets.length === 0
+        ){
+
+            container.innerHTML =
+                "<p>No support messages yet.</p>";
+
+            return;
+        }
+
+
+        let html = "";
+
+
+        result.tickets.forEach(
+            ticket => {
+
+                html += `
+                    <div
+                        style="
+                            margin-bottom:15px;
+                            padding:15px;
+                            border-radius:12px;
+                            background:rgba(15,23,42,.7);
+                        "
+                    >
+
+                        <strong>
+                            ${escapeHtml(
+                                ticket.subject
+                            )}
+                        </strong>
+
+                        <div
+                            style="
+                                margin-top:6px;
+                                font-size:12px;
+                                color:#94a3b8;
+                            "
+                        >
+                            Status:
+                            ${escapeHtml(
+                                ticket.status
+                            )}
+                        </div>
+                `;
+
+
+                if(
+                    ticket.messages &&
+                    ticket.messages.length
+                ){
+
+                    ticket.messages.forEach(
+                        msg => {
+
+                            const sender =
+                                msg.sender_type ===
+                                "admin"
+                                    ? "🛠️ Support"
+                                    : "👤 You";
+
+
+                            html += `
+                                <div
+                                    style="
+                                        margin-top:10px;
+                                        padding:10px;
+                                        border-radius:10px;
+                                        background:${
+                                            msg.sender_type ===
+                                            "admin"
+                                                ? "rgba(37,99,235,.16)"
+                                                : "rgba(255,255,255,.05)"
+                                        };
+                                    "
+                                >
+
+                                    <strong>
+                                        ${sender}
+                                    </strong>
+
+                                    <div
+                                        style="
+                                            margin-top:5px;
+                                            white-space:pre-wrap;
+                                        "
+                                    >
+                                        ${escapeHtml(
+                                            msg.message
+                                        )}
+                                    </div>
+
+                                    <small
+                                        style="
+                                            color:#64748b;
+                                        "
+                                    >
+                                        ${escapeHtml(
+                                            msg.created_at
+                                        )}
+                                    </small>
+
+                                </div>
+                            `;
+
+                        }
+                    );
+
+                }
+
+
+                html += `
+                    </div>
+                `;
+
+            }
+        );
+
+
+        container.innerHTML =
+            html;
+
+
+    }catch(error){
+
+        console.error(
+            "Support messages error:",
+            error
+        );
+
+        container.innerHTML =
+            "❌ Connection error.";
+
+    }
+
+}
+    
 /* =========================================
    INITIAL LOAD
 ========================================= */
