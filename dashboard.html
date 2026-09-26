@@ -2612,74 +2612,128 @@ hr{
 
 </div>
 
-   <!-- CONTACT & SUPPORT MODAL -->
+ <!-- CONTACT & SUPPORT MODAL -->
 
 <div
     id="supportModal"
-    class="modal"
+    class="support-modal-overlay"
 >
 
-    <div class="modal-content">
+    <div class="support-modal">
 
-        <span
-            class="close"
+        <button
+            type="button"
+            class="support-close"
             onclick="closeSupport()"
+            aria-label="Close"
         >
-            &times;
-        </span>
+            ×
+        </button>
 
-        <h2>
-            💬 Contact Support
-        </h2>
 
-        <p>
-            Need help with your account,
-            claim or withdrawal?
-        </p>
+        <!-- HEADER -->
+
+        <div class="support-modal-header">
+
+            <div class="support-icon">
+                💬
+            </div>
+
+            <div>
+
+                <h2>
+                    Contact Support
+                </h2>
+
+                <p>
+                    Need help with your account, claim or withdrawal?
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- DIVIDER -->
+
+        <div class="support-divider"></div>
+
+
+        <!-- SUBJECT -->
+
+        <label
+            class="support-label"
+            for="supportSubject"
+        >
+            Subject
+        </label>
 
         <input
             type="text"
             id="supportSubject"
+            class="support-input"
             maxlength="100"
-            placeholder="Subject"
+            placeholder="Enter your subject"
         >
+
+
+        <!-- MESSAGE -->
+
+        <label
+            class="support-label"
+            for="supportMessage"
+        >
+            Message
+        </label>
 
         <textarea
             id="supportMessage"
+            class="support-textarea"
             maxlength="3000"
-            rows="6"
             placeholder="Describe your problem..."
         ></textarea>
 
+
+        <!-- NOTIFICATION -->
+
+        <div
+            id="supportNotification"
+            class="support-notification"
+        ></div>
+
+
+        <!-- SEND -->
+
         <button
             type="button"
+            class="support-send-button"
             onclick="sendSupportMessage()"
         >
             📩 SEND MESSAGE
         </button>
 
-        <div
-            id="supportNotification"
-            class="notification"
-        ></div>
 
-        <hr>
+        <!-- MY MESSAGES -->
 
         <button
             type="button"
+            class="support-messages-button"
             onclick="loadSupportMessages()"
         >
             📬 MY SUPPORT MESSAGES
         </button>
 
+
+        <!-- MESSAGES -->
+
         <div
             id="supportMessages"
-            style="margin-top:15px;"
+            class="support-messages-container"
         ></div>
 
     </div>
 
-</div> 
+</div>  
 
 <script>
 
