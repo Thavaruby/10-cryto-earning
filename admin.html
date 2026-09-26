@@ -884,6 +884,464 @@
     }  
 
 
+/* =========================================================
+   ADMIN SUPPORT INBOX
+========================================================= */
+
+.support-section {
+    margin-top: 28px;
+    padding-top: 25px;
+    border-top: 1px solid #dde3ea;
+}
+
+.support-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 17px;
+}
+
+.support-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.support-icon {
+    width: 32px;
+    height: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #e9eef5;
+    border: 1px solid #dce3ec;
+    border-radius: 7px;
+
+    font-size: 15px;
+}
+
+.support-refresh {
+    background: #1f4f8f;
+    color: #ffffff;
+    border: 1px solid #1f4f8f;
+}
+
+.support-refresh:hover {
+    background: #1a4278;
+}
+
+.support-tabs {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    margin-bottom: 16px;
+    padding: 5px;
+
+    background: #e9edf2;
+    border: 1px solid #dce2e9;
+    border-radius: 7px;
+
+    width: fit-content;
+}
+
+.support-tab {
+    background: transparent;
+    color: #626d7d;
+
+    border: 1px solid transparent;
+
+    padding: 8px 13px;
+    border-radius: 5px;
+
+    font-size: 11px;
+    font-weight: 650;
+}
+
+.support-tab:hover {
+    background: #f8fafc;
+    color: #263247;
+}
+
+.support-tab.active {
+    background: #ffffff;
+    color: #172033;
+    border-color: #d8dee7;
+
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+#supportAdminMessage {
+    min-height: 20px;
+    margin: 10px 0;
+
+    color: #697586;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.support-list {
+    display: grid;
+    gap: 10px;
+}
+
+.support-ticket {
+    background: #ffffff;
+
+    border: 1px solid #dde3ea;
+    border-radius: 8px;
+
+    padding: 15px 16px;
+
+    cursor: pointer;
+
+    transition:
+        border-color .15s ease,
+        background-color .15s ease;
+}
+
+.support-ticket:hover {
+    background: #fafbfd;
+    border-color: #cbd5e1;
+}
+
+.support-ticket-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    gap: 15px;
+}
+
+.support-ticket-subject {
+    color: #263247;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.support-ticket-email {
+    margin-top: 5px;
+
+    color: #7b8494;
+    font-size: 11px;
+}
+
+.support-ticket-preview {
+    margin-top: 10px;
+
+    color: #697586;
+    font-size: 11px;
+    line-height: 1.5;
+
+    word-break: break-word;
+}
+
+.support-ticket-date {
+    margin-top: 9px;
+
+    color: #9aa3b1;
+    font-size: 10px;
+}
+
+.support-status {
+    display: inline-flex;
+    align-items: center;
+
+    flex-shrink: 0;
+
+    padding: 4px 8px;
+
+    border-radius: 5px;
+
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .035em;
+}
+
+.support-status.open {
+    background: #fff6df;
+    color: #986008;
+    border: 1px solid #f1dfaf;
+}
+
+.support-status.replied {
+    background: #edf5ff;
+    color: #1d5595;
+    border: 1px solid #cfe1f6;
+}
+
+.support-empty {
+    padding: 42px 20px;
+
+    text-align: center;
+
+    background: #ffffff;
+    border: 1px solid #dde3ea;
+    border-radius: 8px;
+
+    color: #7d8796;
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   SUPPORT CONVERSATION
+========================================================= */
+
+.support-conversation {
+    display: none;
+
+    position: fixed;
+    inset: 0;
+
+    z-index: 1100;
+
+    padding: 20px;
+
+    background: rgba(15, 23, 42, .55);
+
+    align-items: center;
+    justify-content: center;
+}
+
+.support-conversation.show {
+    display: flex;
+}
+
+.support-conversation-box {
+    width: 100%;
+    max-width: 650px;
+    max-height: 90vh;
+
+    display: flex;
+    flex-direction: column;
+
+    background: #ffffff;
+
+    border: 1px solid #dce2e9;
+    border-radius: 9px;
+
+    box-shadow:
+        0 18px 45px rgba(15, 23, 42, .20);
+
+    overflow: hidden;
+}
+
+.support-conversation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    gap: 15px;
+
+    padding: 17px 19px;
+
+    border-bottom: 1px solid #e5e9ee;
+}
+
+.support-conversation-header h3 {
+    margin: 0;
+
+    color: #172033;
+
+    font-size: 16px;
+    font-weight: 650;
+}
+
+.support-conversation-header p {
+    margin: 5px 0 0;
+
+    color: #7b8494;
+
+    font-size: 11px;
+}
+
+.support-close {
+    width: 34px;
+    height: 34px;
+
+    padding: 0;
+
+    background: #f4f6f8;
+    color: #697586;
+
+    border: 1px solid #dce2e9;
+    border-radius: 6px;
+
+    font-size: 18px;
+}
+
+.support-close:hover {
+    background: #e9edf2;
+}
+
+.support-messages {
+    flex: 1;
+
+    overflow-y: auto;
+
+    padding: 18px;
+
+    background: #f8fafc;
+}
+
+.support-message {
+    max-width: 82%;
+
+    margin-bottom: 13px;
+    padding: 11px 13px;
+
+    border-radius: 8px;
+
+    font-size: 12px;
+    line-height: 1.6;
+
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.support-message.user {
+    margin-right: auto;
+
+    background: #ffffff;
+
+    border: 1px solid #dde3ea;
+
+    color: #3f4b5d;
+}
+
+.support-message.admin {
+    margin-left: auto;
+
+    background: #edf5ff;
+
+    border: 1px solid #cfe1f6;
+
+    color: #234a78;
+}
+
+.support-message-meta {
+    margin-bottom: 5px;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: .035em;
+
+    opacity: .75;
+}
+
+.support-reply-area {
+    padding: 15px 18px;
+
+    background: #ffffff;
+
+    border-top: 1px solid #e5e9ee;
+}
+
+.support-reply-area textarea {
+    width: 100%;
+    min-height: 95px;
+
+    padding: 11px 13px;
+
+    resize: vertical;
+
+    background: #f8fafc;
+    color: #263247;
+
+    border: 1px solid #d5dce5;
+    border-radius: 7px;
+
+    outline: none;
+
+    font-family: inherit;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.support-reply-area textarea:focus {
+    border-color: #8da9c8;
+
+    box-shadow:
+        0 0 0 3px rgba(31,79,143,.08);
+}
+
+.support-reply-actions {
+    display: flex;
+    justify-content: flex-end;
+
+    margin-top: 9px;
+}
+
+.support-reply-button {
+    background: #1f4f8f;
+    color: #ffffff;
+
+    border: 1px solid #1f4f8f;
+}
+
+.support-reply-button:hover {
+    background: #1a4278;
+}
+
+
+/* =========================================================
+   MOBILE SUPPORT
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .support-header {
+        align-items: stretch;
+    }
+
+    .support-refresh {
+        width: 100%;
+    }
+
+    .support-tabs {
+        width: 100%;
+
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+
+        gap: 5px;
+    }
+
+    .support-tab {
+        width: 100%;
+        padding: 9px 5px;
+        text-align: center;
+    }
+
+    .support-conversation {
+        padding: 10px;
+    }
+
+    .support-conversation-box {
+        max-height: 94vh;
+    }
+
+    .support-message {
+        max-width: 92%;
+    }
+
+    .support-reply-actions {
+        display: block;
+    }
+
+    .support-reply-button {
+        width: 100%;
+    }
+}
+            
     /* =========================================================  
        FOOTER  
     ========================================================= */  
@@ -1599,6 +2057,97 @@
     </div>  
 
 
+<!-- =====================================================
+     ADMIN SUPPORT INBOX
+====================================================== -->
+
+<section class="support-section">
+
+    <div class="support-header">
+
+        <div class="support-title">
+
+            <div class="support-icon">
+                💬
+            </div>
+
+            <div>
+
+                <h2>
+                    Support Inbox
+                </h2>
+
+                <div class="section-description">
+                    View user support requests and reply to users
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <button
+            class="support-refresh"
+            id="supportRefreshButton"
+            onclick="loadSupportTickets()"
+            type="button"
+        >
+            🔄 Refresh Support
+        </button>
+
+    </div>
+
+
+    <!-- =================================================
+         SUPPORT TABS
+    ================================================== -->
+
+    <div class="support-tabs">
+
+        <button
+            class="support-tab active"
+            data-support-status="open"
+            onclick="changeSupportTab('open')"
+            type="button"
+        >
+            🟠 Open
+        </button>
+
+
+        <button
+            class="support-tab"
+            data-support-status="replied"
+            onclick="changeSupportTab('replied')"
+            type="button"
+        >
+            🔵 Replied
+        </button>
+
+
+        <button
+            class="support-tab"
+            data-support-status="all"
+            onclick="changeSupportTab('all')"
+            type="button"
+        >
+            📋 All
+        </button>
+
+    </div>
+
+
+    <div id="supportAdminMessage">
+        ⏳ Loading support tickets...
+    </div>
+
+
+    <div
+        id="supportTicketList"
+        class="support-list"
+    ></div>
+
+</section>
+    
 </section>
 
 </div>  <!-- =========================================================  
@@ -1651,7 +2200,89 @@
 
 </div>
 
-</div>  <script>  
+</div>  
+    
+   <!-- =====================================================
+     SUPPORT CONVERSATION MODAL
+====================================================== -->
+
+<div
+    class="support-conversation"
+    id="supportConversation"
+>
+
+    <div class="support-conversation-box">
+
+
+        <!-- HEADER -->
+
+        <div class="support-conversation-header">
+
+            <div>
+
+                <h3 id="supportConversationSubject">
+                    Support Ticket
+                </h3>
+
+                <p id="supportConversationUser">
+                    —
+                </p>
+
+            </div>
+
+
+            <button
+                class="support-close"
+                onclick="closeSupportConversation()"
+                type="button"
+                aria-label="Close"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <!-- MESSAGES -->
+
+        <div
+            class="support-messages"
+            id="supportConversationMessages"
+        >
+            ⏳ Loading conversation...
+        </div>
+
+
+        <!-- REPLY -->
+
+        <div class="support-reply-area">
+
+            <textarea
+                id="supportReplyMessage"
+                maxlength="3000"
+                placeholder="Write your reply to the user..."
+            ></textarea>
+
+
+            <div class="support-reply-actions">
+
+                <button
+                    class="support-reply-button"
+                    id="supportReplyButton"
+                    onclick="sendAdminSupportReply()"
+                    type="button"
+                >
+                    📩 Send Reply
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div> 
+    <script>  
   
 /* =========================================================  
    GLOBAL STATE  
@@ -2834,5 +3465,648 @@ document.addEventListener(
 loadStats();  
   
 loadWithdrawals();  
+
+
+  /* =========================================================
+   ADMIN SUPPORT STATE
+========================================================= */
+
+let currentSupportStatus = "open";
+
+let selectedSupportTicketId = null;
+
+let supportProcessing = false;
+
+
+/* =========================================================
+   CHANGE SUPPORT TAB
+========================================================= */
+
+function changeSupportTab(status) {
+
+    if (supportProcessing) {
+        return;
+    }
+
+
+    currentSupportStatus = status;
+
+
+    document
+        .querySelectorAll(".support-tab")
+        .forEach(button => {
+
+            button.classList.toggle(
+                "active",
+                button.dataset.supportStatus === status
+            );
+
+        });
+
+
+    loadSupportTickets();
+
+}
+
+
+/* =========================================================
+   LOAD SUPPORT TICKETS
+========================================================= */
+
+async function loadSupportTickets() {
+
+    const message =
+        document.getElementById(
+            "supportAdminMessage"
+        );
+
+    const container =
+        document.getElementById(
+            "supportTicketList"
+        );
+
+    const refreshButton =
+        document.getElementById(
+            "supportRefreshButton"
+        );
+
+
+    message.innerText =
+        "⏳ Loading support tickets...";
+
+    container.innerHTML = "";
+
+    refreshButton.disabled = true;
+
+
+    try {
+
+        const response =
+            await fetch(
+                `/api/admin/support?status=${encodeURIComponent(currentSupportStatus)}`,
+                {
+                    method: "GET",
+
+                    credentials:
+                        "same-origin",
+
+                    cache: "no-store"
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !result.success
+        ) {
+
+            message.innerText =
+                "❌ " + (
+                    result.error ||
+                    "Unable to load support tickets."
+                );
+
+            return;
+        }
+
+
+        const tickets =
+            Array.isArray(result.tickets)
+                ? result.tickets
+                : [];
+
+
+        if (tickets.length === 0) {
+
+            message.innerText =
+                `0 ${currentSupportStatus} support ticket(s)`;
+
+
+            container.innerHTML = `
+                <div class="support-empty">
+                    ${
+                        currentSupportStatus === "open"
+                            ? "No open support tickets."
+                            : currentSupportStatus === "replied"
+                                ? "No replied support tickets."
+                                : "No support tickets found."
+                    }
+                </div>
+            `;
+
+            return;
+        }
+
+
+        message.innerText =
+            `${tickets.length} ${currentSupportStatus} support ticket(s)`;
+
+
+        container.innerHTML =
+            tickets
+                .map(ticket =>
+                    createSupportTicket(ticket)
+                )
+                .join("");
+
+
+    } catch (error) {
+
+        console.error(
+            "Load support tickets error:",
+            error
+        );
+
+        message.innerText =
+            "❌ Unable to load support tickets.";
+
+    } finally {
+
+        refreshButton.disabled = false;
+
+    }
+
+}
+
+
+/* =========================================================
+   CREATE SUPPORT TICKET
+========================================================= */
+
+function createSupportTicket(ticket) {
+
+    const status =
+        String(
+            ticket.status || ""
+        ).toLowerCase();
+
+
+    const subject =
+        escapeHtml(
+            ticket.subject || "No subject"
+        );
+
+
+    const email =
+        escapeHtml(
+            ticket.email || "Unknown user"
+        );
+
+
+    const preview =
+        escapeHtml(
+            ticket.latest_message ||
+            "No message"
+        );
+
+
+    const date =
+        formatDate(
+            ticket.updated_at ||
+            ticket.created_at
+        );
+
+
+    const sender =
+        ticket.latest_sender === "admin"
+            ? "Admin replied"
+            : "User message";
+
+
+    return `
+
+        <div
+            class="support-ticket"
+            onclick="openSupportTicket(${Number(ticket.id)})"
+        >
+
+            <div class="support-ticket-top">
+
+                <div>
+
+                    <div class="support-ticket-subject">
+                        #${escapeHtml(String(ticket.id))}
+                        · ${subject}
+                    </div>
+
+                    <div class="support-ticket-email">
+                        ${email}
+                    </div>
+
+                </div>
+
+
+                <span class="support-status ${status}">
+                    ${escapeHtml(status.toUpperCase())}
+                </span>
+
+            </div>
+
+
+            <div class="support-ticket-preview">
+                <strong>${sender}:</strong>
+                ${preview}
+            </div>
+
+
+            <div class="support-ticket-date">
+                Updated: ${date}
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   OPEN SUPPORT TICKET
+========================================================= */
+
+async function openSupportTicket(ticketId) {
+
+    if (supportProcessing) {
+        return;
+    }
+
+
+    selectedSupportTicketId =
+        Number(ticketId);
+
+
+    const modal =
+        document.getElementById(
+            "supportConversation"
+        );
+
+    const subject =
+        document.getElementById(
+            "supportConversationSubject"
+        );
+
+    const user =
+        document.getElementById(
+            "supportConversationUser"
+        );
+
+    const messages =
+        document.getElementById(
+            "supportConversationMessages"
+        );
+
+
+    subject.innerText =
+        "Support Ticket #" +
+        ticketId;
+
+    user.innerText =
+        "Loading user information...";
+
+    messages.innerHTML =
+        "⏳ Loading conversation...";
+
+
+    modal.classList.add("show");
+
+
+    try {
+
+        const response =
+            await fetch(
+                `/api/admin/support?ticketId=${encodeURIComponent(ticketId)}`,
+                {
+                    method: "GET",
+
+                    credentials:
+                        "same-origin",
+
+                    cache: "no-store"
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !result.success
+        ) {
+
+            messages.innerHTML =
+                `
+                <div class="support-empty">
+                    ❌ ${
+                        escapeHtml(
+                            result.error ||
+                            "Unable to load conversation."
+                        )
+                    }
+                </div>
+                `;
+
+            return;
+        }
+
+
+        subject.innerText =
+            "#" +
+            result.ticket.id +
+            " · " +
+            (
+                result.ticket.subject ||
+                "Support Ticket"
+            );
+
+
+        user.innerText =
+            (
+                result.ticket.email ||
+                "Unknown user"
+            ) +
+            " · User ID: " +
+            result.ticket.user_id;
+
+
+        const conversation =
+            Array.isArray(result.messages)
+                ? result.messages
+                : [];
+
+
+        if (conversation.length === 0) {
+
+            messages.innerHTML =
+                `
+                <div class="support-empty">
+                    No messages found.
+                </div>
+                `;
+
+            return;
+        }
+
+
+        messages.innerHTML =
+            conversation
+                .map(message =>
+                    createSupportMessage(message)
+                )
+                .join("");
+
+
+        messages.scrollTop =
+            messages.scrollHeight;
+
+
+    } catch (error) {
+
+        console.error(
+            "Open support ticket error:",
+            error
+        );
+
+
+        messages.innerHTML =
+            `
+            <div class="support-empty">
+                ❌ Unable to load conversation.
+            </div>
+            `;
+    }
+
+}
+
+
+/* =========================================================
+   CREATE SUPPORT MESSAGE
+========================================================= */
+
+function createSupportMessage(message) {
+
+    const sender =
+        message.sender_type === "admin"
+            ? "ADMIN"
+            : "USER";
+
+
+    const className =
+        message.sender_type === "admin"
+            ? "admin"
+            : "user";
+
+
+    return `
+
+        <div class="support-message ${className}">
+
+            <div class="support-message-meta">
+                ${sender}
+                ·
+                ${formatDate(message.created_at)}
+            </div>
+
+            ${escapeHtml(message.message)}
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   SEND ADMIN SUPPORT REPLY
+========================================================= */
+
+async function sendAdminSupportReply() {
+
+    if (
+        supportProcessing ||
+        !selectedSupportTicketId
+    ) {
+        return;
+    }
+
+
+    const textarea =
+        document.getElementById(
+            "supportReplyMessage"
+        );
+
+
+    const button =
+        document.getElementById(
+            "supportReplyButton"
+        );
+
+
+    const message =
+        textarea.value.trim();
+
+
+    if (!message) {
+
+        textarea.focus();
+
+        return;
+    }
+
+
+    if (message.length > 3000) {
+
+        return;
+    }
+
+
+    supportProcessing = true;
+
+    button.disabled = true;
+
+    button.innerText =
+        "⏳ Sending...";
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/admin/support",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    credentials:
+                        "same-origin",
+
+                    body: JSON.stringify({
+
+                        ticketId:
+                            selectedSupportTicketId,
+
+                        message:
+                            message
+
+                    })
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !result.success
+        ) {
+
+            alert(
+                result.error ||
+                "Unable to send reply."
+            );
+
+            return;
+        }
+
+
+        textarea.value = "";
+
+
+        await openSupportTicket(
+            selectedSupportTicketId
+        );
+
+
+        await loadSupportTickets();
+
+
+    } catch (error) {
+
+        console.error(
+            "Admin support reply error:",
+            error
+        );
+
+
+        alert(
+            "Unable to connect to the support server."
+        );
+
+
+    } finally {
+
+        supportProcessing = false;
+
+        button.disabled = false;
+
+        button.innerText =
+            "📩 Send Reply";
+
+    }
+
+}
+
+
+/* =========================================================
+   CLOSE SUPPORT CONVERSATION
+========================================================= */
+
+function closeSupportConversation() {
+
+    document
+        .getElementById(
+            "supportConversation"
+        )
+        .classList.remove("show");
+
+
+    selectedSupportTicketId = null;
+
+
+    document.getElementById(
+        "supportReplyMessage"
+    ).value = "";
+
+}
+
+
+/* =========================================================
+   SUPPORT MODAL OUTSIDE CLICK
+========================================================= */
+
+document
+    .getElementById("supportConversation")
+    .addEventListener(
+        "click",
+        function(event) {
+
+            if (
+                event.target === this
+            ) {
+
+                closeSupportConversation();
+
+            }
+
+        }
+    );
+
+
+/* =========================================================
+   SUPPORT INITIAL LOAD
+========================================================= */
+
+loadSupportTickets();
   
 </script>  </body>  </html>
