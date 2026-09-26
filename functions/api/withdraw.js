@@ -1155,7 +1155,130 @@ try {
         );  
     }  
 
+/* =================================================
+   7. VERIFY FAUCETPAY BTC ADDRESS
 
+   IMPORTANT:
+   This check happens BEFORE creating the
+   withdrawal record.
+
+   Therefore, a non-FaucetPay BTC address
+   will NOT create a pending withdrawal.
+   ================================================= */
+
+const apiKey =
+    context.env.FAUCETPAY_API_KEY;
+
+
+if (!apiKey) {
+
+    console.error(
+        "FAUCETPAY_API_KEY IS NOT CONFIGURED."
+    );
+
+    return jsonResponse(
+        {
+            success: false,
+            errorMessage:
+                "FaucetPay service is not configured."
+        },
+        500
+    );
+}
+
+
+let faucetPayAddressResponse;
+
+
+try {
+
+    faucetPayAddressResponse =
+        await fetch(
+            "https://faucetpay.io/api/v2/check-address",
+            {
+                method: "POST",
+
+                headers: {
+                    "Authorization":
+                        `Bearer ${apiKey}`,
+
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify({
+                    address:
+                        walletAddress
+                })
+            }
+        );
+
+} catch {
+
+    console.error(
+        "FAUCETPAY ADDRESS CHECK NETWORK ERROR."
+    );
+
+    return jsonResponse(
+        {
+            success: false,
+            errorMessage:
+                "Unable to verify the FaucetPay BTC address. Please try again."
+        },
+        502
+    );
+}
+
+
+let faucetPayAddressResult = null;
+
+
+try {
+
+    faucetPayAddressResult =
+        await faucetPayAddressResponse.json();
+
+} catch {
+
+    faucetPayAddressResult = null;
+}
+
+
+if (!faucetPayAddressResult) {
+
+    console.error(
+        "FAUCETPAY ADDRESS CHECK RETURNED INVALID RESPONSE."
+    );
+
+    return jsonResponse(
+        {
+            success: false,
+            errorMessage:
+                "Unable to verify the FaucetPay BTC address. Please try again."
+        },
+        502
+    );
+}
+
+
+/* =================================================
+   ADDRESS NOT REGISTERED WITH FAUCETPAY
+   ================================================= */
+
+if (
+    faucetPayAddressResult.success !== true
+) {
+
+    return jsonResponse(
+        {
+            success: false,
+            errorMessage:
+                "This is not a FaucetPay BTC address. Please enter your FaucetPay BTC address."
+        },
+        400
+    );
+}
+    
     /* =================================================  
        7. FRIENDLY DUPLICATE CHECK  
        ================================================= */  
