@@ -1,2542 +1,2500 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>Admin Dashboard - My Crypto Faucet</title>
-<meta name="robots" content="noindex, nofollow">
-    
-    <style>
-
-        /* =========================================================
-           RESET
-        ========================================================= */
-
-        * {
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            margin: 0;
-            font-family:
-                Inter,
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                Arial,
-                sans-serif;
-            background: #f4f6f8;
-            color: #172033;
-        }
+<!DOCTYPE html>  <html lang="en">  <head>  <meta charset="UTF-8">  
+
+<meta  
+    name="viewport"  
+    content="width=device-width, initial-scale=1.0"  
+>  
+
+<title>Admin Dashboard - My Crypto Faucet</title>
+
+<meta name="robots" content="noindex, nofollow">  <style>  
+
+    /* =========================================================  
+       RESET  
+    ========================================================= */  
+
+    * {  
+        box-sizing: border-box;  
+    }  
+
+    html {  
+        scroll-behavior: smooth;  
+    }  
+
+    body {  
+        margin: 0;  
+        font-family:  
+            Inter,  
+            -apple-system,  
+            BlinkMacSystemFont,  
+            "Segoe UI",  
+            Arial,  
+            sans-serif;  
+        background: #f4f6f8;  
+        color: #172033;  
+    }  
 
-        button,
-        input {
-            font-family: inherit;
-        }
+    button,  
+    input {  
+        font-family: inherit;  
+    }  
 
-        button {
-            -webkit-tap-highlight-color: transparent;
-        }
+    button {  
+        -webkit-tap-highlight-color: transparent;  
+    }  
 
 
-        /* =========================================================
-           HEADER
-        ========================================================= */
+    /* =========================================================  
+       HEADER  
+    ========================================================= */  
 
-        header {
-            background: #111827;
-            color: #ffffff;
-            border-bottom: 1px solid #273244;
-            padding: 17px 22px;
-        }
+    header {  
+        background: #111827;  
+        color: #ffffff;  
+        border-bottom: 1px solid #273244;  
+        padding: 17px 22px;  
+    }  
 
-        .header-inner {
-            width: 100%;
-            max-width: 1250px;
-            margin: 0 auto;
+    .header-inner {  
+        width: 100%;  
+        max-width: 1250px;  
+        margin: 0 auto;  
 
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        display: flex;  
+        align-items: center;  
+        justify-content: space-between;  
 
-            gap: 20px;
-        }
+        gap: 20px;  
+    }  
 
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+    .brand {  
+        display: flex;  
+        align-items: center;  
+        gap: 12px;  
+    }  
 
-        .brand-icon {
-            width: 42px;
-            height: 42px;
+    .brand-icon {  
+        width: 42px;  
+        height: 42px;  
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        display: flex;  
+        align-items: center;  
+        justify-content: center;  
 
-            background: #1f2937;
-            border: 1px solid #374151;
-            border-radius: 8px;
+        background: #1f2937;  
+        border: 1px solid #374151;  
+        border-radius: 8px;  
 
-            font-size: 20px;
-        }
+        font-size: 20px;  
+    }  
 
-        .brand-text h1 {
-            margin: 0;
+    .brand-text h1 {  
+        margin: 0;  
 
-            font-size: 19px;
-            font-weight: 600;
-            letter-spacing: 0.1px;
-        }
+        font-size: 19px;  
+        font-weight: 600;  
+        letter-spacing: 0.1px;  
+    }  
 
-        .brand-text p {
-            margin: 4px 0 0;
+    .brand-text p {  
+        margin: 4px 0 0;  
 
-            color: #9ca3af;
-            font-size: 11px;
-        }
+        color: #9ca3af;  
+        font-size: 11px;  
+    }  
 
-        .admin-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+    .admin-badge {  
+        display: inline-flex;  
+        align-items: center;  
+        gap: 6px;  
 
-            padding: 7px 10px;
+        padding: 7px 10px;  
 
-            border: 1px solid #374151;
-            border-radius: 6px;
+        border: 1px solid #374151;  
+        border-radius: 6px;  
 
-            color: #d1d5db;
-            background: #1f2937;
+        color: #d1d5db;  
+        background: #1f2937;  
 
-            font-size: 11px;
-            font-weight: 600;
-        }
+        font-size: 11px;  
+        font-weight: 600;  
+    }  
 
 
-        /* =========================================================
-           MAIN CONTAINER
-        ========================================================= */
+    /* =========================================================  
+       MAIN CONTAINER  
+    ========================================================= */  
 
-        .container {
-            width: calc(100% - 30px);
-            max-width: 1250px;
+    .container {  
+        width: calc(100% - 30px);  
+        max-width: 1250px;  
 
-            margin: 25px auto 45px;
-        }
+        margin: 25px auto 45px;  
+    }  
 
 
-        /* =========================================================
-           SECTION
-        ========================================================= */
+    /* =========================================================  
+       SECTION  
+    ========================================================= */  
 
-        .stats-section {
-            margin-bottom: 28px;
-        }
+    .stats-section {  
+        margin-bottom: 28px;  
+    }  
 
-        .stats-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+    .stats-header {  
+        display: flex;  
+        justify-content: space-between;  
+        align-items: center;  
 
-            gap: 15px;
-            flex-wrap: wrap;
+        gap: 15px;  
+        flex-wrap: wrap;  
 
-            margin-bottom: 14px;
-        }
+        margin-bottom: 14px;  
+    }  
 
-        .section-heading {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+    .section-heading {  
+        display: flex;  
+        align-items: center;  
+        gap: 10px;  
+    }  
 
-        .section-heading-icon {
-            width: 32px;
-            height: 32px;
+    .section-heading-icon {  
+        width: 32px;  
+        height: 32px;  
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        display: flex;  
+        align-items: center;  
+        justify-content: center;  
 
-            background: #e9eef5;
-            border: 1px solid #dce3ec;
-            border-radius: 7px;
+        background: #e9eef5;  
+        border: 1px solid #dce3ec;  
+        border-radius: 7px;  
 
-            font-size: 15px;
-        }
+        font-size: 15px;  
+    }  
 
-        .stats-header h2,
-        .top-bar h2 {
-            margin: 0;
+    .stats-header h2,  
+    .top-bar h2 {  
+        margin: 0;  
 
-            color: #172033;
-            font-size: 17px;
-            font-weight: 600;
-        }
+        color: #172033;  
+        font-size: 17px;  
+        font-weight: 600;  
+    }  
 
-        .section-description {
-            margin-top: 3px;
+    .section-description {  
+        margin-top: 3px;  
 
-            color: #7b8494;
-            font-size: 11px;
-        }
+        color: #7b8494;  
+        font-size: 11px;  
+    }  
 
 
-        /* =========================================================
-           BUTTONS
-        ========================================================= */
+    /* =========================================================  
+       BUTTONS  
+    ========================================================= */  
 
-        button {
-            border: 0;
-            border-radius: 6px;
+    button {  
+        border: 0;  
+        border-radius: 6px;  
 
-            padding: 9px 14px;
+        padding: 9px 14px;  
 
-            cursor: pointer;
+        cursor: pointer;  
 
-            font-size: 12px;
-            font-weight: 600;
+        font-size: 12px;  
+        font-weight: 600;  
 
-            transition:
-                background-color 0.15s ease,
-                border-color 0.15s ease,
-                opacity 0.15s ease;
-        }
+        transition:  
+            background-color 0.15s ease,  
+            border-color 0.15s ease,  
+            opacity 0.15s ease;  
+    }  
 
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+    button:disabled {  
+        opacity: 0.5;  
+        cursor: not-allowed;  
+    }  
 
-        .stats-refresh,
-        .refresh {
-            background: #1f4f8f;
-            color: #ffffff;
+    .stats-refresh,  
+    .refresh {  
+        background: #1f4f8f;  
+        color: #ffffff;  
 
-            border: 1px solid #1f4f8f;
-        }
+        border: 1px solid #1f4f8f;  
+    }  
 
-        .stats-refresh:hover,
-        .refresh:hover {
-            background: #1a4278;
-            border-color: #1a4278;
-        }
+    .stats-refresh:hover,  
+    .refresh:hover {  
+        background: #1a4278;  
+        border-color: #1a4278;  
+    }  
 
 
-        /* =========================================================
-           STATISTICS MESSAGE
-        ========================================================= */
+    /* =========================================================  
+       STATISTICS MESSAGE  
+    ========================================================= */  
 
-        #statsMessage {
-            min-height: 18px;
+    #statsMessage {  
+        min-height: 18px;  
 
-            margin-bottom: 11px;
+        margin-bottom: 11px;  
 
-            color: #7b8494;
-            font-size: 12px;
-        }
+        color: #7b8494;  
+        font-size: 12px;  
+    }  
 
 
-        /* =========================================================
-           STATISTICS GRID
-        ========================================================= */
+    /* =========================================================  
+       STATISTICS GRID  
+    ========================================================= */  
 
-        .stats-grid {
-            display: grid;
+    .stats-grid {  
+        display: grid;  
 
-            grid-template-columns:
-                repeat(4, minmax(0, 1fr));
+        grid-template-columns:  
+            repeat(4, minmax(0, 1fr));  
 
-            gap: 13px;
-        }
+        gap: 13px;  
+    }  
 
-        .stat-card {
-            background: #ffffff;
+    .stat-card {  
+        background: #ffffff;  
 
-            border: 1px solid #e1e6ec;
-            border-radius: 8px;
+        border: 1px solid #e1e6ec;  
+        border-radius: 8px;  
 
-            padding: 16px;
+        padding: 16px;  
 
-            min-height: 116px;
-        }
+        min-height: 116px;  
+    }  
 
-        .stat-card:hover {
-            border-color: #d5dce5;
-        }
+    .stat-card:hover {  
+        border-color: #d5dce5;  
+    }  
 
-        .stat-icon {
-            width: 30px;
-            height: 30px;
+    .stat-icon {  
+        width: 30px;  
+        height: 30px;  
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        display: flex;  
+        align-items: center;  
+        justify-content: center;  
 
-            margin-bottom: 11px;
+        margin-bottom: 11px;  
 
-            background: #f1f4f8;
-            border: 1px solid #e5e9ef;
-            border-radius: 6px;
+        background: #f1f4f8;  
+        border: 1px solid #e5e9ef;  
+        border-radius: 6px;  
 
-            font-size: 14px;
-        }
+        font-size: 14px;  
+    }  
 
-        .stat-title {
-            margin-bottom: 7px;
+    .stat-title {  
+        margin-bottom: 7px;  
 
-            color: #707988;
+        color: #707988;  
 
-            font-size: 10px;
-            font-weight: 700;
+        font-size: 10px;  
+        font-weight: 700;  
 
-            text-transform: uppercase;
-            letter-spacing: 0.045em;
-        }
+        text-transform: uppercase;  
+        letter-spacing: 0.045em;  
+    }  
 
-        .stat-value {
-            color: #172033;
+    .stat-value {  
+        color: #172033;  
 
-            font-size: 20px;
-            font-weight: 650;
+        font-size: 20px;  
+        font-weight: 650;  
 
-            line-height: 1.2;
+        line-height: 1.2;  
 
-            word-break: break-word;
-        }
+        word-break: break-word;  
+    }  
 
-        .stat-sub {
-            margin-top: 5px;
+    .stat-sub {  
+        margin-top: 5px;  
 
-            color: #8b94a3;
+        color: #8b94a3;  
 
-            font-size: 11px;
-        }
+        font-size: 11px;  
+    }  
 
 
-        /* =========================================================
-           TODAY ACTIVITY
-        ========================================================= */
+    /* =========================================================  
+       TODAY ACTIVITY  
+    ========================================================= */  
 
-        .today-section {
-            margin-top: 14px;
-        }
+    .today-section {  
+        margin-top: 14px;  
+    }  
 
-        .today-card {
-            background: #ffffff;
+    .today-card {  
+        background: #ffffff;  
 
-            border: 1px solid #e1e6ec;
-            border-radius: 8px;
+        border: 1px solid #e1e6ec;  
+        border-radius: 8px;  
 
-            padding: 17px;
-        }
+        padding: 17px;  
+    }  
 
-        .today-card h3 {
-            margin: 0 0 14px;
+    .today-card h3 {  
+        margin: 0 0 14px;  
 
-            color: #303b4d;
+        color: #303b4d;  
 
-            font-size: 14px;
-            font-weight: 600;
-        }
+        font-size: 14px;  
+        font-weight: 600;  
+    }  
 
-        .today-grid {
-            display: grid;
+    .today-grid {  
+        display: grid;  
 
-            grid-template-columns:
-                repeat(4, minmax(0, 1fr));
+        grid-template-columns:  
+            repeat(4, minmax(0, 1fr));  
 
-            gap: 12px;
-        }
+        gap: 12px;  
+    }  
 
-        .today-item {
-            background: #f8fafc;
+    .today-item {  
+        background: #f8fafc;  
 
-            border: 1px solid #e7ebf0;
-            border-radius: 7px;
+        border: 1px solid #e7ebf0;  
+        border-radius: 7px;  
 
-            padding: 13px;
-        }
+        padding: 13px;  
+    }  
 
-        .today-item-title {
-            margin-bottom: 6px;
+    .today-item-title {  
+        margin-bottom: 6px;  
 
-            color: #7b8494;
-            font-size: 11px;
-        }
+        color: #7b8494;  
+        font-size: 11px;  
+    }  
 
-        .today-item-value {
-            color: #263247;
+    .today-item-value {  
+        color: #263247;  
 
-            font-size: 16px;
-            font-weight: 650;
-        }
+        font-size: 16px;  
+        font-weight: 650;  
+    }  
 
 
-        /* =========================================================
-           WITHDRAWAL SECTION
-        ========================================================= */
+    /* =========================================================  
+       WITHDRAWAL SECTION  
+    ========================================================= */  
 
-        .withdrawal-section {
-            border-top: 1px solid #dde3ea;
+    .withdrawal-section {  
+        border-top: 1px solid #dde3ea;  
 
-            padding-top: 25px;
-        }
+        padding-top: 25px;  
+    }  
 
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+    .top-bar {  
+        display: flex;  
+        justify-content: space-between;  
+        align-items: center;  
 
-            gap: 15px;
-            flex-wrap: wrap;
+        gap: 15px;  
+        flex-wrap: wrap;  
 
-            margin-bottom: 17px;
-        }
+        margin-bottom: 17px;  
+    }  
 
-        .withdrawal-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+    .withdrawal-title {  
+        display: flex;  
+        align-items: center;  
+        gap: 10px;  
+    }  
 
-        .withdrawal-icon {
-            width: 32px;
-            height: 32px;
+    .withdrawal-icon {  
+        width: 32px;  
+        height: 32px;  
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        display: flex;  
+        align-items: center;  
+        justify-content: center;  
 
-            background: #e9eef5;
-            border: 1px solid #dce3ec;
-            border-radius: 7px;
+        background: #e9eef5;  
+        border: 1px solid #dce3ec;  
+        border-radius: 7px;  
 
-            font-size: 15px;
-        }
+        font-size: 15px;  
+    }  
 
 
-        /* =========================================================
-           TABS
-        ========================================================= */
+    /* =========================================================  
+       TABS  
+    ========================================================= */  
 
-        .tabs {
-            display: flex;
-            align-items: center;
+    .tabs {  
+        display: flex;  
+        align-items: center;  
 
-            gap: 5px;
+        gap: 5px;  
 
-            margin-bottom: 16px;
+        margin-bottom: 16px;  
 
-            padding: 5px;
+        padding: 5px;  
 
-            background: #e9edf2;
+        background: #e9edf2;  
 
-            border: 1px solid #dce2e9;
-            border-radius: 7px;
+        border: 1px solid #dce2e9;  
+        border-radius: 7px;  
 
-            width: fit-content;
-        }
+        width: fit-content;  
+    }  
 
-        .tab {
-            background: transparent;
-            color: #626d7d;
+    .tab {  
+        background: transparent;  
+        color: #626d7d;  
 
-            border: 1px solid transparent;
+        border: 1px solid transparent;  
 
-            padding: 8px 13px;
+        padding: 8px 13px;  
 
-            border-radius: 5px;
+        border-radius: 5px;  
 
-            font-size: 11px;
-            font-weight: 650;
-        }
+        font-size: 11px;  
+        font-weight: 650;  
+    }  
 
-        .tab:hover {
-            background: #f8fafc;
-            color: #263247;
-        }
+    .tab:hover {  
+        background: #f8fafc;  
+        color: #263247;  
+    }  
 
-        .tab.active {
-            background: #ffffff;
-            color: #172033;
+    .tab.active {  
+        background: #ffffff;  
+        color: #172033;  
 
-            border-color: #d8dee7;
+        border-color: #d8dee7;  
 
-            box-shadow:
-                0 1px 2px rgba(0, 0, 0, 0.04);
-        }
+        box-shadow:  
+            0 1px 2px rgba(0, 0, 0, 0.04);  
+    }  
 
-        .tab.pending.active {
-            color: #9a5b08;
-        }
+    .tab.pending.active {  
+        color: #9a5b08;  
+    }  
 
-        .tab.processing.active {
-            color: #1d4f91;
-        }
+    .tab.processing.active {  
+        color: #1d4f91;  
+    }  
 
-        .tab.approved.active {
-            color: #267342;
-        }
+    .tab.approved.active {  
+        color: #267342;  
+    }  
 
-        .tab.rejected.active {
-            color: #a33434;
-        }
+    .tab.rejected.active {  
+        color: #a33434;  
+    }  
 
 
-        /* =========================================================
-           MESSAGE
-        ========================================================= */
+    /* =========================================================  
+       MESSAGE  
+    ========================================================= */  
 
-        #message {
-            min-height: 20px;
+    #message {  
+        min-height: 20px;  
 
-            margin: 10px 0;
+        margin: 10px 0;  
 
-            color: #697586;
+        color: #697586;  
 
-            font-size: 12px;
-            font-weight: 500;
-        }
+        font-size: 12px;  
+        font-weight: 500;  
+    }  
 
 
-        /* =========================================================
-           TABLE
-        ========================================================= */
+    /* =========================================================  
+       TABLE  
+    ========================================================= */  
 
-        .table-wrapper {
-            width: 100%;
+    .table-wrapper {  
+        width: 100%;  
 
-            overflow-x: auto;
+        overflow-x: auto;  
 
-            background: #ffffff;
+        background: #ffffff;  
 
-            border: 1px solid #dde3ea;
-            border-radius: 8px;
-        }
+        border: 1px solid #dde3ea;  
+        border-radius: 8px;  
+    }  
 
-        table {
-            width: 100%;
+    table {  
+        width: 100%;  
 
-            border-collapse: collapse;
+        border-collapse: collapse;  
 
-            min-width: 1320px;
-        }
+        min-width: 1320px;  
+    }  
 
-        th,
-        td {
-            padding: 12px 12px;
+    th,  
+    td {  
+        padding: 12px 12px;  
 
-            border-bottom: 1px solid #edf0f3;
+        border-bottom: 1px solid #edf0f3;  
 
-            text-align: left;
-            vertical-align: middle;
+        text-align: left;  
+        vertical-align: middle;  
 
-            font-size: 12px;
-        }
+        font-size: 12px;  
+    }  
 
-        th {
-            background: #f7f9fb;
+    th {  
+        background: #f7f9fb;  
 
-            color: #697586;
+        color: #697586;  
 
-            font-size: 10px;
-            font-weight: 700;
+        font-size: 10px;  
+        font-weight: 700;  
 
-            text-transform: uppercase;
-            letter-spacing: 0.035em;
+        text-transform: uppercase;  
+        letter-spacing: 0.035em;  
 
-            white-space: nowrap;
-        }
+        white-space: nowrap;  
+    }  
 
-        td {
-            color: #3f4b5d;
-        }
+    td {  
+        color: #3f4b5d;  
+    }  
 
-        tbody tr:hover {
-            background: #fafbfd;
-        }
+    tbody tr:hover {  
+        background: #fafbfd;  
+    }  
 
-        tr:last-child td {
-            border-bottom: none;
-        }
+    tr:last-child td {  
+        border-bottom: none;  
+    }  
 
-        td strong {
-            color: #263247;
-        }
+    td strong {  
+        color: #263247;  
+    }  
 
-        td small {
-            color: #8993a2;
-            font-size: 10px;
-        }
+    td small {  
+        color: #8993a2;  
+        font-size: 10px;  
+    }  
 
 
-        /* =========================================================
-           TABLE DATA
-        ========================================================= */
+    /* =========================================================  
+       TABLE DATA  
+    ========================================================= */  
 
-        .wallet {
-            max-width: 185px;
+    .wallet {  
+        max-width: 185px;  
 
-            word-break: break-all;
+        word-break: break-all;  
 
-            font-family:
-                "SFMono-Regular",
-                Consolas,
-                "Liberation Mono",
-                monospace;
+        font-family:  
+            "SFMono-Regular",  
+            Consolas,  
+            "Liberation Mono",  
+            monospace;  
 
-            font-size: 10px;
+        font-size: 10px;  
 
-            color: #566275;
-            line-height: 1.45;
-        }
+        color: #566275;  
+        line-height: 1.45;  
+    }  
 
-        .id-text {
-            max-width: 120px;
+    .id-text {  
+        max-width: 120px;  
 
-            display: inline-block;
+        display: inline-block;  
 
-            word-break: break-all;
+        word-break: break-all;  
 
-            font-family:
-                "SFMono-Regular",
-                Consolas,
-                "Liberation Mono",
-                monospace;
+        font-family:  
+            "SFMono-Regular",  
+            Consolas,  
+            "Liberation Mono",  
+            monospace;  
 
-            font-size: 10px;
+        font-size: 10px;  
 
-            color: #697586;
-        }
+        color: #697586;  
+    }  
 
-        .amount {
-            color: #172033;
+    .amount {  
+        color: #172033;  
 
-            font-weight: 650;
+        font-weight: 650;  
 
-            white-space: nowrap;
-        }
+        white-space: nowrap;  
+    }  
 
-        .actions {
-            white-space: nowrap;
-        }
+    .actions {  
+        white-space: nowrap;  
+    }  
 
 
-        /* =========================================================
-           STATUS
-        ========================================================= */
+    /* =========================================================  
+       STATUS  
+    ========================================================= */  
 
-        .status {
-            display: inline-flex;
-            align-items: center;
+    .status {  
+        display: inline-flex;  
+        align-items: center;  
 
-            padding: 4px 8px;
+        padding: 4px 8px;  
 
-            border-radius: 5px;
+        border-radius: 5px;  
 
-            font-size: 9px;
-            font-weight: 700;
+        font-size: 9px;  
+        font-weight: 700;  
 
-            letter-spacing: 0.035em;
-        }
+        letter-spacing: 0.035em;  
+    }  
 
-        .status.pending {
-            background: #fff6df;
-            color: #986008;
+    .status.pending {  
+        background: #fff6df;  
+        color: #986008;  
 
-            border: 1px solid #f1dfaf;
-        }
+        border: 1px solid #f1dfaf;  
+    }  
 
-        .status.processing {
-            background: #edf5ff;
-            color: #1d5595;
+    .status.processing {  
+        background: #edf5ff;  
+        color: #1d5595;  
 
-            border: 1px solid #cfe1f6;
-        }
+        border: 1px solid #cfe1f6;  
+    }  
 
-        .status.approved {
-            background: #edf8f0;
-            color: #287344;
+    .status.approved {  
+        background: #edf8f0;  
+        color: #287344;  
 
-            border: 1px solid #cde8d4;
-        }
+        border: 1px solid #cde8d4;  
+    }  
 
-        .status.rejected {
-            background: #fff0f0;
-            color: #a23838;
+    .status.rejected {  
+        background: #fff0f0;  
+        color: #a23838;  
 
-            border: 1px solid #f0cece;
-        }
+        border: 1px solid #f0cece;  
+    }  
 
 
-        /* =========================================================
-           ACTION BUTTONS
-        ========================================================= */
+    /* =========================================================  
+       ACTION BUTTONS  
+    ========================================================= */  
 
-        .actions button {
-            padding: 6px 9px;
+    .actions button {  
+        padding: 6px 9px;  
 
-            font-size: 10px;
-            font-weight: 650;
-        }
+        font-size: 10px;  
+        font-weight: 650;  
+    }  
 
-        .approve {
-            background: #267342;
-            color: #ffffff;
+    .approve {  
+        background: #267342;  
+        color: #ffffff;  
 
-            margin-right: 4px;
-        }
+        margin-right: 4px;  
+    }  
 
-        .approve:hover {
-            background: #205f37;
-        }
+    .approve:hover {  
+        background: #205f37;  
+    }  
 
-        .reject {
-            background: #a33434;
-            color: #ffffff;
-        }
+    .reject {  
+        background: #a33434;  
+        color: #ffffff;  
+    }  
 
-        .reject:hover {
-            background: #8f2d2d;
-        }
+    .reject:hover {  
+        background: #8f2d2d;  
+    }  
 
 
-        /* =========================================================
-           EMPTY STATE
-        ========================================================= */
+    /* =========================================================  
+       EMPTY STATE  
+    ========================================================= */  
 
-        .empty {
-            padding: 42px 20px;
+    .empty {  
+        padding: 42px 20px;  
 
-            text-align: center;
+        text-align: center;  
 
-            color: #7d8796;
+        color: #7d8796;  
 
-            font-size: 13px;
-        }
+        font-size: 13px;  
+    }  
 
 
-        /* =========================================================
-           PAGINATION
-        ========================================================= */
+    /* =========================================================  
+       PAGINATION  
+    ========================================================= */  
 
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+    .pagination {  
+        display: flex;  
+        justify-content: center;  
+        align-items: center;  
 
-            gap: 12px;
+        gap: 12px;  
 
-            margin-top: 17px;
-        }
+        margin-top: 17px;  
+    }  
 
-        .page-button {
-            background: #ffffff;
-            color: #394558;
+    .page-button {  
+        background: #ffffff;  
+        color: #394558;  
 
-            border: 1px solid #d5dce5;
+        border: 1px solid #d5dce5;  
 
-            padding: 8px 12px;
+        padding: 8px 12px;  
 
-            font-size: 11px;
-        }
+        font-size: 11px;  
+    }  
 
-        .page-button:hover:not(:disabled) {
-            background: #f7f9fb;
-            border-color: #c3ccd8;
-        }
+    .page-button:hover:not(:disabled) {  
+        background: #f7f9fb;  
+        border-color: #c3ccd8;  
+    }  
 
-        .page-info {
-            min-width: 95px;
+    .page-info {  
+        min-width: 95px;  
 
-            text-align: center;
+        text-align: center;  
 
-            color: #697586;
+        color: #697586;  
 
-            font-size: 11px;
-            font-weight: 600;
-        }
+        font-size: 11px;  
+        font-weight: 600;  
+    }  
 
 
-        /* =========================================================
-           MODAL
-        ========================================================= */
+    /* =========================================================  
+       MODAL  
+    ========================================================= */  
 
-        .modal-overlay {
-            display: none;
+    .modal-overlay {  
+        display: none;  
 
-            position: fixed;
-            inset: 0;
+        position: fixed;  
+        inset: 0;  
 
-            background: rgba(15, 23, 42, 0.55);
+        background: rgba(15, 23, 42, 0.55);  
 
-            z-index: 1000;
+        z-index: 1000;  
 
-            align-items: center;
-            justify-content: center;
+        align-items: center;  
+        justify-content: center;  
 
-            padding: 20px;
-        }
+        padding: 20px;  
+    }  
 
-        .modal-overlay.show {
-            display: flex;
-        }
+    .modal-overlay.show {  
+        display: flex;  
+    }  
 
-        .modal {
-            width: 100%;
-            max-width: 430px;
+    .modal {  
+        width: 100%;  
+        max-width: 430px;  
 
-            background: #ffffff;
+        background: #ffffff;  
 
-            border: 1px solid #dce2e9;
-            border-radius: 9px;
+        border: 1px solid #dce2e9;  
+        border-radius: 9px;  
 
-            padding: 0;
+        padding: 0;  
 
-            box-shadow:
-                0 18px 45px rgba(15, 23, 42, 0.20);
+        box-shadow:  
+            0 18px 45px rgba(15, 23, 42, 0.20);  
 
-            overflow: hidden;
-        }
+        overflow: hidden;  
+    }  
 
-        .modal h3 {
-            margin: 0;
+    .modal h3 {  
+        margin: 0;  
 
-            padding: 17px 19px;
+        padding: 17px 19px;  
 
-            color: #172033;
+        color: #172033;  
 
-            font-size: 16px;
-            font-weight: 650;
+        font-size: 16px;  
+        font-weight: 650;  
 
-            border-bottom: 1px solid #e5e9ee;
-        }
+        border-bottom: 1px solid #e5e9ee;  
+    }  
 
-        .modal-text {
-            padding: 18px 19px;
+    .modal-text {  
+        padding: 18px 19px;  
 
-            color: #5e6979;
+        color: #5e6979;  
 
-            font-size: 13px;
-            line-height: 1.65;
-        }
+        font-size: 13px;  
+        line-height: 1.65;  
+    }  
 
-        .modal-text strong {
-            color: #263247;
-        }
+    .modal-text strong {  
+        color: #263247;  
+    }  
 
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
+    .modal-actions {  
+        display: flex;  
+        justify-content: flex-end;  
 
-            gap: 8px;
+        gap: 8px;  
 
-            padding: 13px 19px;
+        padding: 13px 19px;  
 
-            background: #f8fafc;
+        background: #f8fafc;  
 
-            border-top: 1px solid #e5e9ee;
-        }
+        border-top: 1px solid #e5e9ee;  
+    }  
 
-        .cancel-button {
-            background: #ffffff;
-            color: #4b5563;
+    .cancel-button {  
+        background: #ffffff;  
+        color: #4b5563;  
 
-            border: 1px solid #d1d7df;
-        }
+        border: 1px solid #d1d7df;  
+    }  
 
-        .cancel-button:hover {
-            background: #f4f6f8;
-        }
+    .cancel-button:hover {  
+        background: #f4f6f8;  
+    }  
 
-        .confirm-button {
-            background: #1f4f8f;
-            color: #ffffff;
-        }
+    .confirm-button {  
+        background: #1f4f8f;  
+        color: #ffffff;  
+    }  
 
-        .confirm-button:hover {
-            background: #1a4278;
-        }
+    .confirm-button:hover {  
+        background: #1a4278;  
+    }  
 
-        .confirm-button.approve-confirm {
-            background: #267342;
-        }
+    .confirm-button.approve-confirm {  
+        background: #267342;  
+    }  
 
-        .confirm-button.approve-confirm:hover {
-            background: #205f37;
-        }
+    .confirm-button.approve-confirm:hover {  
+        background: #205f37;  
+    }  
 
-        .confirm-button.reject-confirm {
-            background: #a33434;
-        }
+    .confirm-button.reject-confirm {  
+        background: #a33434;  
+    }  
 
-        .confirm-button.reject-confirm:hover {
-            background: #8f2d2d;
-        }
+    .confirm-button.reject-confirm:hover {  
+        background: #8f2d2d;  
+    }  
 
 
-        /* =========================================================
-           FOOTER
-        ========================================================= */
+    /* =========================================================  
+       FOOTER  
+    ========================================================= */  
 
-        footer {
-            text-align: center;
+    footer {  
+        text-align: center;  
 
-            padding: 0 15px 30px;
+        padding: 0 15px 30px;  
 
-            color: #9aa3b1;
+        color: #9aa3b1;  
 
-            font-size: 10px;
-        }
+        font-size: 10px;  
+    }  
 
 
-        /* =========================================================
-           MOBILE
-        ========================================================= */
+    /* =========================================================  
+       MOBILE  
+    ========================================================= */  
 
-        @media (max-width: 1000px) {
+    @media (max-width: 1000px) {  
 
-            .stats-grid {
-                grid-template-columns:
-                    repeat(3, minmax(0, 1fr));
-            }
+        .stats-grid {  
+            grid-template-columns:  
+                repeat(3, minmax(0, 1fr));  
+        }  
 
-        }
+    }  
 
 
-        @media (max-width: 850px) {
+    @media (max-width: 850px) {  
 
-            .stats-grid {
-                grid-template-columns:
-                    repeat(2, minmax(0, 1fr));
-            }
+        .stats-grid {  
+            grid-template-columns:  
+                repeat(2, minmax(0, 1fr));  
+        }  
 
-            .today-grid {
-                grid-template-columns:
-                    repeat(2, minmax(0, 1fr));
-            }
+        .today-grid {  
+            grid-template-columns:  
+                repeat(2, minmax(0, 1fr));  
+        }  
 
-        }
+    }  
 
 
-        @media (max-width: 600px) {
+    @media (max-width: 600px) {  
 
-            header {
-                padding: 14px 15px;
-            }
+        header {  
+            padding: 14px 15px;  
+        }  
 
-            .header-inner {
-                align-items: flex-start;
-            }
+        .header-inner {  
+            align-items: flex-start;  
+        }  
 
-            .brand-icon {
-                width: 38px;
-                height: 38px;
+        .brand-icon {  
+            width: 38px;  
+            height: 38px;  
 
-                font-size: 18px;
-            }
+            font-size: 18px;  
+        }  
 
-            .brand-text h1 {
-                font-size: 17px;
-            }
+        .brand-text h1 {  
+            font-size: 17px;  
+        }  
 
-            .admin-badge {
-                display: none;
-            }
+        .admin-badge {  
+            display: none;  
+        }  
 
-            .container {
-                width: calc(100% - 16px);
+        .container {  
+            width: calc(100% - 16px);  
 
-                margin: 16px auto 35px;
-            }
+            margin: 16px auto 35px;  
+        }  
 
-            .stats-header {
-                align-items: stretch;
-            }
+        .stats-header {  
+            align-items: stretch;  
+        }  
 
-            .stats-header h2 {
-                font-size: 16px;
-            }
+        .stats-header h2 {  
+            font-size: 16px;  
+        }  
 
-            .stats-refresh {
-                width: 100%;
-            }
+        .stats-refresh {  
+            width: 100%;  
+        }  
 
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
+        .stats-grid {  
+            grid-template-columns: 1fr;  
+        }  
 
-            .today-grid {
-                grid-template-columns: 1fr;
-            }
+        .today-grid {  
+            grid-template-columns: 1fr;  
+        }  
 
-            .stat-card {
-                min-height: 105px;
-            }
+        .stat-card {  
+            min-height: 105px;  
+        }  
 
-            .today-card {
-                padding: 14px;
-            }
+        .today-card {  
+            padding: 14px;  
+        }  
 
-            .top-bar {
-                align-items: stretch;
-            }
+        .top-bar {  
+            align-items: stretch;  
+        }  
 
-            .withdrawal-title {
-                align-items: center;
-            }
+        .withdrawal-title {  
+            align-items: center;  
+        }  
 
-            .top-bar h2 {
-                font-size: 16px;
-            }
+        .top-bar h2 {  
+            font-size: 16px;  
+        }  
 
-            .refresh {
-                width: 100%;
-            }
+        .refresh {  
+            width: 100%;  
+        }  
 
-            .tabs {
-                width: 100%;
+        .tabs {  
+            width: 100%;  
 
-                display: grid;
+            display: grid;  
 
-                grid-template-columns:
-                    repeat(2, 1fr);
+            grid-template-columns:  
+                repeat(2, 1fr);  
 
-                gap: 5px;
-            }
+            gap: 5px;  
+        }  
 
-            .tab {
-                width: 100%;
+        .tab {  
+            width: 100%;  
 
-                padding: 9px 6px;
+            padding: 9px 6px;  
 
-                text-align: center;
-            }
+            text-align: center;  
+        }  
 
-            .modal {
-                max-width: 100%;
-            }
+        .modal {  
+            max-width: 100%;  
+        }  
 
-            .modal-actions {
-                flex-direction: column;
-            }
+        .modal-actions {  
+            flex-direction: column;  
+        }  
 
-            .cancel-button,
-            .confirm-button {
-                width: 100%;
-            }
+        .cancel-button,  
+        .confirm-button {  
+            width: 100%;  
+        }  
 
-        }
+    }  
 
 
-        @media (max-width: 380px) {
+    @media (max-width: 380px) {  
 
-            .tabs {
-                grid-template-columns: 1fr;
-            }
+        .tabs {  
+            grid-template-columns: 1fr;  
+        }  
 
-            .stat-value {
-                font-size: 19px;
-            }
+        .stat-value {  
+            font-size: 19px;  
+        }  
 
-        }
+    }  
 
-    </style>
+</style>
 
-</head>
+</head>  <body>  <!-- =========================================================  
+     HEADER  
+========================================================= -->  <header>  <div class="header-inner">  
 
+    <div class="brand">  
 
-<body>
+        <div class="brand-icon">  
+            🔐  
+        </div>  
 
+        <div class="brand-text">  
 
-<!-- =========================================================
-     HEADER
-========================================================= -->
+            <h1>  
+                Admin Dashboard  
+            </h1>  
 
-<header>
+            <p>  
+                My Crypto Faucet · Administration  
+            </p>  
 
-    <div class="header-inner">
+        </div>  
 
-        <div class="brand">
+    </div>  
 
-            <div class="brand-icon">
-                🔐
-            </div>
 
-            <div class="brand-text">
-
-                <h1>
-                    Admin Dashboard
-                </h1>
-
-                <p>
-                    My Crypto Faucet · Administration
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div class="admin-badge">
-            🛡️ ADMIN PANEL
-        </div>
-
-    </div>
-
-</header>
-
-
-<!-- =========================================================
-     MAIN
-========================================================= -->
-
-<div class="container">
-
-
-    <!-- =====================================================
-         ADMIN STATISTICS
-    ====================================================== -->
-
-    <section class="stats-section">
-
-
-        <div class="stats-header">
-
-            <div>
-
-                <div class="section-heading">
-
-                    <div class="section-heading-icon">
-                        📊
-                    </div>
-
-                    <div>
-
-                        <h2>
-                            Statistics
-                        </h2>
-
-                        <div class="section-description">
-                            Platform overview and withdrawal activity
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <button
-                class="stats-refresh"
-                id="statsRefreshButton"
-                onclick="loadStats()"
-                type="button"
-            >
-                🔄 Refresh Stats
-            </button>
-
-        </div>
-
-
-        <div id="statsMessage">
-            ⏳ Loading statistics...
-        </div>
-
-
-        <div class="stats-grid">
-
-
-            <!-- TOTAL USERS -->
-
-            <div class="stat-card">
-
-                <div class="stat-icon">
-                    👥
-                </div>
-
-                <div class="stat-title">
-                    Total Users
-                </div>
-
-                <div
-                    class="stat-value"
-                    id="totalUsers"
-                >
-                    —
-                </div>
-
-            </div>
-
-
-            <!-- TOTAL CLAIMED -->
-
-            <div class="stat-card">
-
-                <div class="stat-icon">
-                    🎁
-                </div>
-
-                <div class="stat-title">
-                    Total Claimed
-                </div>
-
-                <div
-                    class="stat-value"
-                    id="totalClaimed"
-                >
-                    —
-                </div>
-
-                <div class="stat-sub">
-                    BTC
-                </div>
-
-            </div>
-
-
-            <!-- TOTAL WITHDRAWN -->
-
-            <div class="stat-card">
-
-                <div class="stat-icon">
-                    💸
-                </div>
-
-                <div class="stat-title">
-                    Total Withdrawn
-                </div>
-
-                <div
-                    class="stat-value"
-                    id="totalWithdrawn"
-                >
-                    —
-                </div>
-
-                <div class="stat-sub">
-                    Approved BTC
-                </div>
-
-            </div>
-
-
-            <!-- PENDING -->
-
-            <div class="stat-card">
-
-                <div class="stat-icon">
-                    ⏳
-                </div>
-
-                <div class="stat-title">
-                    Pending Withdrawals
-                </div>
-
-                <div
-                    class="stat-value"
-                    id="pendingWithdrawals"
-                >
-                    —
-                </div>
-
-                <div
-                    class="stat-sub"
-                    id="pendingAmount"
-                >
-                    —
-                </div>
-
-            </div>
-
-
-            <!-- PROCESSING -->
-
-            <div class="stat-card">
-
-                <div class="stat-icon">
-                    🔵
-                </div>
-
-                <div class="stat-title">
-                    Processing Withdrawals
-                </div>
-
-                <div
-                    class="stat-value"
-                    id="processingWithdrawals"
-                >
-                    —
-                </div>
-
-                <div
-                    class="stat-sub"
-                    id="processingAmount"
-                >
-                    —
-                </div>
-
-            </div>
-
-
-            <!-- APPROVED -->
-
-            <div class="stat-card">
-
-                <div class="stat-icon">
-                    ✅
-                </div>
-
-                <div class="stat-title">
-                    Approved
-                </div>
-
-                <div
-                    class="stat-value"
-                    id="approvedWithdrawals"
-                >
-                    —
-                </div>
-
-            </div>
-
-
-            <!-- REJECTED -->
-
-            <div class="stat-card">
-
-                <div class="stat-icon">
-                    ❌
-                </div>
-
-                <div class="stat-title">
-                    Rejected
-                </div>
-
-                <div
-                    class="stat-value"
-                    id="rejectedWithdrawals"
-                >
-                    —
-                </div>
-
-            </div>
-
-
-            <!-- TOTAL WITHDRAWALS -->
-
-            <div class="stat-card">
-
-                <div class="stat-icon">
-                    📤
-                </div>
-
-                <div class="stat-title">
-                    Total Withdrawals
-                </div>
-
-                <div
-                    class="stat-value"
-                    id="totalWithdrawals"
-                >
-                    —
-                </div>
-
-            </div>
-
-
-            <!-- TOTAL CLAIMS -->
-
-            <div class="stat-card">
-
-                <div class="stat-icon">
-                    🎯
-                </div>
-
-                <div class="stat-title">
-                    Total Claims
-                </div>
-
-                <div
-                    class="stat-value"
-                    id="totalClaims"
-                >
-                    —
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- =================================================
-             TODAY
-        ================================================== -->
-
-        <div class="today-section">
-
-            <div class="today-card">
-
-                <h3>
-                    📅 Today's Activity
-                    <span
-                        style="
-                            color:#9aa3b1;
-                            font-size:10px;
-                            font-weight:400;
-                        "
-                    >
-                        UTC
-                    </span>
-                </h3>
-
-
-                <div class="today-grid">
-
-
-                    <div class="today-item">
-
-                        <div class="today-item-title">
-                            Claims Today
-                        </div>
-
-                        <div
-                            class="today-item-value"
-                            id="todayClaims"
-                        >
-                            —
-                        </div>
-
-                    </div>
-
-
-                    <div class="today-item">
-
-                        <div class="today-item-title">
-                            BTC Claimed Today
-                        </div>
-
-                        <div
-                            class="today-item-value"
-                            id="todayClaimed"
-                        >
-                            —
-                        </div>
-
-                    </div>
-
-
-                    <div class="today-item">
-
-                        <div class="today-item-title">
-                            Withdrawals Today
-                        </div>
-
-                        <div
-                            class="today-item-value"
-                            id="todayWithdrawals"
-                        >
-                            —
-                        </div>
-
-                    </div>
-
-
-                    <div class="today-item">
-
-                        <div class="today-item-title">
-                            BTC Withdrawn Today
-                        </div>
-
-                        <div
-                            class="today-item-value"
-                            id="todayWithdrawn"
-                        >
-                            —
-                        </div>
-
-                    </div>
-
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- =====================================================
-         WITHDRAWAL MANAGEMENT
-    ====================================================== -->
-
-    <section class="withdrawal-section">
-
-
-        <div class="top-bar">
-
-            <div class="withdrawal-title">
-
-                <div class="withdrawal-icon">
-                    💸
-                </div>
-
-                <div>
-
-                    <h2>
-                        BTC Withdrawals
-                    </h2>
-
-                    <div class="section-description">
-                        Review and manage user withdrawal requests
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <button
-                class="refresh"
-                id="refreshButton"
-                onclick="loadWithdrawals()"
-                type="button"
-            >
-                🔄 Refresh
-            </button>
-
-        </div>
-
-
-        <!-- =================================================
-             TABS
-        ================================================== -->
-
-        <div class="tabs">
-
-
-            <button
-                class="tab pending active"
-                data-status="pending"
-                onclick="changeTab('pending')"
-                type="button"
-            >
-                🟠 Pending
-            </button>
-
-
-            <button
-                class="tab processing"
-                data-status="processing"
-                onclick="changeTab('processing')"
-                type="button"
-            >
-                🔵 Processing
-            </button>
-
-
-            <button
-                class="tab approved"
-                data-status="approved"
-                onclick="changeTab('approved')"
-                type="button"
-            >
-                🟢 Approved
-            </button>
-
-
-            <button
-                class="tab rejected"
-                data-status="rejected"
-                onclick="changeTab('rejected')"
-                type="button"
-            >
-                🔴 Rejected
-            </button>
-
-
-        </div>
-
-
-        <div id="message">
-            ⏳ Loading...
-        </div>
-
-
-        <div id="withdrawals"></div>
-
-
-        <!-- =================================================
-             PAGINATION
-        ================================================== -->
-
-        <div
-            class="pagination"
-            id="pagination"
-            style="display:none;"
-        >
-
-            <button
-                class="page-button"
-                id="previousButton"
-                onclick="previousPage()"
-                type="button"
-            >
-                ← Previous
-            </button>
-
-
-            <span
-                class="page-info"
-                id="pageInfo"
-            >
-                Page 1
-            </span>
-
-
-            <button
-                class="page-button"
-                id="nextButton"
-                onclick="nextPage()"
-                type="button"
-            >
-                Next →
-            </button>
-
-        </div>
-
-
-    </section>
-
+    <div class="admin-badge">  
+        🛡️ ADMIN PANEL  
+    </div>  
 
 </div>
 
+</header>  <!-- =========================================================  
+     MAIN  
+========================================================= -->  <div class="container">  <!-- =====================================================  
+     ADMIN STATISTICS  
+====================================================== -->  
 
-<!-- =========================================================
-     FOOTER
-========================================================= -->
-
-<footer>
-
-    My Crypto Faucet · Secure Administration Panel
-
-</footer>
+<section class="stats-section">  
 
 
-<!-- =========================================================
-     CONFIRMATION MODAL
-========================================================= -->
+    <div class="stats-header">  
 
-<div
-    class="modal-overlay"
-    id="confirmModal"
->
+        <div>  
 
-    <div class="modal">
+            <div class="section-heading">  
 
-        <h3 id="modalTitle">
-            Confirm Action
-        </h3>
+                <div class="section-heading-icon">  
+                    📊  
+                </div>  
 
+                <div>  
 
-        <div
-            class="modal-text"
-            id="modalText"
-        >
-            Are you sure?
-        </div>
+                    <h2>  
+                        Statistics  
+                    </h2>  
 
+                    <div class="section-description">  
+                        Platform overview and withdrawal activity  
+                    </div>  
 
-        <div class="modal-actions">
+                </div>  
 
+            </div>  
 
-            <button
-                class="cancel-button"
-                onclick="closeModal()"
-                type="button"
-            >
-                Cancel
-            </button>
+        </div>  
 
 
-            <button
-                class="confirm-button"
-                id="confirmActionButton"
-                onclick="confirmWithdrawalAction()"
-                type="button"
-            >
-                Confirm
-            </button>
+        <button  
+            class="stats-refresh"  
+            id="statsRefreshButton"  
+            onclick="loadStats()"  
+            type="button"  
+        >  
+            🔄 Refresh Stats  
+        </button>  
+
+    </div>  
 
 
-        </div>
+    <div id="statsMessage">  
+        ⏳ Loading statistics...  
+    </div>  
 
-    </div>
+
+    <div class="stats-grid">  
+
+
+        <!-- TOTAL USERS -->  
+
+        <div class="stat-card">  
+
+            <div class="stat-icon">  
+                👥  
+            </div>  
+
+            <div class="stat-title">  
+                Total Users  
+            </div>  
+
+            <div  
+                class="stat-value"  
+                id="totalUsers"  
+            >  
+                —  
+            </div>  
+
+        </div>  
+
+
+        <!-- TOTAL CLAIMED -->  
+
+        <div class="stat-card">  
+
+            <div class="stat-icon">  
+                🎁  
+            </div>  
+
+            <div class="stat-title">  
+                Total Claimed  
+            </div>  
+
+            <div  
+                class="stat-value"  
+                id="totalClaimed"  
+            >  
+                —  
+            </div>  
+
+            <div class="stat-sub">  
+                BTC  
+            </div>  
+
+        </div>  
+
+
+        <!-- TOTAL WITHDRAWN -->  
+
+        <div class="stat-card">  
+
+            <div class="stat-icon">  
+                💸  
+            </div>  
+
+            <div class="stat-title">  
+                Total Withdrawn  
+            </div>  
+
+            <div  
+                class="stat-value"  
+                id="totalWithdrawn"  
+            >  
+                —  
+            </div>  
+
+            <div class="stat-sub">  
+                Approved BTC  
+            </div>  
+
+        </div>  
+
+
+        <!-- PENDING -->  
+
+        <div class="stat-card">  
+
+            <div class="stat-icon">  
+                ⏳  
+            </div>  
+
+            <div class="stat-title">  
+                Pending Withdrawals  
+            </div>  
+
+            <div  
+                class="stat-value"  
+                id="pendingWithdrawals"  
+            >  
+                —  
+            </div>  
+
+            <div  
+                class="stat-sub"  
+                id="pendingAmount"  
+            >  
+                —  
+            </div>  
+
+        </div>  
+
+
+        <!-- PROCESSING -->  
+
+        <div class="stat-card">  
+
+            <div class="stat-icon">  
+                🔵  
+            </div>  
+
+            <div class="stat-title">  
+                Processing Withdrawals  
+            </div>  
+
+            <div  
+                class="stat-value"  
+                id="processingWithdrawals"  
+            >  
+                —  
+            </div>  
+
+            <div  
+                class="stat-sub"  
+                id="processingAmount"  
+            >  
+                —  
+            </div>  
+
+        </div>  
+
+
+        <!-- APPROVED -->  
+
+        <div class="stat-card">  
+
+            <div class="stat-icon">  
+                ✅  
+            </div>  
+
+            <div class="stat-title">  
+                Approved  
+            </div>  
+
+            <div  
+                class="stat-value"  
+                id="approvedWithdrawals"  
+            >  
+                —  
+            </div>  
+
+        </div>  
+
+
+        <!-- REJECTED -->  
+
+        <div class="stat-card">  
+
+            <div class="stat-icon">  
+                ❌  
+            </div>  
+
+            <div class="stat-title">  
+                Rejected  
+            </div>  
+
+            <div  
+                class="stat-value"  
+                id="rejectedWithdrawals"  
+            >  
+                —  
+            </div>  
+
+        </div>  
+
+
+        <!-- TOTAL WITHDRAWALS -->  
+
+        <div class="stat-card">  
+
+            <div class="stat-icon">  
+                📤  
+            </div>  
+
+            <div class="stat-title">  
+                Total Withdrawals  
+            </div>  
+
+            <div  
+                class="stat-value"  
+                id="totalWithdrawals"  
+            >  
+                —  
+            </div>  
+
+        </div>  
+
+
+        <!-- TOTAL CLAIMS -->  
+
+        <div class="stat-card">  
+
+            <div class="stat-icon">  
+                🎯  
+            </div>  
+
+            <div class="stat-title">  
+                Total Claims  
+            </div>  
+
+            <div  
+                class="stat-value"  
+                id="totalClaims"  
+            >  
+                —  
+            </div>  
+
+        </div>  
+
+    </div>  
+
+
+    <!-- =================================================  
+         TODAY  
+    ================================================== -->  
+
+    <div class="today-section">  
+
+        <div class="today-card">  
+
+            <h3>  
+                📅 Today's Activity  
+                <span  
+                    style="  
+                        color:#9aa3b1;  
+                        font-size:10px;  
+                        font-weight:400;  
+                    "  
+                >  
+                    UTC  
+                </span>  
+            </h3>  
+
+
+            <div class="today-grid">  
+
+
+                <div class="today-item">  
+
+                    <div class="today-item-title">  
+                        Claims Today  
+                    </div>  
+
+                    <div  
+                        class="today-item-value"  
+                        id="todayClaims"  
+                    >  
+                        —  
+                    </div>  
+
+                </div>  
+
+
+                <div class="today-item">  
+
+                    <div class="today-item-title">  
+                        BTC Claimed Today  
+                    </div>  
+
+                    <div  
+                        class="today-item-value"  
+                        id="todayClaimed"  
+                    >  
+                        —  
+                    </div>  
+
+                </div>  
+
+
+                <div class="today-item">  
+
+                    <div class="today-item-title">  
+                        Withdrawals Today  
+                    </div>  
+
+                    <div  
+                        class="today-item-value"  
+                        id="todayWithdrawals"  
+                    >  
+                        —  
+                    </div>  
+
+                </div>  
+
+
+                <div class="today-item">  
+
+                    <div class="today-item-title">  
+                        BTC Withdrawn Today  
+                    </div>  
+
+                    <div  
+                        class="today-item-value"  
+                        id="todayWithdrawn"  
+                    >  
+                        —  
+                    </div>  
+
+                </div>  
+
+
+            </div>  
+
+        </div>  
+
+    </div>  
+
+</section>  
+
+
+<!-- =====================================================  
+     WITHDRAWAL MANAGEMENT  
+====================================================== -->  
+
+<section class="withdrawal-section">  
+
+
+    <div class="top-bar">  
+
+        <div class="withdrawal-title">  
+
+            <div class="withdrawal-icon">  
+                💸  
+            </div>  
+
+            <div>  
+
+                <h2>  
+                    BTC Withdrawals  
+                </h2>  
+
+                <div class="section-description">  
+                    Review and manage user withdrawal requests  
+                </div>  
+
+            </div>  
+
+        </div>  
+
+
+        <button  
+            class="refresh"  
+            id="refreshButton"  
+            onclick="loadWithdrawals()"  
+            type="button"  
+        >  
+            🔄 Refresh  
+        </button>  
+
+    </div>  
+
+
+    <!-- =================================================  
+         TABS  
+    ================================================== -->  
+
+    <div class="tabs">  
+
+
+        <button  
+            class="tab pending active"  
+            data-status="pending"  
+            onclick="changeTab('pending')"  
+            type="button"  
+        >  
+            🟠 Pending  
+        </button>  
+
+
+        <button  
+            class="tab processing"  
+            data-status="processing"  
+            onclick="changeTab('processing')"  
+            type="button"  
+        >  
+            🔵 Processing  
+        </button>  
+
+
+        <button  
+            class="tab approved"  
+            data-status="approved"  
+            onclick="changeTab('approved')"  
+            type="button"  
+        >  
+            🟢 Approved  
+        </button>  
+
+
+        <button  
+            class="tab rejected"  
+            data-status="rejected"  
+            onclick="changeTab('rejected')"  
+            type="button"  
+        >  
+            🔴 Rejected  
+        </button>  
+
+
+    </div>  
+
+
+    <div id="message">  
+        ⏳ Loading...  
+    </div>  
+
+
+    <div id="withdrawals"></div>  
+
+
+    <!-- =================================================  
+         PAGINATION  
+    ================================================== -->  
+
+    <div  
+        class="pagination"  
+        id="pagination"  
+        style="display:none;"  
+    >  
+
+        <button  
+            class="page-button"  
+            id="previousButton"  
+            onclick="previousPage()"  
+            type="button"  
+        >  
+            ← Previous  
+        </button>  
+
+
+        <span  
+            class="page-info"  
+            id="pageInfo"  
+        >  
+            Page 1  
+        </span>  
+
+
+        <button  
+            class="page-button"  
+            id="nextButton"  
+            onclick="nextPage()"  
+            type="button"  
+        >  
+            Next →  
+        </button>  
+
+    </div>  
+
+
+</section>
+
+</div>  <!-- =========================================================  
+     FOOTER  
+========================================================= -->  <footer>  My Crypto Faucet · Secure Administration Panel
+
+</footer>  <!-- =========================================================  
+     CONFIRMATION MODAL  
+========================================================= -->  <div  
+    class="modal-overlay"  
+    id="confirmModal"  
+>  <div class="modal">  
+
+    <h3 id="modalTitle">  
+        Confirm Action  
+    </h3>  
+
+
+    <div  
+        class="modal-text"  
+        id="modalText"  
+    >  
+        Are you sure?  
+    </div>  
+
+
+    <div class="modal-actions">  
+
+
+        <button  
+            class="cancel-button"  
+            onclick="closeModal()"  
+            type="button"  
+        >  
+            Cancel  
+        </button>  
+
+
+        <button  
+            class="confirm-button"  
+            id="confirmActionButton"  
+            onclick="confirmWithdrawalAction()"  
+            type="button"  
+        >  
+            Confirm  
+        </button>  
+
+
+    </div>  
 
 </div>
 
-
-<script>
-
-/* =========================================================
-   GLOBAL STATE
-========================================================= */
-
-let currentStatus = "pending";
-
-let currentPage = 1;
-
-const itemsPerPage = 10;
-
-let allWithdrawals = [];
-
-let selectedWithdrawalId = null;
-
-let selectedAction = null;
-
-let processing = false;
-
-
-/* =========================================================
-   BTC FORMAT
-========================================================= */
-
-function formatBTC(value) {
-
-    const number = Number(value);
-
-    if (!Number.isFinite(number)) {
-        return "0";
-    }
-
-    return number
-        .toFixed(8)
-        .replace(/0+$/, "")
-        .replace(/\.$/, "");
-
-}
-
-
-/* =========================================================
-   LOAD ADMIN STATS
-========================================================= */
-
-async function loadStats() {
-
-    const message =
-        document.getElementById("statsMessage");
-
-    const refreshButton =
-        document.getElementById("statsRefreshButton");
-
-
-    message.innerText =
-        "⏳ Loading statistics...";
-
-    refreshButton.disabled = true;
-
-
-    try {
-
-        const response =
-            await fetch(
-                "/api/admin/stats",
-                {
-                    method: "GET",
-                    credentials: "same-origin",
-                    cache: "no-store"
-                }
-            );
-
-
-        const result =
-            await response.json();
-
-
-        if (!response.ok || !result.success) {
-
-            message.innerText =
-                "❌ " + (
-                    result.error ||
-                    "Unable to load statistics."
-                );
-
-            return;
-        }
-
-
-        /* =========================
-           USERS
-        ========================== */
-
-        document.getElementById(
-            "totalUsers"
-        ).innerText =
-            Number(
-                result.users?.total || 0
-            ).toLocaleString();
-
-
-        /* =========================
-           CLAIMS
-        ========================== */
-
-        document.getElementById(
-            "totalClaims"
-        ).innerText =
-            Number(
-                result.claims?.totalClaims || 0
-            ).toLocaleString();
-
-
-        document.getElementById(
-            "totalClaimed"
-        ).innerText =
-            formatBTC(
-                result.claims?.totalClaimed
-            ) + " BTC";
-
-
-        /* =========================
-           WITHDRAWALS
-        ========================== */
-
-        document.getElementById(
-            "totalWithdrawals"
-        ).innerText =
-            Number(
-                result.withdrawals?.total || 0
-            ).toLocaleString();
-
-
-        document.getElementById(
-            "totalWithdrawn"
-        ).innerText =
-            formatBTC(
-                result.withdrawals?.totalWithdrawn
-            ) + " BTC";
-
-
-        document.getElementById(
-            "pendingWithdrawals"
-        ).innerText =
-            Number(
-                result.withdrawals?.pending || 0
-            ).toLocaleString();
-
-
-        document.getElementById(
-            "pendingAmount"
-        ).innerText =
-            formatBTC(
-                result.withdrawals?.pendingAmount
-            ) + " BTC pending";
-
-
-        document.getElementById(
-            "processingWithdrawals"
-        ).innerText =
-            Number(
-                result.withdrawals?.processing || 0
-            ).toLocaleString();
-
-
-        document.getElementById(
-            "processingAmount"
-        ).innerText =
-            formatBTC(
-                result.withdrawals?.processingAmount
-            ) + " BTC processing";
-
-
-        document.getElementById(
-            "approvedWithdrawals"
-        ).innerText =
-            Number(
-                result.withdrawals?.approved || 0
-            ).toLocaleString();
-
-
-        document.getElementById(
-            "rejectedWithdrawals"
-        ).innerText =
-            Number(
-                result.withdrawals?.rejected || 0
-            ).toLocaleString();
-
-
-        /* =========================
-           TODAY
-        ========================== */
-
-        document.getElementById(
-            "todayClaims"
-        ).innerText =
-            Number(
-                result.today?.claims || 0
-            ).toLocaleString();
-
-
-        document.getElementById(
-            "todayClaimed"
-        ).innerText =
-            formatBTC(
-                result.today?.claimedAmount
-            ) + " BTC";
-
-
-        document.getElementById(
-            "todayWithdrawals"
-        ).innerText =
-            Number(
-                result.today?.withdrawals || 0
-            ).toLocaleString();
-
-
-        document.getElementById(
-            "todayWithdrawn"
-        ).innerText =
-            formatBTC(
-                result.today?.withdrawalAmount
-            ) + " BTC";
-
-
-        message.innerText =
-            "✅ Statistics updated.";
-
-
-    } catch (error) {
-
-        console.error(
-            "Load stats error:",
-            error
-        );
-
-        message.innerText =
-            "❌ Unable to load statistics.";
-
-    } finally {
-
-        refreshButton.disabled = false;
-
-    }
-
-}
-
-
-/* =========================================================
-   CHANGE TAB
-========================================================= */
-
-function changeTab(status) {
-
-    if (processing) {
-        return;
-    }
-
-    currentStatus = status;
-
-    currentPage = 1;
-
-
-    document
-        .querySelectorAll(".tab")
-        .forEach(button => {
-
-            button.classList.toggle(
-                "active",
-                button.dataset.status === status
-            );
-
-        });
-
-
-    loadWithdrawals();
-
-}
-
-
-/* =========================================================
-   LOAD WITHDRAWALS
-========================================================= */
-
-async function loadWithdrawals() {
-
-    const message =
-        document.getElementById("message");
-
-    const container =
-        document.getElementById("withdrawals");
-
-    const pagination =
-        document.getElementById("pagination");
-
-    const refreshButton =
-        document.getElementById("refreshButton");
-
-
-    message.innerText =
-        `⏳ Loading ${currentStatus} withdrawals...`;
-
-    container.innerHTML = "";
-
-    pagination.style.display = "none";
-
-    refreshButton.disabled = true;
-
-
-    try {
-
-        const response =
-            await fetch(
-                `/api/admin/withdrawals?status=${encodeURIComponent(currentStatus)}`,
-                {
-                    method: "GET",
-                    credentials: "same-origin",
-                    cache: "no-store"
-                }
-            );
-
-
-        const result =
-            await response.json();
-
-
-        if (!response.ok || !result.success) {
-
-            message.innerText =
-                "❌ " + (
-                    result.error ||
-                    "Unable to load withdrawals."
-                );
-
-            allWithdrawals = [];
-
-            return;
-        }
-
-
-        allWithdrawals =
-            Array.isArray(result.withdrawals)
-                ? result.withdrawals
-                : [];
-
-
-        if (allWithdrawals.length === 0) {
-
-            message.innerText =
-                `0 ${currentStatus} BTC withdrawal(s)`;
-
-
-            container.innerHTML = `
-                <div class="empty">
-                    ${
-                        currentStatus === "pending"
-                            ? "No pending BTC withdrawals."
-                            : currentStatus === "processing"
-                                ? "No processing BTC withdrawals."
-                                : currentStatus === "approved"
-                                    ? "No approved BTC withdrawals."
-                                    : "No rejected BTC withdrawals."
-                    }
-                </div>
-            `;
-
-            return;
-        }
-
-
-        message.innerText =
-            `${allWithdrawals.length} ${currentStatus} BTC withdrawal(s)`;
-
-
-        renderWithdrawals();
-
-
-    } catch (error) {
-
-        console.error(
-            "Load withdrawals error:",
-            error
-        );
-
-        message.innerText =
-            "❌ Unable to load withdrawals.";
-
-        container.innerHTML = "";
-
-    } finally {
-
-        refreshButton.disabled = false;
-
-    }
-
-}
-
-
-/* =========================================================
-   RENDER WITHDRAWALS
-========================================================= */
-
-function renderWithdrawals() {
-
-    const container =
-        document.getElementById("withdrawals");
-
-    const pagination =
-        document.getElementById("pagination");
-
-
-    const totalPages =
-        Math.ceil(
-            allWithdrawals.length /
-            itemsPerPage
-        );
-
-
-    if (currentPage > totalPages) {
-        currentPage = totalPages;
-    }
-
-
-    const start =
-        (currentPage - 1) *
-        itemsPerPage;
-
-
-    const end =
-        start + itemsPerPage;
-
-
-    const pageItems =
-        allWithdrawals.slice(
-            start,
-            end
-        );
-
-
-    container.innerHTML = `
-
-        <div class="table-wrapper">
-
-            <table>
-
-                <thead>
-
-                    <tr>
-
-                        <th>ID</th>
-
-                        <th>User</th>
-
-                        <th>Amount</th>
-
-                        <th>Before Withdrawal Balance</th>
-
-                        <th>Current Balance</th>
-
-                        <th>Wallet</th>
-
-                        <th>Status</th>
-
-                        <th>Payout ID</th>
-
-                        <th>TXID</th>
-
-                        <th>Created</th>
-
-                        <th>Processed</th>
-
-                        ${
-                            currentStatus === "pending"
-                                ? "<th>Actions</th>"
-                                : ""
-                        }
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    ${
-                        pageItems
-                            .map(item =>
-                                createWithdrawalRow(item)
-                            )
-                            .join("")
-                    }
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    `;
-
-
-    pagination.style.display =
-        totalPages > 1
-            ? "flex"
-            : "none";
-
-
-    document.getElementById(
-        "pageInfo"
-    ).innerText =
-        `Page ${currentPage} of ${totalPages}`;
-
-
-    document.getElementById(
-        "previousButton"
-    ).disabled =
-        currentPage <= 1;
-
-
-    document.getElementById(
-        "nextButton"
-    ).disabled =
-        currentPage >= totalPages;
-
-}
-
-
-/* =========================================================
-   CREATE WITHDRAWAL ROW
-========================================================= */
-
-function createWithdrawalRow(item) {
-
-    const status =
-        String(
-            item.status || ""
-        ).toLowerCase();
-
-
-    const created =
-        formatDate(
-            item.created_at
-        );
-
-
-    const processed =
-        item.processed_at
-            ? formatDate(item.processed_at)
-            : "—";
-
-
-    const payoutId =
-        item.payout_id
-            ? escapeHtml(
-                String(item.payout_id)
-            )
-            : "—";
-
-
-    const txid =
-        item.txid
-            ? escapeHtml(
-                String(item.txid)
-            )
-            : "—";
-
-
-    const beforeBalance =
-        item.balance_before === null ||
-        item.balance_before === undefined ||
-        item.balance_before === ""
-            ? "—"
-            : `${formatBTC(item.balance_before)} BTC`;
-
-
-    const currentBalance =
-        item.current_balance === null ||
-        item.current_balance === undefined ||
-        item.current_balance === ""
-            ? "—"
-            : `${formatBTC(item.current_balance)} BTC`;
-
-
-    return `
-
-        <tr>
-
-            <td>
-                <strong>
-                    #${escapeHtml(
-                        String(item.id)
-                    )}
-                </strong>
-            </td>
-
-
-            <td>
-
-                <strong>
-                    ${escapeHtml(
-                        item.email || "N/A"
-                    )}
-                </strong>
-
-                <br>
-
-                <small>
-                    User ID:
-                    ${escapeHtml(
-                        String(item.user_id)
-                    )}
-                </small>
-
-            </td>
-
-
-            <td class="amount">
-
-                ${formatBTC(item.amount)}
-                BTC
-
-            </td>
-
-
-            <td class="amount">
-
-                ${beforeBalance}
-
-            </td>
-
-
-            <td class="amount">
-
-                ${currentBalance}
-
-            </td>
-
-
-            <td>
-
-                <div class="wallet">
-
-                    ${escapeHtml(
-                        item.wallet_address || "N/A"
-                    )}
-
-                </div>
-
-            </td>
-
-
-            <td>
-
-                <span class="status ${status}">
-
-                    ${escapeHtml(
-                        status.toUpperCase()
-                    )}
-
-                </span>
-
-            </td>
-
-
-            <td>
-
-                <span class="id-text">
-
-                    ${payoutId}
-
-                </span>
-
-            </td>
-
-
-            <td>
-
-                <span class="id-text">
-
-                    ${txid}
-
-                </span>
-
-            </td>
-
-
-            <td>
-
-                ${created}
-
-            </td>
-
-
-            <td>
-
-                ${processed}
-
-            </td>
-
-
-            ${
-                currentStatus === "pending"
-                    ? `
-
-                    <td class="actions">
-
-                        <button
-                            class="approve"
-                            onclick="openConfirmation(
-                                ${Number(item.id)},
-                                'approve'
-                            )"
-                            type="button"
-                        >
-                            ✓ Approve
-                        </button>
-
-                        <button
-                            class="reject"
-                            onclick="openConfirmation(
-                                ${Number(item.id)},
-                                'reject'
-                            )"
-                            type="button"
-                        >
-                            ✕ Reject
-                        </button>
-
-                    </td>
-
-                    `
-                    : ""
-            }
-
-        </tr>
-
-    `;
-
-}
-
-
-/* =========================================================
-   CONFIRMATION MODAL
-========================================================= */
-
-function openConfirmation(
-    id,
-    action
-) {
-
-    if (processing) {
-        return;
-    }
-
-
-    selectedWithdrawalId = id;
-
-    selectedAction = action;
-
-
-    const modal =
-        document.getElementById(
-            "confirmModal"
-        );
-
-    const title =
-        document.getElementById(
-            "modalTitle"
-        );
-
-    const text =
-        document.getElementById(
-            "modalText"
-        );
-
-    const confirmButton =
-        document.getElementById(
-            "confirmActionButton"
-        );
-
-
-    if (action === "approve") {
-
-        title.innerText =
-            "Approve Withdrawal?";
-
-
-        text.innerHTML =
-            `Are you sure you want to approve withdrawal <strong>#${id}</strong>?<br><br>
-             This will send the BTC payout through FaucetPay.`;
-
-
-        confirmButton.innerText =
-            "✓ Approve";
-
-
-        confirmButton.className =
-            "confirm-button approve-confirm";
-
-    } else {
-
-        title.innerText =
-            "Reject Withdrawal?";
-
-
-        text.innerHTML =
-            `Are you sure you want to reject withdrawal <strong>#${id}</strong>?<br><br>
-             The reserved BTC will be refunded to the user.`;
-
-
-        confirmButton.innerText =
-            "✕ Reject";
-
-
-        confirmButton.className =
-            "confirm-button reject-confirm";
-
-    }
-
-
-    modal.classList.add("show");
-
-}
-
-
-/* =========================================================
-   CLOSE MODAL
-========================================================= */
-
-function closeModal() {
-
-    document
-        .getElementById(
-            "confirmModal"
-        )
-        .classList.remove("show");
-
-
-    selectedWithdrawalId = null;
-
-    selectedAction = null;
-
-}
-
-
+</div>  <script>  
+  
+/* =========================================================  
+   GLOBAL STATE  
+========================================================= */  
+  
+let currentStatus = "pending";  
+  
+let currentPage = 1;  
+  
+const itemsPerPage = 10;  
+  
+let allWithdrawals = [];  
+  
+let selectedWithdrawalId = null;  
+  
+let selectedAction = null;  
+  
+let processing = false;  
+  
+  
+/* =========================================================  
+   BTC FORMAT  
+========================================================= */  
+  
+function formatBTC(value) {  
+  
+    const number = Number(value);  
+  
+    if (!Number.isFinite(number)) {  
+        return "0";  
+    }  
+  
+    return number  
+        .toFixed(8)  
+        .replace(/0+$/, "")  
+        .replace(/\.$/, "");  
+  
+}  
+  
+  
+/* =========================================================  
+   LOAD ADMIN STATS  
+========================================================= */  
+  
+async function loadStats() {  
+  
+    const message =  
+        document.getElementById("statsMessage");  
+  
+    const refreshButton =  
+        document.getElementById("statsRefreshButton");  
+  
+  
+    message.innerText =  
+        "⏳ Loading statistics...";  
+  
+    refreshButton.disabled = true;  
+  
+  
+    try {  
+  
+        const response =  
+            await fetch(  
+                "/api/admin/stats",  
+                {  
+                    method: "GET",  
+                    credentials: "same-origin",  
+                    cache: "no-store"  
+                }  
+            );  
+  
+  
+        const result =  
+            await response.json();  
+  
+  
+        if (!response.ok || !result.success) {  
+  
+            message.innerText =  
+                "❌ " + (  
+                    result.error ||  
+                    "Unable to load statistics."  
+                );  
+  
+            return;  
+        }  
+  
+  
+        /* =========================  
+           USERS  
+        ========================== */  
+  
+        document.getElementById(  
+            "totalUsers"  
+        ).innerText =  
+            Number(  
+                result.users?.total || 0  
+            ).toLocaleString();  
+  
+  
+        /* =========================  
+           CLAIMS  
+        ========================== */  
+  
+        document.getElementById(  
+            "totalClaims"  
+        ).innerText =  
+            Number(  
+                result.claims?.totalClaims || 0  
+            ).toLocaleString();  
+  
+  
+        document.getElementById(  
+            "totalClaimed"  
+        ).innerText =  
+            formatBTC(  
+                result.claims?.totalClaimed  
+            ) + " BTC";  
+  
+  
+        /* =========================  
+           WITHDRAWALS  
+        ========================== */  
+  
+        document.getElementById(  
+            "totalWithdrawals"  
+        ).innerText =  
+            Number(  
+                result.withdrawals?.total || 0  
+            ).toLocaleString();  
+  
+  
+        document.getElementById(  
+            "totalWithdrawn"  
+        ).innerText =  
+            formatBTC(  
+                result.withdrawals?.totalWithdrawn  
+            ) + " BTC";  
+  
+  
+        document.getElementById(  
+            "pendingWithdrawals"  
+        ).innerText =  
+            Number(  
+                result.withdrawals?.pending || 0  
+            ).toLocaleString();  
+  
+  
+        document.getElementById(  
+            "pendingAmount"  
+        ).innerText =  
+            formatBTC(  
+                result.withdrawals?.pendingAmount  
+            ) + " BTC pending";  
+  
+  
+        document.getElementById(  
+            "processingWithdrawals"  
+        ).innerText =  
+            Number(  
+                result.withdrawals?.processing || 0  
+            ).toLocaleString();  
+  
+  
+        document.getElementById(  
+            "processingAmount"  
+        ).innerText =  
+            formatBTC(  
+                result.withdrawals?.processingAmount  
+            ) + " BTC processing";  
+  
+  
+        document.getElementById(  
+            "approvedWithdrawals"  
+        ).innerText =  
+            Number(  
+                result.withdrawals?.approved || 0  
+            ).toLocaleString();  
+  
+  
+        document.getElementById(  
+            "rejectedWithdrawals"  
+        ).innerText =  
+            Number(  
+                result.withdrawals?.rejected || 0  
+            ).toLocaleString();  
+  
+  
+        /* =========================  
+           TODAY  
+        ========================== */  
+  
+        document.getElementById(  
+            "todayClaims"  
+        ).innerText =  
+            Number(  
+                result.today?.claims || 0  
+            ).toLocaleString();  
+  
+  
+        document.getElementById(  
+            "todayClaimed"  
+        ).innerText =  
+            formatBTC(  
+                result.today?.claimedAmount  
+            ) + " BTC";  
+  
+  
+        document.getElementById(  
+            "todayWithdrawals"  
+        ).innerText =  
+            Number(  
+                result.today?.withdrawals || 0  
+            ).toLocaleString();  
+  
+  
+        document.getElementById(  
+            "todayWithdrawn"  
+        ).innerText =  
+            formatBTC(  
+                result.today?.withdrawalAmount  
+            ) + " BTC";  
+  
+  
+        message.innerText =  
+            "✅ Statistics updated.";  
+  
+  
+    } catch (error) {  
+  
+        console.error(  
+            "Load stats error:",  
+            error  
+        );  
+  
+        message.innerText =  
+            "❌ Unable to load statistics.";  
+  
+    } finally {  
+  
+        refreshButton.disabled = false;  
+  
+    }  
+  
+}  
+  
+  
+/* =========================================================  
+   CHANGE TAB  
+========================================================= */  
+  
+function changeTab(status) {  
+  
+    if (processing) {  
+        return;  
+    }  
+  
+    currentStatus = status;  
+  
+    currentPage = 1;  
+  
+  
+    document  
+        .querySelectorAll(".tab")  
+        .forEach(button => {  
+  
+            button.classList.toggle(  
+                "active",  
+                button.dataset.status === status  
+            );  
+  
+        });  
+  
+  
+    loadWithdrawals();  
+  
+}  
+  
+  
+/* =========================================================  
+   LOAD WITHDRAWALS  
+========================================================= */  
+  
+async function loadWithdrawals() {  
+  
+    const message =  
+        document.getElementById("message");  
+  
+    const container =  
+        document.getElementById("withdrawals");  
+  
+    const pagination =  
+        document.getElementById("pagination");  
+  
+    const refreshButton =  
+        document.getElementById("refreshButton");  
+  
+  
+    message.innerText =  
+        `⏳ Loading ${currentStatus} withdrawals...`;  
+  
+    container.innerHTML = "";  
+  
+    pagination.style.display = "none";  
+  
+    refreshButton.disabled = true;  
+  
+  
+    try {  
+  
+        const response =  
+            await fetch(  
+                `/api/admin/withdrawals?status=${encodeURIComponent(currentStatus)}`,  
+                {  
+                    method: "GET",  
+                    credentials: "same-origin",  
+                    cache: "no-store"  
+                }  
+            );  
+  
+  
+        const result =  
+            await response.json();  
+  
+  
+        if (!response.ok || !result.success) {  
+  
+            message.innerText =  
+                "❌ " + (  
+                    result.error ||  
+                    "Unable to load withdrawals."  
+                );  
+  
+            allWithdrawals = [];  
+  
+            return;  
+        }  
+  
+  
+        allWithdrawals =  
+            Array.isArray(result.withdrawals)  
+                ? result.withdrawals  
+                : [];  
+  
+  
+        if (allWithdrawals.length === 0) {  
+  
+            message.innerText =  
+                `0 ${currentStatus} BTC withdrawal(s)`;  
+  
+  
+            container.innerHTML = `  
+                <div class="empty">  
+                    ${  
+                        currentStatus === "pending"  
+                            ? "No pending BTC withdrawals."  
+                            : currentStatus === "processing"  
+                                ? "No processing BTC withdrawals."  
+                                : currentStatus === "approved"  
+                                    ? "No approved BTC withdrawals."  
+                                    : "No rejected BTC withdrawals."  
+                    }  
+                </div>  
+            `;  
+  
+            return;  
+        }  
+  
+  
+        message.innerText =  
+            `${allWithdrawals.length} ${currentStatus} BTC withdrawal(s)`;  
+  
+  
+        renderWithdrawals();  
+  
+  
+    } catch (error) {  
+  
+        console.error(  
+            "Load withdrawals error:",  
+            error  
+        );  
+  
+        message.innerText =  
+            "❌ Unable to load withdrawals.";  
+  
+        container.innerHTML = "";  
+  
+    } finally {  
+  
+        refreshButton.disabled = false;  
+  
+    }  
+  
+}  
+  
+  
+/* =========================================================  
+   RENDER WITHDRAWALS  
+========================================================= */  
+  
+function renderWithdrawals() {  
+  
+    const container =  
+        document.getElementById("withdrawals");  
+  
+    const pagination =  
+        document.getElementById("pagination");  
+  
+  
+    const totalPages =  
+        Math.ceil(  
+            allWithdrawals.length /  
+            itemsPerPage  
+        );  
+  
+  
+    if (currentPage > totalPages) {  
+        currentPage = totalPages;  
+    }  
+  
+  
+    const start =  
+        (currentPage - 1) *  
+        itemsPerPage;  
+  
+  
+    const end =  
+        start + itemsPerPage;  
+  
+  
+    const pageItems =  
+        allWithdrawals.slice(  
+            start,  
+            end  
+        );  
+  
+  
+    container.innerHTML = `  
+  
+        <div class="table-wrapper">  
+  
+            <table>  
+  
+                <thead>  
+  
+                    <tr>  
+  
+                        <th>ID</th>  
+  
+                        <th>User</th>  
+  
+                        <th>Amount</th>  
+  
+                        <th>Before Withdrawal Balance</th>  
+  
+                        <th>Current Balance</th>  
+  
+                        <th>Wallet</th>  
+  
+                        <th>Status</th>  
+  
+                        <th>Payout ID</th>  
+  
+                        <th>TXID</th>  
+  
+                        <th>Created</th>  
+  
+                        <th>Processed</th>  
+  
+                        ${  
+                            currentStatus === "pending"  
+                                ? "<th>Actions</th>"  
+                                : ""  
+                        }  
+  
+                    </tr>  
+  
+                </thead>  
+  
+                <tbody>  
+  
+                    ${  
+                        pageItems  
+                            .map(item =>  
+                                createWithdrawalRow(item)  
+                            )  
+                            .join("")  
+                    }  
+  
+                </tbody>  
+  
+            </table>  
+  
+        </div>  
+  
+    `;  
+  
+  
+    pagination.style.display =  
+        totalPages > 1  
+            ? "flex"  
+            : "none";  
+  
+  
+    document.getElementById(  
+        "pageInfo"  
+    ).innerText =  
+        `Page ${currentPage} of ${totalPages}`;  
+  
+  
+    document.getElementById(  
+        "previousButton"  
+    ).disabled =  
+        currentPage <= 1;  
+  
+  
+    document.getElementById(  
+        "nextButton"  
+    ).disabled =  
+        currentPage >= totalPages;  
+  
+}  
+  
+  
+/* =========================================================  
+   CREATE WITHDRAWAL ROW  
+========================================================= */  
+  
+function createWithdrawalRow(item) {  
+  
+    const status =  
+        String(  
+            item.status || ""  
+        ).toLowerCase();  
+  
+  
+    const created =  
+        formatDate(  
+            item.created_at  
+        );  
+  
+  
+    const processed =  
+        item.processed_at  
+            ? formatDate(item.processed_at)  
+            : "—";  
+  
+  
+    const payoutId =  
+        item.payout_id  
+            ? escapeHtml(  
+                String(item.payout_id)  
+            )  
+            : "—";  
+  
+  
+    const txid =  
+        item.txid  
+            ? escapeHtml(  
+                String(item.txid)  
+            )  
+            : "—";  
+  
+  
+    const beforeBalance =  
+        item.balance_before === null ||  
+        item.balance_before === undefined ||  
+        item.balance_before === ""  
+            ? "—"  
+            : `${formatBTC(item.balance_before)} BTC`;  
+  
+  
+    const currentBalance =  
+        item.current_balance === null ||  
+        item.current_balance === undefined ||  
+        item.current_balance === ""  
+            ? "—"  
+            : `${formatBTC(item.current_balance)} BTC`;  
+  
+  
+    return `  
+  
+        <tr>  
+  
+            <td>  
+                <strong>  
+                    #${escapeHtml(  
+                        String(item.id)  
+                    )}  
+                </strong>  
+            </td>  
+  
+  
+            <td>  
+  
+                <strong>  
+                    ${escapeHtml(  
+                        item.email || "N/A"  
+                    )}  
+                </strong>  
+  
+                <br>  
+  
+                <small>  
+                    User ID:  
+                    ${escapeHtml(  
+                        String(item.user_id)  
+                    )}  
+                </small>  
+  
+            </td>  
+  
+  
+            <td class="amount">  
+  
+                ${formatBTC(item.amount)}  
+                BTC  
+  
+            </td>  
+  
+  
+            <td class="amount">  
+  
+                ${beforeBalance}  
+  
+            </td>  
+  
+  
+            <td class="amount">  
+  
+                ${currentBalance}  
+  
+            </td>  
+  
+  
+            <td>  
+  
+                <div class="wallet">  
+  
+                    ${escapeHtml(  
+                        item.wallet_address || "N/A"  
+                    )}  
+  
+                </div>  
+  
+            </td>  
+  
+  
+            <td>  
+  
+                <span class="status ${status}">  
+  
+                    ${escapeHtml(  
+                        status.toUpperCase()  
+                    )}  
+  
+                </span>  
+  
+            </td>  
+  
+  
+            <td>  
+  
+                <span class="id-text">  
+  
+                    ${payoutId}  
+  
+                </span>  
+  
+            </td>  
+  
+  
+            <td>  
+  
+                <span class="id-text">  
+  
+                    ${txid}  
+  
+                </span>  
+  
+            </td>  
+  
+  
+            <td>  
+  
+                ${created}  
+  
+            </td>  
+  
+  
+            <td>  
+  
+                ${processed}  
+  
+            </td>  
+  
+  
+            ${  
+                currentStatus === "pending"  
+                    ? `  
+  
+                    <td class="actions">  
+  
+                        <button  
+                            class="approve"  
+                            onclick="openConfirmation(  
+                                ${Number(item.id)},  
+                                'approve'  
+                            )"  
+                            type="button"  
+                        >  
+                            ✓ Approve  
+                        </button>  
+  
+                        <button  
+                            class="reject"  
+                            onclick="openConfirmation(  
+                                ${Number(item.id)},  
+                                'reject'  
+                            )"  
+                            type="button"  
+                        >  
+                            ✕ Reject  
+                        </button>  
+  
+                    </td>  
+  
+                    `  
+                    : ""  
+            }  
+  
+        </tr>  
+  
+    `;  
+  
+}  
+  
+  
+/* =========================================================  
+   CONFIRMATION MODAL  
+========================================================= */  
+  
+function openConfirmation(  
+    id,  
+    action  
+) {  
+  
+    if (processing) {  
+        return;  
+    }  
+  
+  
+    selectedWithdrawalId = id;  
+  
+    selectedAction = action;  
+  
+  
+    const modal =  
+        document.getElementById(  
+            "confirmModal"  
+        );  
+  
+    const title =  
+        document.getElementById(  
+            "modalTitle"  
+        );  
+  
+    const text =  
+        document.getElementById(  
+            "modalText"  
+        );  
+  
+    const confirmButton =  
+        document.getElementById(  
+            "confirmActionButton"  
+        );  
+  
+  
+    if (action === "approve") {  
+  
+        title.innerText =  
+            "Approve Withdrawal?";  
+  
+  
+        text.innerHTML =  
+            `Are you sure you want to approve withdrawal <strong>#${id}</strong>?<br><br>  
+             This will send the BTC payout through FaucetPay.`;  
+  
+  
+        confirmButton.innerText =  
+            "✓ Approve";  
+  
+  
+        confirmButton.className =  
+            "confirm-button approve-confirm";  
+  
+    } else {  
+  
+        title.innerText =  
+            "Reject Withdrawal?";  
+  
+  
+        text.innerHTML =  
+            `Are you sure you want to reject withdrawal <strong>#${id}</strong>?<br><br>  
+             The reserved BTC will be refunded to the user.`;  
+  
+  
+        confirmButton.innerText =  
+            "✕ Reject";  
+  
+  
+        confirmButton.className =  
+            "confirm-button reject-confirm";  
+  
+    }  
+  
+  
+    modal.classList.add("show");  
+  
+}  
+  
+  
+/* =========================================================  
+   CLOSE MODAL  
+========================================================= */  
+  
+function closeModal() {  
+  
+    document  
+        .getElementById(  
+            "confirmModal"  
+        )  
+        .classList.remove("show");  
+  
+  
+    selectedWithdrawalId = null;  
+  
+    selectedAction = null;  
+  
+}  
+  
+  
 /* =========================================================
    CONFIRM WITHDRAWAL ACTION
 ========================================================= */
@@ -2602,11 +2560,35 @@ async function confirmWithdrawalAction() {
             );
 
 
-        const result =
-            await response.json();
+        let result = null;
+
+        try {
+
+            result =
+                await response.json();
+
+        } catch (jsonError) {
+
+            console.error(
+                "Withdrawal response JSON error:",
+                jsonError
+            );
+
+            message.innerText =
+                `❌ Server response error (${response.status}).`;
+
+            return;
+        }
 
 
-        if (!response.ok || !result.success) {
+        /* =====================================================
+           API ERROR
+        ===================================================== */
+
+        if (
+            !response.ok ||
+            !result.success
+        ) {
 
             message.innerText =
                 "❌ " + (
@@ -2617,6 +2599,10 @@ async function confirmWithdrawalAction() {
             return;
         }
 
+
+        /* =====================================================
+           SUCCESS
+        ===================================================== */
 
         if (
             result.status ===
@@ -2642,9 +2628,38 @@ async function confirmWithdrawalAction() {
         }
 
 
-        await loadWithdrawals();
+        /* =====================================================
+           REFRESH DATA
+           Refresh errors must NOT change the
+           original withdrawal result.
+        ===================================================== */
 
-        await loadStats();
+        try {
+
+            await loadWithdrawals();
+
+        } catch (refreshError) {
+
+            console.error(
+                "Withdrawal list refresh error:",
+                refreshError
+            );
+
+        }
+
+
+        try {
+
+            await loadStats();
+
+        } catch (statsError) {
+
+            console.error(
+                "Stats refresh error:",
+                statsError
+            );
+
+        }
 
 
     } catch (error) {
@@ -2655,7 +2670,7 @@ async function confirmWithdrawalAction() {
         );
 
         message.innerText =
-            "❌ Connection error.";
+            "❌ Unable to connect to the withdrawal server.";
 
     } finally {
 
@@ -2664,165 +2679,160 @@ async function confirmWithdrawalAction() {
     }
 
 }
-
-
-/* =========================================================
-   PAGINATION
-========================================================= */
-
-function previousPage() {
-
-    if (currentPage <= 1) {
-        return;
-    }
-
-
-    currentPage--;
-
-    renderWithdrawals();
-
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-
-}
-
-
-function nextPage() {
-
-    const totalPages =
-        Math.ceil(
-            allWithdrawals.length /
-            itemsPerPage
-        );
-
-
-    if (currentPage >= totalPages) {
-        return;
-    }
-
-
-    currentPage++;
-
-    renderWithdrawals();
-
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-
-}
-
-
-/* =========================================================
-   DATE FORMAT
-========================================================= */
-
-function formatDate(value) {
-
-    if (!value) {
-        return "—";
-    }
-
-
-    const date =
-        new Date(
-            String(value).replace(" ", "T")
-        );
-
-
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return escapeHtml(
-            String(value)
-        );
-
-    }
-
-
-    return escapeHtml(
-        date.toLocaleString()
-    );
-
-}
-
-
-/* =========================================================
-   HTML ESCAPE
-========================================================= */
-
-function escapeHtml(value) {
-
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-
-}
-
-
-/* =========================================================
-   MODAL OUTSIDE CLICK
-========================================================= */
-
-document
-    .getElementById("confirmModal")
-    .addEventListener(
-        "click",
-        function(event) {
-
-            if (
-                event.target === this
-            ) {
-
-                closeModal();
-
-            }
-
-        }
-    );
-
-
-/* =========================================================
-   ESC KEY
-========================================================= */
-
-document.addEventListener(
-    "keydown",
-    function(event) {
-
-        if (
-            event.key === "Escape"
-        ) {
-
-            closeModal();
-
-        }
-
-    }
-);
-
-
-/* =========================================================
-   INITIAL LOAD
-========================================================= */
-
-loadStats();
-
-loadWithdrawals();
-
-</script>
-
-
-</body>
-
-</html>
+  
+  
+/* =========================================================  
+   PAGINATION  
+========================================================= */  
+  
+function previousPage() {  
+  
+    if (currentPage <= 1) {  
+        return;  
+    }  
+  
+  
+    currentPage--;  
+  
+    renderWithdrawals();  
+  
+  
+    window.scrollTo({  
+        top: 0,  
+        behavior: "smooth"  
+    });  
+  
+}  
+  
+  
+function nextPage() {  
+  
+    const totalPages =  
+        Math.ceil(  
+            allWithdrawals.length /  
+            itemsPerPage  
+        );  
+  
+  
+    if (currentPage >= totalPages) {  
+        return;  
+    }  
+  
+  
+    currentPage++;  
+  
+    renderWithdrawals();  
+  
+  
+    window.scrollTo({  
+        top: 0,  
+        behavior: "smooth"  
+    });  
+  
+}  
+  
+  
+/* =========================================================  
+   DATE FORMAT  
+========================================================= */  
+  
+function formatDate(value) {  
+  
+    if (!value) {  
+        return "—";  
+    }  
+  
+  
+    const date =  
+        new Date(  
+            String(value).replace(" ", "T")  
+        );  
+  
+  
+    if (  
+        Number.isNaN(  
+            date.getTime()  
+        )  
+    ) {  
+  
+        return escapeHtml(  
+            String(value)  
+        );  
+  
+    }  
+  
+  
+    return escapeHtml(  
+        date.toLocaleString()  
+    );  
+  
+}  
+  
+  
+/* =========================================================  
+   HTML ESCAPE  
+========================================================= */  
+  
+function escapeHtml(value) {  
+  
+    return String(value ?? "")  
+        .replace(/&/g, "&amp;")  
+        .replace(/</g, "&lt;")  
+        .replace(/>/g, "&gt;")  
+        .replace(/"/g, "&quot;")  
+        .replace(/'/g, "&#039;");  
+  
+}  
+  
+  
+/* =========================================================  
+   MODAL OUTSIDE CLICK  
+========================================================= */  
+  
+document  
+    .getElementById("confirmModal")  
+    .addEventListener(  
+        "click",  
+        function(event) {  
+  
+            if (  
+                event.target === this  
+            ) {  
+  
+                closeModal();  
+  
+            }  
+  
+        }  
+    );  
+  
+  
+/* =========================================================  
+   ESC KEY  
+========================================================= */  
+  
+document.addEventListener(  
+    "keydown",  
+    function(event) {  
+  
+        if (  
+            event.key === "Escape"  
+        ) {  
+  
+            closeModal();  
+  
+        }  
+  
+    }  
+);  
+  
+  
+/* =========================================================  
+   INITIAL LOAD  
+========================================================= */  
+  
+loadStats();  
+  
+loadWithdrawals();  
+  
+</script>  </body>  </html>
