@@ -463,7 +463,7 @@ export async function onRequestPost(context) {
 
 
         // ---------------------------------------------------------
-        // SUCCESSFUL LOGIN
+        // SUCCESSFUL PASSWORD VERIFICATION
         // ---------------------------------------------------------
 
         await db
@@ -476,7 +476,7 @@ export async function onRequestPost(context) {
 
 
         // ---------------------------------------------------------
-        // DEVICE BINDING
+        // DEVICE BINDING / MULTIPLE ACCOUNT PROTECTION
         // ---------------------------------------------------------
 
         let deviceToken =
@@ -509,15 +509,7 @@ export async function onRequestPost(context) {
 
 
         /*
-         * If this browser/device has no device record yet,
-         * bind it to the account that successfully logged in.
-         *
-         * We do NOT block another existing account here.
-         *
-         * Step 1 registration protection is handled by
-         * register-secure.js.
-         *
-         * Step 2 will later add device-level claim protection.
+         * Check whether this device is already registered.
          */
         const existingDevice =
             await db
@@ -533,7 +525,43 @@ export async function onRequestPost(context) {
                 .first();
 
 
-        if (!existingDevice) {
+        // ---------------------------------------------------------
+        // SAME DEVICE + SAME ACCOUNT
+        // ---------------------------------------------------------
+
+        if (
+            existingDevice &&
+            Number(existingDevice.user_id) === Number(user.id)
+        ) {
+
+            // Allowed.
+        }
+
+
+        // ---------------------------------------------------------
+        // SAME DEVICE + DIFFERENT ACCOUNT
+        // ---------------------------------------------------------
+
+        else if (
+            existingDevice &&
+            Number(existingDevice.user_id) !== Number(user.id)
+        ) {
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error: "This device is already registered to another account."
+                },
+                403
+            );
+        }
+
+
+        // ---------------------------------------------------------
+        // NEW DEVICE
+        // ---------------------------------------------------------
+
+        else {
 
             try {
 
@@ -559,21 +587,59 @@ export async function onRequestPost(context) {
                         ? deviceError.message
                         : "Unknown device binding error";
 
+
                 /*
-                 * A concurrent request may have inserted
-                 * the same device between SELECT and INSERT.
-                 *
-                 * Login itself remains successful.
+                 * If another request inserted the same device
+                 * concurrently, re-check ownership before
+                 * allowing the login.
                  */
                 if (
-                    !deviceErrorMessage
+                    deviceErrorMessage
                         .toLowerCase()
                         .includes("unique")
                 ) {
 
+                    const concurrentDevice =
+                        await db
+                            .prepare(
+                                `SELECT
+                                    user_id
+                                 FROM user_devices
+                                 WHERE device_id_hash = ?
+                                 LIMIT 1`
+                            )
+                            .bind(deviceIdHash)
+                            .first();
+
+
+                    if (
+                        concurrentDevice &&
+                        Number(concurrentDevice.user_id) !==
+                            Number(user.id)
+                    ) {
+
+                        return jsonResponse(
+                            {
+                                success: false,
+                                error: "This device is already registered to another account."
+                            },
+                            403
+                        );
+                    }
+
+                } else {
+
                     console.error(
                         "Device binding error:",
                         deviceErrorMessage
+                    );
+
+                    return jsonResponse(
+                        {
+                            success: false,
+                            error: "Unable to verify this device."
+                        },
+                        500
                     );
                 }
             }
@@ -715,54 +781,14 @@ async function recordFailedLogin(
     now
 ) {
 
-    const existing =
-        await db
-            .prepare(
-                `SELECT
-                    failed_attempts,
-                    locked_until
-                 FROM login_attempts
-                 WHERE email = ?`
-            )
-            .bind(email)
-            .first();
-
-
-    let failedAttempts =
-        Number(
-            existing?.failed_attempts || 0
-        );
-
-
-    let lockedUntil =
-        Number(
-            existing?.locked_until || 0
-        );
-
-
-    if (
-        lockedUntil > 0 &&
-        lockedUntil <= now
-    ) {
-
-        failedAttempts = 0;
-        lockedUntil = 0;
-    }
-
-
-    failedAttempts++;
-
-
-    if (
-        failedAttempts >=
-        MAX_FAILED_ATTEMPTS
-    ) {
-
-        lockedUntil =
-            now + LOCKOUT_MS;
-    }
-
-
+    /*
+     * Atomic UPSERT.
+     *
+     * This avoids the previous:
+     * SELECT -> increment -> UPDATE
+     * race condition when multiple failed
+     * login requests arrive at the same time.
+     */
     await db
         .prepare(
             `INSERT INTO login_attempts
@@ -772,18 +798,60 @@ async function recordFailedLogin(
                     locked_until,
                     updated_at
                 )
-             VALUES (?, ?, ?, ?)
+             VALUES (?, 1, 0, ?)
+
              ON CONFLICT(email)
              DO UPDATE SET
-                failed_attempts = excluded.failed_attempts,
-                locked_until = excluded.locked_until,
+
+                failed_attempts =
+                    CASE
+                        WHEN login_attempts.locked_until > ?
+                            THEN login_attempts.failed_attempts
+
+                        WHEN login_attempts.locked_until > 0
+                            AND login_attempts.locked_until <= ?
+                            THEN 1
+
+                        ELSE login_attempts.failed_attempts + 1
+                    END,
+
+                locked_until =
+                    CASE
+                        WHEN login_attempts.locked_until > ?
+                            THEN login_attempts.locked_until
+
+                        WHEN
+                            (
+                                CASE
+                                    WHEN login_attempts.locked_until > 0
+                                        AND login_attempts.locked_until <= ?
+                                        THEN 1
+
+                                    ELSE login_attempts.failed_attempts + 1
+                                END
+                            ) >= ?
+
+                            THEN ? + ?
+
+                        ELSE 0
+                    END,
+
                 updated_at = excluded.updated_at`
         )
         .bind(
             email,
-            failedAttempts,
-            lockedUntil,
-            now
+            now,
+
+            now,
+            now,
+
+            now,
+            now,
+
+            MAX_FAILED_ATTEMPTS,
+
+            now,
+            LOCKOUT_MS
         )
         .run();
 }
