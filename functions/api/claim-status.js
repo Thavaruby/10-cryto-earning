@@ -18,9 +18,17 @@ function getCookie(request, name) {
             cookie.trim().split("=");
 
         if (key === name) {
-            return decodeURIComponent(
-                value.join("=")
-            );
+
+            try {
+
+                return decodeURIComponent(
+                    value.join("=")
+                );
+
+            } catch {
+
+                return null;
+            }
         }
     }
 
@@ -80,6 +88,37 @@ function jsonResponse(
                 ...extraHeaders
             }
         }
+    );
+}
+
+
+/* =====================================================
+   PARSE SQLITE UTC TIMESTAMP
+===================================================== */
+
+function parseSqliteUtcTimestamp(value) {
+
+    if (
+        typeof value !== "string" ||
+        !value.trim()
+    ) {
+        return NaN;
+    }
+
+    const timestamp =
+        value.trim();
+
+    const isoTimestamp =
+        timestamp.includes("T")
+            ? (
+                timestamp.endsWith("Z")
+                    ? timestamp
+                    : `${timestamp}Z`
+            )
+            : `${timestamp.replace(" ", "T")}Z`;
+
+    return Date.parse(
+        isoTimestamp
     );
 }
 
@@ -163,9 +202,17 @@ export async function onRequestGet(context) {
            EXPIRY
         ================================================= */
 
+        const expiresAt =
+            new Date(
+                session.expires_at
+            );
+
+
         if (
-            new Date(session.expires_at) <=
-            new Date()
+            Number.isNaN(
+                expiresAt.getTime()
+            ) ||
+            expiresAt <= new Date()
         ) {
 
             await db
@@ -221,14 +268,44 @@ export async function onRequestGet(context) {
 
 
         /* =================================================
-           CALCULATE REMAINING TIME
+           PARSE LAST CLAIM TIME
         ================================================= */
 
         const lastTime =
-            new Date(
+            parseSqliteUtcTimestamp(
                 lastClaim.claimed_at
-            ).getTime();
+            );
 
+
+        /*
+         * Invalid database timestamp should
+         * never produce NaN or accidentally
+         * allow/deny a claim.
+         */
+        if (
+            !Number.isFinite(
+                lastTime
+            )
+        ) {
+
+            console.error(
+                "INVALID CLAIM TIMESTAMP"
+            );
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Unable to check claim status."
+                },
+                500
+            );
+        }
+
+
+        /* =================================================
+           CALCULATE REMAINING TIME
+        ================================================= */
 
         const elapsed =
             Math.floor(
@@ -252,6 +329,7 @@ export async function onRequestGet(context) {
         ================================================= */
 
         return jsonResponse({
+
             success: true,
 
             canClaim:
