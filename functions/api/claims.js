@@ -17,9 +17,17 @@ function getCookie(request, name) {
             cookie.trim().split("=");
 
         if (key === name) {
-            return decodeURIComponent(
-                value.join("=")
-            );
+
+            try {
+
+                return decodeURIComponent(
+                    value.join("=")
+                );
+
+            } catch {
+
+                return null;
+            }
         }
     }
 
@@ -169,9 +177,17 @@ export async function onRequestGet(context) {
            CHECK EXPIRY
         ================================================= */
 
+        const expiresAt =
+            new Date(
+                session.expires_at
+            );
+
+
         if (
-            new Date(session.expires_at) <=
-            new Date()
+            Number.isNaN(
+                expiresAt.getTime()
+            ) ||
+            expiresAt <= new Date()
         ) {
 
             await db
