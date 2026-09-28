@@ -326,7 +326,7 @@ export async function onRequestGet(
         if (
             !response.ok ||
             !result ||
-            result.success !== true
+            result.status !== 200
         ) {
 
             return jsonResponse(
