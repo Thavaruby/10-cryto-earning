@@ -1,7 +1,9 @@
 // functions/api/admin/faucetpay-transactions.js
 
 async function sha256Hex(text) {
-    const data = new TextEncoder().encode(text);
+
+    const data =
+        new TextEncoder().encode(text);
 
     const hash =
         await crypto.subtle.digest(
@@ -17,34 +19,52 @@ async function sha256Hex(text) {
         .join("");
 }
 
+
 function getCookie(request, name) {
 
     const cookieHeader =
         request.headers.get("Cookie") || "";
 
-    for (const cookie of cookieHeader.split(";")) {
+    for (
+        const cookie
+        of cookieHeader.split(";")
+    ) {
 
-        const [key, ...valueParts] =
+        const [
+            key,
+            ...valueParts
+        ] =
             cookie.trim().split("=");
 
         if (key === name) {
-            return decodeURIComponent(
-                valueParts.join("=")
-            );
+
+            try {
+
+                return decodeURIComponent(
+                    valueParts.join("=")
+                );
+
+            } catch {
+
+                return null;
+            }
         }
     }
 
     return null;
 }
 
+
 function jsonResponse(
     data,
     status = 200
 ) {
+
     return new Response(
         JSON.stringify(data),
         {
             status,
+
             headers: {
                 "Content-Type":
                     "application/json",
@@ -56,11 +76,18 @@ function jsonResponse(
     );
 }
 
-export async function onRequestGet(context) {
+
+export async function onRequestGet(
+    context
+) {
 
     try {
 
-        const { request, env } = context;
+        const {
+            request,
+            env
+        } = context;
+
 
         // --------------------------------------------------
         // 1. Database session
@@ -70,6 +97,7 @@ export async function onRequestGet(context) {
             env.DB.withSession(
                 "first-primary"
             );
+
 
         // --------------------------------------------------
         // 2. Check login session
@@ -81,21 +109,25 @@ export async function onRequestGet(context) {
                 "session"
             );
 
+
         if (!sessionToken) {
 
             return jsonResponse(
                 {
                     success: false,
-                    error: "Unauthorized."
+                    error:
+                        "Unauthorized."
                 },
                 401
             );
         }
 
+
         const tokenHash =
             await sha256Hex(
                 sessionToken
             );
+
 
         const session =
             await db
@@ -110,24 +142,61 @@ export async function onRequestGet(context) {
                 .bind(tokenHash)
                 .first();
 
+
         if (!session) {
 
             return jsonResponse(
                 {
                     success: false,
-                    error: "Unauthorized."
+                    error:
+                        "Unauthorized."
                 },
                 401
             );
         }
 
+
         // --------------------------------------------------
-        // 3. Check session expiry
+        // 3. Validate session user ID
         // --------------------------------------------------
 
+        const userId =
+            Number(
+                session.user_id
+            );
+
+
         if (
-            new Date(session.expires_at) <=
-            new Date()
+            !Number.isInteger(userId) ||
+            userId <= 0
+        ) {
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Unauthorized."
+                },
+                401
+            );
+        }
+
+
+        // --------------------------------------------------
+        // 4. Check session expiry
+        // --------------------------------------------------
+
+        const expiresAt =
+            new Date(
+                session.expires_at
+            );
+
+
+        if (
+            Number.isNaN(
+                expiresAt.getTime()
+            ) ||
+            expiresAt <= new Date()
         ) {
 
             await db
@@ -138,17 +207,20 @@ export async function onRequestGet(context) {
                 .bind(tokenHash)
                 .run();
 
+
             return jsonResponse(
                 {
                     success: false,
-                    error: "Unauthorized."
+                    error:
+                        "Unauthorized."
                 },
                 401
             );
         }
 
+
         // --------------------------------------------------
-        // 4. Check admin
+        // 5. Check admin
         // --------------------------------------------------
 
         const admin =
@@ -159,26 +231,30 @@ export async function onRequestGet(context) {
                      WHERE user_id = ?
                      LIMIT 1`
                 )
-                .bind(session.user_id)
+                .bind(userId)
                 .first();
+
 
         if (!admin) {
 
             return jsonResponse(
                 {
                     success: false,
-                    error: "Forbidden."
+                    error:
+                        "Forbidden."
                 },
                 403
             );
         }
 
+
         // --------------------------------------------------
-        // 5. Check FaucetPay API key
+        // 6. Check FaucetPay API key
         // --------------------------------------------------
 
         const apiKey =
             env.FAUCETPAY_API_KEY;
+
 
         if (!apiKey) {
 
@@ -196,8 +272,9 @@ export async function onRequestGet(context) {
             );
         }
 
+
         // --------------------------------------------------
-        // 6. Request FaucetPay transactions
+        // 7. Request FaucetPay transactions
         // --------------------------------------------------
 
         const response =
@@ -221,22 +298,29 @@ export async function onRequestGet(context) {
                 }
             );
 
+
         let result;
 
+
         try {
+
             result =
                 await response.json();
+
         } catch {
+
             result = null;
         }
+
 
         console.log(
             "FaucetPay transactions HTTP status:",
             response.status
         );
 
+
         // --------------------------------------------------
-        // 7. Handle FaucetPay failure
+        // 8. Handle FaucetPay failure
         // --------------------------------------------------
 
         if (
@@ -257,20 +341,24 @@ export async function onRequestGet(context) {
             );
         }
 
+
         // --------------------------------------------------
-        // 8. Success
+        // 9. Success
         // --------------------------------------------------
 
         return jsonResponse(
             {
                 success: true,
+
                 http_status:
                     response.status,
+
                 faucetpay:
                     result
             },
             200
         );
+
 
     } catch (error) {
 
@@ -280,6 +368,7 @@ export async function onRequestGet(context) {
                 ? error.message
                 : "Unknown error"
         );
+
 
         return jsonResponse(
             {
