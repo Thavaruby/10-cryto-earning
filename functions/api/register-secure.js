@@ -4,7 +4,13 @@ const DEVICE_COOKIE_NAME = "mcf_device";
 const DEVICE_TOKEN_BYTES = 32;
 const DEVICE_COOKIE_MAX_AGE = 60 * 60 * 24 * 365 * 2; // 2 years
 
+
+/* =====================================================
+   BASE64
+===================================================== */
+
 function toBase64(bytes) {
+
     let binary = "";
 
     for (const byte of bytes) {
@@ -14,15 +20,24 @@ function toBase64(bytes) {
     return btoa(binary);
 }
 
+
 function toBase64Url(bytes) {
+
     return toBase64(bytes)
         .replace(/\+/g, "-")
         .replace(/\//g, "_")
         .replace(/=+$/g, "");
 }
 
+
+/* =====================================================
+   SHA-256
+===================================================== */
+
 async function sha256Base64Url(value) {
-    const encoder = new TextEncoder();
+
+    const encoder =
+        new TextEncoder();
 
     const digest =
         await crypto.subtle.digest(
@@ -35,8 +50,18 @@ async function sha256Base64Url(value) {
     );
 }
 
-async function hashPassword(password, salt) {
-    const encoder = new TextEncoder();
+
+/* =====================================================
+   PASSWORD HASH
+===================================================== */
+
+async function hashPassword(
+    password,
+    salt
+) {
+
+    const encoder =
+        new TextEncoder();
 
     const keyMaterial =
         await crypto.subtle.importKey(
@@ -59,18 +84,36 @@ async function hashPassword(password, salt) {
             256
         );
 
-    return new Uint8Array(derivedBits);
+    return new Uint8Array(
+        derivedBits
+    );
 }
 
+
+/* =====================================================
+   EMAIL VALIDATION
+===================================================== */
+
 function isValidEmail(email) {
+
     if (email.length > 254) {
         return false;
     }
 
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        .test(email);
 }
 
-function getCookie(request, name) {
+
+/* =====================================================
+   COOKIE
+===================================================== */
+
+function getCookie(
+    request,
+    name
+) {
+
     const cookieHeader =
         request.headers.get("Cookie") || "";
 
@@ -78,47 +121,86 @@ function getCookie(request, name) {
         cookieHeader.split(";");
 
     for (const cookie of cookies) {
-        const index = cookie.indexOf("=");
+
+        const index =
+            cookie.indexOf("=");
 
         if (index === -1) {
             continue;
         }
 
         const key =
-            cookie.slice(0, index).trim();
+            cookie.slice(
+                0,
+                index
+            ).trim();
 
         if (key !== name) {
             continue;
         }
 
-        return decodeURIComponent(
-            cookie.slice(index + 1).trim()
-        );
+        try {
+
+            return decodeURIComponent(
+                cookie
+                    .slice(index + 1)
+                    .trim()
+            );
+
+        } catch {
+
+            return null;
+        }
     }
 
     return null;
 }
 
+
+/* =====================================================
+   DEVICE TOKEN
+===================================================== */
+
 function createDeviceToken() {
+
     return toBase64Url(
         crypto.getRandomValues(
-            new Uint8Array(DEVICE_TOKEN_BYTES)
+            new Uint8Array(
+                DEVICE_TOKEN_BYTES
+            )
         )
     );
 }
+
+
+/* =====================================================
+   JSON RESPONSE
+===================================================== */
 
 function jsonResponse(
     data,
     status = 200,
     extraHeaders = {}
 ) {
-    const headers = new Headers({
-        "Content-Type": "application/json",
-        "Cache-Control": "no-store"
-    });
 
-    for (const [key, value] of Object.entries(extraHeaders)) {
-        headers.set(key, value);
+    const headers =
+        new Headers({
+            "Content-Type":
+                "application/json",
+
+            "Cache-Control":
+                "no-store"
+        });
+
+    for (
+        const [key, value]
+        of Object.entries(extraHeaders)
+    ) {
+
+        headers.set(
+            key,
+            value
+        );
     }
 
     return new Response(
@@ -130,14 +212,28 @@ function jsonResponse(
     );
 }
 
-export async function onRequestPost(context) {
+
+/* =====================================================
+   REGISTER
+===================================================== */
+
+export async function onRequestPost(
+    context
+) {
 
     try {
+
+        /* =================================================
+           REQUEST JSON
+        ================================================= */
 
         let data;
 
         try {
-            data = await context.request.json();
+
+            data =
+                await context.request.json();
+
         } catch {
 
             return jsonResponse(
@@ -149,51 +245,90 @@ export async function onRequestPost(context) {
             );
         }
 
+
+        /* =================================================
+           INPUT
+        ================================================= */
+
         const email =
-            String(data?.email || "")
+            String(
+                data?.email || ""
+            )
                 .trim()
                 .toLowerCase();
 
         const password =
-            String(data?.password || "");
+            String(
+                data?.password || ""
+            );
 
-        if (!email || !password) {
+
+        /* =================================================
+           REQUIRED FIELDS
+        ================================================= */
+
+        if (
+            !email ||
+            !password
+        ) {
 
             return jsonResponse(
                 {
                     success: false,
-                    error: "Email and password are required"
+                    error:
+                        "Email and password are required"
                 },
                 400
             );
         }
+
+
+        /* =================================================
+           EMAIL VALIDATION
+        ================================================= */
 
         if (!isValidEmail(email)) {
 
             return jsonResponse(
                 {
                     success: false,
-                    error: "Please enter a valid email address"
+                    error:
+                        "Please enter a valid email address"
                 },
                 400
             );
         }
 
-        if (password.length < 8) {
+
+        /* =================================================
+           PASSWORD VALIDATION
+        ================================================= */
+
+        if (
+            password.length < 8 ||
+            password.length > 1024
+        ) {
 
             return jsonResponse(
                 {
                     success: false,
-                    error: "Password must contain at least 8 characters"
+                    error:
+                        "Password must contain between 8 and 1024 characters"
                 },
                 400
             );
         }
 
+
+        /* =================================================
+           DEVICE TOKEN
+        ================================================= */
+
         /*
-         * Existing device gets its existing token.
+         * Existing device keeps its existing token.
          * A new browser/device receives a new token.
          */
+
         let deviceToken =
             getCookie(
                 context.request,
@@ -202,75 +337,108 @@ export async function onRequestPost(context) {
 
         let newDeviceCookie = false;
 
+
         if (
             !deviceToken ||
             deviceToken.length < 40 ||
             deviceToken.length > 200
         ) {
-            deviceToken = createDeviceToken();
+
+            deviceToken =
+                createDeviceToken();
+
             newDeviceCookie = true;
         }
 
+
         const deviceIdHash =
-            await sha256Base64Url(deviceToken);
+            await sha256Base64Url(
+                deviceToken
+            );
+
+
+        /* =================================================
+           DATABASE
+        ================================================= */
 
         const db =
-            context.env.DB.withSession("first-primary");
+            context.env.DB.withSession(
+                "first-primary"
+            );
 
-        /*
-         * Existing email check.
-         */
+
+        /* =================================================
+           EXISTING EMAIL CHECK
+        ================================================= */
+
         const existingUser =
             await db
                 .prepare(
-                    "SELECT id FROM users WHERE email = ?"
+                    `SELECT
+                        id
+                     FROM users
+                     WHERE email = ?`
                 )
-                .bind(email)
+                .bind(
+                    email
+                )
                 .first();
+
 
         if (existingUser) {
 
             return jsonResponse(
                 {
                     success: false,
-                    error: "Email already registered"
+                    error:
+                        "Email already registered"
                 },
                 409
             );
         }
 
-        /*
-         * Device protection:
-         *
-         * If this device is already linked to an account,
-         * a second account cannot be created.
-         */
+
+        /* =================================================
+           EXISTING DEVICE CHECK
+        ================================================= */
+
         const existingDevice =
             await db
                 .prepare(
-                    `SELECT user_id
+                    `SELECT
+                        user_id
                      FROM user_devices
                      WHERE device_id_hash = ?
                      LIMIT 1`
                 )
-                .bind(deviceIdHash)
+                .bind(
+                    deviceIdHash
+                )
                 .first();
+
 
         if (existingDevice) {
 
             return jsonResponse(
                 {
                     success: false,
-                    error: "This device already has an account."
+                    error:
+                        "This device already has an account."
                 },
                 409
             );
         }
 
+
+        /* =================================================
+           PASSWORD HASH
+        ================================================= */
+
         const salt =
             crypto.getRandomValues(
                 new Uint8Array(16)
             );
+
 
         const passwordHash =
             await hashPassword(
@@ -278,105 +446,58 @@ export async function onRequestPost(context) {
                 salt
             );
 
+
         const storedHash =
             `pbkdf2$${ITERATIONS}$${toBase64(salt)}$${toBase64(passwordHash)}`;
 
-        let userId;
+
+        /* =================================================
+           ATOMIC USER + DEVICE CREATION
+        ================================================= */
+
+        /*
+         * Both operations are executed in one D1 batch.
+         *
+         * If either INSERT fails, the batch is rolled back.
+         *
+         * The second statement obtains the newly-created
+         * user's ID through the unique email address.
+         */
 
         try {
 
-            /*
-             * Create the user first.
-             */
-            const userResult =
-                await db
-                    .prepare(
-                        `INSERT INTO users
-                        (email, password_hash, balance)
-                        VALUES (?, ?, 0)
-                        RETURNING id`
-                    )
-                    .bind(
+            await db.batch([
+
+                db.prepare(
+                    `INSERT INTO users
+                    (
                         email,
-                        storedHash
+                        password_hash,
+                        balance
                     )
-                    .first();
+                    VALUES (?, ?, 0)`
+                ).bind(
+                    email,
+                    storedHash
+                ),
 
-            if (!userResult?.id) {
-                throw new Error(
-                    "User creation did not return an ID"
-                );
-            }
-
-            userId = Number(userResult.id);
-
-            /*
-             * Bind this device to the newly created account.
-             */
-            try {
-
-                await db
-                    .prepare(
-                        `INSERT INTO user_devices
-                        (user_id, device_id_hash)
-                        VALUES (?, ?)`
+                db.prepare(
+                    `INSERT INTO user_devices
+                    (
+                        user_id,
+                        device_id_hash
                     )
-                    .bind(
-                        userId,
-                        deviceIdHash
-                    )
-                    .run();
+                    SELECT
+                        id,
+                        ?
+                    FROM users
+                    WHERE email = ?`
+                ).bind(
+                    deviceIdHash,
+                    email
+                )
 
-            } catch (deviceError) {
-
-                /*
-                 * Another request may have registered
-                 * this same device at almost the same time.
-                 *
-                 * Remove the just-created account so we
-                 * don't leave an unprotected account behind.
-                 */
-                try {
-
-                    await db
-                        .prepare(
-                            "DELETE FROM users WHERE id = ?"
-                        )
-                        .bind(userId)
-                        .run();
-
-                } catch (cleanupError) {
-
-                    console.error(
-                        "Registration cleanup error:",
-                        cleanupError instanceof Error
-                            ? cleanupError.message
-                            : "Unknown cleanup error"
-                    );
-                }
-
-                const deviceErrorMessage =
-                    deviceError instanceof Error
-                        ? deviceError.message
-                        : "";
-
-                if (
-                    deviceErrorMessage
-                        .toLowerCase()
-                        .includes("unique")
-                ) {
-
-                    return jsonResponse(
-                        {
-                            success: false,
-                            error: "This device already has an account."
-                        },
-                        409
-                    );
-                }
-
-                throw deviceError;
-            }
+            ]);
 
         } catch (error) {
 
@@ -386,43 +507,124 @@ export async function onRequestPost(context) {
                     : "";
 
             /*
-             * If the database has a UNIQUE constraint
-             * on email, another simultaneous registration
-             * can reach the INSERT after the earlier check.
+             * A UNIQUE constraint can be triggered
+             * by another registration request arriving
+             * concurrently.
              */
+
             if (
                 errorMessage
                     .toLowerCase()
                     .includes("unique")
             ) {
 
-                return jsonResponse(
-                    {
-                        success: false,
-                        error: "Email already registered"
-                    },
-                    409
-                );
+                /*
+                 * Determine whether the conflict is
+                 * the email or the device.
+                 */
+
+                const conflictingUser =
+                    await db
+                        .prepare(
+                            `SELECT
+                                id
+                             FROM users
+                             WHERE email = ?
+                             LIMIT 1`
+                        )
+                        .bind(
+                            email
+                        )
+                        .first();
+
+
+                if (conflictingUser) {
+
+                    return jsonResponse(
+                        {
+                            success: false,
+                            error:
+                                "Email already registered"
+                        },
+                        409
+                    );
+                }
+
+
+                const conflictingDevice =
+                    await db
+                        .prepare(
+                            `SELECT
+                                user_id
+                             FROM user_devices
+                             WHERE device_id_hash = ?
+                             LIMIT 1`
+                        )
+                        .bind(
+                            deviceIdHash
+                        )
+                        .first();
+
+
+                if (conflictingDevice) {
+
+                    return jsonResponse(
+                        {
+                            success: false,
+                            error:
+                                "This device already has an account."
+                        },
+                        409
+                    );
+                }
             }
 
-            throw error;
+
+            console.error(
+                "Registration database error:",
+                errorMessage ||
+                    "Unknown registration error"
+            );
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Unable to create account."
+                },
+                500
+            );
         }
+
+
+        /* =================================================
+           RESPONSE COOKIE
+        ================================================= */
 
         const headers = {};
 
+
         if (newDeviceCookie) {
+
             headers["Set-Cookie"] =
                 `${DEVICE_COOKIE_NAME}=${encodeURIComponent(deviceToken)}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=${DEVICE_COOKIE_MAX_AGE}`;
         }
 
+
+        /* =================================================
+           SUCCESS
+        ================================================= */
+
         return jsonResponse(
             {
                 success: true,
-                message: "Account created successfully!"
+                message:
+                    "Account created successfully!"
             },
             201,
             headers
         );
+
 
     } catch (error) {
 
@@ -433,10 +635,12 @@ export async function onRequestPost(context) {
                 : "Unknown error"
         );
 
+
         return jsonResponse(
             {
                 success: false,
-                error: "Unable to create account."
+                error:
+                    "Unable to create account."
             },
             500
         );
