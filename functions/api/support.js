@@ -195,6 +195,26 @@ export async function onRequestGet(
 
 
         /* =========================================
+           USER ID VALIDATION
+        ========================================= */
+
+        if (
+            !Number.isInteger(userId) ||
+            userId <= 0
+        ) {
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Invalid session"
+                },
+                401
+            );
+        }
+
+
+        /* =========================================
            LOAD USER'S TICKETS
         ========================================= */
 
@@ -392,6 +412,26 @@ export async function onRequestPost(
             Number(
                 session.user_id
             );
+
+
+        /* =========================================
+           USER ID VALIDATION
+        ========================================= */
+
+        if (
+            !Number.isInteger(userId) ||
+            userId <= 0
+        ) {
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Invalid session"
+                },
+                401
+            );
+        }
 
 
         /* =========================================
