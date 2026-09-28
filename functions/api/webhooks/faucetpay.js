@@ -72,9 +72,7 @@ async function verifySignature(
 
 
     const receivedBytes =
-        new Uint8Array(
-            32
-        );
+        new Uint8Array(32);
 
 
     for (
@@ -453,7 +451,7 @@ export async function onRequestPost(
 
 
             /* =========================
-               ATOMIC EVENT + APPROVAL
+               ATOMIC APPROVAL + EVENT
             ========================= */
 
             try {
@@ -461,21 +459,9 @@ export async function onRequestPost(
                 const results =
                     await db.batch([
 
-                        db.prepare(`
-                            INSERT INTO
-                            faucetpay_webhook_events
-                            (
-                                event_id,
-                                event_type,
-                                payout_id
-                            )
-                            VALUES (?, ?, ?)
-                        `).bind(
-                            String(eventId),
-                            String(eventType),
-                            String(payoutId)
-                        ),
-
+                        /*
+                         * First change the withdrawal.
+                         */
 
                         db.prepare(`
                             UPDATE withdrawals
@@ -489,48 +475,166 @@ export async function onRequestPost(
                         `).bind(
                             withdrawal.id,
                             String(payoutId)
+                        ),
+
+
+                        /*
+                         * Record the webhook event only
+                         * when the withdrawal is approved.
+                         *
+                         * This also handles a concurrent
+                         * successful transition safely.
+                         */
+
+                        db.prepare(`
+                            INSERT INTO
+                            faucetpay_webhook_events
+                            (
+                                event_id,
+                                event_type,
+                                payout_id
+                            )
+                            SELECT ?, ?, ?
+                            WHERE EXISTS (
+                                SELECT 1
+                                FROM withdrawals
+                                WHERE id = ?
+                                  AND status = 'approved'
+                                  AND payout_id = ?
+                            )
+                        `).bind(
+                            String(eventId),
+                            String(eventType),
+                            String(payoutId),
+                            withdrawal.id,
+                            String(payoutId)
                         )
 
                     ]);
 
 
                 const withdrawalChanges =
+                    results[0]
+                        ?.meta
+                        ?.changes || 0;
+
+
+                const eventChanges =
                     results[1]
                         ?.meta
                         ?.changes || 0;
 
 
+                /*
+                 * Normal processing:
+                 * withdrawal changed and event recorded.
+                 */
+
                 if (
-                    withdrawalChanges !== 1
+                    withdrawalChanges === 1 &&
+                    eventChanges === 1
                 ) {
 
-                    console.warn(
-                        "Withdrawal was not approved:",
-                        withdrawal.id
+                    console.log(
+                        "WITHDRAWAL APPROVED BY WEBHOOK:",
+                        JSON.stringify({
+                            withdrawalId:
+                                withdrawal.id,
+
+                            payoutId:
+                                payoutId,
+
+                            amount:
+                                amount,
+
+                            walletAddress:
+                                walletAddress
+                        })
                     );
 
                     return new Response(
-                        "Webhook processing error",
+                        "OK",
                         {
-                            status: 500
+                            status: 200
                         }
                     );
                 }
 
 
+                /*
+                 * If another request already completed
+                 * the payout, check the current state.
+                 */
+
+                const currentWithdrawal =
+                    await db
+                        .prepare(`
+                            SELECT status
+                            FROM withdrawals
+                            WHERE id = ?
+                              AND payout_id = ?
+                            LIMIT 1
+                        `)
+                        .bind(
+                            withdrawal.id,
+                            String(payoutId)
+                        )
+                        .first();
+
+
+                if (
+                    currentWithdrawal?.status ===
+                    "approved"
+                ) {
+
+                    console.log(
+                        "Payout.sent already processed:",
+                        eventId
+                    );
+
+                    return new Response(
+                        "OK",
+                        {
+                            status: 200
+                        }
+                    );
+                }
+
+
+                console.error(
+                    "PAYOUT SENT PROCESSING FAILED:",
+                    JSON.stringify({
+                        withdrawalId:
+                            withdrawal.id,
+
+                        payoutId:
+                            payoutId,
+
+                        withdrawalChanges:
+                            withdrawalChanges,
+
+                        eventChanges:
+                            eventChanges
+                    })
+                );
+
+
+                return new Response(
+                    "Webhook processing error",
+                    {
+                        status: 500
+                    }
+                );
+
+
             } catch (error) {
 
                 /*
-                 * IMPORTANT:
+                 * A duplicate event_id can cause the
+                 * INSERT to fail.
                  *
-                 * If the event already exists because
-                 * FaucetPay sent the same webhook again,
-                 * the UNIQUE event_id constraint causes
-                 * the batch to fail.
-                 *
-                 * We then check whether the withdrawal
-                 * is already approved. If yes, the webhook
-                 * was already successfully processed.
+                 * Because this is a D1 batch, the
+                 * withdrawal update is rolled back too.
                  */
 
                 const currentWithdrawal =
@@ -583,24 +687,6 @@ export async function onRequestPost(
                     }
                 );
             }
-
-
-            console.log(
-                "WITHDRAWAL APPROVED BY WEBHOOK:",
-                JSON.stringify({
-                    withdrawalId:
-                        withdrawal.id,
-
-                    payoutId:
-                        payoutId,
-
-                    amount:
-                        amount,
-
-                    walletAddress:
-                        walletAddress
-                })
-            );
         }
 
 
@@ -636,34 +722,14 @@ export async function onRequestPost(
 
 
             /* =========================
-               ATOMIC EVENT + REFUND
-               + REJECT
+               ATOMIC REFUND + REJECT
+               + EVENT
             ========================= */
 
             try {
 
                 const results =
                     await db.batch([
-
-                        /* =====================
-                           SAVE EVENT
-                        ===================== */
-
-                        db.prepare(`
-                            INSERT INTO
-                            faucetpay_webhook_events
-                            (
-                                event_id,
-                                event_type,
-                                payout_id
-                            )
-                            VALUES (?, ?, ?)
-                        `).bind(
-                            String(eventId),
-                            String(eventType),
-                            String(payoutId)
-                        ),
-
 
                         /* =====================
                            REFUND USER
@@ -714,34 +780,71 @@ export async function onRequestPost(
                         `).bind(
                             withdrawal.id,
                             String(payoutId)
+                        ),
+
+
+                        /* =====================
+                           SAVE EVENT ONLY AFTER
+                           WITHDRAWAL IS REJECTED
+                        ===================== */
+
+                        db.prepare(`
+                            INSERT INTO
+                            faucetpay_webhook_events
+                            (
+                                event_id,
+                                event_type,
+                                payout_id
+                            )
+                            SELECT ?, ?, ?
+                            WHERE EXISTS (
+                                SELECT 1
+                                FROM withdrawals
+                                WHERE id = ?
+                                  AND status = 'rejected'
+                                  AND payout_id = ?
+                            )
+                        `).bind(
+                            String(eventId),
+                            String(eventType),
+                            String(payoutId),
+                            withdrawal.id,
+                            String(payoutId)
                         )
 
                     ]);
 
 
                 const refundChanges =
-                    results[1]
+                    results[0]
                         ?.meta
                         ?.changes || 0;
 
 
                 const withdrawalChanges =
+                    results[1]
+                        ?.meta
+                        ?.changes || 0;
+
+
+                const eventChanges =
                     results[2]
                         ?.meta
                         ?.changes || 0;
 
 
                 /* =========================
-                   VERIFY BOTH OPERATIONS
+                   NORMAL SUCCESS
                 ========================= */
 
                 if (
-                    refundChanges !== 1 ||
-                    withdrawalChanges !== 1
+                    refundChanges === 1 &&
+                    withdrawalChanges === 1 &&
+                    eventChanges === 1
                 ) {
 
-                    console.error(
-                        "PAYOUT FAILED REFUND/REJECT FAILED:",
+                    console.log(
+                        "WITHDRAWAL REJECTED AND REFUNDED:",
                         JSON.stringify({
                             withdrawalId:
                                 withdrawal.id,
@@ -749,40 +852,101 @@ export async function onRequestPost(
                             payoutId:
                                 payoutId,
 
-                            refundChanges:
-                                refundChanges,
+                            amount:
+                                withdrawal.amount,
 
-                            withdrawalChanges:
-                                withdrawalChanges
+                            userId:
+                                withdrawal.user_id
                         })
                     );
 
-
-                    /*
-                     * D1 batch is transactional.
-                     * If the batch itself fails,
-                     * all changes are rolled back.
-                     *
-                     * Return 500 so FaucetPay can retry.
-                     */
-
                     return new Response(
-                        "Webhook processing error",
+                        "OK",
                         {
-                            status: 500
+                            status: 200
                         }
                     );
                 }
 
 
+                /*
+                 * Check current state after a possible
+                 * concurrent webhook/request.
+                 */
+
+                const currentWithdrawal =
+                    await db
+                        .prepare(`
+                            SELECT status
+                            FROM withdrawals
+                            WHERE id = ?
+                              AND payout_id = ?
+                            LIMIT 1
+                        `)
+                        .bind(
+                            withdrawal.id,
+                            String(payoutId)
+                        )
+                        .first();
+
+
+                if (
+                    currentWithdrawal?.status ===
+                    "rejected"
+                ) {
+
+                    console.log(
+                        "Payout.failed already processed:",
+                        eventId
+                    );
+
+                    return new Response(
+                        "OK",
+                        {
+                            status: 200
+                        }
+                    );
+                }
+
+
+                console.error(
+                    "PAYOUT FAILED REFUND/REJECT FAILED:",
+                    JSON.stringify({
+                        withdrawalId:
+                            withdrawal.id,
+
+                        payoutId:
+                            payoutId,
+
+                        refundChanges:
+                            refundChanges,
+
+                        withdrawalChanges:
+                            withdrawalChanges,
+
+                        eventChanges:
+                            eventChanges
+                    })
+                );
+
+
+                return new Response(
+                    "Webhook processing error",
+                    {
+                        status: 500
+                    }
+                );
+
+
             } catch (error) {
 
                 /*
-                 * If this was a duplicate webhook,
-                 * the UNIQUE event_id constraint prevents
-                 * duplicate processing.
+                 * If the event already exists, the
+                 * unique event_id constraint causes
+                 * the batch to fail.
                  *
-                 * Check current withdrawal state.
+                 * The batch rollback protects against
+                 * duplicate refunding.
                  */
 
                 const currentWithdrawal =
@@ -835,24 +999,6 @@ export async function onRequestPost(
                     }
                 );
             }
-
-
-            console.log(
-                "WITHDRAWAL REJECTED AND REFUNDED:",
-                JSON.stringify({
-                    withdrawalId:
-                        withdrawal.id,
-
-                    payoutId:
-                        payoutId,
-
-                    amount:
-                        withdrawal.amount,
-
-                    userId:
-                        withdrawal.user_id
-                })
-            );
         }
 
 
