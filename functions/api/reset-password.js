@@ -274,18 +274,45 @@ export async function onRequestPost(
 
 
         /* -------------------------------------------------
-           Password validation
+           Reset token length protection
         ------------------------------------------------- */
 
         if (
-            password.length < 8
+            token.length < 1 ||
+            token.length > 2048
         ) {
 
             return Response.json(
                 {
                     success: false,
                     error:
-                        "Password must contain at least 8 characters."
+                        "Invalid password reset request."
+                },
+                {
+                    status: 400,
+                    headers: {
+                        "Cache-Control":
+                            "no-store"
+                    }
+                }
+            );
+        }
+
+
+        /* -------------------------------------------------
+           Password validation
+        ------------------------------------------------- */
+
+        if (
+            password.length < 8 ||
+            password.length > 1024
+        ) {
+
+            return Response.json(
+                {
+                    success: false,
+                    error:
+                        "Password must contain 8 to 1024 characters."
                 },
                 {
                     status: 400,
@@ -426,7 +453,7 @@ export async function onRequestPost(
 
         /* -------------------------------------------------
            Reset token must not already be consumed
-           
+
            used = 1
            → verification completed
 
