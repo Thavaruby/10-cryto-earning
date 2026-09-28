@@ -23,7 +23,8 @@ function toBase64(bytes) {
 
 async function hashValue(value, salt) {
 
-    const encoder = new TextEncoder();
+    const encoder =
+        new TextEncoder();
 
     const keyMaterial =
         await crypto.subtle.importKey(
@@ -46,7 +47,9 @@ async function hashValue(value, salt) {
             256
         );
 
-    return new Uint8Array(derivedBits);
+    return new Uint8Array(
+        derivedBits
+    );
 }
 
 
@@ -91,7 +94,9 @@ function generateCode() {
    MAIN
 ========================================================= */
 
-export async function onRequestPost(context) {
+export async function onRequestPost(
+    context
+) {
 
     try {
 
@@ -108,14 +113,17 @@ export async function onRequestPost(context) {
         ------------------------------------------------- */
 
         const email =
-            String(data.email || "")
+            String(
+                data.email || ""
+            )
                 .trim()
                 .toLowerCase();
 
 
-        /*
-         * Basic email length protection.
-         */
+        /* -------------------------------------------------
+           Email length protection
+        ------------------------------------------------- */
+
         if (
             !email ||
             email.length > 254
@@ -124,7 +132,8 @@ export async function onRequestPost(context) {
             return Response.json(
                 {
                     success: false,
-                    error: "Email is required"
+                    error:
+                        "Email is required."
                 },
                 {
                     status: 400,
@@ -170,7 +179,7 @@ export async function onRequestPost(context) {
          *
          * Do not reveal whether the email exists.
          *
-         * This prevents account/email enumeration.
+         * This prevents account enumeration.
          */
 
         if (!user) {
@@ -200,69 +209,6 @@ export async function onRequestPost(context) {
             Math.floor(
                 Date.now() / 1000
             );
-
-
-        /* -------------------------------------------------
-           Check previous reset request
-        ------------------------------------------------- */
-
-        const recentReset =
-            await db
-                .prepare(
-                    `
-                    SELECT created_at
-                    FROM password_resets
-                    WHERE user_id = ?
-                    ORDER BY created_at DESC
-                    LIMIT 1
-                    `
-                )
-                .bind(user.id)
-                .first();
-
-
-        /* -------------------------------------------------
-           10-minute request cooldown
-        ------------------------------------------------- */
-
-        if (
-            recentReset &&
-            now -
-                Number(
-                    recentReset.created_at
-                ) < 600
-        ) {
-
-            return Response.json(
-                {
-                    success: true,
-                    cooldown: true,
-                    message:
-                        "Please wait before requesting another verification code."
-                },
-                {
-                    headers: {
-                        "Cache-Control":
-                            "no-store"
-                    }
-                }
-            );
-        }
-
-
-        /* -------------------------------------------------
-           Remove previous reset sessions
-        ------------------------------------------------- */
-
-        await db
-            .prepare(
-                `
-                DELETE FROM password_resets
-                WHERE user_id = ?
-                `
-            )
-            .bind(user.id)
-            .run();
 
 
         /* -------------------------------------------------
@@ -309,9 +255,22 @@ export async function onRequestPost(context) {
             now;
 
 
-        /* -------------------------------------------------
-           Store hashed verification code
-        ------------------------------------------------- */
+        /*
+         * =================================================
+         * ATOMIC REQUEST COOLDOWN PROTECTION
+         * =================================================
+         *
+         * Insert a new reset record ONLY when the user
+         * does not already have a reset request created
+         * within the last 10 minutes.
+         *
+         * This removes the race condition where two
+         * simultaneous requests could both pass a separate
+         * SELECT cooldown check.
+         *
+         * D1 processes writes on the primary and batch
+         * statements sequentially.
+         */
 
         const insertResult =
             await db
@@ -326,16 +285,64 @@ export async function onRequestPost(context) {
                         used,
                         created_at
                     )
-                    VALUES (?, ?, ?, 0, 0, ?)
+                    SELECT
+                        ?,
+                        ?,
+                        ?,
+                        0,
+                        0,
+                        ?
+                    WHERE NOT EXISTS (
+                        SELECT 1
+                        FROM password_resets
+                        WHERE user_id = ?
+                          AND created_at > ?
+                    )
                     `
                 )
                 .bind(
                     user.id,
                     storedCodeHash,
                     expiresAt,
-                    createdAt
+                    createdAt,
+                    user.id,
+                    now - 600
                 )
                 .run();
+
+
+        const insertChanges =
+            insertResult &&
+            insertResult.meta
+                ? Number(
+                    insertResult.meta.changes
+                )
+                : 0;
+
+
+        /* -------------------------------------------------
+           Cooldown already active
+        ------------------------------------------------- */
+
+        if (
+            insertChanges !== 1
+        ) {
+
+            return Response.json(
+                {
+                    success: true,
+                    cooldown: true,
+                    message:
+                        "Please wait before requesting another verification code."
+                },
+                {
+                    headers: {
+                        "Cache-Control":
+                            "no-store"
+                    }
+                }
+            );
+        }
 
 
         /*
@@ -350,7 +357,9 @@ export async function onRequestPost(context) {
         if (
             insertResult &&
             insertResult.meta &&
-            Number(insertResult.meta.last_row_id)
+            Number(
+                insertResult.meta.last_row_id
+            )
         ) {
 
             resetId =
@@ -363,8 +372,8 @@ export async function onRequestPost(context) {
         /*
          * Fallback: find the newest reset record.
          *
-         * This is only used if D1 does not return
-         * last_row_id in the expected form.
+         * The conditional INSERT above guarantees that
+         * this is the reset record created by this request.
          */
 
         if (!resetId) {
@@ -391,6 +400,27 @@ export async function onRequestPost(context) {
                     );
             }
         }
+
+
+        /*
+         * Remove older reset records.
+         *
+         * The newly created record remains.
+         */
+
+        await db
+            .prepare(
+                `
+                DELETE FROM password_resets
+                WHERE user_id = ?
+                  AND id != ?
+                `
+            )
+            .bind(
+                user.id,
+                resetId
+            )
+            .run();
 
 
         /* -------------------------------------------------
@@ -554,8 +584,6 @@ export async function onRequestPost(context) {
 
 
             /*
-             * IMPORTANT:
-             *
              * The reset code was already stored.
              * Since the email was not sent, remove it.
              *
