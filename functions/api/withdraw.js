@@ -25,20 +25,19 @@ Bech32m checksum validation
 Witness version validation
 
 Witness program length validation
-*/
-
+===================================================== */
 
 const BASE58_ALPHABET =
-"123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+    "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 
 const BECH32_CHARSET =
-"qpzry9x8gf2tvdw0s3jn54khce6mua7l";
+    "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
 
 const BECH32_CONST =
-1;
+    1;
 
 const BECH32M_CONST =
-0x2bc830a3;
+    0x2bc830a3;
 
 /* =====================================================
 SHA-256
@@ -46,12 +45,12 @@ SHA-256
 
 async function sha256(bytes) {
 
-return new Uint8Array(  
-    await crypto.subtle.digest(  
-        "SHA-256",  
-        bytes  
-    )  
-);
+    return new Uint8Array(
+        await crypto.subtle.digest(
+            "SHA-256",
+            bytes
+        )
+    );
 
 }
 
@@ -61,80 +60,73 @@ BASE58 DECODE
 
 function base58Decode(address) {
 
-let num = 0n;  
+    let num = 0n;
 
-for (const char of address) {  
+    for (const char of address) {
 
-    const index =  
-        BASE58_ALPHABET.indexOf(char);  
+        const index =
+            BASE58_ALPHABET.indexOf(char);
 
-    if (index === -1) {  
-        return null;  
-    }  
+        if (index === -1) {
+            return null;
+        }
 
-    num =  
-        num * 58n +  
-        BigInt(index);  
-}  
+        num =
+            num * 58n +
+            BigInt(index);
+    }
 
+    let hex =
+        num.toString(16);
 
-let hex =  
-    num.toString(16);  
+    if (hex.length % 2 !== 0) {
+        hex = "0" + hex;
+    }
 
+    const bytes = [];
 
-if (hex.length % 2 !== 0) {  
-    hex = "0" + hex;  
-}  
+    for (
+        let i = 0;
+        i < hex.length;
+        i += 2
+    ) {
 
+        bytes.push(
+            parseInt(
+                hex.slice(i, i + 2),
+                16
+            )
+        );
+    }
 
-const bytes = [];  
+    /*
+     * Preserve leading zero bytes.
+     *
+     * In Base58 Bitcoin addresses,
+     * leading "1" characters represent
+     * zero bytes.
+     */
 
+    let leadingZeros = 0;
 
-for (  
-    let i = 0;  
-    i < hex.length;  
-    i += 2  
-) {  
+    for (
+        const char of address
+    ) {
 
-    bytes.push(  
-        parseInt(  
-            hex.slice(i, i + 2),  
-            16  
-        )  
-    );  
-}  
+        if (char !== "1") {
+            break;
+        }
 
+        leadingZeros++;
+    }
 
-/*  
- * Preserve leading zero bytes.  
- *  
- * In Base58 Bitcoin addresses,  
- * leading "1" characters represent  
- * zero bytes.  
- */  
+    return new Uint8Array([
+        ...new Array(
+            leadingZeros
+        ).fill(0),
 
-let leadingZeros = 0;  
-
-
-for (  
-    const char of address  
-) {  
-
-    if (char !== "1") {  
-        break;  
-    }  
-
-    leadingZeros++;  
-}  
-
-
-return new Uint8Array([  
-    ...new Array(  
-        leadingZeros  
-    ).fill(0),  
-
-    ...bytes  
-]);
+        ...bytes
+    ]);
 
 }
 
@@ -144,100 +136,91 @@ BASE58CHECK VALIDATION
 
 async function isValidBase58Check(address) {
 
-const decoded =  
-    base58Decode(address);  
+    const decoded =
+        base58Decode(address);
 
+    if (!decoded) {
+        return false;
+    }
 
-if (!decoded) {  
-    return false;  
-}  
+    /*
+     * Bitcoin Base58Check address:
+     *
+     * 1 byte version
+     * 20 bytes payload
+     * 4 bytes checksum
+     *
+     * Total = 25 bytes
+     */
 
+    if (decoded.length !== 25) {
+        return false;
+    }
 
-/*  
- * Bitcoin Base58Check address:  
+    const version =
+        decoded[0];
 
- * 1 byte  version  
- * 20 bytes payload  
- * 4 bytes checksum  
- *  
- * Total = 25 bytes  
- */  
+    /*
+     * Bitcoin mainnet:
+     *
+     * 0x00 = P2PKH → 1...
+     * 0x05 = P2SH  → 3...
+     */
 
-if (decoded.length !== 25) {  
-    return false;  
-}  
+    if (
+        version !== 0x00 &&
+        version !== 0x05
+    ) {
 
+        return false;
+    }
 
-const version =  
-    decoded[0];  
+    const payload =
+        decoded.slice(
+            0,
+            21
+        );
 
+    const checksum =
+        decoded.slice(
+            21
+        );
 
-/*  
- * Bitcoin mainnet:  
+    /*
+     * Base58Check checksum:
+     *
+     * SHA256(SHA256(version + payload))
+     * first 4 bytes
+     */
 
- * 0x00 = P2PKH → 1...  
- * 0x05 = P2SH  → 3...  
- */  
+    const hash1 =
+        await sha256(payload);
 
-if (  
-    version !== 0x00 &&  
-    version !== 0x05  
-) {  
-    return false;  
-}  
+    const hash2 =
+        await sha256(hash1);
 
+    const expectedChecksum =
+        hash2.slice(
+            0,
+            4
+        );
 
-const payload =  
-    decoded.slice(  
-        0,  
-        21  
-    );  
+    for (
+        let i = 0;
+        i < 4;
+        i++
+    ) {
 
+        if (
+            checksum[i] !==
+            expectedChecksum[i]
+        ) {
 
-const checksum =  
-    decoded.slice(  
-        21  
-    );  
+            return false;
+        }
+    }
 
-
-/*  
- * Base58Check checksum:  
-
- * SHA256(SHA256(version + payload))  
- * first 4 bytes  
- */  
-
-const hash1 =  
-    await sha256(payload);  
-
-
-const hash2 =  
-    await sha256(hash1);  
-
-
-const expectedChecksum =  
-    hash2.slice(  
-        0,  
-        4  
-    );  
-
-
-for (  
-    let i = 0;  
-    i < 4;  
-    i++  
-) {  
-
-    if (  
-        checksum[i] !==  
-        expectedChecksum[i]  
-    ) {  
-        return false;  
-    }  
-}  
-
-
-return true;
+    return true;
 
 }
 
@@ -247,51 +230,46 @@ BECH32 POLYMOD
 
 function bech32Polymod(values) {
 
-const generator = [  
-    0x3b6a57b2,  
-    0x26508e6d,  
-    0x1ea119fa,  
-    0x3d4233dd,  
-    0x2a1462b3  
-];  
+    const generator = [
+        0x3b6a57b2,
+        0x26508e6d,
+        0x1ea119fa,
+        0x3d4233dd,
+        0x2a1462b3
+    ];
 
+    let chk = 1;
 
-let chk = 1;  
+    for (
+        const value of values
+    ) {
 
+        const top =
+            chk >>> 25;
 
-for (  
-    const value of values  
-) {  
+        chk =
+            (
+                (chk & 0x1ffffff) << 5
+            ) ^
+            value;
 
-    const top =  
-        chk >>> 25;  
+        for (
+            let i = 0;
+            i < 5;
+            i++
+        ) {
 
+            if (
+                (top >>> i) & 1
+            ) {
 
-    chk =  
-        (  
-            (chk & 0x1ffffff) << 5  
-        ) ^  
-        value;  
+                chk ^=
+                    generator[i];
+            }
+        }
+    }
 
-
-    for (  
-        let i = 0;  
-        i < 5;  
-        i++  
-    ) {  
-
-        if (  
-            (top >>> i) & 1  
-        ) {  
-
-            chk ^=  
-                generator[i];  
-        }  
-    }  
-}  
-
-
-return chk >>> 0;
+    return chk >>> 0;
 
 }
 
@@ -301,34 +279,30 @@ BECH32 HRP EXPAND
 
 function bech32HrpExpand(hrp) {
 
-const high = [];  
-const low = [];  
+    const high = [];
+    const low = [];
 
+    for (
+        const char of hrp
+    ) {
 
-for (  
-    const char of hrp  
-) {  
+        const code =
+            char.charCodeAt(0);
 
-    const code =  
-        char.charCodeAt(0);  
+        high.push(
+            code >> 5
+        );
 
+        low.push(
+            code & 31
+        );
+    }
 
-    high.push(  
-        code >> 5  
-    );  
-
-
-    low.push(  
-        code & 31  
-    );  
-}  
-
-
-return [  
-    ...high,  
-    0,  
-    ...low  
-];
+    return [
+        ...high,
+        0,
+        ...low
+    ];
 
 }
 
@@ -337,110 +311,103 @@ CONVERT BITS
 ===================================================== */
 
 function convertBits(
-data,
-fromBits,
-toBits,
-pad
+    data,
+    fromBits,
+    toBits,
+    pad
 ) {
 
-let acc = 0;  
-let bits = 0;  
+    let acc = 0;
+    let bits = 0;
 
-const ret = [];  
+    const ret = [];
 
+    const maxv =
+        (1 << toBits) - 1;
 
-const maxv =  
-    (1 << toBits) - 1;  
+    const maxAcc =
+        (1 << (fromBits + toBits - 1)) - 1;
 
+    for (
+        const value of data
+    ) {
 
-const maxAcc =  
-    (1 << (fromBits + toBits - 1)) - 1;  
+        if (
+            value < 0 ||
+            (value >> fromBits) !== 0
+        ) {
 
+            return null;
+        }
 
-for (  
-    const value of data  
-) {  
+        acc =
+            (
+                (acc << fromBits) |
+                value
+            ) &
+            maxAcc;
 
-    if (  
-        value < 0 ||  
-        (value >> fromBits) !== 0  
-    ) {  
-        return null;  
-    }  
+        bits += fromBits;
 
+        while (
+            bits >= toBits
+        ) {
 
-    acc =  
-        (  
-            (acc << fromBits) |  
-            value  
-        ) &  
-        maxAcc;  
+            bits -= toBits;
 
+            ret.push(
+                (
+                    acc >> bits
+                ) &
+                maxv
+            );
+        }
+    }
 
-    bits += fromBits;  
+    if (pad) {
 
+        if (bits > 0) {
 
-    while (  
-        bits >= toBits  
-    ) {  
+            ret.push(
+                (
+                    acc <<
+                    (toBits - bits)
+                ) &
+                maxv
+            );
+        }
 
-        bits -= toBits;  
+    } else {
 
+        /*
+         * Invalid if there are
+         * too many leftover bits.
+         */
 
-        ret.push(  
-            (  
-                acc >> bits  
-            ) &  
-            maxv  
-        );  
-    }  
-}  
+        if (
+            bits >= fromBits
+        ) {
 
+            return null;
+        }
 
-if (pad) {  
+        /*
+         * Remaining bits must be zero.
+         */
 
-    if (bits > 0) {  
+        if (
+            (
+                acc <<
+                (toBits - bits)
+            ) &
+            maxv
+        ) {
 
-        ret.push(  
-            (  
-                acc <<  
-                (toBits - bits)  
-            ) &  
-            maxv  
-        );  
-    }  
+            return null;
+        }
+    }
 
-} else {  
-
-    /*  
-     * Invalid if there are  
-     * too many leftover bits.  
-     */  
-
-    if (  
-        bits >= fromBits  
-    ) {  
-        return null;  
-    }  
-
-
-    /*  
-     * Remaining bits must be zero.  
-     */  
-
-    if (  
-        (  
-            acc <<  
-            (toBits - bits)  
-        ) &  
-        maxv  
-    ) {  
-        return null;  
-    }  
-}  
-
-
-return ret;
+    return ret;
 
 }
 
@@ -450,250 +417,234 @@ BECH32 / BECH32M VALIDATION
 
 function decodeBech32(address) {
 
-/*  
- * Bech32 cannot use mixed case.  
- *  
- * All lowercase OR all uppercase  
- * is allowed.  
- */  
+    /*
+     * Bech32 cannot use mixed case.
+     *
+     * All lowercase OR all uppercase
+     * is allowed.
+     */
+
+    const lower =
+        address.toLowerCase();
+
+    const upper =
+        address.toUpperCase();
+
+    if (
+        address !== lower &&
+        address !== upper
+    ) {
+
+        return null;
+    }
+
+    const normalized =
+        lower;
+
+    /*
+     * Bitcoin mainnet only.
+     */
+
+    if (
+        !normalized.startsWith("bc1")
+    ) {
 
-const lower =  
-    address.toLowerCase();  
+        return null;
+    }
 
+    /*
+     * BIP-173 maximum length.
+     */
 
-const upper =  
-    address.toUpperCase();  
+    if (
+        normalized.length < 14 ||
+        normalized.length > 90
+    ) {
 
+        return null;
+    }
 
-if (  
-    address !== lower &&  
-    address !== upper  
-) {  
-    return null;  
-}  
+    /*
+     * Separator is the final "1".
+     */
 
+    const separator =
+        normalized.lastIndexOf("1");
 
-const normalized =  
-    lower;  
+    if (
+        separator < 1 ||
+        separator + 7 >
+        normalized.length
+    ) {
 
-
-/*  
- * Bitcoin mainnet only.  
- */  
-
-if (  
-    !normalized.startsWith("bc1")  
-) {  
-    return null;  
-}  
-
-
-/*  
- * BIP-173 maximum length.  
- */  
-
-if (  
-    normalized.length < 14 ||  
-    normalized.length > 90  
-) {  
-    return null;  
-}  
-
-
-/*  
- * Separator is the final "1".  
- */  
-
-const separator =  
-    normalized.lastIndexOf("1");  
-
-
-if (  
-    separator < 1 ||  
-    separator + 7 >  
-    normalized.length  
-) {  
-    return null;  
-}  
-
-
-const hrp =  
-    normalized.slice(  
-        0,  
-        separator  
-    );  
-
-
-const dataPart =  
-    normalized.slice(  
-        separator + 1  
-    );  
-
-
-const data = [];  
-
-
-for (  
-    const char of dataPart  
-) {  
-
-    const value =  
-        BECH32_CHARSET.indexOf(  
-            char  
-        );  
-
-
-    if (value === -1) {  
-        return null;  
-    }  
-
-
-    data.push(value);  
-}  
-
-
-/*  
- * Need at least:  
-
- * 1 witness version  
- * 6 checksum values  
- */  
-
-if (  
-    data.length < 7  
-) {  
-    return null;  
-}  
-
-
-const polymod =  
-    bech32Polymod([  
-        ...bech32HrpExpand(hrp),  
-        ...data  
-    ]);  
-
-
-let encoding;  
-
-
-if (  
-    polymod === BECH32_CONST  
-) {  
-
-    encoding =  
-        "bech32";  
-
-} else if (  
-    polymod === BECH32M_CONST  
-) {  
-
-    encoding =  
-        "bech32m";  
-
-} else {  
-
-    /*  
-     * Invalid checksum.  
-     */  
-
-    return null;  
-}  
-
-
-/*  
- * First data value is  
- * the witness version.  
- */  
-
-const witnessVersion =  
-    data[0];  
-
-
-if (  
-    witnessVersion > 16  
-) {  
-    return null;  
-}  
-
-
-/*  
- * Remove:  
-
- * witness version  
- * 6 checksum values  
- */  
-
-const program =  
-    convertBits(  
-        data.slice(1, -6),  
-        5,  
-        8,  
-        false  
-    );  
-
-
-if (!program) {  
-    return null;  
-}  
-
-
-/*  
- * Witness program:  
-
- * minimum 2 bytes  
- * maximum 40 bytes  
- */  
-
-if (  
-    program.length < 2 ||  
-    program.length > 40  
-) {  
-    return null;  
-}  
-
-
-/*  
- * Witness version 0:  
-
- * P2WPKH = 20 bytes  
- * P2WSH  = 32 bytes  
- */  
-
-if (  
-    witnessVersion === 0 &&  
-    program.length !== 20 &&  
-    program.length !== 32  
-) {  
-    return null;  
-}  
-
-
-/*  
- * Witness version 0 MUST use Bech32.  
- */  
-
-if (  
-    witnessVersion === 0 &&  
-    encoding !== "bech32"  
-) {  
-    return null;  
-}  
-
-
-/*  
- * Witness version 1+  
- * MUST use Bech32m.  
- */  
-
-if (  
-    witnessVersion !== 0 &&  
-    encoding !== "bech32m"  
-) {  
-    return null;  
-}  
-
-
-return true;
+        return null;
+    }
+
+    const hrp =
+        normalized.slice(
+            0,
+            separator
+        );
+
+    const dataPart =
+        normalized.slice(
+            separator + 1
+        );
+
+    const data = [];
+
+    for (
+        const char of dataPart
+    ) {
+
+        const value =
+            BECH32_CHARSET.indexOf(
+                char
+            );
+
+        if (value === -1) {
+            return null;
+        }
+
+        data.push(value);
+    }
+
+    /*
+     * Need at least:
+     *
+     * 1 witness version
+     * 6 checksum values
+     */
+
+    if (
+        data.length < 7
+    ) {
+
+        return null;
+    }
+
+    const polymod =
+        bech32Polymod([
+            ...bech32HrpExpand(hrp),
+            ...data
+        ]);
+
+    let encoding;
+
+    if (
+        polymod === BECH32_CONST
+    ) {
+
+        encoding =
+            "bech32";
+
+    } else if (
+        polymod === BECH32M_CONST
+    ) {
+
+        encoding =
+            "bech32m";
+
+    } else {
+
+        /*
+         * Invalid checksum.
+         */
+
+        return null;
+    }
+
+    /*
+     * First data value is
+     * the witness version.
+     */
+
+    const witnessVersion =
+        data[0];
+
+    if (
+        witnessVersion > 16
+    ) {
+
+        return null;
+    }
+
+    /*
+     * Remove:
+     *
+     * witness version
+     * 6 checksum values
+     */
+
+    const program =
+        convertBits(
+            data.slice(1, -6),
+            5,
+            8,
+            false
+        );
+
+    if (!program) {
+        return null;
+    }
+
+    /*
+     * Witness program:
+     *
+     * minimum 2 bytes
+     * maximum 40 bytes
+     */
+
+    if (
+        program.length < 2 ||
+        program.length > 40
+    ) {
+
+        return null;
+    }
+
+    /*
+     * Witness version 0:
+     *
+     * P2WPKH = 20 bytes
+     * P2WSH  = 32 bytes
+     */
+
+    if (
+        witnessVersion === 0 &&
+        program.length !== 20 &&
+        program.length !== 32
+    ) {
+
+        return null;
+    }
+
+    /*
+     * Witness version 0 MUST use Bech32.
+     */
+
+    if (
+        witnessVersion === 0 &&
+        encoding !== "bech32"
+    ) {
+
+        return null;
+    }
+
+    /*
+     * Witness version 1+
+     * MUST use Bech32m.
+     */
+
+    if (
+        witnessVersion !== 0 &&
+        encoding !== "bech32m"
+    ) {
+
+        return null;
+    }
+
+    return true;
 
 }
 
@@ -703,67 +654,63 @@ FINAL BITCOIN ADDRESS VALIDATION
 
 async function isValidBitcoinAddress(address) {
 
-if (  
-    typeof address !== "string"  
-) {  
-    return false;  
-}  
+    if (
+        typeof address !== "string"
+    ) {
 
+        return false;
+    }
 
-const value =  
-    address.trim();  
+    const value =
+        address.trim();
 
+    if (!value) {
+        return false;
+    }
 
-if (!value) {  
-    return false;  
-}  
+    /*
+     * Security limit:
+     *
+     * Prevent excessively long input
+     * from causing unnecessary Base58
+     * BigInt processing.
+     */
 
+    if (
+        value.length > 90
+    ) {
 
-/*  
- * Security limit:  
- *  
- * Prevent excessively long input  
- * from causing unnecessary Base58  
- * BigInt processing.  
- */  
+        return false;
+    }
 
-if (  
-    value.length > 90  
-) {  
-    return false;  
-}  
+    /*
+     * Legacy / P2SH
+     */
 
+    if (
+        value.startsWith("1") ||
+        value.startsWith("3")
+    ) {
 
-/*  
- * Legacy / P2SH  
- */  
+        return await isValidBase58Check(
+            value
+        );
+    }
 
-if (  
-    value.startsWith("1") ||  
-    value.startsWith("3")  
-) {  
+    /*
+     * Native SegWit / Taproot
+     */
 
-    return await isValidBase58Check(  
-        value  
-    );  
-}  
+    if (
+        value.toLowerCase().startsWith("bc1")
+    ) {
 
+        return (
+            decodeBech32(value) === true
+        );
+    }
 
-/*  
- * Native SegWit / Taproot  
- */  
-
-if (  
-    value.toLowerCase().startsWith("bc1")  
-) {  
-
-    return (  
-        decodeBech32(value) === true  
-    );  
-}  
-
-
-return false;
+    return false;
 
 }
 
@@ -773,32 +720,28 @@ GET COOKIE VALUE
 
 function getCookie(request, name) {
 
-const cookieHeader =  
-    request.headers.get("Cookie");  
+    const cookieHeader =
+        request.headers.get("Cookie");
 
+    if (!cookieHeader) {
+        return null;
+    }
 
-if (!cookieHeader) {  
-    return null;  
-}  
+    for (
+        const cookie of
+        cookieHeader.split(";")
+    ) {
 
+        const [key, ...value] =
+            cookie.trim().split("=");
 
-for (  
-    const cookie of  
-    cookieHeader.split(";")  
-) {  
+        if (key === name) {
 
-    const [key, ...value] =  
-        cookie.trim().split("=");  
+            return value.join("=");
+        }
+    }
 
-
-    if (key === name) {  
-
-        return value.join("=");  
-    }  
-}  
-
-
-return null;
+    return null;
 
 }
 
@@ -808,27 +751,25 @@ SHA-256 SESSION TOKEN HASH
 
 async function hashSessionToken(token) {
 
-const data =  
-    new TextEncoder().encode(token);  
+    const data =
+        new TextEncoder().encode(token);
 
+    const hash =
+        await crypto.subtle.digest(
+            "SHA-256",
+            data
+        );
 
-const hash =  
-    await crypto.subtle.digest(  
-        "SHA-256",  
-        data  
-    );  
-
-
-return Array.from(  
-    new Uint8Array(hash)  
-)  
-    .map(  
-        byte =>  
-            byte  
-                .toString(16)  
-                .padStart(2, "0")  
-    )  
-    .join("");
+    return Array.from(
+        new Uint8Array(hash)
+    )
+        .map(
+            byte =>
+                byte
+                    .toString(16)
+                    .padStart(2, "0")
+        )
+        .join("");
 
 }
 
@@ -837,27 +778,27 @@ STANDARD JSON RESPONSE
 ===================================================== */
 
 function jsonResponse(
-data,
-status = 200
+    data,
+    status = 200
 ) {
 
-return Response.json(  
-    data,  
-    {  
-        status,  
+    return Response.json(
+        data,
+        {
+            status,
 
-        headers: {  
-            "Cache-Control":  
-                "no-store, no-cache, must-revalidate, max-age=0",  
+            headers: {
+                "Cache-Control":
+                    "no-store, no-cache, must-revalidate, max-age=0",
 
-            "Pragma":  
-                "no-cache",  
+                "Pragma":
+                    "no-cache",
 
-            "Expires":  
-                "0"  
-        }  
-    }  
-);
+                "Expires":
+                    "0"
+            }
+        }
+    );
 
 }
 
@@ -867,723 +808,676 @@ WITHDRAWAL API
 
 export async function onRequestPost(context) {
 
-try {  
+    try {
 
-    /*  
-     * D1 SESSION  
-     */  
+        /*
+         * D1 SESSION
+         */
 
-    const db =  
-        context.env.DB.withSession(  
-            "first-primary"  
-        );  
+        const db =
+            context.env.DB.withSession(
+                "first-primary"
+            );
 
+        /* =================================================
+           1. READ REQUEST
+           ================================================= */
 
-    /* =================================================  
-       1. READ REQUEST  
-       ================================================= */  
+        let data;
 
-    let data;  
+        try {
 
+            data =
+                await context.request.json();
 
-    try {  
+        } catch {
 
-        data =  
-            await context.request.json();  
-
-    } catch {  
-
-        return jsonResponse(  
-            {  
-                success: false,  
-                error:  
-                    "Invalid request."  
-            },  
-            400  
-        );  
-    }  
-
-
-    const amount =  
-        Number(data.amount);  
-
-
-    const walletAddress =  
-        String(  
-            data.walletAddress || ""  
-        ).trim();  
-
-
-    /*  
-     * BTC ONLY  
-     */  
-
-    const currency =  
-        "BTC";  
-
-
-    /* =================================================  
-       2. AMOUNT VALIDATION  
-       ================================================= */  
-
-    if (  
-        !Number.isFinite(amount) ||  
-        amount <= 0  
-    ) {  
-
-        return jsonResponse(  
-            {  
-                success: false,  
-                error:  
-                    "Invalid withdrawal amount."  
-            },  
-            400  
-        );  
-    }  
-
-
-    if (  
-        amount < MIN_WITHDRAWAL  
-    ) {  
-
-        return jsonResponse(  
-            {  
-                success: false,  
-                error:  
-                    "Minimum withdrawal is 0.0000001 BTC."  
-            },  
-            400  
-        );  
-    }  
-
-
-    /*  
-     * BTC has 8 decimal places.  
-     *  
-     * Convert to satoshis first.  
-     */  
-
-    const satoshis =  
-        Math.round(  
-            amount * 100000000  
-        );  
-
-
-    if (  
-        !Number.isSafeInteger(  
-            satoshis  
-        ) ||  
-        satoshis <= 0  
-    ) {  
-
-        return jsonResponse(  
-            {  
-                success: false,  
-                error:  
-                    "Invalid BTC amount."  
-            },  
-            400  
-        );  
-    }  
-
-
-    const normalizedAmount =  
-        satoshis / 100000000;  
-
-
-    if (  
-        normalizedAmount !== amount  
-    ) {  
-
-        return jsonResponse(  
-            {  
-                success: false,  
-                error:  
-                    "BTC amount can have a maximum of 8 decimal places."  
-            },  
-            400  
-        );  
-    }  
-
-
-    /* =================================================  
-       3. WALLET VALIDATION  
-       ================================================= */  
-
-    if (!walletAddress) {  
-
-        return jsonResponse(  
-            {  
-                success: false,  
-                error:  
-                    "Bitcoin wallet address is required."  
-            },  
-            400  
-        );  
-    }  
-
-
-    if (  
-        !(await isValidBitcoinAddress(  
-            walletAddress  
-        ))  
-    ) {  
-
-        return jsonResponse(  
-            {  
-                success: false,  
-                error:  
-                    "Invalid Bitcoin wallet address."  
-            },  
-            400  
-        );  
-    }  
-
-
-    /* =================================================  
-       4. SESSION  
-       ================================================= */  
-
-    const sessionToken =  
-        getCookie(  
-            context.request,  
-            "session"  
-        );  
-
-
-    if (!sessionToken) {  
-
-        return jsonResponse(  
-            {  
-                success: false,  
-                error:  
-                    "Please login first."  
-            },  
-            401  
-        );  
-    }  
-
-
-    const tokenHash =  
-        await hashSessionToken(  
-            sessionToken  
-        );  
-
-
-    /* =================================================  
-       5. VERIFY SESSION  
-       ================================================= */  
-
-    const session =  
-        await db  
-            .prepare(  
-                `SELECT  
-                    user_id,  
-                    expires_at  
-                 FROM sessions  
-                 WHERE token_hash = ?  
-                   AND expires_at > ?  
-                 LIMIT 1`  
-            )  
-            .bind(  
-                tokenHash,  
-                new Date().toISOString()  
-            )  
-            .first();  
-
-
-    if (!session) {  
-
-        return jsonResponse(  
-            {  
-                success: false,  
-                error:  
-                    "Invalid or expired session."  
-            },  
-            401  
-        );  
-    }  
-
-
-    const userId =  
-        Number(session.user_id);  
-
-
-    if (  
-        !Number.isInteger(userId) ||  
-        userId <= 0  
-    ) {  
-
-        return jsonResponse(  
-            {  
-                success: false,  
-                error:  
-                    "Invalid user session."  
-            },  
-            401  
-        );  
-    }  
-
-
-    /* =================================================  
-       6. VERIFY USER  
-       ================================================= */  
-
-    const user =  
-        await db  
-            .prepare(  
-                `SELECT  
-                    id,  
-                    balance  
-                 FROM users  
-                 WHERE id = ?  
-                 LIMIT 1`  
-            )  
-            .bind(userId)  
-            .first();  
-
-
-    if (!user) {  
-
-        return jsonResponse(  
-            {  
-                success: false,  
-                error:  
-                    "User account not found."  
-            },  
-            404  
-        );  
-    }  
-
-/* =================================================
-   7. VERIFY FAUCETPAY BTC ADDRESS
-
-   IMPORTANT:
-   This check happens BEFORE creating the
-   withdrawal record.
-
-   Therefore, a non-FaucetPay BTC address
-   will NOT create a pending withdrawal.
-   ================================================= */
-
-const apiKey =
-    context.env.FAUCETPAY_API_KEY;
-
-
-if (!apiKey) {
-
-    console.error(
-        "FAUCETPAY_API_KEY IS NOT CONFIGURED."
-    );
-
-    return jsonResponse(
-        {
-            success: false,
-            errorMessage:
-                "FaucetPay service is not configured."
-        },
-        500
-    );
-}
-
-
-let faucetPayAddressResponse;
-
-
-try {
-
-    faucetPayAddressResponse =
-        await fetch(
-            "https://faucetpay.io/api/v2/check-address",
-            {
-                method: "POST",
-
-                headers: {
-                    "Authorization":
-                        `Bearer ${apiKey}`,
-
-                    "Content-Type":
-                        "application/json"
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Invalid request."
                 },
+                400
+            );
+        }
 
-                body: JSON.stringify({
-                    address:
-                        walletAddress
-                })
+        const amount =
+            Number(data.amount);
+
+        const walletAddress =
+            String(
+                data.walletAddress || ""
+            ).trim();
+
+        /*
+         * BTC ONLY
+         */
+
+        const currency =
+            "BTC";
+
+        /* =================================================
+           2. AMOUNT VALIDATION
+           ================================================= */
+
+        if (
+            !Number.isFinite(amount) ||
+            amount <= 0
+        ) {
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Invalid withdrawal amount."
+                },
+                400
+            );
+        }
+
+        if (
+            amount < MIN_WITHDRAWAL
+        ) {
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Minimum withdrawal is 0.0000001 BTC."
+                },
+                400
+            );
+        }
+
+        /*
+         * BTC has 8 decimal places.
+         *
+         * Convert to satoshis first.
+         */
+
+        const satoshis =
+            Math.round(
+                amount * 100000000
+            );
+
+        if (
+            !Number.isSafeInteger(
+                satoshis
+            ) ||
+            satoshis <= 0
+        ) {
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Invalid BTC amount."
+                },
+                400
+            );
+        }
+
+        const normalizedAmount =
+            satoshis / 100000000;
+
+        if (
+            normalizedAmount !== amount
+        ) {
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "BTC amount can have a maximum of 8 decimal places."
+                },
+                400
+            );
+        }
+
+        /* =================================================
+           3. WALLET VALIDATION
+           ================================================= */
+
+        if (!walletAddress) {
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Bitcoin wallet address is required."
+                },
+                400
+            );
+        }
+
+        if (
+            !(await isValidBitcoinAddress(
+                walletAddress
+            ))
+        ) {
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Invalid Bitcoin wallet address."
+                },
+                400
+            );
+        }
+
+        /* =================================================
+           4. SESSION
+           ================================================= */
+
+        const sessionToken =
+            getCookie(
+                context.request,
+                "session"
+            );
+
+        if (!sessionToken) {
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Please login first."
+                },
+                401
+            );
+        }
+
+        const tokenHash =
+            await hashSessionToken(
+                sessionToken
+            );
+
+        /* =================================================
+           5. VERIFY SESSION
+           ================================================= */
+
+        const session =
+            await db
+                .prepare(
+                    `SELECT
+                        user_id,
+                        expires_at
+                     FROM sessions
+                     WHERE token_hash = ?
+                       AND expires_at > ?
+                     LIMIT 1`
+                )
+                .bind(
+                    tokenHash,
+                    new Date().toISOString()
+                )
+                .first();
+
+        if (!session) {
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Invalid or expired session."
+                },
+                401
+            );
+        }
+
+        const userId =
+            Number(session.user_id);
+
+        if (
+            !Number.isInteger(userId) ||
+            userId <= 0
+        ) {
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Invalid user session."
+                },
+                401
+            );
+        }
+
+        /* =================================================
+           6. VERIFY USER
+           ================================================= */
+
+        const user =
+            await db
+                .prepare(
+                    `SELECT
+                        id,
+                        balance
+                     FROM users
+                     WHERE id = ?
+                     LIMIT 1`
+                )
+                .bind(userId)
+                .first();
+
+        if (!user) {
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "User account not found."
+                },
+                404
+            );
+        }
+
+        /* =================================================
+           7. VERIFY FAUCETPAY BTC ADDRESS
+
+           IMPORTANT:
+           This check happens BEFORE creating the
+           withdrawal record.
+
+           Therefore, a non-FaucetPay BTC address
+           will NOT create a pending withdrawal.
+           ================================================= */
+
+        const apiKey =
+            context.env.FAUCETPAY_API_KEY;
+
+        if (!apiKey) {
+
+            console.error(
+                "FAUCETPAY_API_KEY IS NOT CONFIGURED."
+            );
+
+            return jsonResponse(
+                {
+                    success: false,
+                    errorMessage:
+                        "FaucetPay service is not configured."
+                },
+                500
+            );
+        }
+
+        let faucetPayAddressResponse;
+
+        try {
+
+            faucetPayAddressResponse =
+                await fetch(
+                    "https://faucetpay.io/api/v2/check-address",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Authorization":
+                                `Bearer ${apiKey}`,
+
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            address:
+                                walletAddress
+                        })
+                    }
+                );
+
+        } catch {
+
+            console.error(
+                "FAUCETPAY ADDRESS CHECK NETWORK ERROR."
+            );
+
+            return jsonResponse(
+                {
+                    success: false,
+                    errorMessage:
+                        "Unable to verify the FaucetPay BTC address. Please try again."
+                },
+                502
+            );
+        }
+
+        let faucetPayAddressResult =
+            null;
+
+        try {
+
+            faucetPayAddressResult =
+                await faucetPayAddressResponse.json();
+
+        } catch {
+
+            faucetPayAddressResult =
+                null;
+        }
+
+        if (!faucetPayAddressResult) {
+
+            console.error(
+                "FAUCETPAY ADDRESS CHECK RETURNED INVALID RESPONSE."
+            );
+
+            return jsonResponse(
+                {
+                    success: false,
+                    errorMessage:
+                        "Unable to verify the FaucetPay BTC address. Please try again."
+                },
+                502
+            );
+        }
+
+        /* =================================================
+           ADDRESS NOT REGISTERED WITH FAUCETPAY
+           ================================================= */
+
+        if (
+            faucetPayAddressResult.status !== 200
+        ) {
+
+            const faucetPayMessage =
+                faucetPayAddressResult.message ||
+                "This is not a FaucetPay BTC address. Please enter your FaucetPay BTC address.";
+
+            return jsonResponse(
+                {
+                    success: false,
+                    errorMessage:
+                        "This is not a FaucetPay BTC address. Please enter your FaucetPay BTC address.",
+                    message:
+                        faucetPayMessage
+                },
+                400
+            );
+        }
+
+        /* =================================================
+           8. FRIENDLY DUPLICATE CHECK
+           ================================================= */
+
+        const existingWithdrawal =
+            await db
+                .prepare(
+                    `SELECT
+                        id,
+                        status
+                     FROM withdrawals
+                     WHERE user_id = ?
+                       AND status IN
+                           ('pending', 'processing')
+                     LIMIT 1`
+                )
+                .bind(userId)
+                .first();
+
+        if (existingWithdrawal) {
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "You already have a withdrawal being processed."
+                },
+                409
+            );
+        }
+
+        /* =================================================
+           9. CREATE WITHDRAWAL
+           ================================================= */
+
+        let withdrawalResult;
+
+        try {
+
+            withdrawalResult =
+                await db
+                    .prepare(
+                        `INSERT INTO withdrawals
+                        (
+                            user_id,
+                            amount,
+                            wallet_address,
+                            currency,
+                            status,
+                            balance_before
+                        )
+                        VALUES
+                        (?, ?, ?, ?, 'pending', ?)`
+                    )
+                    .bind(
+                        userId,
+                        normalizedAmount,
+                        walletAddress,
+                        currency,
+                        Number(user.balance)
+                    )
+                    .run();
+
+        } catch (error) {
+
+            const message =
+                String(
+                    error?.message || ""
+                );
+
+            /*
+             * Raw database errors are
+             * NEVER returned to the user.
+             */
+
+            if (
+                message.includes(
+                    "INSUFFICIENT_BALANCE"
+                )
+            ) {
+
+                return jsonResponse(
+                    {
+                        success: false,
+                        error:
+                            "Insufficient BTC balance."
+                    },
+                    400
+                );
             }
+
+            if (
+                message.includes(
+                    "WITHDRAWAL_ALREADY_PENDING"
+                )
+            ) {
+
+                return jsonResponse(
+                    {
+                        success: false,
+                        error:
+                            "You already have a withdrawal being processed."
+                    },
+                    409
+                );
+            }
+
+            if (
+                message.includes(
+                    "USER_NOT_FOUND"
+                )
+            ) {
+
+                return jsonResponse(
+                    {
+                        success: false,
+                        error:
+                            "User account not found."
+                    },
+                    404
+                );
+            }
+
+            console.error(
+                "Withdrawal insert failed."
+            );
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Unable to process withdrawal request."
+                },
+                500
+            );
+        }
+
+        /* =================================================
+           10. VERIFY WITHDRAWAL WAS CREATED
+           ================================================= */
+
+        const createdWithdrawal =
+            await db
+                .prepare(
+                    `SELECT
+                        id,
+                        amount,
+                        currency,
+                        status,
+                        created_at
+                     FROM withdrawals
+                     WHERE user_id = ?
+                       AND amount = ?
+                       AND currency = 'BTC'
+                       AND status = 'pending'
+                     ORDER BY id DESC
+                     LIMIT 1`
+                )
+                .bind(
+                    userId,
+                    normalizedAmount
+                )
+                .first();
+
+        if (!createdWithdrawal) {
+
+            console.error(
+                "Withdrawal record verification failed."
+            );
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Your withdrawal may have been submitted. Please check your withdrawal history."
+                },
+                500
+            );
+        }
+
+        /* =================================================
+           11. GET UPDATED BALANCE
+           ================================================= */
+
+        const updatedUser =
+            await db
+                .prepare(
+                    `SELECT
+                        balance
+                     FROM users
+                     WHERE id = ?
+                     LIMIT 1`
+                )
+                .bind(userId)
+                .first();
+
+        if (!updatedUser) {
+
+            /*
+             * Withdrawal was already created.
+             *
+             * Never deduct balance again.
+             */
+
+            console.error(
+                "Withdrawal created but updated balance could not be loaded."
+            );
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Your withdrawal was submitted successfully. Please check your balance again shortly."
+                },
+                500
+            );
+        }
+
+        const balance =
+            Number(
+                updatedUser.balance
+            );
+
+        if (
+            !Number.isFinite(balance) ||
+            balance < 0
+        ) {
+
+            console.error(
+                "Invalid balance returned after withdrawal."
+            );
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Your withdrawal was submitted successfully. Please check your balance again shortly."
+                },
+                500
+            );
+        }
+
+        /* =================================================
+           12. SUCCESS
+           ================================================= */
+
+        return jsonResponse({
+
+            success: true,
+
+            message:
+                "Withdrawal request submitted successfully.",
+
+            status:
+                "pending",
+
+            amount:
+                normalizedAmount,
+
+            currency:
+                "BTC",
+
+            balance
+        });
+
+    } catch {
+
+        console.error(
+            "Withdrawal request failed."
         );
 
-} catch {
-
-    console.error(
-        "FAUCETPAY ADDRESS CHECK NETWORK ERROR."
-    );
-
-    return jsonResponse(
-        {
-            success: false,
-            errorMessage:
-                "Unable to verify the FaucetPay BTC address. Please try again."
-        },
-        502
-    );
-}
-
-
-let faucetPayAddressResult = null;
-
-
-try {
-
-    faucetPayAddressResult =
-        await faucetPayAddressResponse.json();
-
-} catch {
-
-    faucetPayAddressResult = null;
-}
-
-
-if (!faucetPayAddressResult) {
-
-    console.error(
-        "FAUCETPAY ADDRESS CHECK RETURNED INVALID RESPONSE."
-    );
-
-    return jsonResponse(
-        {
-            success: false,
-            errorMessage:
-                "Unable to verify the FaucetPay BTC address. Please try again."
-        },
-        502
-    );
-}
-
-
-/* =================================================
-   ADDRESS NOT REGISTERED WITH FAUCETPAY
-   ================================================= */
-
-if (faucetPayAddressResult.success !== true) {
-
-    const faucetPayMessage =
-        faucetPayAddressResult.message ||
-        faucetPayAddressResult.error ||
-        "This is not a FaucetPay BTC address. Please enter your FaucetPay BTC address.";
-
-    return jsonResponse(
-        {
-            success: false,
-            errorMessage:
-                "This is not a FaucetPay BTC address. Please enter your FaucetPay BTC address.",
-            message:
-                faucetPayMessage
-        },
-        400
-    );
-}
-    
-    /* =================================================  
-       7. FRIENDLY DUPLICATE CHECK  
-       ================================================= */  
-
-    const existingWithdrawal =  
-        await db  
-            .prepare(  
-                `SELECT  
-                    id,  
-                    status  
-                 FROM withdrawals  
-                 WHERE user_id = ?  
-                   AND status IN  
-                       ('pending', 'processing')  
-                 LIMIT 1`  
-            )  
-            .bind(userId)  
-            .first();  
-
-
-    if (existingWithdrawal) {  
-
-        return jsonResponse(  
-            {  
-                success: false,  
-                error:  
-                    "You already have a withdrawal being processed."  
-            },  
-            409  
-        );  
-    }  
-
-
-    /* =================================================  
-       8. CREATE WITHDRAWAL  
-       ================================================= */  
-
-    let withdrawalResult;  
-
-
-    try {  
-
-        withdrawalResult =  
-            await db  
-                .prepare(  
-                    `INSERT INTO withdrawals  
-                    (  
-                        user_id,  
-                        amount,  
-                        wallet_address,  
-                        currency,  
-                        status,  
-                        balance_before  
-                    )  
-                    VALUES  
-                    (?, ?, ?, ?, 'pending', ?)`  
-                )  
-                .bind(  
-                    userId,  
-                    normalizedAmount,  
-                    walletAddress,  
-                    currency,  
-                    Number(user.balance)  
-                )  
-                .run();  
-
-
-    } catch (error) {  
-
-        const message =  
-            String(  
-                error?.message || ""  
-            );  
-
-
-        /*  
-         * Raw database errors are  
-         * NEVER returned to the user.  
-         */  
-
-        if (  
-            message.includes(  
-                "INSUFFICIENT_BALANCE"  
-            )  
-        ) {  
-
-            return jsonResponse(  
-                {  
-                    success: false,  
-                    error:  
-                        "Insufficient BTC balance."  
-                },  
-                400  
-            );  
-        }  
-
-
-        if (  
-            message.includes(  
-                "WITHDRAWAL_ALREADY_PENDING"  
-            )  
-        ) {  
-
-            return jsonResponse(  
-                {  
-                    success: false,  
-                    error:  
-                        "You already have a withdrawal being processed."  
-                },  
-                409  
-            );  
-        }  
-
-
-        if (  
-            message.includes(  
-                "USER_NOT_FOUND"  
-            )  
-        ) {  
-
-            return jsonResponse(  
-                {  
-                    success: false,  
-                    error:  
-                        "User account not found."  
-                },  
-                404  
-            );  
-        }  
-
-
-        console.error(  
-            "Withdrawal insert failed."  
-        );  
-
-
-        return jsonResponse(  
-            {  
-                success: false,  
-                error:  
-                    "Unable to process withdrawal request."  
-            },  
-            500  
-        );  
-    }  
-
-
-    /* =================================================  
-       9. VERIFY WITHDRAWAL WAS CREATED  
-       ================================================= */  
-
-    const createdWithdrawal =  
-        await db  
-            .prepare(  
-                `SELECT  
-                    id,  
-                    amount,  
-                    currency,  
-                    status,  
-                    created_at  
-                 FROM withdrawals  
-                 WHERE user_id = ?  
-                   AND amount = ?  
-                   AND currency = 'BTC'  
-                   AND status = 'pending'  
-                 ORDER BY id DESC  
-                 LIMIT 1`  
-            )  
-            .bind(  
-                userId,  
-                normalizedAmount  
-            )  
-            .first();  
-
-
-    if (!createdWithdrawal) {  
-
-        console.error(  
-            "Withdrawal record verification failed."  
-        );  
-
-
-        return jsonResponse(  
-            {  
-                success: false,  
-                error:  
-                    "Your withdrawal may have been submitted. Please check your withdrawal history."  
-            },  
-            500  
-        );  
-    }  
-
-
-    /* =================================================  
-       10. GET UPDATED BALANCE  
-       ================================================= */  
-
-    const updatedUser =  
-        await db  
-            .prepare(  
-                `SELECT  
-                    balance  
-                 FROM users  
-                 WHERE id = ?  
-                 LIMIT 1`  
-            )  
-            .bind(userId)  
-            .first();  
-
-
-    if (!updatedUser) {  
-
-        /*  
-         * Withdrawal was already created.  
-         *  
-         * Never deduct balance again.  
-         */  
-
-        console.error(  
-            "Withdrawal created but updated balance could not be loaded."  
-        );  
-
-
-        return jsonResponse(  
-            {  
-                success: false,  
-                error:  
-                    "Your withdrawal was submitted successfully. Please check your balance again shortly."  
-            },  
-            500  
-        );  
-    }  
-
-
-    const balance =  
-        Number(  
-            updatedUser.balance  
-        );  
-
-
-    if (  
-        !Number.isFinite(balance) ||  
-        balance < 0  
-    ) {  
-
-        console.error(  
-            "Invalid balance returned after withdrawal."  
-        );  
-
-
-        return jsonResponse(  
-            {  
-                success: false,  
-                error:  
-                    "Your withdrawal was submitted successfully. Please check your balance again shortly."  
-            },  
-            500  
-        );  
-    }  
-
-
-    /* =================================================  
-       11. SUCCESS  
-       ================================================= */  
-
-    return jsonResponse({  
-
-        success: true,  
-
-        message:  
-            "Withdrawal request submitted successfully.",  
-
-        status:  
-            "pending",  
-
-        amount:  
-            normalizedAmount,  
-
-        currency:  
-            "BTC",  
-
-        balance  
-    });  
-
-
-} catch {  
-
-    console.error(  
-        "Withdrawal request failed."  
-    );  
-
-
-    return jsonResponse(  
-        {  
-            success: false,  
-            error:  
-                "Unable to process withdrawal request."  
-        },  
-        500  
-    );  
-}
+        return jsonResponse(
+            {
+                success: false,
+                error:
+                    "Unable to process withdrawal request."
+            },
+            500
+        );
+    }
 
 }
