@@ -4,11 +4,45 @@
 // ========================================
 
 
-async function verifySignature(rawBody, signature, secret) {
+async function verifySignature(
+    rawBody,
+    signature,
+    secret
+) {
 
     if (!signature || !secret) {
         return false;
     }
+
+
+    const expectedPrefix =
+        "sha256=";
+
+
+    if (
+        !signature.startsWith(
+            expectedPrefix
+        )
+    ) {
+        return false;
+    }
+
+
+    const receivedHex =
+        signature.slice(
+            expectedPrefix.length
+        );
+
+
+    if (
+        receivedHex.length !== 64 ||
+        !/^[0-9a-fA-F]{64}$/.test(
+            receivedHex
+        )
+    ) {
+        return false;
+    }
+
 
     const key =
         await crypto.subtle.importKey(
@@ -22,6 +56,7 @@ async function verifySignature(rawBody, signature, secret) {
             ["sign"]
         );
 
+
     const signatureBytes =
         await crypto.subtle.sign(
             "HMAC",
@@ -29,17 +64,56 @@ async function verifySignature(rawBody, signature, secret) {
             new TextEncoder().encode(rawBody)
         );
 
-    const expectedHex =
-        Array.from(
-            new Uint8Array(signatureBytes)
-        )
-        .map(
-            b => b.toString(16).padStart(2, "0")
-        )
-        .join("");
 
-    return signature ===
-        `sha256=${expectedHex}`;
+    const expectedBytes =
+        new Uint8Array(
+            signatureBytes
+        );
+
+
+    const receivedBytes =
+        new Uint8Array(
+            32
+        );
+
+
+    for (
+        let i = 0;
+        i < 32;
+        i++
+    ) {
+
+        receivedBytes[i] =
+            parseInt(
+                receivedHex.slice(
+                    i * 2,
+                    i * 2 + 2
+                ),
+                16
+            );
+    }
+
+
+    /* ========================================
+       CONSTANT-TIME COMPARISON
+    ======================================== */
+
+    let difference = 0;
+
+
+    for (
+        let i = 0;
+        i < expectedBytes.length;
+        i++
+    ) {
+
+        difference |=
+            expectedBytes[i] ^
+            receivedBytes[i];
+    }
+
+
+    return difference === 0;
 }
 
 
@@ -47,11 +121,9 @@ async function verifySignature(rawBody, signature, secret) {
 // WEBHOOK
 // ========================================
 
-export async function onRequestPost(context) {
-
-    // ========================================
-    // D1 SESSION
-    // ========================================
+export async function onRequestPost(
+    context
+) {
 
     const db =
         context.env.DB.withSession(
@@ -91,7 +163,9 @@ export async function onRequestPost(context) {
 
             return new Response(
                 "Webhook secret missing",
-                { status: 500 }
+                {
+                    status: 500
+                }
             );
         }
 
@@ -116,7 +190,9 @@ export async function onRequestPost(context) {
 
             return new Response(
                 "Invalid signature",
-                { status: 401 }
+                {
+                    status: 401
+                }
             );
         }
 
@@ -126,6 +202,7 @@ export async function onRequestPost(context) {
         ========================= */
 
         let event;
+
 
         try {
 
@@ -140,7 +217,9 @@ export async function onRequestPost(context) {
 
             return new Response(
                 "Invalid JSON",
-                { status: 400 }
+                {
+                    status: 400
+                }
             );
         }
 
@@ -153,7 +232,10 @@ export async function onRequestPost(context) {
             event.event ?? null;
 
 
-        if (!eventId || !eventType) {
+        if (
+            !eventId ||
+            !eventType
+        ) {
 
             console.error(
                 "Invalid FaucetPay webhook event"
@@ -161,7 +243,9 @@ export async function onRequestPost(context) {
 
             return new Response(
                 "Invalid event",
-                { status: 400 }
+                {
+                    status: 400
+                }
             );
         }
 
@@ -177,7 +261,9 @@ export async function onRequestPost(context) {
 
             return new Response(
                 "OK",
-                { status: 200 }
+                {
+                    status: 200
+                }
             );
         }
 
@@ -210,50 +296,21 @@ export async function onRequestPost(context) {
 
             return new Response(
                 "Missing payout_id",
-                { status: 400 }
+                {
+                    status: 400
+                }
             );
         }
 
 
         /* =========================
-           7. DUPLICATE EVENT CHECK
-        ========================= */
-
-        const existingEvent =
-            await db
-                .prepare(`
-                    SELECT id
-                    FROM faucetpay_webhook_events
-                    WHERE event_id = ?
-                    LIMIT 1
-                `)
-                .bind(
-                    String(eventId)
-                )
-                .first();
-
-
-        if (existingEvent) {
-
-            console.log(
-                "Duplicate FaucetPay webhook:",
-                eventId
-            );
-
-            return new Response(
-                "OK",
-                { status: 200 }
-            );
-        }
-
-
-        /* =========================
-           8. BTC ONLY
+           7. BTC ONLY
         ========================= */
 
         if (
             currency &&
-            String(currency).toUpperCase() !== "BTC"
+            String(currency).toUpperCase() !==
+                "BTC"
         ) {
 
             console.error(
@@ -263,13 +320,15 @@ export async function onRequestPost(context) {
 
             return new Response(
                 "Unsupported currency",
-                { status: 400 }
+                {
+                    status: 400
+                }
             );
         }
 
 
         /* =========================
-           9. FIND WITHDRAWAL
+           8. FIND WITHDRAWAL
         ========================= */
 
         const withdrawal =
@@ -295,7 +354,7 @@ export async function onRequestPost(context) {
 
 
         /* =========================
-           10. WITHDRAWAL NOT FOUND
+           9. WITHDRAWAL NOT FOUND
         ========================= */
 
         if (!withdrawal) {
@@ -307,35 +366,40 @@ export async function onRequestPost(context) {
 
             return new Response(
                 "OK",
-                { status: 200 }
+                {
+                    status: 200
+                }
             );
         }
 
 
         /* =========================
-           11. SAVE WEBHOOK EVENT
+           10. WITHDRAWAL CURRENCY
         ========================= */
 
-        await db
-            .prepare(`
-                INSERT INTO faucetpay_webhook_events
-                (
-                    event_id,
-                    event_type,
-                    payout_id
-                )
-                VALUES (?, ?, ?)
-            `)
-            .bind(
-                String(eventId),
-                String(eventType),
-                String(payoutId)
-            )
-            .run();
+        if (
+            withdrawal.currency &&
+            String(
+                withdrawal.currency
+            ).toUpperCase() !== "BTC"
+        ) {
+
+            console.error(
+                "Withdrawal currency is not BTC:",
+                withdrawal.id
+            );
+
+            return new Response(
+                "Unsupported currency",
+                {
+                    status: 400
+                }
+            );
+        }
 
 
         /* =================================================
-           12. PAYOUT SENT
+           11. PAYOUT SENT
         ================================================= */
 
         if (
@@ -347,7 +411,8 @@ export async function onRequestPost(context) {
             ========================= */
 
             if (
-                withdrawal.status === "approved"
+                withdrawal.status ===
+                "approved"
             ) {
 
                 console.log(
@@ -357,7 +422,9 @@ export async function onRequestPost(context) {
 
                 return new Response(
                     "OK",
-                    { status: 200 }
+                    {
+                        status: 200
+                    }
                 );
             }
 
@@ -367,7 +434,8 @@ export async function onRequestPost(context) {
             ========================= */
 
             if (
-                withdrawal.status !== "processing"
+                withdrawal.status !==
+                "processing"
             ) {
 
                 console.warn(
@@ -377,45 +445,142 @@ export async function onRequestPost(context) {
 
                 return new Response(
                     "OK",
-                    { status: 200 }
+                    {
+                        status: 200
+                    }
                 );
             }
 
 
             /* =========================
-               APPROVE WITHDRAWAL
+               ATOMIC EVENT + APPROVAL
             ========================= */
 
-            const result =
-                await db
-                    .prepare(`
-                        UPDATE withdrawals
-                        SET
-                            status = 'approved',
-                            processed_at = CURRENT_TIMESTAMP
-                        WHERE id = ?
-                          AND status = 'processing'
-                          AND payout_id = ?
-                    `)
-                    .bind(
-                        withdrawal.id,
-                        String(payoutId)
-                    )
-                    .run();
+            try {
+
+                const results =
+                    await db.batch([
+
+                        db.prepare(`
+                            INSERT INTO
+                            faucetpay_webhook_events
+                            (
+                                event_id,
+                                event_type,
+                                payout_id
+                            )
+                            VALUES (?, ?, ?)
+                        `).bind(
+                            String(eventId),
+                            String(eventType),
+                            String(payoutId)
+                        ),
 
 
-            if (
-                result.meta.changes !== 1
-            ) {
+                        db.prepare(`
+                            UPDATE withdrawals
+                            SET
+                                status = 'approved',
+                                processed_at =
+                                    CURRENT_TIMESTAMP
+                            WHERE id = ?
+                              AND status = 'processing'
+                              AND payout_id = ?
+                        `).bind(
+                            withdrawal.id,
+                            String(payoutId)
+                        )
 
-                console.warn(
-                    "Withdrawal was not updated:",
-                    withdrawal.id
+                    ]);
+
+
+                const withdrawalChanges =
+                    results[1]
+                        ?.meta
+                        ?.changes || 0;
+
+
+                if (
+                    withdrawalChanges !== 1
+                ) {
+
+                    console.warn(
+                        "Withdrawal was not approved:",
+                        withdrawal.id
+                    );
+
+                    return new Response(
+                        "Webhook processing error",
+                        {
+                            status: 500
+                        }
+                    );
+                }
+
+
+            } catch (error) {
+
+                /*
+                 * IMPORTANT:
+                 *
+                 * If the event already exists because
+                 * FaucetPay sent the same webhook again,
+                 * the UNIQUE event_id constraint causes
+                 * the batch to fail.
+                 *
+                 * We then check whether the withdrawal
+                 * is already approved. If yes, the webhook
+                 * was already successfully processed.
+                 */
+
+                const currentWithdrawal =
+                    await db
+                        .prepare(`
+                            SELECT status
+                            FROM withdrawals
+                            WHERE id = ?
+                              AND payout_id = ?
+                            LIMIT 1
+                        `)
+                        .bind(
+                            withdrawal.id,
+                            String(payoutId)
+                        )
+                        .first();
+
+
+                if (
+                    currentWithdrawal?.status ===
+                    "approved"
+                ) {
+
+                    console.log(
+                        "Duplicate successful payout.sent:",
+                        eventId
+                    );
+
+                    return new Response(
+                        "OK",
+                        {
+                            status: 200
+                        }
+                    );
+                }
+
+
+                console.error(
+                    "PAYOUT SENT PROCESSING FAILED:",
+                    error instanceof Error
+                        ? error.message
+                        : "Unknown error"
                 );
 
+
                 return new Response(
-                    "OK",
-                    { status: 200 }
+                    "Webhook processing error",
+                    {
+                        status: 500
+                    }
                 );
             }
 
@@ -440,7 +605,7 @@ export async function onRequestPost(context) {
 
 
         /* =================================================
-           13. PAYOUT FAILED
+           12. PAYOUT FAILED
         ================================================= */
 
         if (
@@ -452,7 +617,8 @@ export async function onRequestPost(context) {
             ========================= */
 
             if (
-                withdrawal.status !== "processing"
+                withdrawal.status !==
+                "processing"
             ) {
 
                 console.warn(
@@ -462,99 +628,211 @@ export async function onRequestPost(context) {
 
                 return new Response(
                     "OK",
-                    { status: 200 }
+                    {
+                        status: 200
+                    }
                 );
             }
 
 
             /* =========================
-               SAFELY REFUND + REJECT
+               ATOMIC EVENT + REFUND
+               + REJECT
             ========================= */
 
-            const results =
-                await db.batch([
+            try {
 
-                    db.prepare(`
-                        UPDATE users
-                        SET balance =
-                            balance + (
-                                SELECT amount
+                const results =
+                    await db.batch([
+
+                        /* =====================
+                           SAVE EVENT
+                        ===================== */
+
+                        db.prepare(`
+                            INSERT INTO
+                            faucetpay_webhook_events
+                            (
+                                event_id,
+                                event_type,
+                                payout_id
+                            )
+                            VALUES (?, ?, ?)
+                        `).bind(
+                            String(eventId),
+                            String(eventType),
+                            String(payoutId)
+                        ),
+
+
+                        /* =====================
+                           REFUND USER
+                        ===================== */
+
+                        db.prepare(`
+                            UPDATE users
+                            SET balance =
+                                balance + (
+                                    SELECT amount
+                                    FROM withdrawals
+                                    WHERE id = ?
+                                      AND status =
+                                          'processing'
+                                      AND payout_id = ?
+                                )
+                            WHERE id = (
+                                SELECT user_id
                                 FROM withdrawals
                                 WHERE id = ?
-                                  AND status = 'processing'
+                                  AND status =
+                                      'processing'
                                   AND payout_id = ?
                             )
-                        WHERE id = (
-                            SELECT user_id
-                            FROM withdrawals
-                            WHERE id = ?
-                              AND status = 'processing'
-                              AND payout_id = ?
-                        )
-                    `).bind(
-                        withdrawal.id,
-                        String(payoutId),
-                        withdrawal.id,
-                        String(payoutId)
-                    ),
-
-                    db.prepare(`
-                        UPDATE withdrawals
-                        SET
-                            status = 'rejected',
-                            processed_at = CURRENT_TIMESTAMP
-                        WHERE id = ?
-                          AND status = 'processing'
-                          AND payout_id = ?
-                    `).bind(
-                        withdrawal.id,
-                        String(payoutId)
-                    )
-                ]);
-
-
-            const refundChanges =
-                results[0]?.meta?.changes || 0;
-
-
-            const withdrawalChanges =
-                results[1]?.meta?.changes || 0;
-
-
-            /* =========================
-               VERIFY BOTH OPERATIONS
-            ========================= */
-
-            if (
-                refundChanges !== 1 ||
-                withdrawalChanges !== 1
-            ) {
-
-                console.error(
-                    "PAYOUT FAILED REFUND/REJECT FAILED:",
-                    JSON.stringify({
-                        withdrawalId:
+                        `).bind(
                             withdrawal.id,
+                            String(payoutId),
 
-                        payoutId:
-                            payoutId,
+                            withdrawal.id,
+                            String(payoutId)
+                        ),
 
-                        refundChanges:
-                            refundChanges,
 
-                        withdrawalChanges:
-                            withdrawalChanges
-                    })
-                );
+                        /* =====================
+                           REJECT WITHDRAWAL
+                        ===================== */
+
+                        db.prepare(`
+                            UPDATE withdrawals
+                            SET
+                                status = 'rejected',
+                                processed_at =
+                                    CURRENT_TIMESTAMP
+                            WHERE id = ?
+                              AND status =
+                                  'processing'
+                              AND payout_id = ?
+                        `).bind(
+                            withdrawal.id,
+                            String(payoutId)
+                        )
+
+                    ]);
+
+
+                const refundChanges =
+                    results[1]
+                        ?.meta
+                        ?.changes || 0;
+
+
+                const withdrawalChanges =
+                    results[2]
+                        ?.meta
+                        ?.changes || 0;
+
+
+                /* =========================
+                   VERIFY BOTH OPERATIONS
+                ========================= */
+
+                if (
+                    refundChanges !== 1 ||
+                    withdrawalChanges !== 1
+                ) {
+
+                    console.error(
+                        "PAYOUT FAILED REFUND/REJECT FAILED:",
+                        JSON.stringify({
+                            withdrawalId:
+                                withdrawal.id,
+
+                            payoutId:
+                                payoutId,
+
+                            refundChanges:
+                                refundChanges,
+
+                            withdrawalChanges:
+                                withdrawalChanges
+                        })
+                    );
+
+
+                    /*
+                     * D1 batch is transactional.
+                     * If the batch itself fails,
+                     * all changes are rolled back.
+                     *
+                     * Return 500 so FaucetPay can retry.
+                     */
+
+                    return new Response(
+                        "Webhook processing error",
+                        {
+                            status: 500
+                        }
+                    );
+                }
+
+
+            } catch (error) {
 
                 /*
-                 * D1 batch is transactional.
-                 * If the batch failed, changes are rolled back.
+                 * If this was a duplicate webhook,
+                 * the UNIQUE event_id constraint prevents
+                 * duplicate processing.
+                 *
+                 * Check current withdrawal state.
                  */
+
+                const currentWithdrawal =
+                    await db
+                        .prepare(`
+                            SELECT status
+                            FROM withdrawals
+                            WHERE id = ?
+                              AND payout_id = ?
+                            LIMIT 1
+                        `)
+                        .bind(
+                            withdrawal.id,
+                            String(payoutId)
+                        )
+                        .first();
+
+
+                if (
+                    currentWithdrawal?.status ===
+                    "rejected"
+                ) {
+
+                    console.log(
+                        "Duplicate successful payout.failed:",
+                        eventId
+                    );
+
+                    return new Response(
+                        "OK",
+                        {
+                            status: 200
+                        }
+                    );
+                }
+
+
+                console.error(
+                    "PAYOUT FAILED PROCESSING ERROR:",
+                    error instanceof Error
+                        ? error.message
+                        : "Unknown error"
+                );
+
 
                 return new Response(
                     "Webhook processing error",
-                    { status: 500 }
+                    {
+                        status: 500
+                    }
                 );
             }
 
@@ -584,7 +862,9 @@ export async function onRequestPost(context) {
 
         return new Response(
             "OK",
-            { status: 200 }
+            {
+                status: 200
+            }
         );
 
 
@@ -592,12 +872,16 @@ export async function onRequestPost(context) {
 
         console.error(
             "FaucetPay webhook error:",
-            error
+            error instanceof Error
+                ? error.message
+                : "Unknown error"
         );
 
         return new Response(
             "Webhook error",
-            { status: 500 }
+            {
+                status: 500
+            }
         );
     }
 }
