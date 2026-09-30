@@ -1109,6 +1109,38 @@ hr{
         0 16px 32px rgba(37,99,235,.18);
 }
 
+/* =========================================
+   SUPPORT UNREAD COUNT BADGE
+========================================= */
+
+.support-unread-badge{
+    display:none;
+    position:absolute;
+    top:-8px;
+    right:-7px;
+    min-width:24px;
+    height:24px;
+    padding:0 7px;
+    align-items:center;
+    justify-content:center;
+    border-radius:999px;
+    background:linear-gradient(135deg,#ef4444,#dc2626);
+    border:2px solid #0f172a;
+    color:#fff;
+    font-size:11px;
+    font-weight:950;
+    line-height:1;
+    box-shadow:
+        0 5px 14px rgba(239,68,68,.38),
+        0 0 0 3px rgba(239,68,68,.08);
+    pointer-events:none;
+    z-index:10;
+}
+
+.support-unread-badge.show{
+    display:flex;
+}
+
 /* TWO SUPPORT NOTIFICATIONS */
 
 .support-notification{
@@ -2609,6 +2641,14 @@ hr{
             onclick="openSupport()"
         >
             💬 CONTACT SUPPORT
+
+            <span
+                id="supportUnreadBadge"
+                class="support-unread-badge"
+                aria-label="Unread support replies"
+            >
+                0
+            </span>
         </button>
 
         <!-- SUPPORT NOTIFICATION #1 -->
@@ -3844,6 +3884,55 @@ let supportNotificationTimer=null;
 
 
 /* =================================================
+   SUPPORT UNREAD BADGE
+================================================= */
+
+function updateSupportUnreadBadge(
+    unreadCount
+){
+
+    const badge=
+        document.getElementById(
+            "supportUnreadBadge"
+        );
+
+
+    if(!badge)
+        return;
+
+
+    const count=
+        Number(unreadCount);
+
+
+    if(
+        !Number.isInteger(count) ||
+        count<=0
+    ){
+
+        badge.innerText="";
+
+        badge.classList.remove(
+            "show"
+        );
+
+        return;
+    }
+
+
+    badge.innerText=
+        count>99
+            ? "99+"
+            : String(count);
+
+
+    badge.classList.add(
+        "show"
+    );
+}
+
+
+/* =================================================
    SUPPORT NOTIFICATION
 ================================================= */
 
@@ -3915,6 +4004,8 @@ function clearSupportNotification(){
 
 
     supportUnreadCount=0;
+
+    updateSupportUnreadBadge(0);
 }
 
 
@@ -3962,6 +4053,11 @@ async function checkSupportNotification(){
             Number(
                 result.unread_count || 0
             );
+
+
+        updateSupportUnreadBadge(
+            unreadCount
+        );
 
 
         if(
@@ -4641,12 +4737,19 @@ function showSupportReplyNotificationFromCount(
         count<=0
     ){
 
+        updateSupportUnreadBadge(0);
+
         return;
     }
 
 
     supportUnreadCount=
         count;
+
+
+    updateSupportUnreadBadge(
+        count
+    );
 
 
     const message=
