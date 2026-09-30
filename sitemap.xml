@@ -6,5 +6,11 @@
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
+    <url>
+    <loc>https://myfaucetcrypto.com/terms.html</loc>
+</url>
+<url>
+    <loc>https://myfaucetcrypto.com/privacy.html</loc>
+</url>
 
 </urlset>
