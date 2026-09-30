@@ -6,7 +6,7 @@
 >  
 
 <title>Admin Dashboard - My Crypto Faucet</title>
-<link rel="icon" type="image/svg+xml" href="assets/favicon.png">
+<link rel="icon" type="image/png" href="assets/favico.png">
     
 <meta name="robots" content="noindex, nofollow">  <style>  
 
@@ -3731,11 +3731,6 @@ function createSupportTicket(ticket) {
 
 async function openSupportTicket(ticketId) {
 
-    if (supportProcessing) {
-        return;
-    }
-
-
     selectedSupportTicketId =
         Number(ticketId);
 
@@ -3782,14 +3777,10 @@ async function openSupportTicket(ticketId) {
                 `/api/admin/support?ticketId=${encodeURIComponent(ticketId)}`,
                 {
                     method: "GET",
-
-                    credentials:
-                        "same-origin",
-
+                    credentials: "same-origin",
                     cache: "no-store"
                 }
             );
-
 
         const result =
             await response.json();
