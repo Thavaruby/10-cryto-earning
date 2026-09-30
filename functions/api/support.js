@@ -270,11 +270,48 @@ export async function onRequestGet(
         }
 
 
+        /* =========================================
+           UNREAD ADMIN REPLY COUNT
+        ========================================= */
+
+        const unreadResult =
+            await db
+                .prepare(
+                    `SELECT
+                        COUNT(*) AS unread_count
+                     FROM support_messages sm
+                     INNER JOIN support_tickets st
+                         ON st.id = sm.ticket_id
+                     WHERE st.user_id = ?
+                       AND sm.sender_type = 'admin'
+                       AND sm.is_read = 0`
+                )
+                .bind(userId)
+                .first();
+
+
+        const unreadCount =
+            Number(
+                unreadResult?.unread_count || 0
+            );
+
+
+        /* =========================================
+           SUCCESS
+        ========================================= */
+
         return jsonResponse(
             {
                 success: true,
+
                 tickets:
-                    ticketList
+                    ticketList,
+
+                unread_count:
+                    Number.isInteger(unreadCount) &&
+                    unreadCount > 0
+                        ? unreadCount
+                        : 0
             }
         );
 
@@ -294,6 +331,259 @@ export async function onRequestGet(
                 success: false,
                 error:
                     "Unable to load support messages."
+            },
+            500
+        );
+    }
+}
+
+
+/* =================================================
+   MARK SUPPORT MESSAGES AS READ
+================================================= */
+
+export async function onRequestPatch(
+    context
+) {
+
+    try {
+
+        const db =
+            context.env.DB
+                .withSession(
+                    "first-primary"
+                );
+
+
+        /* =========================================
+           SESSION
+        ========================================= */
+
+        const sessionToken =
+            getCookie(
+                context.request,
+                "session"
+            );
+
+
+        if (!sessionToken) {
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Not logged in"
+                },
+                401
+            );
+        }
+
+
+        const tokenHash =
+            await hashSessionToken(
+                sessionToken
+            );
+
+
+        const session =
+            await db
+                .prepare(
+                    `SELECT
+                        sessions.user_id,
+                        sessions.expires_at
+                     FROM sessions
+                     WHERE sessions.token_hash = ?
+                     LIMIT 1`
+                )
+                .bind(tokenHash)
+                .first();
+
+
+        if (!session) {
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Invalid session"
+                },
+                401
+            );
+        }
+
+
+        const expiresAt =
+            new Date(
+                session.expires_at
+            );
+
+
+        if (
+            Number.isNaN(
+                expiresAt.getTime()
+            ) ||
+            expiresAt <= new Date()
+        ) {
+
+            await db
+                .prepare(
+                    `DELETE FROM sessions
+                     WHERE token_hash = ?`
+                )
+                .bind(tokenHash)
+                .run();
+
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Session expired"
+                },
+                401
+            );
+        }
+
+
+        const userId =
+            Number(
+                session.user_id
+            );
+
+
+        /* =========================================
+           USER ID VALIDATION
+        ========================================= */
+
+        if (
+            !Number.isInteger(userId) ||
+            userId <= 0
+        ) {
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Invalid session"
+                },
+                401
+            );
+        }
+
+
+        /* =========================================
+           REQUEST BODY
+        ========================================= */
+
+        let body;
+
+        try {
+
+            body =
+                await context.request.json();
+
+        } catch {
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Invalid request."
+                },
+                400
+            );
+        }
+
+
+        const ticketId =
+            Number(
+                body.ticket_id
+            );
+
+
+        /* =========================================
+           TICKET ID VALIDATION
+        ========================================= */
+
+        if (
+            !Number.isInteger(ticketId) ||
+            ticketId <= 0
+        ) {
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Invalid ticket."
+                },
+                400
+            );
+        }
+
+
+        /* =========================================
+           MARK ONLY THIS USER'S ADMIN MESSAGES READ
+        ========================================= */
+
+        const result =
+            await db
+                .prepare(
+                    `UPDATE support_messages
+                     SET is_read = 1
+                     WHERE ticket_id = ?
+                       AND sender_type = 'admin'
+                       AND is_read = 0
+                       AND ticket_id IN
+                           (
+                               SELECT id
+                               FROM support_tickets
+                               WHERE id = ?
+                                 AND user_id = ?
+                           )`
+                )
+                .bind(
+                    ticketId,
+                    ticketId,
+                    userId
+                )
+                .run();
+
+
+        const changed =
+            Number(
+                result.meta?.changes || 0
+            );
+
+
+        /* =========================================
+           SUCCESS
+        ========================================= */
+
+        return jsonResponse(
+            {
+                success: true,
+
+                marked_read:
+                    changed
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "SUPPORT PATCH ERROR:",
+            error instanceof Error
+                ? error.message
+                : "Unknown error"
+        );
+
+
+        return jsonResponse(
+            {
+                success: false,
+                error:
+                    "Unable to update support notification."
             },
             500
         );
@@ -527,7 +817,7 @@ export async function onRequestPost(
 
 
         /* =========================================
-           CREATE TICKET
+           CREATE SUPPORT TICKET
         ========================================= */
 
         const ticketResult =
