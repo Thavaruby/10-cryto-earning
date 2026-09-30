@@ -1124,7 +1124,8 @@ export async function onRequestPost(context) {
 
                         body: JSON.stringify({
                             address:
-                                walletAddress
+                                walletAddress,
+                            currency: "BTC"
                         })
                     }
                 );
