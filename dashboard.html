@@ -3830,19 +3830,19 @@ window.onclick=function(event){
         closeHistory();
     }
 };
-
-
+    
 /* =================================================
    CONTACT & SUPPORT
 ================================================= */
 
-/*
-    Support notifications are intentionally shown
-    in two places:
+let supportUnreadCount=0;
 
-    1. Dashboard Contact & Support section
-    2. Contact Support modal
-*/
+let supportSendInProgress=false;
+
+
+/* =================================================
+   SUPPORT NOTIFICATION
+================================================= */
 
 function setSupportNotification(
     message,
@@ -3854,6 +3854,7 @@ function setSupportNotification(
         "supportNotification"
     ];
 
+
     notificationIds.forEach(
         function(id){
 
@@ -3862,6 +3863,7 @@ function setSupportNotification(
 
             if(!notification)
                 return;
+
 
             notification.className=
                 "support-notification "+type;
@@ -3876,36 +3878,66 @@ function setSupportNotification(
 }
 
 
-function clearSupportModalNotification(){
+/* =================================================
+   CLEAR SUPPORT NOTIFICATION
+================================================= */
 
-    const notification=
-        document.getElementById(
-            "supportNotification"
-        );
+function clearSupportNotification(){
 
-    if(!notification)
-        return;
+    const notificationIds=[
+        "supportTopNotification",
+        "supportNotification"
+    ];
 
-    notification.className=
-        "support-notification";
 
-    notification.innerText="";
+    notificationIds.forEach(
+        function(id){
 
-    notification.style.display=
-        "none";
+            const notification=
+                document.getElementById(id);
+
+            if(!notification)
+                return;
+
+
+            notification.className=
+                "support-notification";
+
+            notification.innerText="";
+
+            notification.style.display=
+                "none";
+        }
+    );
+
+
+    supportUnreadCount=0;
 }
 
 
-function openSupport(){
+/* =================================================
+   OPEN SUPPORT
+================================================= */
 
-    clearSupportModalNotification();
+function openSupport(){
 
     document.getElementById(
         "supportModal"
     ).style.display="block";
 
+
+    /*
+       Load current support messages
+       when the modal is opened.
+    */
+
+    loadSupportMessages();
 }
 
+
+/* =================================================
+   CLOSE SUPPORT
+================================================= */
 
 function closeSupport(){
 
@@ -3917,25 +3949,141 @@ function closeSupport(){
 
 
 /* =================================================
-   SEND SUPPORT MESSAGE
+   SHOW ADMIN REPLY NOTIFICATION
 ================================================= */
 
-let supportSendInProgress=false;
+function showAdminReplyNotification(
+    unreadCount
+){
+
+    const count=
+        Number(unreadCount);
+
+
+    if(
+        !Number.isInteger(count) ||
+        count<=0
+    ){
+
+        return;
+    }
+
+
+    supportUnreadCount=count;
+
+
+    const message=
+        count===1
+            ? "🔔 You have 1 new reply from Support."
+            : `🔔 You have ${count} new replies from Support.`;
+
+
+    setSupportNotification(
+        message,
+        "info"
+    );
+}
+
+
+/* =================================================
+   MARK ONE TICKET'S ADMIN REPLIES AS READ
+================================================= */
+
+async function markSupportTicketAsRead(
+    ticketId
+){
+
+    const id=
+        Number(ticketId);
+
+
+    if(
+        !Number.isInteger(id) ||
+        id<=0
+    ){
+
+        return false;
+    }
+
+
+    try{
+
+        const response=
+            await fetch(
+                "/api/support",
+                {
+                    method:"PATCH",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:JSON.stringify({
+                        ticket_id:id
+                    })
+                }
+            );
+
+
+        let result;
+
+
+        try{
+
+            result=
+                await response.json();
+
+        }catch(jsonError){
+
+            console.error(
+                "Invalid support PATCH response:",
+                jsonError
+            );
+
+            return false;
+        }
+
+
+        return(
+            response.ok &&
+            result.success===true
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "Support read-status error:",
+            error
+        );
+
+        return false;
+    }
+}
+
+
+/* =================================================
+   SEND SUPPORT MESSAGE
+================================================= */
 
 async function sendSupportMessage(){
 
     if(supportSendInProgress)
         return;
 
+
     const subject=
         document.getElementById(
             "supportSubject"
         ).value.trim();
 
+
     const message=
         document.getElementById(
             "supportMessage"
         ).value.trim();
+
 
     const sendButton=
         document.querySelector(
@@ -3950,9 +4098,11 @@ async function sendSupportMessage(){
             "error"
         );
 
+
         document.getElementById(
             "supportSubject"
         ).focus();
+
 
         return;
     }
@@ -3965,15 +4115,18 @@ async function sendSupportMessage(){
             "error"
         );
 
+
         document.getElementById(
             "supportMessage"
         ).focus();
+
 
         return;
     }
 
 
     supportSendInProgress=true;
+
 
     if(sendButton){
 
@@ -4015,6 +4168,7 @@ async function sendSupportMessage(){
 
         let result;
 
+
         try{
 
             result=
@@ -4027,10 +4181,12 @@ async function sendSupportMessage(){
                 jsonError
             );
 
+
             setSupportNotification(
                 "❌ Server returned an invalid response.",
                 "error"
             );
+
 
             return;
         }
@@ -4059,6 +4215,7 @@ async function sendSupportMessage(){
 
             await loadSupportMessages();
 
+
             return;
         }
 
@@ -4074,6 +4231,7 @@ async function sendSupportMessage(){
             "error"
         );
 
+
     }catch(error){
 
         console.error(
@@ -4081,14 +4239,17 @@ async function sendSupportMessage(){
             error
         );
 
+
         setSupportNotification(
             "❌ Connection error. Please try again.",
             "error"
         );
 
+
     }finally{
 
         supportSendInProgress=false;
+
 
         if(sendButton){
 
@@ -4130,14 +4291,17 @@ async function loadSupportMessages(){
                 {
                     method:"GET",
                     cache:"no-store",
+
                     headers:{
-                        "Cache-Control":"no-cache"
+                        "Cache-Control":
+                            "no-cache"
                     }
                 }
             );
 
 
         let result;
+
 
         try{
 
@@ -4151,8 +4315,10 @@ async function loadSupportMessages(){
                 jsonError
             );
 
+
             container.innerHTML=
                 "❌ Server returned an invalid response.";
+
 
             return;
         }
@@ -4172,9 +4338,35 @@ async function loadSupportMessages(){
                     "Unable to load messages."
                 );
 
+
             return;
         }
 
+
+        /* =========================================
+           ADMIN REPLY NOTIFICATION
+        ========================================= */
+
+        const unreadCount=
+            Number(
+                result.unread_count || 0
+            );
+
+
+        if(
+            Number.isInteger(unreadCount) &&
+            unreadCount>0
+        ){
+
+            showAdminReplyNotification(
+                unreadCount
+            );
+        }
+
+
+        /* =========================================
+           NO TICKETS
+        ========================================= */
 
         if(
             !result.tickets ||
@@ -4191,11 +4383,17 @@ async function loadSupportMessages(){
         let html="";
 
 
+        const unreadTicketIds=[];
+
+
+        /* =========================================
+           RENDER SUPPORT TICKETS
+        ========================================= */
+
         result.tickets.forEach(
             function(ticket){
 
                 html+=`
-
                     <div class="support-ticket-card">
 
                         <div class="support-ticket-subject">
@@ -4224,10 +4422,12 @@ async function loadSupportMessages(){
                             const isAdmin=
                                 msg.sender_type==="admin";
 
+
                             const sender=
                                 isAdmin
                                     ? "🛠️ Support"
                                     : "👤 You";
+
 
                             const messageClass=
                                 isAdmin
@@ -4235,8 +4435,25 @@ async function loadSupportMessages(){
                                     : "user";
 
 
-                            html+=`
+                            /*
+                               Find unread admin replies.
+                            */
 
+                            if(
+                                isAdmin &&
+                                Number(msg.is_read)===0 &&
+                                !unreadTicketIds.includes(
+                                    Number(ticket.id)
+                                )
+                            ){
+
+                                unreadTicketIds.push(
+                                    Number(ticket.id)
+                                );
+                            }
+
+
+                            html+=`
                                 <div
                                     class="support-message ${messageClass}"
                                 >
@@ -4258,7 +4475,6 @@ async function loadSupportMessages(){
                                     </small>
 
                                 </div>
-
                             `;
                         }
                     );
@@ -4266,9 +4482,7 @@ async function loadSupportMessages(){
 
 
                 html+=`
-
                     </div>
-
                 `;
             }
         );
@@ -4278,6 +4492,51 @@ async function loadSupportMessages(){
             html;
 
 
+        /* =========================================
+           MARK ADMIN REPLIES AS READ
+           ONLY AFTER SUCCESSFUL DISPLAY
+        ========================================= */
+
+        if(
+            unreadTicketIds.length>0
+        ){
+
+            const readResults=
+                await Promise.all(
+                    unreadTicketIds.map(
+                        function(ticketId){
+
+                            return markSupportTicketAsRead(
+                                ticketId
+                            );
+                        }
+                    )
+                );
+
+
+            const allMarkedRead=
+                readResults.every(
+                    function(success){
+
+                        return success===true;
+                    }
+                );
+
+
+            /*
+               Only clear notification when
+               every unread ticket was successfully
+               marked as read.
+            */
+
+            if(allMarkedRead){
+
+                clearSupportNotification();
+
+            }
+        }
+
+
     }catch(error){
 
         console.error(
@@ -4285,11 +4544,12 @@ async function loadSupportMessages(){
             error
         );
 
+
         container.innerHTML=
             "❌ Connection error. Please try again.";
-
     }
 }
+
 
 
 /* =========================================
