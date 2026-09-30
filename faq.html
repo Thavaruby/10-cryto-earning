@@ -1,0 +1,538 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="icon" type="image/png" href="/assets/favico.png"><title>FAQ — My Crypto Faucet</title><meta name="description"
+content="Find answers to common questions about My Crypto Faucet, Bitcoin claims, hourly rewards, balances, FaucetPay withdrawals, and account security.">
+
+<link rel="canonical" href="https://myfaucetcrypto.com/faq.html"><!-- Open Graph --><meta property="og:type" content="website">
+<meta property="og:title" content="FAQ — My Crypto Faucet">
+<meta property="og:description"
+content="Answers to common questions about Bitcoin faucet claims, rewards, balances, withdrawals, and account security.">
+<meta property="og:url" content="https://myfaucetcrypto.com/faq.html">
+<meta property="og:site_name" content="My Crypto Faucet">
+<meta property="og:image"
+content="https://myfaucetcrypto.com/assets/_social-preview1.jpeg">
+<meta property="og:image:secure_url"
+content="https://myfaucetcrypto.com/assets/_social-preview1.jpeg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt"
+content="My Crypto Faucet — Frequently Asked Questions"><!-- X / Twitter --><meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="FAQ — My Crypto Faucet">
+<meta name="twitter:description"
+content="Answers to common questions about My Crypto Faucet.">
+<meta name="twitter:image"
+content="https://myfaucetcrypto.com/assets/_social-preview1.jpeg">
+<meta name="twitter:image:alt"
+content="My Crypto Faucet — FAQ"><meta name="theme-color" content="#07111f"><style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:
+        radial-gradient(circle at 15% 15%,rgba(37,99,235,.24),transparent 34%),
+        radial-gradient(circle at 85% 75%,rgba(124,58,237,.20),transparent 35%),
+        linear-gradient(135deg,#07111f,#0d1b2f 45%,#111827);
+    color:#fff;
+    min-height:100vh;
+}
+
+.container{
+    width:min(1000px,92%);
+    margin:auto;
+}
+
+/* HEADER */
+
+header{
+    height:72px;
+    background:rgba(7,17,31,.84);
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+    border-bottom:1px solid rgba(255,255,255,.07);
+}
+
+.navbar{
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    color:#fff;
+    text-decoration:none;
+    font-size:20px;
+    font-weight:800;
+}
+
+.logo-icon{
+    width:38px;
+    height:38px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(145deg,#fbbf24,#f59e0b);
+    color:#111827;
+    font-size:22px;
+    font-weight:900;
+}
+
+.nav-buttons{
+    display:flex;
+    gap:8px;
+}
+
+.nav-button{
+    padding:9px 15px;
+    border-radius:9px;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:700;
+}
+
+.login{
+    color:#93c5fd;
+    border:1px solid rgba(96,165,250,.35);
+}
+
+.register{
+    color:#fff;
+    background:linear-gradient(135deg,#2563eb,#4f46e5);
+}
+
+/* MAIN */
+
+main{
+    padding:70px 0 85px;
+}
+
+.page-title{
+    text-align:center;
+    margin-bottom:48px;
+}
+
+.page-title h1{
+    font-size:clamp(36px,6vw,52px);
+    line-height:1.1;
+    margin-bottom:16px;
+}
+
+.page-title h1 span{
+    background:linear-gradient(135deg,#60a5fa,#818cf8);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+}
+
+.page-title p{
+    max-width:680px;
+    margin:auto;
+    color:#9aadc2;
+    font-size:17px;
+    line-height:1.7;
+}
+
+/* FAQ */
+
+.faq-list{
+    display:grid;
+    gap:15px;
+}
+
+.faq-item{
+    background:rgba(15,23,42,.72);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:16px;
+    overflow:hidden;
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+}
+
+.faq-item summary{
+    cursor:pointer;
+    list-style:none;
+    padding:21px 24px;
+    color:#fff;
+    font-size:16px;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+}
+
+.faq-item summary::-webkit-details-marker{
+    display:none;
+}
+
+.faq-item summary::after{
+    content:"+";
+    flex-shrink:0;
+    color:#60a5fa;
+    font-size:24px;
+    font-weight:400;
+}
+
+.faq-item[open] summary::after{
+    content:"−";
+}
+
+.faq-answer{
+    padding:0 24px 23px;
+    color:#9aadc2;
+    font-size:14px;
+    line-height:1.75;
+}
+
+.faq-answer strong{
+    color:#dbeafe;
+}
+
+.info-box{
+    margin-top:35px;
+    padding:22px;
+    border-radius:14px;
+    background:rgba(37,99,235,.08);
+    border:1px solid rgba(96,165,250,.15);
+    color:#9aadc2;
+    line-height:1.7;
+    font-size:14px;
+}
+
+/* CTA */
+
+.cta{
+    margin-top:45px;
+    text-align:center;
+    padding:45px 25px;
+    border-radius:20px;
+    background:rgba(15,23,42,.70);
+    border:1px solid rgba(96,165,250,.16);
+}
+
+.cta h2{
+    font-size:28px;
+    margin-bottom:12px;
+}
+
+.cta p{
+    color:#9aadc2;
+    margin-bottom:24px;
+}
+
+.cta a{
+    display:inline-block;
+    padding:13px 22px;
+    border-radius:10px;
+    background:linear-gradient(135deg,#2563eb,#4f46e5);
+    color:#fff;
+    text-decoration:none;
+    font-weight:800;
+}
+
+/* FOOTER */
+
+footer{
+    border-top:1px solid rgba(255,255,255,.07);
+    background:rgba(4,12,23,.82);
+    padding:35px 0 22px;
+}
+
+.footer-inner{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:25px;
+}
+
+.footer-links{
+    display:flex;
+    flex-wrap:wrap;
+    gap:18px;
+}
+
+.footer-links a{
+    color:#8da0b5;
+    text-decoration:none;
+    font-size:13px;
+}
+
+.footer-bottom{
+    margin-top:25px;
+    padding-top:20px;
+    border-top:1px solid rgba(255,255,255,.06);
+    text-align:center;
+    color:#596d83;
+    font-size:12px;
+}
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+    header{
+        height:64px;
+    }
+
+    .navbar{
+        width:94%;
+    }
+
+    .logo{
+        font-size:15px;
+    }
+
+    .logo-icon{
+        width:33px;
+        height:33px;
+        font-size:18px;
+    }
+
+    .nav-button{
+        padding:8px 10px;
+        font-size:11px;
+    }
+
+    main{
+        padding:55px 0 65px;
+    }
+
+    .page-title{
+        margin-bottom:35px;
+    }
+
+    .page-title h1{
+        font-size:36px;
+    }
+
+    .page-title p{
+        font-size:14px;
+    }
+
+    .faq-item summary{
+        padding:18px;
+        font-size:14px;
+    }
+
+    .faq-answer{
+        padding:0 18px 20px;
+        font-size:13px;
+    }
+
+    .footer-inner{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+}
+
+</style></head><body><header><nav class="navbar container">
+
+    <a href="/" class="logo" aria-label="My Crypto Faucet Home">
+        <span class="logo-icon">₿</span>
+        My Crypto Faucet
+    </a>
+
+    <div class="nav-buttons">
+        <a href="/login.html" class="nav-button login">Login</a>
+        <a href="/register.html" class="nav-button register">Register</a>
+    </div>
+
+</nav>
+
+</header><main><div class="container"><div class="page-title">
+
+    <h1>Frequently Asked <span>Questions</span></h1>
+
+    <p>
+        Find answers to common questions about My Crypto Faucet,
+        Bitcoin rewards, claims, balances, withdrawals and account security.
+    </p>
+
+</div>
+
+<div class="faq-list">
+
+    <details class="faq-item">
+        <summary>What is My Crypto Faucet?</summary>
+
+        <div class="faq-answer">
+            My Crypto Faucet is a Bitcoin faucet platform where registered
+            users can claim small BTC rewards at the available claim interval
+            and build their account balance.
+        </div>
+    </details>
+
+    <details class="faq-item">
+        <summary>How often can I claim Bitcoin?</summary>
+
+        <div class="faq-answer">
+            Eligible users can make a faucet claim once every
+            <strong>1 hour</strong>. After a successful claim, the cooldown
+            period must finish before another claim becomes available.
+        </div>
+    </details>
+
+    <details class="faq-item">
+        <summary>How much Bitcoin do I receive from a claim?</summary>
+
+        <div class="faq-answer">
+            The current faucet reward is
+            <strong>0.00000001 BTC</strong> per successful claim.
+            Faucet conditions and reward settings may change in the future.
+        </div>
+    </details>
+
+    <details class="faq-item">
+        <summary>Do I need an account to use the faucet?</summary>
+
+        <div class="faq-answer">
+            Yes. You need to create an account and sign in before you can
+            use the faucet claim system and manage your balance.
+        </div>
+    </details>
+
+    <details class="faq-item">
+        <summary>What is the minimum withdrawal amount?</summary>
+
+        <div class="faq-answer">
+            The current minimum withdrawal amount is
+            <strong>0.0000001 BTC</strong>.
+            Your available balance must meet the minimum before a withdrawal
+            request can be submitted.
+        </div>
+    </details>
+
+    <details class="faq-item">
+        <summary>How do Bitcoin withdrawals work?</summary>
+
+        <div class="faq-answer">
+            When your balance reaches the minimum withdrawal amount, you can
+            submit a BTC withdrawal request from your dashboard. The Bitcoin
+            address is checked before the withdrawal request is created.
+        </div>
+    </details>
+
+    <details class="faq-item">
+        <summary>Why do I need a FaucetPay Bitcoin address?</summary>
+
+        <div class="faq-answer">
+            My Crypto Faucet uses FaucetPay for eligible Bitcoin withdrawals.
+            Therefore, the withdrawal address must be a valid FaucetPay BTC
+            address accepted by the payment system.
+        </div>
+    </details>
+
+    <details class="faq-item">
+        <summary>Can I use any Bitcoin address for withdrawal?</summary>
+
+        <div class="faq-answer">
+            No. A Bitcoin address can be technically valid but still not be
+            registered as a FaucetPay BTC address. The withdrawal system checks
+            the address with the payment service before creating the request.
+        </div>
+    </details>
+
+    <details class="faq-item">
+        <summary>Why can't I claim my reward right now?</summary>
+
+        <div class="faq-answer">
+            A claim may be unavailable when your cooldown period has not
+            finished or when a required security verification has not been
+            completed successfully.
+        </div>
+    </details>
+
+    <details class="faq-item">
+        <summary>Is My Crypto Faucet available worldwide?</summary>
+
+        <div class="faq-answer">
+            The platform is designed for users worldwide. Availability of
+            individual services or payment providers can depend on their
+            respective terms and regional restrictions.
+        </div>
+    </details>
+
+    <details class="faq-item">
+        <summary>How can I protect my account?</summary>
+
+        <div class="faq-answer">
+            Use a strong, unique password and never share your login details
+            with another person. Keep access to your email account secure and
+            contact support if you notice unusual activity.
+        </div>
+    </details>
+
+    <details class="faq-item">
+        <summary>How can I contact support?</summary>
+
+        <div class="faq-answer">
+            Logged-in users can use the <strong>Contact Support</strong>
+            feature available from their account dashboard to send a support
+            message.
+        </div>
+    </details>
+
+</div>
+
+<div class="info-box">
+    <strong>Important:</strong>
+    Cryptocurrency transactions involve risk. Always check your withdrawal
+    details carefully before submitting a request.
+</div>
+
+<div class="cta">
+
+    <h2>Ready to Get Started?</h2>
+
+    <p>
+        Create your free account and start using My Crypto Faucet.
+    </p>
+
+    <a href="/register.html">Create Free Account</a>
+
+</div>
+
+</div></main><footer><div class="container">
+
+    <div class="footer-inner">
+
+        <a href="/" class="logo">
+            <span class="logo-icon">₿</span>
+            My Crypto Faucet
+        </a>
+
+        <div class="footer-links">
+            <a href="/">Home</a>
+            <a href="/how-it-works.html">How It Works</a>
+            <a href="/faq.html">FAQ</a>
+            <a href="/terms.html">Terms</a>
+            <a href="/privacy.html">Privacy</a>
+        </div>
+
+    </div>
+
+    <div class="footer-bottom">
+        © 2026 My Crypto Faucet. All rights reserved.
+    </div>
+
+</div>
+
+</footer></body>
+</html>
