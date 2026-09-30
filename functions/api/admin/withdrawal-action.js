@@ -336,7 +336,7 @@ export async function onRequestPost(context) {
 
         /* =====================================================
            7. REJECT
-           
+
            PENDING → REJECTED
 
            Existing D1 trigger refunds the reserved
@@ -405,7 +405,7 @@ export async function onRequestPost(context) {
 
         /* =====================================================
            8. APPROVE
-           
+
            Atomically claim the withdrawal:
 
            PENDING → PROCESSING
@@ -721,69 +721,126 @@ export async function onRequestPost(context) {
 
 
         /* =====================================================
-   15. EXPLICIT FAUCETPAY FAILURE
-===================================================== */
+           15. FAUCETPAY HTTP STATUS / RESPONSE STATUS
+        ===================================================== */
 
-const faucetPayExplicitFailure =
-    faucetPayResult.success === false;
-
-
-if (faucetPayExplicitFailure) {
-
-    console.error(
-        "FAUCETPAY PAYMENT FAILED:",
-        JSON.stringify(faucetPayResult)
-    );
+        const faucetPayExplicitFailure =
+            faucetPayResult.success === false;
 
 
-    /*
-     * FaucetPay explicitly rejected the request.
-     *
-     * Restore PENDING.
-     */
+        /*
+         * An explicit FaucetPay failure is safe to
+         * return to PENDING because the provider has
+         * clearly rejected the request.
+         */
 
-    await db
-        .prepare(
-            `UPDATE withdrawals
-             SET
-                status = 'pending'
-             WHERE id = ?
-               AND status = 'processing'`
-        )
-        .bind(withdrawalId)
-        .run();
+        if (faucetPayExplicitFailure) {
+
+            console.error(
+                "FAUCETPAY PAYMENT FAILED:",
+                JSON.stringify(faucetPayResult)
+            );
 
 
-    /* TEMPORARY DIAGNOSTIC:
-       Show FaucetPay's actual error message
-       so we can identify why the normal BTC
-       wallet address was rejected.
-    */
-
-    const faucetPayError =
-        faucetPayResult?.message ||
-        faucetPayResult?.error ||
-        faucetPayResult?.data?.message ||
-        faucetPayResult?.data?.error ||
-        "Unknown FaucetPay error.";
+            await db
+                .prepare(
+                    `UPDATE withdrawals
+                     SET
+                        status = 'pending'
+                     WHERE id = ?
+                       AND status = 'processing'`
+                )
+                .bind(withdrawalId)
+                .run();
 
 
-    return Response.json(
-        {
-            success: false,
-            error:
-                `FaucetPay payment failed: ${faucetPayError}`,
-            faucetpay_response:
-                faucetPayResult
-        },
-        {
-            status: 502,
-            headers: {
-                "Cache-Control": "no-store"
-            }
+            const faucetPayError =
+                faucetPayResult?.message ||
+                faucetPayResult?.error ||
+                faucetPayResult?.data?.message ||
+                faucetPayResult?.data?.error ||
+                "Unknown FaucetPay error.";
+
+
+            return Response.json(
+                {
+                    success: false,
+                    error:
+                        `FaucetPay payment failed: ${faucetPayError}`
+                },
+                {
+                    status: 502,
+                    headers: {
+                        "Cache-Control": "no-store"
+                    }
+                }
+            );
         }
-    );
-}
+
+
+        /*
+         * A non-2xx response without an explicit
+         * success:false response is UNCERTAIN.
+         *
+         * Do NOT return to pending.
+         * Do NOT retry.
+         * Keep PROCESSING.
+         */
+
+        if (!faucetPayResponse.ok) {
+
+            console.error(
+                "FAUCETPAY RETURNED NON-2XX RESPONSE:",
+                faucetPayResponse.status,
+                JSON.stringify(faucetPayResult)
+            );
+
+
+            return Response.json(
+                {
+                    success: false,
+                    error:
+                        "FaucetPay returned an uncertain response. Withdrawal remains processing and requires reconciliation."
+                },
+                {
+                    status: 502,
+                    headers: {
+                        "Cache-Control": "no-store"
+                    }
+                }
+            );
+        }
+
+
+        /*
+         * Only success:true is accepted as a confirmed
+         * successful FaucetPay response.
+         *
+         * Anything else is uncertain.
+         */
+
+        if (faucetPayResult.success !== true) {
+
+            console.error(
+                "FAUCETPAY RETURNED UNEXPECTED SUCCESS RESPONSE:",
+                JSON.stringify(faucetPayResult)
+            );
+
+
+            return Response.json(
+                {
+                    success: false,
+                    error:
+                        "FaucetPay returned an unexpected response. Withdrawal remains processing and requires reconciliation."
+                },
+                {
+                    status: 502,
+                    headers: {
+                        "Cache-Control": "no-store"
+                    }
+                }
+            );
+        }
 
 
         /* =====================================================
@@ -837,11 +894,11 @@ if (faucetPayExplicitFailure) {
 
         /* =====================================================
            18. SAVE PAYOUT ID FIRST
-           
+
            IMPORTANT:
-           
+
            FaucetPay has already confirmed the payout.
-           
+
            Save payout_id while the withdrawal is still
            PROCESSING so reconciliation can identify the
            payment even if the following status update fails.
@@ -866,7 +923,8 @@ if (faucetPayExplicitFailure) {
 
         if (
             !payoutSaveResult ||
-            !payoutSaveResult.meta
+            !payoutSaveResult.meta ||
+            payoutSaveResult.meta.changes !== 1
         ) {
 
             console.error(
@@ -902,9 +960,9 @@ if (faucetPayExplicitFailure) {
 
         /* =====================================================
            19. MARK APPROVED
-           
+
            PROCESSING → APPROVED
-           
+
            payout_id has already been persisted.
         ===================================================== */
 
@@ -1003,10 +1061,11 @@ if (faucetPayExplicitFailure) {
         );
 
 
-    } catch {
+    } catch (error) {
 
         console.error(
-            "ADMIN WITHDRAWAL ACTION ERROR."
+            "ADMIN WITHDRAWAL ACTION ERROR:",
+            error
         );
 
 
