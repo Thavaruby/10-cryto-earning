@@ -1125,7 +1125,9 @@ export async function onRequestPost(context) {
                         body: JSON.stringify({
                             address:
                                 walletAddress,
-                            currency: "BTC"
+
+                            currency:
+                                "BTC"
                         })
                     }
                 );
@@ -1176,25 +1178,32 @@ export async function onRequestPost(context) {
             );
         }
 
-        /* =================================================
-           ADDRESS NOT REGISTERED WITH FAUCETPAY
-           ================================================= */
+        /*
+         * FaucetPay v2 uses a successful response
+         * to indicate that the address was verified.
+         *
+         * Some FaucetPay API responses/documentation
+         * expose the success state through `success`,
+         * while the documented legacy envelope uses
+         * `status: 200`.
+         *
+         * Accept only an explicit successful result.
+         */
+
+        const faucetPayAddressIsValid =
+            faucetPayAddressResult.success === true ||
+            faucetPayAddressResult.status === 200;
 
         if (
-            faucetPayAddressResult.status !== 200
+            !faucetPayAddressIsValid
         ) {
-
-            const faucetPayMessage =
-                faucetPayAddressResult.message ||
-                "This is not a FaucetPay BTC address. Please enter your FaucetPay BTC address.";
 
             return jsonResponse(
                 {
                     success: false,
+
                     errorMessage:
-                        "This is not a FaucetPay BTC address. Please enter your FaucetPay BTC address.",
-                    message:
-                        faucetPayMessage
+                        "This is not a FaucetPay BTC address. Please enter your FaucetPay BTC address."
                 },
                 400
             );
