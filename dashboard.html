@@ -3830,7 +3830,8 @@ window.onclick=function(event){
         closeHistory();
     }
 };
-    
+ 
+                        
 /* =================================================
    CONTACT & SUPPORT
 ================================================= */
@@ -3838,6 +3839,8 @@ window.onclick=function(event){
 let supportUnreadCount=0;
 
 let supportSendInProgress=false;
+
+let supportNotificationTimer=null;
 
 
 /* =================================================
@@ -3916,6 +3919,123 @@ function clearSupportNotification(){
 
 
 /* =================================================
+   CHECK ADMIN REPLY NOTIFICATION
+================================================= */
+
+async function checkSupportNotification(){
+
+    try{
+
+        const response=
+            await fetch(
+                "/api/support",
+                {
+                    method:"GET",
+                    cache:"no-store",
+
+                    headers:{
+                        "Cache-Control":
+                            "no-cache"
+                    }
+                }
+            );
+
+
+        if(!response.ok)
+            return;
+
+
+        const result=
+            await response.json();
+
+
+        if(
+            !result ||
+            result.success!==true
+        ){
+
+            return;
+        }
+
+
+        const unreadCount=
+            Number(
+                result.unread_count || 0
+            );
+
+
+        if(
+            Number.isInteger(unreadCount) &&
+            unreadCount>0
+        ){
+
+            supportUnreadCount=
+                unreadCount;
+
+
+            const message=
+                unreadCount===1
+                    ? "🔔 You have 1 new reply from Support."
+                    : `🔔 You have ${unreadCount} new replies from Support.`;
+
+
+            setSupportNotification(
+                message,
+                "info"
+            );
+
+            return;
+        }
+
+
+        /*
+           No unread admin replies.
+        */
+
+        if(
+            supportUnreadCount===0
+        ){
+
+            clearSupportNotification();
+        }
+
+
+    }catch(error){
+
+        console.error(
+            "Support notification check error:",
+            error
+        );
+    }
+}
+
+
+/* =================================================
+   START SUPPORT NOTIFICATION CHECK
+================================================= */
+
+function startSupportNotificationCheck(){
+
+    checkSupportNotification();
+
+
+    if(supportNotificationTimer){
+
+        clearInterval(
+            supportNotificationTimer
+        );
+    }
+
+
+    supportNotificationTimer=
+        setInterval(
+            checkSupportNotification,
+            30000
+        );
+}
+
+
+/* =================================================
    OPEN SUPPORT
 ================================================= */
 
@@ -3927,11 +4047,10 @@ function openSupport(){
 
 
     /*
-       Load current support messages
-       when the modal is opened.
+       Keep the notification visible.
+       Do not mark messages as read here.
     */
 
-    loadSupportMessages();
 }
 
 
@@ -3949,44 +4068,7 @@ function closeSupport(){
 
 
 /* =================================================
-   SHOW ADMIN REPLY NOTIFICATION
-================================================= */
-
-function showAdminReplyNotification(
-    unreadCount
-){
-
-    const count=
-        Number(unreadCount);
-
-
-    if(
-        !Number.isInteger(count) ||
-        count<=0
-    ){
-
-        return;
-    }
-
-
-    supportUnreadCount=count;
-
-
-    const message=
-        count===1
-            ? "🔔 You have 1 new reply from Support."
-            : `🔔 You have ${count} new replies from Support.`;
-
-
-    setSupportNotification(
-        message,
-        "info"
-    );
-}
-
-
-/* =================================================
-   MARK ONE TICKET'S ADMIN REPLIES AS READ
+   MARK SUPPORT TICKET AS READ
 ================================================= */
 
 async function markSupportTicketAsRead(
@@ -4026,27 +4108,16 @@ async function markSupportTicketAsRead(
             );
 
 
-        let result;
-
-
-        try{
-
-            result=
-                await response.json();
-
-        }catch(jsonError){
-
-            console.error(
-                "Invalid support PATCH response:",
-                jsonError
-            );
-
+        if(!response.ok)
             return false;
-        }
+
+
+        const result=
+            await response.json();
 
 
         return(
-            response.ok &&
+            result &&
             result.success===true
         );
 
@@ -4343,10 +4414,6 @@ async function loadSupportMessages(){
         }
 
 
-        /* =========================================
-           ADMIN REPLY NOTIFICATION
-        ========================================= */
-
         const unreadCount=
             Number(
                 result.unread_count || 0
@@ -4358,7 +4425,7 @@ async function loadSupportMessages(){
             unreadCount>0
         ){
 
-            showAdminReplyNotification(
+            showSupportReplyNotificationFromCount(
                 unreadCount
             );
         }
@@ -4382,13 +4449,6 @@ async function loadSupportMessages(){
 
         let html="";
 
-
-        const unreadTicketIds=[];
-
-
-        /* =========================================
-           RENDER SUPPORT TICKETS
-        ========================================= */
 
         result.tickets.forEach(
             function(ticket){
@@ -4435,24 +4495,6 @@ async function loadSupportMessages(){
                                     : "user";
 
 
-                            /*
-                               Find unread admin replies.
-                            */
-
-                            if(
-                                isAdmin &&
-                                Number(msg.is_read)===0 &&
-                                !unreadTicketIds.includes(
-                                    Number(ticket.id)
-                                )
-                            ){
-
-                                unreadTicketIds.push(
-                                    Number(ticket.id)
-                                );
-                            }
-
-
                             html+=`
                                 <div
                                     class="support-message ${messageClass}"
@@ -4492,10 +4534,48 @@ async function loadSupportMessages(){
             html;
 
 
-        /* =========================================
-           MARK ADMIN REPLIES AS READ
-           ONLY AFTER SUCCESSFUL DISPLAY
-        ========================================= */
+        /*
+           Messages have now been displayed.
+           Mark each ticket containing unread
+           admin replies as read.
+        */
+
+        const unreadTicketIds=[];
+
+
+        result.tickets.forEach(
+            function(ticket){
+
+                if(
+                    !ticket.messages ||
+                    !ticket.messages.length
+                ){
+
+                    return;
+                }
+
+
+                const hasUnreadAdminReply=
+                    ticket.messages.some(
+                        function(msg){
+
+                            return(
+                                msg.sender_type==="admin" &&
+                                Number(msg.is_read)===0
+                            );
+                        }
+                    );
+
+
+                if(hasUnreadAdminReply){
+
+                    unreadTicketIds.push(
+                        Number(ticket.id)
+                    );
+                }
+            }
+        );
+
 
         if(
             unreadTicketIds.length>0
@@ -4523,16 +4603,9 @@ async function loadSupportMessages(){
                 );
 
 
-            /*
-               Only clear notification when
-               every unread ticket was successfully
-               marked as read.
-            */
-
             if(allMarkedRead){
 
                 clearSupportNotification();
-
             }
         }
 
@@ -4551,6 +4624,42 @@ async function loadSupportMessages(){
 }
 
 
+/* =================================================
+   SHOW SUPPORT REPLY FROM COUNT
+================================================= */
+
+function showSupportReplyNotificationFromCount(
+    unreadCount
+){
+
+    const count=
+        Number(unreadCount);
+
+
+    if(
+        !Number.isInteger(count) ||
+        count<=0
+    ){
+
+        return;
+    }
+
+
+    supportUnreadCount=
+        count;
+
+
+    const message=
+        count===1
+            ? "🔔 You have 1 new reply from Support."
+            : `🔔 You have ${count} new replies from Support.`;
+
+
+    setSupportNotification(
+        message,
+        "info"
+    );
+}
 
 /* =========================================
    INITIAL LOAD
@@ -4560,6 +4669,7 @@ loadUser();
 
 loadClaimCooldown();
 
+startSupportNotificationCheck();
 
 /* =========================================
    CRYPTO SLIDER
