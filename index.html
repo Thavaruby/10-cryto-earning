@@ -1812,5 +1812,18 @@ a:focus-visible {
 
 </footer>
 
+<script>
+(function () {
+    const params = new URLSearchParams(window.location.search);
+    const referralCode = params.get("ref");
+
+    if (!referralCode) return;
+
+    document.querySelectorAll('a[href="/register.html"]').forEach(link => {
+        link.href = "/register.html?ref=" + encodeURIComponent(referralCode);
+    });
+})();
+</script>
+    
 </body>
 </html>
