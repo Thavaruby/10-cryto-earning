@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <link
+        rel="icon"
+        type="image/png"
+        href="assets/favico.png"
+    >
+
+    <title>Referral Program - My Crypto Faucet</title>
+
+    <meta
+        name="robots"
+        content="noindex, nofollow"
+    >
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+        }
+
+        body {
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at 20% 20%,
+                    rgba(37, 99, 235, 0.24),
+                    transparent 35%
+                ),
+                radial-gradient(
+                    circle at 80% 80%,
+                    rgba(124, 58, 237, 0.20),
+                    transparent 35%
+                ),
+                linear-gradient(
+                    135deg,
+                    #07111f,
+                    #0d1b2f 45%,
+                    #111827
+                );
+
+            color: white;
+
+            min-height: 100vh;
+
+            overflow-x: hidden;
+        }
+
+
+        /* =========================================
+           HEADER
+        ========================================= */
+
+        header {
+
+            padding:
+                24px 18px 18px;
+
+            text-align: center;
+        }
+
+        .logo {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 10px;
+        }
+
+        .logo-coin {
+
+            width: 44px;
+            height: 44px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #fbbf24,
+                    #f59e0b
+                );
+
+            color: #111827;
+
+            font-size: 23px;
+
+            font-weight: bold;
+
+            box-shadow:
+                0 0 0 4px
+                rgba(251, 191, 36, 0.10),
+                0 0 22px
+                rgba(251, 191, 36, 0.25);
+        }
+
+        header h1 {
+
+            margin: 0;
+
+            font-size: 22px;
+        }
+
+        .subtitle {
+
+            margin: 7px 0 0;
+
+            color: #94a3b8;
+
+            font-size: 13px;
+        }
+
+
+        /* =========================================
+           MAIN
+        ========================================= */
+
+        .page {
+
+            width: 100%;
+
+            max-width: 600px;
+
+            margin: 0 auto;
+
+            padding:
+                15px 16px 45px;
+        }
+
+
+        .card {
+
+            background:
+                rgba(15, 23, 42, 0.78);
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.09);
+
+            border-radius: 22px;
+
+            padding: 26px 22px;
+
+            box-shadow:
+                0 25px 65px
+                rgba(0, 0, 0, 0.40),
+
+                inset 0 1px 0
+                rgba(255, 255, 255, 0.05);
+
+            backdrop-filter:
+                blur(16px);
+
+            -webkit-backdrop-filter:
+                blur(16px);
+        }
+
+
+        /* =========================================
+           TITLE
+        ========================================= */
+
+        .hero-icon {
+
+            width: 64px;
+            height: 64px;
+
+            margin:
+                0 auto 15px;
+
+            border-radius: 18px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 30px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(251, 191, 36, 0.16),
+                    rgba(245, 158, 11, 0.08)
+                );
+
+            border:
+                1px solid
+                rgba(251, 191, 36, 0.20);
+        }
+
+        .card h2 {
+
+            margin: 0;
+
+            text-align: center;
+
+            font-size: 25px;
+        }
+
+        .intro {
+
+            margin:
+                9px 0 25px;
+
+            text-align: center;
+
+            color: #94a3b8;
+
+            font-size: 14px;
+
+            line-height: 1.55;
+        }
+
+
+        /* =========================================
+           REFERRAL LINK
+        ========================================= */
+
+        .section-title {
+
+            margin:
+                0 0 9px;
+
+            color: #cbd5e1;
+
+            font-size: 13px;
+
+            font-weight: bold;
+        }
+
+        .link-box {
+
+            display: flex;
+
+            gap: 8px;
+
+            padding: 6px;
+
+            border:
+                1px solid
+                rgba(148, 163, 184, 0.18);
+
+            border-radius: 12px;
+
+            background:
+                rgba(2, 6, 23, 0.50);
+        }
+
+        .link-value {
+
+            flex: 1;
+
+            min-width: 0;
+
+            display: flex;
+
+            align-items: center;
+
+            padding:
+                0 9px;
+
+            color: #fbbf24;
+
+            font-size: 12px;
+
+            overflow: hidden;
+
+            white-space: nowrap;
+
+            text-overflow: ellipsis;
+        }
+
+        .copy-button {
+
+            height: 42px;
+
+            padding:
+                0 15px;
+
+            border: none;
+
+            border-radius: 9px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #2563eb,
+                    #4f46e5
+                );
+
+            color: white;
+
+            font-size: 12px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.18s ease,
+                opacity 0.18s ease;
+        }
+
+        .copy-button:hover {
+
+            transform:
+                translateY(-1px);
+        }
+
+        .copy-button:active {
+
+            transform:
+                translateY(0);
+        }
+
+
+        /* =========================================
+           STATS
+        ========================================= */
+
+        .stats {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 10px;
+
+            margin-top: 20px;
+        }
+
+        .stat {
+
+            padding:
+                17px 12px;
+
+            text-align: center;
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.07);
+
+            border-radius: 13px;
+
+            background:
+                rgba(2, 6, 23, 0.34);
+        }
+
+        .stat-value {
+
+            color: #fbbf24;
+
+            font-size: 21px;
+
+            font-weight: bold;
+        }
+
+        .stat-label {
+
+            margin-top: 5px;
+
+            color: #64748b;
+
+            font-size: 11px;
+        }
+
+
+        /* =========================================
+           MILESTONES
+        ========================================= */
+
+        .milestone-title {
+
+            margin:
+                25px 0 11px;
+
+            color: #cbd5e1;
+
+            font-size: 14px;
+
+            font-weight: bold;
+        }
+
+        .milestones {
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.07);
+
+            border-radius: 13px;
+
+            overflow: hidden;
+
+            background:
+                rgba(2, 6, 23, 0.30);
+        }
+
+        .milestone {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding:
+                13px 14px;
+
+            border-bottom:
+                1px solid
+                rgba(255, 255, 255, 0.06);
+
+            font-size: 13px;
+        }
+
+        .milestone:last-child {
+
+            border-bottom: none;
+        }
+
+        .claim-count {
+
+            color: #cbd5e1;
+        }
+
+        .reward {
+
+            color: #fbbf24;
+
+            font-weight: bold;
+        }
+
+
+        /* =========================================
+           INFO
+        ========================================= */
+
+        .info {
+
+            margin-top: 18px;
+
+            padding:
+                13px 14px;
+
+            border:
+                1px solid
+                rgba(59, 130, 246, 0.16);
+
+            border-radius: 12px;
+
+            background:
+                rgba(37, 99, 235, 0.06);
+
+            color: #94a3b8;
+
+            font-size: 12px;
+
+            line-height: 1.55;
+
+            text-align: center;
+        }
+
+        .info strong {
+
+            color: #60a5fa;
+        }
+
+
+        /* =========================================
+           BACK BUTTON
+        ========================================= */
+
+        .back-link {
+
+            display: block;
+
+            width: 100%;
+
+            margin-top: 20px;
+
+            padding: 13px;
+
+            border:
+                1px solid
+                rgba(148, 163, 184, 0.15);
+
+            border-radius: 11px;
+
+            color: #cbd5e1;
+
+            text-align: center;
+
+            text-decoration: none;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+            background:
+                rgba(2, 6, 23, 0.30);
+
+            transition:
+                background 0.18s ease,
+                border-color 0.18s ease;
+        }
+
+        .back-link:hover {
+
+            background:
+                rgba(37, 99, 235, 0.08);
+
+            border-color:
+                rgba(96, 165, 250, 0.25);
+        }
+
+
+        /* =========================================
+           FOOTER
+        ========================================= */
+
+        footer {
+
+            padding:
+                0 16px 28px;
+
+            text-align: center;
+
+            color: #475569;
+
+            font-size: 11px;
+        }
+
+
+        /* =========================================
+           MOBILE
+        ========================================= */
+
+        @media (max-width: 520px) {
+
+            header {
+
+                padding:
+                    20px 15px 13px;
+            }
+
+            header h1 {
+
+                font-size: 20px;
+            }
+
+            .page {
+
+                padding:
+                    10px 13px 35px;
+            }
+
+            .card {
+
+                padding:
+                    23px 18px;
+
+                border-radius: 20px;
+            }
+
+            .card h2 {
+
+                font-size: 23px;
+            }
+
+            .link-box {
+
+                display: block;
+
+                padding: 7px;
+            }
+
+            .link-value {
+
+                height: 38px;
+
+                padding:
+                    0 8px;
+            }
+
+            .copy-button {
+
+                width: 100%;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <div class="logo">
+
+        <div class="logo-coin">
+            ₿
+        </div>
+
+        <h1>
+            My Crypto Faucet
+        </h1>
+
+    </div>
+
+    <p class="subtitle">
+        Earn Bitcoin • Claim Hourly • Withdraw
+    </p>
+
+</header>
+
+
+<main class="page">
+
+    <div class="card">
+
+
+        <!-- =====================================
+             TITLE
+        ====================================== -->
+
+        <div class="hero-icon">
+            🎁
+        </div>
+
+        <h2>
+            Referral Program
+        </h2>
+
+        <p class="intro">
+            Invite friends to My Crypto Faucet
+            and earn bonus Bitcoin when they
+            reach claim milestones.
+        </p>
+
+
+        <!-- =====================================
+             REFERRAL LINK
+        ====================================== -->
+
+        <div class="section-title">
+            Your Referral Link
+        </div>
+
+        <div class="link-box">
+
+            <div
+                class="link-value"
+                id="referralLink"
+            >
+                Loading referral link...
+            </div>
+
+            <button
+                type="button"
+                class="copy-button"
+                id="copyButton"
+            >
+                📋 Copy Link
+            </button>
+
+        </div>
+
+
+        <!-- =====================================
+             STATS
+        ====================================== -->
+
+        <div class="stats">
+
+            <div class="stat">
+
+                <div
+                    class="stat-value"
+                    id="referralCount"
+                >
+                    0
+                </div>
+
+                <div class="stat-label">
+                    Referrals
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div
+                    class="stat-value"
+                    id="referralEarnings"
+                >
+                    0 sats
+                </div>
+
+                <div class="stat-label">
+                    Referral Earnings
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================
+             MILESTONES
+        ====================================== -->
+
+        <div class="milestone-title">
+            🎯 Referral Reward Milestones
+        </div>
+
+        <div class="milestones">
+
+            <div class="milestone">
+
+                <span class="claim-count">
+                    1st claim
+                </span>
+
+                <span class="reward">
+                    +5 sats
+                </span>
+
+            </div>
+
+
+            <div class="milestone">
+
+                <span class="claim-count">
+                    5th claim
+                </span>
+
+                <span class="reward">
+                    +10 sats
+                </span>
+
+            </div>
+
+
+            <div class="milestone">
+
+                <span class="claim-count">
+                    10th claim
+                </span>
+
+                <span class="reward">
+                    +15 sats
+                </span>
+
+            </div>
+
+
+            <div class="milestone">
+
+                <span class="claim-count">
+                    20th claim
+                </span>
+
+                <span class="reward">
+                    +20 sats
+                </span>
+
+            </div>
+
+
+            <div class="milestone">
+
+                <span class="claim-count">
+                    50th claim
+                </span>
+
+                <span class="reward">
+                    +30 sats
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================
+             INFO
+        ====================================== -->
+
+        <div class="info">
+
+            Maximum referral reward:
+            <strong>80 sats</strong>
+            per referred user.
+
+            There is no limit on the number
+            of genuine referrals you can make.
+
+        </div>
+
+
+        <!-- =====================================
+             BACK
+        ====================================== -->
+
+        <a
+            href="/dashboard.html"
+            class="back-link"
+        >
+            ← Back to Dashboard
+        </a>
+
+    </div>
+
+</main>
+
+
+<footer>
+
+    © My Crypto Faucet
+
+</footer>
+
+
+<script>
+
+/* =========================================
+   TEMPORARY UI DATA
+   API WILL BE CONNECTED LATER
+========================================= */
+
+const referralLink =
+    document.getElementById(
+        "referralLink"
+    );
+
+const copyButton =
+    document.getElementById(
+        "copyButton"
+    );
+
+
+/*
+ * Temporary placeholder.
+ *
+ * This will be replaced by the
+ * authenticated referral API later.
+ */
+
+referralLink.innerText =
+    "Your referral link will appear here";
+
+
+/* =========================================
+   COPY
+========================================= */
+
+copyButton.addEventListener(
+    "click",
+    async function () {
+
+        const text =
+            referralLink.innerText;
+
+        if (
+            !text ||
+            text ===
+                "Your referral link will appear here"
+        ) {
+
+            return;
+        }
+
+        try {
+
+            await navigator.clipboard.writeText(
+                text
+            );
+
+            copyButton.innerText =
+                "✅ Copied!";
+
+            setTimeout(
+                () => {
+
+                    copyButton.innerText =
+                        "📋 Copy Link";
+
+                },
+                1600
+            );
+
+        } catch {
+
+            copyButton.innerText =
+                "Copy failed";
+
+            setTimeout(
+                () => {
+
+                    copyButton.innerText =
+                        "📋 Copy Link";
+
+                },
+                1600
+            );
+        }
+
+    }
+);
+
+</script>
+
+
+</body>
+</html>
