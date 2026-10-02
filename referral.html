@@ -875,16 +875,71 @@ const copyButton =
         "copyButton"
     );
 
+/* =========================================
+   LOAD REFERRAL LINK
+========================================= */
 
-/*
- * Temporary placeholder.
- *
- * This will be replaced by the
- * authenticated referral API later.
- */
+async function loadReferralLink() {
 
-referralLink.innerText =
-    "Your referral link will appear here";
+    try {
+
+        const response =
+            await fetch(
+                "/api/me",
+                {
+                    method: "GET",
+                    cache: "no-store",
+                    headers: {
+                        "Cache-Control":
+                            "no-cache"
+                    }
+                }
+            );
+
+        const result =
+            await response.json();
+
+        if (
+            !response.ok ||
+            result.success !== true ||
+            !result.user ||
+            !result.user.referralCode
+        ) {
+
+            referralLink.innerText =
+                "Unable to load referral link";
+
+            return;
+        }
+
+        const referralCode =
+            String(
+                result.user.referralCode
+            );
+
+        const link =
+            window.location.origin +
+            "/?ref=" +
+            encodeURIComponent(
+                referralCode
+            );
+
+        referralLink.innerText =
+            link;
+
+    } catch (error) {
+
+        console.error(
+            "Referral link error:",
+            error
+        );
+
+        referralLink.innerText =
+            "Unable to load referral link";
+    }
+}
+
+loadReferralLink();
 
 
 /* =========================================
