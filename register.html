@@ -645,6 +645,64 @@
             }
         }
 
+/* Referral Info */
+
+.referral-info {
+    display: none;
+
+    margin:
+        0 0 22px;
+
+    padding:
+        13px 14px;
+
+    border:
+        1px solid rgba(251, 191, 36, 0.22);
+
+    border-radius: 12px;
+
+    background:
+        rgba(251, 191, 36, 0.07);
+
+    color: #cbd5e1;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+
+    text-align: center;
+}
+
+.referral-info strong {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #fbbf24;
+
+    font-size: 13px;
+}
+
+.referral-code-display {
+    display: inline-block;
+
+    margin-top: 5px;
+
+    padding:
+        4px 8px;
+
+    border-radius: 6px;
+
+    background:
+        rgba(251, 191, 36, 0.10);
+
+    color: #fbbf24;
+
+    font-weight: bold;
+
+    letter-spacing: 0.5px;
+}
+        
         @media (max-height: 700px) {
 
             .page {
@@ -699,7 +757,22 @@
             Create your account and start earning Bitcoin
         </p>
 
+<div
+    class="referral-info"
+    id="referralInfo"
+>
+    <strong>🎁 Referral Bonus</strong>
 
+    You joined through a referral link.
+    Your referrer can earn bonus BTC as you reach claim milestones.
+
+    <span
+        class="referral-code-display"
+        id="referralCodeDisplay"
+    ></span>
+</div>
+
+        
         <form id="registerForm">
 
             <!-- Email -->
@@ -825,6 +898,29 @@ const passwordToggle =
     document.getElementById("passwordToggle");
 
 
+/* ==============================
+   REFERRAL CODE
+================================ */
+
+const referralCode =
+    new URLSearchParams(window.location.search)
+        .get("ref") || "";
+
+const referralInfo =
+    document.getElementById("referralInfo");
+
+const referralCodeDisplay =
+    document.getElementById("referralCodeDisplay");
+
+if (referralCode) {
+
+    referralInfo.style.display = "block";
+
+    referralCodeDisplay.innerText =
+        "Referral Code: " + referralCode;
+
+}
+    
 passwordToggle.addEventListener(
     "click",
     function () {
@@ -930,7 +1026,8 @@ document
                             body:
                                 JSON.stringify({
                                     email: email,
-                                    password: password
+                                    password: password,
+                                    referralCode: referralCode
                                 })
                         }
                     );
