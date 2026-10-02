@@ -3250,24 +3250,88 @@ async function claimReward(){
                 formatBTC(newBalance);
 
             showActionNotification(
-                "claimNotification",
-                "✅ Reward claimed: "+
-                formatBTC(result.reward)+
-                " BTC",
-                "success"
-            );
+    "claimNotification",
+    "✅ Reward claimed: "+
+    formatBTC(result.reward)+
+    " BTC",
+    "success"
+);
 
-            startClaimCountdown(3600);
 
-            if(
-                typeof turnstile!=="undefined" &&
-                typeof turnstile.reset==="function"
-            ){
+/* =================================================
+   REFERRAL MILESTONE REWARD
+   ================================================= */
 
-                turnstile.reset();
+try {
+
+    const referralResponse =
+        await fetch(
+            "/api/referral/reward",
+            {
+                method: "POST",
+                cache: "no-store",
+
+                headers: {
+                    "Content-Type":
+                        "application/json",
+
+                    "Cache-Control":
+                        "no-cache"
+                }
             }
+        );
 
-            return;
+
+    const referralResult =
+        await referralResponse.json();
+
+
+    if (
+        referralResponse.ok &&
+        referralResult.success === true &&
+        Number(
+            referralResult.awardedSats
+        ) > 0
+    ) {
+
+        console.log(
+            "Referral milestone processed:",
+            referralResult.awardedSats,
+            "sats"
+        );
+    }
+
+} catch (referralError) {
+
+    /*
+     * The main claim already succeeded.
+     * Referral processing failure must NOT
+     * turn a successful claim into an error.
+     */
+
+    console.error(
+        "Referral reward processing error:",
+        referralError
+    );
+}
+
+
+/* =================================================
+   CLAIM COUNTDOWN
+   ================================================= */
+
+startClaimCountdown(3600);
+
+
+if(
+    typeof turnstile!=="undefined" &&
+    typeof turnstile.reset==="function"
+){
+
+    turnstile.reset();
+}
+
+return;
         }
 
         showActionNotification(
