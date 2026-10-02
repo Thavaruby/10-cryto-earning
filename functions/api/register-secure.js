@@ -174,6 +174,38 @@ function createDeviceToken() {
 
 
 /* =====================================================
+   REFERRAL CODE
+===================================================== */
+
+const REFERRAL_CODE_LENGTH = 10;
+
+const REFERRAL_ALPHABET =
+    "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+
+function createReferralCode() {
+
+    const randomBytes =
+        crypto.getRandomValues(
+            new Uint8Array(
+                REFERRAL_CODE_LENGTH
+            )
+        );
+
+    let code = "";
+
+    for (const byte of randomBytes) {
+
+        code +=
+            REFERRAL_ALPHABET[
+                byte % REFERRAL_ALPHABET.length
+            ];
+    }
+
+    return code;
+}
+   
+/* =====================================================
    JSON RESPONSE
 ===================================================== */
 
@@ -262,7 +294,25 @@ export async function onRequestPost(
                 data?.password || ""
             );
 
+        /* =================================================
+           REFERRAL
+        ================================================= */
 
+        const referralCode =
+            String(
+                data?.referralCode || ""
+            )
+                .trim()
+                .toUpperCase();
+
+        const validReferralCode =
+            /^[A-Z0-9]{10}$/.test(
+                referralCode
+            )
+                ? referralCode
+                : "";
+
+       
         /* =================================================
            REQUIRED FIELDS
         ================================================= */
@@ -429,7 +479,82 @@ export async function onRequestPost(
             );
         }
 
+        /* =================================================
+           REFERRAL LOOKUP
+        ================================================= */
 
+        let referrerUserId = null;
+
+        if (validReferralCode) {
+
+            const referralOwner =
+                await db
+                    .prepare(
+                        `SELECT
+                            user_id
+                         FROM referral_codes
+                         WHERE code = ?
+                         LIMIT 1`
+                    )
+                    .bind(
+                        validReferralCode
+                    )
+                    .first();
+
+            if (referralOwner) {
+
+                referrerUserId =
+                    referralOwner.user_id;
+            }
+        }
+
+
+        /* =================================================
+           NEW USER REFERRAL CODE
+        ================================================= */
+
+        let newReferralCode = "";
+
+        for (let attempt = 0; attempt < 5; attempt++) {
+
+            const candidate =
+                createReferralCode();
+
+            const existingCode =
+                await db
+                    .prepare(
+                        `SELECT
+                            user_id
+                         FROM referral_codes
+                         WHERE code = ?
+                         LIMIT 1`
+                    )
+                    .bind(
+                        candidate
+                    )
+                    .first();
+
+            if (!existingCode) {
+
+                newReferralCode =
+                    candidate;
+
+                break;
+            }
+        }
+
+        if (!newReferralCode) {
+
+            return jsonResponse(
+                {
+                    success: false,
+                    error:
+                        "Unable to create account."
+                },
+                500
+            );
+        }
+       
         /* =================================================
            PASSWORD HASH
         ================================================= */
@@ -466,7 +591,7 @@ export async function onRequestPost(
 
         try {
 
-            await db.batch([
+                        await db.batch([
 
                 db.prepare(
                     `INSERT INTO users
@@ -495,6 +620,43 @@ export async function onRequestPost(
                 ).bind(
                     deviceIdHash,
                     email
+                ),
+
+                db.prepare(
+                    `INSERT INTO referral_codes
+                    (
+                        user_id,
+                        code
+                    )
+                    SELECT
+                        id,
+                        ?
+                    FROM users
+                    WHERE email = ?`
+                ).bind(
+                    newReferralCode,
+                    email
+                ),
+
+                db.prepare(
+                    `INSERT INTO referrals
+                    (
+                        referrer_user_id,
+                        referred_user_id,
+                        referral_code
+                    )
+                    SELECT
+                        ?,
+                        id,
+                        ?
+                    FROM users
+                    WHERE email = ?
+                      AND ? IS NOT NULL`
+                ).bind(
+                    referrerUserId,
+                    validReferralCode,
+                    email,
+                    referrerUserId
                 )
 
             ]);
