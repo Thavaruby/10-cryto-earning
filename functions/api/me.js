@@ -76,13 +76,16 @@ export async function onRequestGet(context) {
             await db
                 .prepare(
                     `SELECT
-                        sessions.user_id,
-                        sessions.expires_at,
-                        users.email,
-                        users.balance
-                     FROM sessions
-                     JOIN users
-                     ON users.id = sessions.user_id
+    sessions.user_id,
+    sessions.expires_at,
+    users.email,
+    users.balance,
+    referral_codes.code AS referral_code
+FROM sessions
+JOIN users
+ON users.id = sessions.user_id
+LEFT JOIN referral_codes
+ON referral_codes.user_id = users.id
                      WHERE sessions.token_hash = ?
                      LIMIT 1`
                 )
@@ -126,10 +129,11 @@ export async function onRequestGet(context) {
         return jsonResponse({
             success: true,
             user: {
-                id: session.user_id,
-                email: session.email,
-                balance: session.balance
-            }
+    id: session.user_id,
+    email: session.email,
+    balance: session.balance,
+    referralCode: session.referral_code
+}
         });
 
     } catch (error) {
