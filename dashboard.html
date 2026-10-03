@@ -689,10 +689,10 @@ body{
     box-shadow:none;
 }
 #claimCooldown{
-    min-height:24px;
+    min-height:40px;
     margin:10px 0 18px;
     color:#60a5fa;
-    font-size:20px;
+    font-size:40px;
     font-weight:800;
     text-align:center;
 }
@@ -1551,7 +1551,7 @@ select:focus{
             alt="My Crypto Faucet">
         <h2> Dashboard </h2>
         <p>
-Claim free Bitcoin every hour and grow your BTC balance with regular hourly rewards. Check your current Bitcoin balance and keep track of your earnings from every successful claim. Withdraw your available BTC securely through FaucetPay whenever you reach the minimum withdrawal amount. Your claim and withdrawal activity can be reviewed anytime from the dashboard menu. Invite genuine users with your referral link and earn additional Bitcoin rewards automatically. Referral rewards are added directly to your BTC balance when your referred users reach the required milestones. U0se your dashboard to manage your Bitcoin earnings, referrals, withdrawals, and support requests in one place.
+Claim free Bitcoin every hour and grow your BTC balance with regular hourly rewards. Check your current Bitcoin balance and keep track of your earnings from every successful claim. Withdraw your available BTC securely through FaucetPay whenever you reach the minimum withdrawal amount. Your claim and withdrawal activity can be reviewed anytime from the dashboard menu. Invite genuine users with your referral link and earn additional Bitcoin rewards automatically. Referral rewards are added directly to your BTC balance when your referred users reach the required milestones. Use your dashboard to manage your Bitcoin earnings, referrals, withdrawals, and support requests in one place.
         </p>
     </section>
     <div id="topNotification"></div>
@@ -2614,7 +2614,7 @@ function startClaimCountdown(
         const secs=
             seconds%60;
         countdown.innerText=
-            `⏳ Next claim available in ${hours}h ${minutes}m ${secs}s`;
+            `⏳ Next claim available in ${minutes}m ${secs}s`;
         countdown.style.color=
             "#60a5fa";
         button.disabled=
@@ -2676,7 +2676,6 @@ async function loadClaimCooldown(){
             result.remainingSeconds
         );
     }catch(error){
-
         console.error(
             "Cooldown error:",
             error
@@ -3150,9 +3149,7 @@ function setMaxWithdrawal(){
 /* =========================================================
    HTML ESCAPE
 ========================================================= */
-
 function escapeHtml(value){
-
     return String(value ?? "")
         .replace(
             /&/g,
@@ -3176,44 +3173,30 @@ function escapeHtml(value){
         );
 }
 
-
 /* =========================================================
    CLAIM HISTORY
 ========================================================= */
-
 async function openClaimHistory(){
-
     closeDashboardMenu();
-
-
     const modal=
         document.getElementById(
             "historyModal"
         );
-
     const title=
         document.getElementById(
             "historyTitle"
         );
-
     const content=
         document.getElementById(
             "historyContent"
         );
-
-
     title.innerText=
         "📜 Claim History";
-
     content.innerHTML=
         "⏳ Loading...";
-
     modal.style.display=
         "block";
-
-
     try{
-
         const response=
             await fetch(
                 "/api/claims",
@@ -3221,120 +3204,81 @@ async function openClaimHistory(){
                     cache:"no-store"
                 }
             );
-
-
         const result=
             await response.json();
-
-
         if(!result.success){
-
             content.innerText=
                 "❌ "+
                 (
                     result.error ||
                     "Unable to load claim history."
                 );
-
             return;
         }
-
-
         if(
             !result.claims ||
             result.claims.length===0
         ){
-
             content.innerText=
                 "No claims yet.";
-
             return;
         }
-
-
         content.innerHTML=
             result.claims.map(
                 claim=>`
-
                     <div class="history-item">
-
                         <strong>
                             🎁 Reward Claimed
                         </strong>
-
                         <br><br>
-
                         💰 Reward:
                         ${formatBTC(
                             claim.reward
                         )} BTC
-
                         <br>
-
                         🕐 Date:
                         ${escapeHtml(
                             new Date(
                                 claim.claimed_at+"Z"
                             ).toLocaleString()
                         )}
-
                     </div>
-
                 `
             ).join("");
-
-
     }catch(error){
-
         console.error(
             "Claim history error:",
             error
         );
-
         content.innerText=
             "❌ Unable to load claim history.";
-
     }
 }
-
 
 /* =========================================================
    WITHDRAWAL HISTORY
 ========================================================= */
-
 async function openWithdrawalHistory(){
-
     closeDashboardMenu();
-
-
     const modal=
         document.getElementById(
             "historyModal"
         );
-
     const title=
         document.getElementById(
             "historyTitle"
         );
-
     const content=
         document.getElementById(
             "historyContent"
         );
-
-
     title.innerText=
         "💸 Withdrawal History";
-
     content.innerHTML=
         "⏳ Loading...";
-
     modal.style.display=
         "block";
-
-
     try{
-
         const response=
             await fetch(
                 "/api/withdrawals",
@@ -3342,95 +3286,65 @@ async function openWithdrawalHistory(){
                     cache:"no-store"
                 }
             );
-
-
         const result=
             await response.json();
-
-
         if(!result.success){
-
             content.innerText=
                 "❌ "+
                 (
                     result.error ||
                     "Unable to load withdrawal history."
                 );
-
             return;
         }
-
-
         if(
             !result.withdrawals ||
             result.withdrawals.length===0
         ){
-
             content.innerText=
                 "No withdrawal requests yet.";
-
             return;
         }
-
-
         content.innerHTML=
             result.withdrawals.map(
                 withdrawal=>{
-
                     let statusText=
                         "UNKNOWN";
-
                     let statusClass=
                         "unknown";
-
-
                     if(
                         withdrawal.status===
                         "approved"
                     ){
-
                         statusText=
                             "🟢 APPROVED";
-
                         statusClass=
                             "approved";
-
                     }else if(
                         withdrawal.status===
                         "rejected"
                     ){
-
                         statusText=
                             "🔴 REJECTED";
-
                         statusClass=
                             "rejected";
-
                     }else if(
                         withdrawal.status===
                         "pending"
                     ){
-
                         statusText=
                             "🟡 PENDING";
-
                         statusClass=
                             "pending";
-
                     }else if(
                         withdrawal.status===
                         "processing"
                     ){
-
                         statusText=
                             "🔵 PROCESSING";
-
                         statusClass=
                             "processing";
-
                     }
-
-
                     const refundText=
                         withdrawal.refund_amount
                         ? `
@@ -3441,8 +3355,6 @@ async function openWithdrawalHistory(){
                             )} BTC
                           `
                         : "";
-
-
                     const payoutText=
                         withdrawal.payout_id
                         ? `
@@ -3457,8 +3369,6 @@ async function openWithdrawalHistory(){
                             </strong>
                           `
                         : "";
-
-
                     const txidText=
                         withdrawal.txid
                         ? `
@@ -3473,34 +3383,23 @@ async function openWithdrawalHistory(){
                             </strong>
                           `
                         : "";
-
-
                     return `
-
                         <div class="history-item">
-
                             <strong>
                                 💸 Withdrawal
                             </strong>
-
                             <br><br>
-
                             💰 Amount:
                             ${formatBTC(
                                 withdrawal.amount
                             )} BTC
-
                             <br>
-
                             🏦 Wallet:
                             ${escapeHtml(
                                 withdrawal.wallet_address
                             )}
-
                             <br>
-
                             📌 Status:
-
                             <span
                                 class="withdraw-status ${escapeHtml(
                                     statusClass
@@ -3510,258 +3409,178 @@ async function openWithdrawalHistory(){
                                     statusText
                                 )}
                             </span>
-
                             ${refundText}
-
                             ${payoutText}
-
                             ${txidText}
-
                             <br>
-
                             🕐 Date:
                             ${escapeHtml(
                                 new Date(
                                     withdrawal.created_at+"Z"
                                 ).toLocaleString()
                             )}
-
                         </div>
-
                     `;
-
                 }
             ).join("");
-
-
     }catch(error){
-
         console.error(
             "Withdrawal history error:",
             error
         );
-
         content.innerText=
             "❌ Unable to load withdrawal history.";
-
     }
 }
-
 
 /* =========================================================
    CLOSE HISTORY
 ========================================================= */
-
 function closeHistory(){
-
     const modal=
         document.getElementById(
             "historyModal"
         );
-
     if(modal){
-
         modal.style.display=
             "none";
-
     }
 }
-
 
 /* =========================================================
    SUPPORT
 ========================================================= */
-
 let supportUnreadCount=0;
-
 let supportSendInProgress=false;
-
 let supportNotificationTimer=null;
-
 
 /* =========================================================
    SUPPORT BADGE
 ========================================================= */
-
 function updateSupportUnreadBadge(
     unreadCount
 ){
-
     const badge=
         document.getElementById(
             "supportUnreadBadge"
         );
-
-
     if(!badge){
         return;
     }
-
-
     const count=
         Number(
             unreadCount
         );
-
-
     if(
         !Number.isInteger(count) ||
         count<=0
     ){
-
         badge.innerText="";
-
         badge.classList.remove(
             "show"
         );
-
         return;
     }
-
-
     badge.innerText=
         count>99
             ? "99+"
             : String(count);
-
     badge.classList.add(
         "show"
     );
 }
 
-
 /* =========================================================
    SUPPORT FORM NOTIFICATION
 ========================================================= */
-
 function setSupportNotification(
     message,
     type="info"
 ){
-
     const ids=[
         "supportTopNotification",
         "supportNotification"
     ];
-
-
     ids.forEach(
         function(id){
-
             const element=
                 document.getElementById(id);
-
             if(!element){
                 return;
             }
-
-
             element.className=
                 "support-notification "+type;
-
             element.innerText=
                 message;
-
             element.style.display=
                 "block";
-
         }
     );
 }
-
 
 /* =========================================================
    CLEAR SUPPORT FORM NOTIFICATION
 ========================================================= */
-
 function clearSupportNotification(){
-
     const ids=[
         "supportTopNotification",
         "supportNotification"
     ];
-
-
     ids.forEach(
         function(id){
-
             const element=
                 document.getElementById(id);
-
             if(!element){
                 return;
             }
-
-
             element.className=
                 "support-notification";
-
             element.innerText="";
-
             element.style.display=
                 "none";
-
         }
     );
-
 }
-
 
 /* =========================================================
    CHECK ADMIN REPLY
    BADGE ONLY
 ========================================================= */
-
 async function checkSupportNotification(){
-
     try{
-
         const response=
             await fetch(
                 "/api/support",
                 {
                     method:"GET",
                     cache:"no-store",
-
                     headers:{
                         "Cache-Control":
                             "no-cache"
                     }
                 }
             );
-
-
         if(!response.ok){
             return;
         }
-
-
         const result=
             await response.json();
-
-
         if(
             !result ||
             result.success!==true
         ){
-
             return;
         }
-
-
         const unreadCount=
             Number(
                 result.unread_count || 0
             );
-
-
         supportUnreadCount=
             Number.isInteger(
                 unreadCount
             )
                 ? unreadCount
                 : 0;
-
 
         /*
          * Admin replies are shown only as
@@ -3773,37 +3592,24 @@ async function checkSupportNotification(){
         updateSupportUnreadBadge(
             supportUnreadCount
         );
-
-
     }catch(error){
-
         console.error(
             "Support notification check error:",
             error
         );
-
     }
 }
-
 
 /* =========================================================
    START SUPPORT CHECK
 ========================================================= */
-
 function startSupportNotificationCheck(){
-
     checkSupportNotification();
-
-
     if(supportNotificationTimer){
-
         clearInterval(
             supportNotificationTimer
         );
-
     }
-
-
     supportNotificationTimer=
         setInterval(
             checkSupportNotification,
@@ -3811,276 +3617,184 @@ function startSupportNotificationCheck(){
         );
 }
 
-
 /* =========================================================
    OPEN SUPPORT
 ========================================================= */
-
 function openSupport(){
-
     const modal=
         document.getElementById(
             "supportModal"
         );
-
-
     if(modal){
-
         modal.style.display=
             "block";
-
     }
 }
-
 
 /* =========================================================
    CLOSE SUPPORT
 ========================================================= */
-
 function closeSupport(){
-
     const modal=
         document.getElementById(
             "supportModal"
         );
-
-
     if(modal){
-
         modal.style.display=
             "none";
-
     }
 }
-
 
 /* =========================================================
    MARK SUPPORT TICKET READ
 ========================================================= */
-
 async function markSupportTicketAsRead(
     ticketId
 ){
-
     const id=
         Number(
             ticketId
         );
-
-
     if(
         !Number.isInteger(id) ||
         id<=0
     ){
-
         return false;
-
     }
-
-
     try{
-
         const response=
             await fetch(
                 "/api/support",
                 {
                     method:"PATCH",
-
                     headers:{
                         "Content-Type":
                             "application/json"
                     },
-
                     body:JSON.stringify({
                         ticket_id:id
                     })
                 }
             );
-
-
         if(!response.ok){
             return false;
         }
-
-
         const result=
             await response.json();
-
-
         return(
             result &&
             result.success===true
         );
-
-
     }catch(error){
-
         console.error(
             "Support read-status error:",
             error
         );
-
         return false;
-
     }
 }
-
 
 /* =========================================================
    SEND SUPPORT MESSAGE
 ========================================================= */
-
 async function sendSupportMessage(){
-
     if(supportSendInProgress){
         return;
     }
-
-
     const subject=
         document.getElementById(
             "supportSubject"
         ).value.trim();
-
-
     const message=
         document.getElementById(
             "supportMessage"
         ).value.trim();
-
-
     const sendButton=
         document.querySelector(
             ".support-send-button"
         );
-
-
     if(!subject){
-
         setSupportNotification(
             "❌ Please enter a subject.",
             "error"
         );
-
         document.getElementById(
             "supportSubject"
         ).focus();
-
         return;
     }
-
-
     if(!message){
-
         setSupportNotification(
             "❌ Please enter your message.",
             "error"
         );
-
         document.getElementById(
             "supportMessage"
         ).focus();
-
         return;
     }
-
-
     supportSendInProgress=
         true;
-
-
     if(sendButton){
-
         sendButton.disabled=
             true;
-
         sendButton.setAttribute(
             "aria-busy",
             "true"
         );
-
     }
-
-
     setSupportNotification(
         "⏳ Sending message...",
         "info"
     );
-
-
     try{
-
         const response=
             await fetch(
                 "/api/support",
                 {
-                    method:"POST",
-
+                    method:"POST"
                     headers:{
                         "Content-Type":
                             "application/json"
                     },
-
                     body:JSON.stringify({
                         subject:subject,
                         message:message
                     })
                 }
             );
-
-
         let result;
-
-
         try{
-
             result=
                 await response.json();
-
         }catch(jsonError){
-
             console.error(
                 "Invalid support response:",
                 jsonError
             );
-
             setSupportNotification(
                 "❌ Server returned an invalid response.",
                 "error"
             );
-
             return;
         }
-
-
         if(
             response.ok &&
             result.success===true
         ){
-
             setSupportNotification(
                 "✅ Your support request has been sent.",
                 "success"
             );
-
-
             document.getElementById(
                 "supportSubject"
             ).value="";
-
-
             document.getElementById(
                 "supportMessage"
             ).value="";
-
-
             await loadSupportMessages();
-
-
             return;
         }
-
-
         setSupportNotification(
             "❌ "+
             (
@@ -4091,108 +3805,71 @@ async function sendSupportMessage(){
             ),
             "error"
         );
-
-
     }catch(error){
-
         console.error(
             "Support error:",
             error
         );
-
-
         setSupportNotification(
             "❌ Connection error. Please try again.",
             "error"
         );
-
-
     }finally{
-
         supportSendInProgress=
             false;
-
-
         if(sendButton){
-
             sendButton.disabled=
                 false;
-
             sendButton.removeAttribute(
                 "aria-busy"
             );
-
         }
-
     }
 }
-
 
 /* =========================================================
    LOAD SUPPORT MESSAGES
 ========================================================= */
-
 async function loadSupportMessages(){
-
     const container=
         document.getElementById(
             "supportMessages"
         );
-
-
     if(!container){
         return;
     }
-
-
     container.innerHTML=
         "⏳ Loading support messages...";
-
-
     try{
-
         const response=
             await fetch(
                 "/api/support",
                 {
                     method:"GET",
                     cache:"no-store",
-
                     headers:{
                         "Cache-Control":
                             "no-cache"
                     }
                 }
             );
-
-
         let result;
-
-
         try{
-
             result=
                 await response.json();
-
         }catch(jsonError){
-
             console.error(
                 "Invalid support messages response:",
                 jsonError
             );
-
             container.innerHTML=
                 "❌ Server returned an invalid response.";
-
             return;
         }
-
-
         if(
             !response.ok ||
             result.success!==true
         ){
-
             container.innerHTML=
                 "❌ "+
                 (
@@ -4201,128 +3878,86 @@ async function loadSupportMessages(){
                     result.message ||
                     "Unable to load messages."
                 );
-
             return;
         }
-
-
         const unreadCount=
             Number(
                 result.unread_count || 0
             );
-
-
         updateSupportUnreadBadge(
             unreadCount
         );
-
-
         if(
             !result.tickets ||
             result.tickets.length===0
         ){
-
             container.innerHTML=
                 "<p>No support messages yet.</p>";
-
             return;
         }
-
-
         let html="";
-
-
         result.tickets.forEach(
             function(ticket){
-
                 html+=`
-
                     <div class="support-ticket-card">
-
                         <div class="support-ticket-subject">
                             ${escapeHtml(
                                 ticket.subject
                             )}
                         </div>
-
                         <div class="support-ticket-status">
                             Status:
                             ${escapeHtml(
                                 ticket.status
                             )}
                         </div>
-
                 `;
-
-
                 if(
                     ticket.messages &&
                     ticket.messages.length
                 ){
-
                     ticket.messages.forEach(
                         function(msg){
-
                             const isAdmin=
                                 msg.sender_type===
                                 "admin";
-
-
                             const sender=
                                 isAdmin
                                     ? "🛠️ Support"
                                     : "👤 You";
-
-
                             const messageClass=
                                 isAdmin
                                     ? "admin"
                                     : "user";
-
-
                             html+=`
-
                                 <div
                                     class="support-message ${messageClass}"
                                 >
-
                                     <div class="support-message-sender">
                                         ${sender}
                                     </div>
-
                                     <div class="support-message-text">
                                         ${escapeHtml(
                                             msg.message
                                         )}
                                     </div>
-
                                     <small class="support-message-date">
                                         ${escapeHtml(
                                             msg.created_at
                                         )}
                                     </small>
-
                                 </div>
-
                             `;
-
                         }
                     );
-
                 }
-
-
                 html+=`
                     </div>
                 `;
-
             }
         );
-
-
         container.innerHTML=
             html;
-
 
         /*
          * Find tickets containing unread
@@ -4330,25 +3965,17 @@ async function loadSupportMessages(){
          */
 
         const unreadTicketIds=[];
-
-
         result.tickets.forEach(
             function(ticket){
-
                 if(
                     !ticket.messages ||
                     !ticket.messages.length
                 ){
-
                     return;
-
                 }
-
-
                 const hasUnreadAdminReply=
                     ticket.messages.some(
                         function(msg){
-
                             return(
                                 msg.sender_type===
                                 "admin" &&
@@ -4356,211 +3983,137 @@ async function loadSupportMessages(){
                                     msg.is_read
                                 )===0
                             );
-
                         }
                     );
-
-
                 if(hasUnreadAdminReply){
-
                     unreadTicketIds.push(
                         Number(ticket.id)
                     );
-
                 }
-
             }
         );
-
-
         if(
             unreadTicketIds.length>0
         ){
-
             const readResults=
                 await Promise.all(
                     unreadTicketIds.map(
                         function(ticketId){
-
                             return markSupportTicketAsRead(
                                 ticketId
                             );
-
                         }
                     )
                 );
-
-
             const allMarkedRead=
                 readResults.every(
                     function(success){
-
                         return success===true;
-
                     }
                 );
-
-
             if(allMarkedRead){
-
                 supportUnreadCount=
                     0;
-
                 updateSupportUnreadBadge(
                     0
                 );
-
             }
-
         }
-
-
     }catch(error){
-
         console.error(
             "Support messages error:",
             error
         );
-
-
         container.innerHTML=
             "❌ Connection error. Please try again.";
-
     }
 }
-
 
 /* =========================================================
    CLOSE MODALS WHEN CLICKING OUTSIDE
 ========================================================= */
-
 document.addEventListener(
     "click",
     function(event){
-
         const historyModal=
             document.getElementById(
                 "historyModal"
             );
-
         const accountModal=
             document.getElementById(
                 "accountModal"
             );
-
         const supportModal=
             document.getElementById(
                 "supportModal"
             );
-
-
         if(
             historyModal &&
             event.target===historyModal
         ){
-
             closeHistory();
-
         }
-
-
         if(
             accountModal &&
             event.target===accountModal
         ){
-
             closeAccountPanel();
-
         }
-
-
         if(
             supportModal &&
             event.target===supportModal
         ){
-
             closeSupport();
-
         }
-
     }
 );
-
 
 /* =========================================================
    CRYPTO SLIDER
 ========================================================= */
-
 let currentCryptoAd=0;
-
 let cryptoAdTimer=null;
-
 const totalCryptoAds=9;
-
-
 function showCryptoAd(
     index
 ){
-
     currentCryptoAd=
         index;
-
-
     const track=
         document.getElementById(
             "cryptoAdTrack"
         );
-
-
     const dots=
         document.querySelectorAll(
             ".crypto-dot"
         );
-
-
     if(!track){
         return;
     }
-
-
     track.style.transform=
         `translateX(-${index*11.111111}%)`;
-
-
     dots.forEach(
         function(dot,i){
-
             dot.classList.toggle(
                 "active",
                 i===index
             );
-
         }
     );
 }
-
-
 function manualNextAd(){
-
     currentCryptoAd=
         (
             currentCryptoAd+
             1
         )%
         totalCryptoAds;
-
-
     showCryptoAd(
         currentCryptoAd
     );
-
-
     restartCryptoAdTimer();
 }
-
-
 function manualPrevAd(){
-
     currentCryptoAd=
         (
             currentCryptoAd-
@@ -4568,93 +4121,60 @@ function manualPrevAd(){
             totalCryptoAds
         )%
         totalCryptoAds;
-
-
     showCryptoAd(
         currentCryptoAd
     );
-
-
     restartCryptoAdTimer();
 }
-
-
 function goToCryptoAd(
     index
 ){
-
     showCryptoAd(
         index
     );
-
-
     restartCryptoAdTimer();
 }
-
-
 function restartCryptoAdTimer(){
-
     if(cryptoAdTimer){
-
         clearInterval(
             cryptoAdTimer
         );
-
     }
-
-
     cryptoAdTimer=
         setInterval(
             function(){
-
                 currentCryptoAd=
                     (
                         currentCryptoAd+
                         1
                     )%
                     totalCryptoAds;
-
-
                 showCryptoAd(
                     currentCryptoAd
                 );
-
             },
             5000
         );
 }
-
-
 restartCryptoAdTimer();
-
-
 const adSlider=
     document.getElementById(
         "cryptoAdSlider"
     );
-
-
 if(adSlider){
-
     adSlider.addEventListener(
         "touchstart",
         function(){
-
             if(cryptoAdTimer){
-
                 clearInterval(
                     cryptoAdTimer
                 );
-
             }
-
         },
         {
             passive:true
         }
     );
-
-
     adSlider.addEventListener(
         "touchend",
         function(){
