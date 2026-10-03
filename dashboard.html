@@ -61,6 +61,7 @@ body{
     z-index:10;
     padding:22px 15px 18px;
     text-align:center;
+    margin-top: 58px;
 }
 
 .brand{
@@ -115,39 +116,21 @@ body{
    DASHBOARD TOP BAR
 ========================================================= */
 
-.dashboard-topbar{
-    position:relative;
-    z-index:50;
-
-    width:min(94%,600px);
-    margin:0 auto 15px;
-
-    min-height:58px;
-    padding:9px 11px;
-
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-
-    border:1px solid rgba(255,255,255,.10);
-    border-radius:17px;
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(15,23,42,.96),
-            rgba(15,23,42,.82)
-        );
-
-    box-shadow:
-        0 14px 35px rgba(0,0,0,.28),
-        inset 0 1px 0 rgba(255,255,255,.06);
-
-    backdrop-filter:blur(15px);
-    -webkit-backdrop-filter:blur(15px);
+.dashboard-topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    width: 100%;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(7, 17, 31, 0.96);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
 }
-
 .dashboard-menu{
     position:relative;
 }
@@ -392,11 +375,9 @@ body{
 
 .dashboard-intro p{
     max-width:500px;
-
     margin:9px auto 0;
-
     color:#94a3b8;
-
+    text-align: justify;
     font-size:12px;
     line-height:1.65;
 }
@@ -2043,34 +2024,6 @@ select:focus{
 
 <body>
 
-
-<!-- =====================================================
-     BRAND HEADER
-===================================================== -->
-
-<header class="crypto-header">
-
-    <div class="brand">
-
-        <div class="logo-coin">
-            ₿
-        </div>
-
-        <div>
-            <h1>
-                My Crypto Faucet
-            </h1>
-        </div>
-
-    </div>
-
-    <p class="brand-subtitle">
-        Earn Bitcoin • Claim Hourly • Withdraw
-    </p>
-
-</header>
-
-
 <!-- =====================================================
      DASHBOARD TOP NAVIGATION
 ===================================================== -->
@@ -2177,6 +2130,31 @@ select:focus{
 
 </div>
 
+ <!-- =====================================================
+     BRAND HEADER
+===================================================== -->
+
+<header class="crypto-header">
+
+    <div class="brand">
+
+        <div class="logo-coin">
+            ₿
+        </div>
+
+        <div>
+            <h1>
+                My Crypto Faucet
+            </h1>
+        </div>
+
+    </div>
+
+    <p class="brand-subtitle">
+        Earn Bitcoin • Claim Hourly • Withdraw
+    </p>
+
+</header>  
 
 <!-- =====================================================
      MAIN DASHBOARD
