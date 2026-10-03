@@ -1391,64 +1391,52 @@ select:focus{
     .crypto-ad-text{
         margin-left:8px;
     }
-    .crypto-ad-tesupport-notification.success4px;
+    .crypto-ad-text span{
+       font-size:14px;
     }
-
     .crypto-ad-text small{
-        font-size:10px;
+        font-size:13px;
     }
-
     .crypto-symbol{
         font-size:45px;
     }
-
     .ad-arrow{
         width:28px;
         min-width:28px;
         height:40px;
     }
-
     .support-modal-overlay,
     .modal,
     .account-modal{
         padding:10px;
     }
-
     .support-modal,
     .modal-content,
     .account-modal-content{
         margin-top:3vh;
     }
 }
-
 @media(max-width:350px){
-
     .brand h1{
         font-size:19px;
     }
-
     .dashboard-user-email{
         max-width:145px;
     }
-
     .container{
         width:97%;
         padding-left:10px;
         padding-right:10px;
     }
-
     .crypto-ad-text span{
-        font-size:11px;
+        font-size:13px;
     }
 }
-
 
 /* =========================================================
    REDUCED MOTION
 ========================================================= */
-
 @media(prefers-reduced-motion:reduce){
-
     *,
     *::before,
     *::after{
@@ -1458,667 +1446,452 @@ select:focus{
         transition-duration:.01ms!important;
     }
 }
-
 </style>
 </head>
-
-
 <body>
 
 <!-- =====================================================
      DASHBOARD TOP NAVIGATION
 ===================================================== -->
-
 <div class="dashboard-topbar">
-
     <div class="dashboard-menu">
-
         <button
             type="button"
             class="menu-toggle"
             onclick="toggleDashboardMenu()"
             aria-label="Open dashboard menu"
-            aria-expanded="false"
-        >
+            aria-expanded="false">
             ☰
         </button>
-
-
         <div
             id="dashboardMenuPanel"
-            class="menu-panel"
-        >
-
+            class="menu-panel">
             <button
                 type="button"
                 class="menu-item"
-                onclick="openAccountPanel('profile')"
-            >
+                onclick="openAccountPanel('profile')">
                 👤 Profile
             </button>
-
             <button
                 type="button"
                 class="menu-item"
-                onclick="openAccountPanel('settings')"
-            >
+                onclick="openAccountPanel('settings')">
                 ⚙️ Settings
             </button>
-
             <div class="menu-divider"></div>
-
             <button
                 type="button"
                 class="menu-item"
-                onclick="scrollToDashboardSection('.withdraw-section')"
-            >
+                onclick="scrollToDashboardSection('.withdraw-section')">
                 💸 Withdrawal
             </button>
-
             <button
                 type="button"
                 class="menu-item"
-                onclick="openClaimHistory();closeDashboardMenu()"
-            >
+                onclick="openClaimHistory();closeDashboardMenu()">
                 📜 Claim History
             </button>
-
             <button
                 type="button"
                 class="menu-item"
-                onclick="openWithdrawalHistory();closeDashboardMenu()"
-            >
+                onclick="openWithdrawalHistory();closeDashboardMenu()">
                 💸 Withdrawal History
             </button>
-
             <button
                 type="button"
                 class="menu-item"
-                onclick="window.location.href='/referral.html'"
-            >
+                onclick="window.location.href='/referral.html'">
                 🎁 Referral
             </button>
-
             <div class="menu-divider"></div>
-
             <button
                 type="button"
                 class="menu-item logout"
-                onclick="closeDashboardMenu();logout()"
-            >
+                onclick="closeDashboardMenu();logout()">
                 🚪 Logout
             </button>
-
         </div>
-
     </div>
-
-
     <div class="dashboard-user">
-
         <div class="dashboard-user-icon">
-            👤
-        </div>
-
+            👤 </div>
         <span
             id="email"
-            class="dashboard-user-email"
-        >
+            class="dashboard-user-email">
             Loading...
         </span>
-
     </div>
-
 </div>
 
  <!-- =====================================================
      BRAND HEADER
 ===================================================== -->
-
 <header class="crypto-header">
-
     <div class="brand">
-
         <div class="logo-coin">
-            ₿
-        </div>
-
+            ₿ </div>
         <div>
-            <h1>
-                My Crypto Faucet
-            </h1>
+            <h1> My Crypto Faucet </h1>
         </div>
-
     </div>
-
     <p class="brand-subtitle">
         Earn Bitcoin • Claim Hourly • Withdraw
     </p>
-
 </header>  
 
 <!-- =====================================================
      MAIN DASHBOARD
 ===================================================== -->
-
 <div class="container">
-
-
     <!-- DASHBOARD INTRO -->
-
     <section class="dashboard-intro">
-
         <img
             src="assets/favico.png"
             class="dashboard-intro-icon"
-            alt="My Crypto Faucet"
-        >
-
-        <h2>
-            Dashboard
-        </h2>
-
+            alt="My Crypto Faucet">
+        <h2> Dashboard </h2>
         <p>
 Claim free Bitcoin every hour and grow your BTC balance with regular hourly rewards. Check your current Bitcoin balance and keep track of your earnings from every successful claim. Withdraw your available BTC securely through FaucetPay whenever you reach the minimum withdrawal amount. Your claim and withdrawal activity can be reviewed anytime from the dashboard menu. Invite genuine users with your referral link and earn additional Bitcoin rewards automatically. Referral rewards are added directly to your BTC balance when your referred users reach the required milestones. U0se your dashboard to manage your Bitcoin earnings, referrals, withdrawals, and support requests in one place.
         </p>
-
     </section>
-
-
     <div id="topNotification"></div>
-
 
     <!-- =================================================
          BTC BALANCE
     ================================================= -->
-
     <div class="balance-box">
-
         <div class="balance-title">
-            My BTC Balance
-        </div>
-
+            My BTC Balance </div>
         <div class="balance">
-
             <span class="btc-symbol">
-                ₿
-            </span>
-
+                ₿   </span>
             <span id="balance">
-                0.00000000
-            </span>
-
-            BTC
-
+                0.00000000  </span>
+               BTC
         </div>
-
     </div>
-
 
     <!-- =================================================
          TURNSTILE
     ================================================= -->
-
     <div
         class="cf-turnstile"
         data-sitekey="0x4AAAAAAEaIQnOPdSP3LRPa"
         data-theme="dark"
     ></div>
 
-
     <!-- =================================================
          9 CRYPTO SLIDER
     ================================================= -->
-
     <div
         class="crypto-ad-slider"
-        id="cryptoAdSlider"
-    >
-
+        id="cryptoAdSlider" >
         <button
             class="ad-arrow"
             onclick="manualPrevAd()"
-            aria-label="Previous cryptocurrency"
-        >
-            ❮
-        </button>
-
-
+            aria-label="Previous cryptocurrency">
+            ❮ </button>
         <div class="crypto-ad-window">
-
             <div
                 class="crypto-ad-track"
-                id="cryptoAdTrack"
-            >
-
+                id="cryptoAdTrack">
 
                 <!-- LTC -->
-
                 <a
                     href="https://litepick.io/?ref=francaise"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="crypto-ad-slide"
-                >
-
+                    class="crypto-ad-slide" >
                     <div class="crypto-ad ltc-ad">
-
                         <div class="crypto-coin">
-
                             <img
                                 src="/assets/crypto/litecoin.svg"
                                 alt="Litecoin logo"
                                 width="40"
-                                height="40"
-                            >
-
-                        </div>
-
+                                height="40">
+                             </div>
                         <div class="crypto-ad-text">
-
                             <strong>
                                 HOURLY FAUCET
                             </strong>
-
                             <span>
                                 Claim Free LTC
                             </span>
-
                             <small>
                                 High Commission Share • 25%
                             </small>
-
                         </div>
-
                         <div class="crypto-symbol">
                             LTC
                         </div>
-
                     </div>
-
                 </a>
 
-
                 <!-- BNB -->
-
                 <a
                     href="https://bnbpick.io/?ref=francaise"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="crypto-ad-slide"
                 >
-
                     <div class="crypto-ad bnb-ad">
-
                         <div class="crypto-coin">
-
                             <img
                                 src="/assets/crypto/binance.svg"
                                 alt="Binance logo"
                                 width="40"
                                 height="40"
                             >
-
                         </div>
-
                         <div class="crypto-ad-text">
-
                             <strong>
                                 HOURLY FAUCET
                             </strong>
-
                             <span>
                                 Claim Free BNB
                             </span>
-
                             <small>
                                 High Commission Share • 25%
                             </small>
-
                         </div>
-
                         <div class="crypto-symbol">
                             BNB
                         </div>
-
                     </div>
-
                 </a>
 
-
                 <!-- DOGE -->
-
                 <a
                     href="https://dogepick.io/?ref=francaise"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="crypto-ad-slide"
                 >
-
                     <div class="crypto-ad doge-ad">
-
                         <div class="crypto-coin">
-
                             <img
                                 src="/assets/crypto/dogecoin.svg"
                                 alt="Dogecoin logo"
                                 width="40"
                                 height="40"
                             >
-
                         </div>
-
                         <div class="crypto-ad-text">
-
                             <strong>
                                 HOURLY FAUCET
                             </strong>
-
                             <span>
                                 Claim Free DOGE
                             </span>
-
                             <small>
                                 High Commission Share • 25%
                             </small>
-
                         </div>
-
                         <div class="crypto-symbol">
                             DOGE
                         </div>
-
                     </div>
-
                 </a>
 
-
                 <!-- SUI -->
-
                 <a
                     href="https://suipick.io/?ref=francaise"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="crypto-ad-slide"
                 >
-
                     <div class="crypto-ad sui-ad">
-
                         <div class="crypto-coin">
-
                             <img
                                 src="/assets/crypto/sui.svg"
                                 alt="Sui logo"
                                 width="40"
                                 height="40"
                             >
-
                         </div>
-
                         <div class="crypto-ad-text">
-
                             <strong>
                                 HOURLY FAUCET
                             </strong>
-
                             <span>
                                 Claim Free SUI
                             </span>
-
                             <small>
                                 High Commission Share • 25%
                             </small>
-
                         </div>
-
                         <div class="crypto-symbol">
                             SUI
                         </div>
-
                     </div>
-
                 </a>
 
-
                 <!-- TRON -->
-
                 <a
                     href="https://tronpick.io/?ref=francaise"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="crypto-ad-slide"
                 >
-
                     <div class="crypto-ad tron-ad">
-
                         <div class="crypto-coin">
-
                             <img
                                 src="/assets/crypto/tron.svg"
                                 alt="Tron logo"
                                 width="35"
                                 height="35"
                             >
-
                         </div>
-
                         <div class="crypto-ad-text">
-
                             <strong>
                                 HOURLY FAUCET
                             </strong>
-
                             <span>
                                 Claim Free TRON
                             </span>
-
                             <small>
                                 High Commission Share • 25%
                             </small>
-
                         </div>
-
                         <div class="crypto-symbol">
                             TRX
                         </div>
-
                     </div>
-
                 </a>
 
-
                 <!-- TON -->
-
                 <a
                     href="https://tonpick.game/?ref=francaise"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="crypto-ad-slide"
                 >
-
                     <div class="crypto-ad ton-ad">
-
                         <div class="crypto-coin">
-
                             <img
                                 src="/assets/crypto/ton.svg"
                                 alt="Ton logo"
                                 width="40"
                                 height="40"
                             >
-
                         </div>
-
                         <div class="crypto-ad-text">
-
                             <strong>
                                 HOURLY FAUCET
                             </strong>
-
                             <span>
                                 Claim Free TON
                             </span>
-
                             <small>
                                 High Commission Share • 25%
                             </small>
-
                         </div>
-
                         <div class="crypto-symbol">
                             TON
                         </div>
-
                     </div>
-
                 </a>
 
-
                 <!-- SOL -->
-
                 <a
                     href="https://solpick.io/?ref=francaise"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="crypto-ad-slide"
                 >
-
                     <div class="crypto-ad sol-ad">
-
                         <div class="crypto-coin">
-
                             <img
                                 src="/assets/crypto/solana.svg"
                                 alt="Solana logo"
                                 width="35"
                                 height="35"
                             >
-
                         </div>
-
                         <div class="crypto-ad-text">
-
                             <strong>
                                 HOURLY FAUCET
                             </strong>
-
                             <span>
                                 Claim Free SOL
                             </span>
-
                             <small>
                                 High Commission Share • 25%
                             </small>
-
                         </div>
-
                         <div class="crypto-symbol">
                             SOL
                         </div>
-
                     </div>
-
                 </a>
 
-
                 <!-- POL -->
-
                 <a
                     href="https://polpick.io/?ref=francaise"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="crypto-ad-slide"
                 >
-
                     <div class="crypto-ad pol-ad">
-
                         <div class="crypto-coin">
-
                             <img
                                 src="/assets/crypto/polygon.svg"
                                 alt="Polygon logo"
                                 width="40"
                                 height="40"
                             >
-
                         </div>
-
                         <div class="crypto-ad-text">
-
                             <strong>
                                 HOURLY FAUCET
                             </strong>
-
                             <span>
                                 Claim Free POL
                             </span>
-
                             <small>
                                 High Commission Share • 25%
                             </small>
-
                         </div>
-
                         <div class="crypto-symbol">
                             POL
                         </div>
-
                     </div>
-
                 </a>
 
-
                 <!-- BCH -->
-
                 <a
                     href="https://bchpick.io/?ref=francaise"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="crypto-ad-slide"
                 >
-
                     <div class="crypto-ad bch-ad">
-
                         <div class="crypto-coin">
-
                             <img
                                 src="/assets/crypto/bitcoincash.svg"
                                 alt="Bitcoin Cash logo"
                                 width="40"
                                 height="40"
                             >
-
                         </div>
-
                         <div class="crypto-ad-text">
-
                             <strong>
                                 HOURLY FAUCET
                             </strong>
-
                             <span>
                                 Claim Free BCH
                             </span>
-
                             <small>
                                 High Commission Share • 25%
                             </small>
-
                         </div>
-
                         <div class="crypto-symbol">
                             BCH
                         </div>
-
                     </div>
-
                 </a>
-
             </div>
-
         </div>
-
-
         <button
             class="ad-arrow"
             onclick="manualNextAd()"
@@ -2126,122 +1899,91 @@ Claim free Bitcoin every hour and grow your BTC balance with regular hourly rewa
         >
             ❯
         </button>
-
     </div>
-
-
     <div class="crypto-ad-dots">
-
         <button
             class="crypto-dot active"
             onclick="goToCryptoAd(0)"
             aria-label="LTC"
         ></button>
-
         <button
             class="crypto-dot"
             onclick="goToCryptoAd(1)"
             aria-label="BNB"
         ></button>
-
         <button
             class="crypto-dot"
             onclick="goToCryptoAd(2)"
             aria-label="DOGE"
         ></button>
-
         <button
             class="crypto-dot"
             onclick="goToCryptoAd(3)"
             aria-label="SUI"
         ></button>
-
         <button
             class="crypto-dot"
             onclick="goToCryptoAd(4)"
             aria-label="TRON"
         ></button>
-
         <button
             class="crypto-dot"
             onclick="goToCryptoAd(5)"
             aria-label="TON"
         ></button>
-
         <button
             class="crypto-dot"
             onclick="goToCryptoAd(6)"
             aria-label="SOL"
         ></button>
-
         <button
             class="crypto-dot"
             onclick="goToCryptoAd(7)"
             aria-label="POL"
         ></button>
-
         <button
             class="crypto-dot"
             onclick="goToCryptoAd(8)"
             aria-label="BCH"
         ></button>
-
     </div>
-
 
     <!-- =================================================
          CLAIM
     ================================================= -->
-
     <button
         id="claimButton"
-        onclick="claimReward()"
-    >
+        onclick="claimReward()">
         🎁 CLAIM REWARD
     </button>
-
     <div
         id="claimNotification"
         class="action-notification"
     ></div>
-
     <div id="claimCooldown"></div>
-
 
     <!-- =================================================
          WITHDRAWAL
     ================================================= -->
-
     <div class="withdraw-section">
-
         <h3>
-
             <img
                 src="https://faucetpay.io/favicon.ico"
                 alt="FaucetPay"
                 class="faucetpay-logo"
             >
-
             FaucetPay
-
         </h3>
-
-
         <div class="amount-row">
-
             <label
                 class="amount-label"
                 for="withdrawAmount"
             >
-
                 Amount BTC
-
                 <small>
                     (Min: 0.00000010 BTC)
                 </small>
-
             </label>
-
             <button
                 type="button"
                 class="max-button"
@@ -2249,10 +1991,7 @@ Claim free Bitcoin every hour and grow your BTC balance with regular hourly rewa
             >
                 MAX
             </button>
-
         </div>
-
-
         <input
             type="number"
             id="withdrawAmount"
@@ -2261,21 +2000,13 @@ Claim free Bitcoin every hour and grow your BTC balance with regular hourly rewa
             min="0.0000001"
             inputmode="decimal"
         >
-
         <div style="height:12px"></div>
-
-
         <select id="withdrawCurrency">
-
             <option value="BTC">
                 Enter BTC
             </option>
-
         </select>
-
         <div style="height:12px"></div>
-
-
         <input
             type="text"
             id="walletAddress"
@@ -2283,148 +2014,104 @@ Claim free Bitcoin every hour and grow your BTC balance with regular hourly rewa
             autocomplete="off"
             spellcheck="false"
         >
-
         <div style="height:12px"></div>
-
-
         <button
             id="withdrawButton"
             onclick="submitWithdrawal()"
         >
             💸 REQUEST WITHDRAWAL
         </button>
-
-
         <div class="faucetpay-register">
-
             Don't have a FaucetPay account?
-
             <a
                 href="https://faucetpay.io/r/6367403"
                 target="_blank"
                 rel="noopener noreferrer"
             >
                 <h4>
-
                     <img
                         src="https://faucetpay.io/favicon.ico"
                         alt="FaucetPay"
                         height="15"
                         width="15"
                     >
-
                     Create FaucetPay Account
-
                 </h4>
             </a>
-
         </div>
-
-
         <div
             id="withdrawNotification"
             class="action-notification"
         ></div>
-
     </div>
-
 
     <!-- =================================================
          CONTACT & SUPPORT
     ================================================= -->
-
     <div class="support-section">
-
-        <h3>
-            📩 Contact & Support
-        </h3>
-
+        <h3> 📩 Contact & Support </h3>
         <p class="support-subtitle">
             Need help with your account, claim or withdrawal?
             Contact our support team.
         </p>
-
-
         <button
             type="button"
             class="support-button"
             onclick="openSupport()"
         >
-
             💬 CONTACT SUPPORT
-
             <span
                 id="supportUnreadBadge"
                 class="support-unread-badge"
                 aria-label="Unread support replies"
             ></span>
-
         </button>
-
 
         <!--
             This notification is used only for
             send-message feedback.
             Admin reply notification is badge-only.
         -->
-
         <div
             id="supportTopNotification"
             class="support-notification"
             aria-live="polite"
         ></div>
-
     </div>
-
 </div>
-
 
 <!-- =====================================================
      FOOTER
 ===================================================== -->
-
 <footer class="dashboard-footer">
-
     <div class="footer-links">
-
         <a href="/">
             Home
         </a>
-
         <a href="/how-it-works.html">
             How It Works
         </a>
-
         <a href="/faq.html">
             FAQ
         </a>
-
         <a href="/terms.html">
             Terms
         </a>
-
         <a href="/privacy.html">
             Privacy
         </a>
-
     </div>
-
     © 2026 My Crypto Faucet. All rights reserved.
-
 </footer>
-
 
 <!-- =====================================================
      HISTORY MODAL
 ===================================================== -->
-
 <div
     id="historyModal"
     class="modal"
 >
-
     <div class="modal-content">
-
         <button
             class="closeButton"
             onclick="closeHistory()"
@@ -2432,24 +2119,18 @@ Claim free Bitcoin every hour and grow your BTC balance with regular hourly rewa
         >
             ✕
         </button>
-
         <h3 id="historyTitle">
             History
         </h3>
-
         <div id="historyContent">
             Loading...
         </div>
-
     </div>
-
 </div>
-
 
 <!-- =====================================================
      SUPPORT MODAL
 ===================================================== -->
-
 <div
     id="supportModal"
     class="support-modal-overlay"
@@ -2457,9 +2138,7 @@ Claim free Bitcoin every hour and grow your BTC balance with regular hourly rewa
     aria-modal="true"
     aria-labelledby="supportModalTitle"
 >
-
     <div class="support-modal">
-
         <button
             type="button"
             class="support-close"
@@ -2468,39 +2147,26 @@ Claim free Bitcoin every hour and grow your BTC balance with regular hourly rewa
         >
             ×
         </button>
-
-
         <div class="support-modal-header">
-
             <div class="support-icon">
                 💬
             </div>
-
             <div>
-
                 <h2 id="supportModalTitle">
                     Contact Support
                 </h2>
-
                 <p>
                     Need help with your account, claim or withdrawal?
                 </p>
-
             </div>
-
         </div>
-
-
         <div class="support-divider"></div>
-
-
         <label
             class="support-label"
             for="supportSubject"
         >
             Subject
         </label>
-
         <input
             type="text"
             id="supportSubject"
@@ -2508,30 +2174,23 @@ Claim free Bitcoin every hour and grow your BTC balance with regular hourly rewa
             maxlength="100"
             placeholder="Enter your subject"
         >
-
-
         <label
             class="support-label"
             for="supportMessage"
         >
             Message
         </label>
-
         <textarea
             id="supportMessage"
             class="support-textarea"
             maxlength="3000"
             placeholder="Describe your problem..."
         ></textarea>
-
-
         <div
             id="supportNotification"
             class="support-notification"
             aria-live="polite"
         ></div>
-
-
         <button
             type="button"
             class="support-send-button"
@@ -2539,8 +2198,6 @@ Claim free Bitcoin every hour and grow your BTC balance with regular hourly rewa
         >
             📩 SEND MESSAGE
         </button>
-
-
         <button
             type="button"
             class="support-messages-button"
@@ -2548,29 +2205,21 @@ Claim free Bitcoin every hour and grow your BTC balance with regular hourly rewa
         >
             📬 MY SUPPORT MESSAGES
         </button>
-
-
         <div
             id="supportMessages"
             class="support-messages-container"
         ></div>
-
     </div>
-
 </div>
-
 
 <!-- =====================================================
      PROFILE / SETTINGS MODAL
 ===================================================== -->
-
 <div
     id="accountModal"
     class="account-modal"
 >
-
     <div class="account-modal-content">
-
         <button
             type="button"
             class="account-close"
@@ -2579,156 +2228,118 @@ Claim free Bitcoin every hour and grow your BTC balance with regular hourly rewa
         >
             ✕
         </button>
-
         <h3
             id="accountModalTitle"
             class="account-title"
         >
             Account
         </h3>
-
         <div id="accountModalContent"></div>
-
     </div>
-
 </div>
-
 
 <script>
 
 /* =========================================================
    GLOBAL USER DATA
 ========================================================= */
-
 let currentUserEmail="";
 let currentUserBalance=0;
 let currentReferralCode="";
 
-
 /* =========================================================
    FORMAT BTC
 ========================================================= */
-
 function formatBTC(value){
-
     const number=Number(value);
-
     if(!Number.isFinite(number)){
         return "0.00000000";
     }
-
     return number.toFixed(8);
 }
-
 
 /* =========================================================
    TOP NOTIFICATION
 ========================================================= */
-
 function showNotification(
     message,
     type="info"
 ){
-
     const notification=
         document.getElementById(
             "topNotification"
         );
-
     if(!notification){
         return;
     }
-
     notification.className=
         "notification-"+type;
-
     notification.innerText=
         message;
-
     notification.style.display=
         "block";
 }
 
-
 /* =========================================================
    ACTION NOTIFICATION
 ========================================================= */
-
 function showActionNotification(
     id,
     message,
     type="info"
 ){
-
     const notification=
         document.getElementById(id);
-
     if(!notification){
         console.error(
             "Notification element not found:",
             id
         );
-
         return;
     }
-
     notification.className=
         "action-notification "+type;
-
     notification.innerText=
         message;
-
     notification.style.display=
         "block";
 }
 
-
 /* =========================================================
    DASHBOARD MENU
 ========================================================= */
-
 function toggleDashboardMenu(){
-
     const panel=
         document.getElementById(
             "dashboardMenuPanel"
         );
-
     const button=
         document.querySelector(
             ".menu-toggle"
         );
-
     if(!panel || !button){
         return;
     }
-
     const isOpen=
         panel.classList.toggle("show");
-
     button.setAttribute(
         "aria-expanded",
         String(isOpen)
     );
 }
 
-
 function closeDashboardMenu(){
-
     const panel=
         document.getElementById(
             "dashboardMenuPanel"
         );
-
     const button=
         document.querySelector(
             ".menu-toggle"
         );
-
     if(panel){
         panel.classList.remove("show");
     }
-
     if(button){
         button.setAttribute(
             "aria-expanded",
@@ -2737,88 +2348,64 @@ function closeDashboardMenu(){
     }
 }
 
-
 document.addEventListener(
     "click",
     function(event){
-
         const menu=
             document.querySelector(
                 ".dashboard-menu"
             );
-
         if(
             menu &&
             !menu.contains(event.target)
         ){
-
             closeDashboardMenu();
-
         }
-
     }
 );
-
 
 /* =========================================================
    DASHBOARD SECTION SCROLL
 ========================================================= */
-
 function scrollToDashboardSection(
     selector
 ){
-
     closeDashboardMenu();
-
     const element=
         document.querySelector(selector);
-
     if(element){
-
         element.scrollIntoView({
             behavior:"smooth",
             block:"start"
         });
-
     }
 }
-
 
 /* =========================================================
    PROFILE / SETTINGS PANEL
 ========================================================= */
-
 function openAccountPanel(
     type
 ){
-
     closeDashboardMenu();
-
     const modal=
         document.getElementById(
             "accountModal"
         );
-
     const title=
         document.getElementById(
             "accountModalTitle"
         );
-
     const content=
         document.getElementById(
             "accountModalContent"
         );
-
     if(!modal || !title || !content){
         return;
     }
-
-
     if(type==="profile"){
-
         title.innerText=
             "👤 Profile";
-
         const referralLink=
             currentReferralCode
                 ? window.location.origin+
@@ -2827,156 +2414,103 @@ function openAccountPanel(
                       currentReferralCode
                   )
                 : "Not available";
-
         content.innerHTML=`
-
             <div class="account-card">
-
                 <div class="account-card-label">
                     Email
                 </div>
-
                 <div class="account-card-value">
                     ${escapeHtml(
                         currentUserEmail
                     )}
                 </div>
-
             </div>
-
-
             <div class="account-card">
-
                 <div class="account-card-label">
                     BTC Balance
                 </div>
-
                 <div class="account-card-value">
                     ₿ ${formatBTC(
                         currentUserBalance
                     )} BTC
                 </div>
-
             </div>
-
-
             <div class="account-card">
-
                 <div class="account-card-label">
                     Referral Code
                 </div>
-
                 <div class="account-card-value">
                     ${escapeHtml(
                         currentReferralCode ||
                         "Not available"
                     )}
                 </div>
-
             </div>
-
-
             <div class="account-card">
-
                 <div class="account-card-label">
                     Referral Link
                 </div>
-
                 <div class="account-card-value">
                     ${escapeHtml(
                         referralLink
                     )}
                 </div>
-
             </div>
-
         `;
-
     }else{
-
         title.innerText=
             "⚙️ Settings";
-
         content.innerHTML=`
-
             <div class="account-card">
-
                 <div class="account-card-label">
                     Theme
                 </div>
-
                 <div class="account-card-value">
                     Dark
                 </div>
-
             </div>
-
-
             <div class="account-card">
-
                 <div class="account-card-label">
                     Reward Currency
                 </div>
-
                 <div class="account-card-value">
                     Bitcoin (BTC)
                 </div>
-
             </div>
-
-
             <div class="account-card">
-
                 <div class="account-card-label">
                     Support Notifications
                 </div>
-
                 <div class="account-card-value">
                     Unread reply badge
                 </div>
-
             </div>
-
-
             <p class="account-info">
                 Your account and security controls are
                 protected by the website authentication system.
             </p>
-
         `;
-
     }
-
-
     modal.style.display=
         "block";
 }
 
-
 function closeAccountPanel(){
-
     const modal=
         document.getElementById(
             "accountModal"
         );
-
     if(modal){
-
         modal.style.display=
             "none";
-
     }
 }
-
 
 /* =========================================================
    LOAD USER
 ========================================================= */
-
 async function loadUser(){
-
     try{
-
         const response=
             await fetch(
                 "/api/me",
@@ -2985,169 +2519,109 @@ async function loadUser(){
                     cache:"no-store"
                 }
             );
-
-
         const result=
             await response.json();
-
-
         if(!result.success){
-
             window.location.href=
                 "/login.html";
-
             return;
         }
-
-
         currentUserEmail=
             result.user.email || "";
-
         currentUserBalance=
             Number(
                 result.user.balance || 0
             );
-
         currentReferralCode=
             result.user.referralCode || "";
-
-
         const emailElement=
             document.getElementById(
                 "email"
             );
-
         const balanceElement=
             document.getElementById(
                 "balance"
             );
-
-
         if(emailElement){
-
             emailElement.innerText=
                 currentUserEmail;
-
         }
-
-
         if(balanceElement){
-
             balanceElement.innerText=
                 formatBTC(
                     currentUserBalance
                 );
-
         }
-
-
     }catch(error){
-
         console.error(
             "Load user error:",
             error
         );
-
         showNotification(
             "❌ Unable to load account.",
             "error"
         );
-
     }
 }
-
 
 /* =========================================================
    CLAIM COOLDOWN
 ========================================================= */
-
 let cooldownTimer=null;
-
-
 function startClaimCountdown(
     seconds
 ){
-
     const countdown=
         document.getElementById(
             "claimCooldown"
         );
-
     const button=
         document.getElementById(
             "claimButton"
         );
-
-
     if(!countdown || !button){
         return;
     }
-
-
     if(cooldownTimer){
-
         clearInterval(
             cooldownTimer
         );
-
     }
 
-
     function updateCountdown(){
-
         if(seconds<=0){
-
             clearInterval(
                 cooldownTimer
             );
-
             countdown.innerText=
                 "✅ You can claim now!";
-
             countdown.style.color=
                 "#16a34a";
-
             claimInProgress=
                 false;
-
             button.disabled=
                 false;
-
             return;
         }
-
-
         const hours=
             Math.floor(
                 seconds/3600
             );
-
         const minutes=
             Math.floor(
                 (seconds%3600)/60
             );
-
         const secs=
             seconds%60;
-
-
         countdown.innerText=
             `⏳ Next claim available in ${hours}h ${minutes}m ${secs}s`;
-
         countdown.style.color=
             "#60a5fa";
-
         button.disabled=
             true;
-
         seconds--;
-
     }
-
-
     updateCountdown();
-
-
     cooldownTimer=
         setInterval(
             updateCountdown,
@@ -3155,15 +2629,11 @@ function startClaimCountdown(
         );
 }
 
-
 /* =========================================================
    LOAD CLAIM COOLDOWN
 ========================================================= */
-
 async function loadClaimCooldown(){
-
     try{
-
         const response=
             await fetch(
                 "/api/claim-status",
@@ -3176,80 +2646,53 @@ async function loadClaimCooldown(){
                     }
                 }
             );
-
-
         const result=
             await response.json();
-
-
         if(!result.success){
             return;
         }
-
-
         if(result.canClaim){
-
             const button=
                 document.getElementById(
                     "claimButton"
                 );
-
             const countdown=
                 document.getElementById(
                     "claimCooldown"
                 );
-
-
             if(button){
                 button.disabled=
                     false;
             }
-
-
             if(countdown){
-
                 countdown.innerText=
                     "✅ You can claim now!";
-
                 countdown.style.color=
                     "#16a34a";
-
             }
-
             return;
         }
-
-
         startClaimCountdown(
             result.remainingSeconds
         );
-
-
     }catch(error){
 
         console.error(
             "Cooldown error:",
             error
         );
-
     }
 }
-
 
 /* =========================================================
    LOGOUT
 ========================================================= */
-
 async function logout(){
-
     showNotification(
         "⏳ Logging out...",
         "info"
     );
-
-
     try{
-
         const response=
             await fetch(
                 "/api/logout",
@@ -3257,19 +2700,12 @@ async function logout(){
                     method:"POST"
                 }
             );
-
-
         const result=
             await response.json();
-
-
         if(result.success){
-
             window.location.href=
                 "/login.html";
-
         }else{
-
             showNotification(
                 "❌ "+
                 (
@@ -3278,218 +2714,148 @@ async function logout(){
                 ),
                 "error"
             );
-
         }
-
-
     }catch(error){
-
         showNotification(
             "❌ Logout failed. Please try again.",
             "error"
         );
-
     }
 }
-
 
 /* =========================================================
    CLAIM
 ========================================================= */
-
 let claimInProgress=false;
-
-
 async function claimReward(){
-
     const button=
         document.getElementById(
             "claimButton"
         );
-
     const balanceElement=
         document.getElementById(
             "balance"
         );
-
-
     if(
         !button ||
         !balanceElement
     ){
-
         return;
-
     }
-
-
     if(
         button.disabled ||
         claimInProgress
     ){
-
         return;
-
     }
-
-
     claimInProgress=
         true;
-
     button.disabled=
         true;
-
-
     showActionNotification(
         "claimNotification",
         "⏳ Claiming reward...",
         "info"
     );
-
-
     try{
-
         if(
             typeof turnstile==="undefined" ||
             typeof turnstile.getResponse!=="function"
         ){
-
             showActionNotification(
                 "claimNotification",
                 "❌ CAPTCHA is not ready. Please try again.",
                 "error"
             );
-
             claimInProgress=
                 false;
-
             button.disabled=
                 false;
-
             return;
         }
-
-
         const turnstileToken=
             turnstile.getResponse();
-
-
         if(!turnstileToken){
-
             showActionNotification(
                 "claimNotification",
                 "❌ Please complete CAPTCHA verification.",
                 "error"
             );
-
             claimInProgress=
                 false;
-
             button.disabled=
                 false;
-
             return;
         }
-
-
         const response=
             await fetch(
                 "/api/claim",
                 {
                     method:"POST",
                     cache:"no-store",
-
                     headers:{
                         "Content-Type":
                             "application/json",
-
                         "Cache-Control":
                             "no-cache"
                     },
-
                     body:JSON.stringify({
                         turnstileToken:
                             turnstileToken
                     })
                 }
             );
-
-
         let result;
-
-
         try{
-
             result=
                 await response.json();
-
         }catch(jsonError){
-
             console.error(
                 "Invalid claim response:",
                 jsonError
             );
-
             showActionNotification(
                 "claimNotification",
                 "❌ Server returned an invalid response.",
                 "error"
             );
-
             claimInProgress=
                 false;
-
             button.disabled=
                 false;
-
             return;
         }
-
-
         if(
             response.ok &&
             result.success===true
         ){
-
             const newBalance=
                 Number(
                     result.balance
                 );
-
-
             if(
                 !Number.isFinite(
                     newBalance
                 ) ||
                 newBalance<0
             ){
-
                 showActionNotification(
                     "claimNotification",
                     "❌ Claim completed, but the updated balance could not be loaded.",
                     "error"
                 );
-
                 claimInProgress=
                     false;
-
                 button.disabled=
                     false;
-
                 return;
             }
-
-
             currentUserBalance=
                 newBalance;
-
-
             balanceElement.textContent=
                 formatBTC(
                     newBalance
                 );
-
-
             showActionNotification(
                 "claimNotification",
                 "✅ Reward claimed: "+
@@ -3500,7 +2866,6 @@ async function claimReward(){
                 "success"
             );
 
-
             /*
              * Referral milestone reward.
              * Failure here never changes a successful claim
@@ -3508,7 +2873,6 @@ async function claimReward(){
              */
 
             try{
-
                 const referralResponse=
                     await fetch(
                         "/api/referral/reward",
@@ -3517,12 +2881,8 @@ async function claimReward(){
                             cache:"no-store"
                         }
                     );
-
-
                 const referralResult=
                     await referralResponse.json();
-
-
                 if(
                     referralResult &&
                     referralResult.success===true &&
@@ -3530,44 +2890,29 @@ async function claimReward(){
                         referralResult.awardedSats || 0
                     )>0
                 ){
-
                     console.log(
                         "Referral reward awarded:",
                         referralResult.awardedSats,
                         "sats"
                     );
-
                 }
-
             }catch(referralError){
-
                 console.error(
                     "Referral reward processing error:",
                     referralError
                 );
-
             }
-
-
             startClaimCountdown(
                 3600
             );
-
-
             if(
                 typeof turnstile!=="undefined" &&
                 typeof turnstile.reset==="function"
             ){
-
                 turnstile.reset();
-
             }
-
-
             return;
         }
-
-
         showActionNotification(
             "claimNotification",
             "❌ "+
@@ -3577,250 +2922,165 @@ async function claimReward(){
             ),
             "error"
         );
-
-
         if(response.status===429){
-
             const errorMessage=
                 String(
                     result.error || ""
                 );
-
-
             const match=
                 errorMessage.match(
                     /(\d+)h\s+(\d+)m\s+(\d+)s/
                 );
-
-
             if(match){
-
                 const hours=
                     Number(match[1]);
-
                 const minutes=
                     Number(match[2]);
-
                 const seconds=
                     Number(match[3]);
-
-
                 startClaimCountdown(
                     hours*3600+
                     minutes*60+
                     seconds
                 );
-
             }else{
-
                 claimInProgress=
                     false;
-
                 button.disabled=
                     false;
-
             }
-
         }else{
-
             claimInProgress=
                 false;
-
             button.disabled=
                 false;
-
         }
-
-
         if(
             typeof turnstile!=="undefined" &&
             typeof turnstile.reset==="function"
         ){
-
             turnstile.reset();
-
         }
-
-
     }catch(error){
-
         console.error(
             "Claim error:",
             error
         );
-
-
         showActionNotification(
             "claimNotification",
             "❌ Connection error. Please try again.",
             "error"
         );
-
-
         if(
             typeof turnstile!=="undefined" &&
             typeof turnstile.reset==="function"
         ){
-
             turnstile.reset();
-
         }
-
-
         claimInProgress=
             false;
-
         button.disabled=
             false;
-
     }
 }
-
 
 /* =========================================================
    WITHDRAWAL
 ========================================================= */
-
 async function submitWithdrawal(){
-
     const amount=
         Number(
             document.getElementById(
                 "withdrawAmount"
             ).value
         );
-
-
     const walletAddress=
         document.getElementById(
             "walletAddress"
         ).value.trim();
-
-
     const button=
         document.getElementById(
             "withdrawButton"
         );
-
-
     if(
         !Number.isFinite(amount) ||
         amount<=0
     ){
-
         showActionNotification(
             "withdrawNotification",
             "❌ Enter a valid BTC amount.",
             "error"
         );
-
         return;
     }
-
-
     if(amount<0.0000001){
-
         showActionNotification(
             "withdrawNotification",
             "❌ Minimum withdrawal is 0.00000010 BTC.",
             "error"
         );
-
         return;
     }
-
-
     if(!walletAddress){
-
         showActionNotification(
             "withdrawNotification",
             "❌ Enter your Bitcoin wallet address.",
             "error"
         );
-
         return;
     }
-
-
     button.disabled=
         true;
-
-
     showActionNotification(
         "withdrawNotification",
         "⏳ Submitting withdrawal request...",
         "info"
     );
-
-
     try{
-
         const response=
             await fetch(
                 "/api/withdraw",
                 {
                     method:"POST",
-
                     headers:{
                         "Content-Type":
                             "application/json"
                     },
-
                     body:JSON.stringify({
-
                         amount:
                             amount,
-
                         currency:
                             "BTC",
-
                         walletAddress:
                             walletAddress
-
                     })
                 }
             );
-
-
         const result=
             await response.json();
-
-
         if(result.success){
-
             currentUserBalance=
                 Number(
                     result.balance
                 );
-
-
             document.getElementById(
                 "balance"
             ).innerText=
                 formatBTC(
                     result.balance
                 );
-
-
             showActionNotification(
                 "withdrawNotification",
                 "✅ Withdrawal request submitted. Status: PENDING",
                 "success"
             );
-
-
             document.getElementById(
                 "withdrawAmount"
             ).value="";
-
-
             document.getElementById(
                 "walletAddress"
             ).value="";
-
-
         }else{
-
             showActionNotification(
                 "withdrawNotification",
                 "❌ "+
@@ -3832,85 +3092,60 @@ async function submitWithdrawal(){
                 ),
                 "error"
             );
-
         }
-
-
     }catch(error){
-
         console.error(
             "Withdrawal error:",
             error
         );
-
-
         showActionNotification(
             "withdrawNotification",
             "❌ Connection error.",
             "error"
         );
-
-
     }finally{
-
         button.disabled=
             false;
-
     }
 }
-
 
 /* =========================================================
    MAX WITHDRAWAL
 ========================================================= */
-
 function setMaxWithdrawal(){
-
     const balanceElement=
         document.getElementById(
             "balance"
         );
-
     const amountInput=
         document.getElementById(
             "withdrawAmount"
         );
-
-
     const balance=
         Number(
             balanceElement.innerText
         );
-
-
     if(
         !Number.isFinite(balance) ||
         balance<=0
     ){
-
         showActionNotification(
             "withdrawNotification",
             "❌ No BTC balance available.",
             "error"
         );
-
         return;
     }
-
-
     amountInput.value=
         formatBTC(
             balance
         );
-
-
     showActionNotification(
         "withdrawNotification",
         "💰 Maximum BTC balance selected.",
         "info"
     );
 }
-
 
 /* =========================================================
    HTML ESCAPE
