@@ -301,8 +301,8 @@ body{
     margin:9px auto 0;
     color:#94a3b8;
     text-align: justify;
-    font-size:14px;
-    line-height:1.70;
+    font-size:15px;
+    line-height:1.6;
 }
 
 /* =========================================================
@@ -689,11 +689,11 @@ body{
     box-shadow:none;
 }
 #claimCooldown{
-    min-height:24px;
+    min-height:40px;
     margin:10px 0 18px;
     color:#60a5fa;
-    font-size:20px;
-    font-weight:800;
+    font-size:40px;
+    font-weight:1000;
     text-align:center;
 }
 
@@ -1960,6 +1960,7 @@ Claim free Bitcoin every hour and grow your BTC balance with regular hourly rewa
         id="claimNotification"
         class="action-notification"
     ></div>
+   <div> Next Claim Available In:</div>
     <div id="claimCooldown"></div>
 
     <!-- =================================================
@@ -2614,7 +2615,7 @@ function startClaimCountdown(
         const secs=
             seconds%60;
         countdown.innerText=
-            `⏳ Next claim available in ${hours}h ${minutes}m ${secs}s`;
+            `⏳ ${hours}H ${minutes}M ${secs}S`;
         countdown.style.color=
             "#60a5fa";
         button.disabled=
