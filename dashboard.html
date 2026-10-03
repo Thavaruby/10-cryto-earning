@@ -1960,7 +1960,7 @@ Claim free Bitcoin every hour and grow your BTC balance with regular hourly rewa
         id="claimNotification"
         class="action-notification"
     ></div>
-   <div> Next Claim Available In:</div>
+   <div class="faucetpay-register"> Next Claim Available In:</div>
     <div id="claimCooldown"></div>
 
     <!-- =================================================
@@ -2615,7 +2615,7 @@ function startClaimCountdown(
         const secs=
             seconds%60;
         countdown.innerText=
-            `⏳ ${hours}H ${minutes}M ${secs}S`;
+            `⏳ ${minutes}m ${secs}s`;
         countdown.style.color=
             "#60a5fa";
         button.disabled=
