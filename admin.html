@@ -802,6 +802,297 @@ td small {
     background: #9f7618;
 }
 
+/* =====================================================
+   STATISTICS DETAILS MODAL
+===================================================== */
+
+.stats-details-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    padding: 18px;
+
+    background: rgba(0, 0, 0, 0.72);
+}
+
+.stats-details-modal.active {
+    display: flex;
+}
+
+.stats-details-box {
+    width: min(1100px, 100%);
+    max-height: 90vh;
+
+    display: flex;
+    flex-direction: column;
+
+    background: #0e1b2c;
+    border: 1px solid #1c3047;
+    border-radius: 10px;
+
+    overflow: hidden;
+}
+
+.stats-details-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 14px 16px;
+
+    background: #0c1727;
+    border-bottom: 1px solid #1c3047;
+}
+
+.stats-details-header h2 {
+    margin: 0;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    color: #f5c84c;
+}
+
+.stats-details-count {
+    margin-top: 3px;
+
+    font-size: 13px;
+    color: #9eafc3;
+}
+
+.stats-details-close {
+    width: 34px;
+    height: 34px;
+
+    border: 1px solid #263b53;
+    border-radius: 7px;
+
+    background: #101f31;
+    color: #c9d5e3;
+
+    font-size: 22px;
+    line-height: 1;
+
+    cursor: pointer;
+}
+
+.stats-details-close:hover {
+    border-color: #f5c84c;
+    color: #f5c84c;
+}
+
+.stats-details-toolbar {
+    display: flex;
+    gap: 8px;
+
+    padding: 12px 16px;
+
+    border-bottom: 1px solid #1c3047;
+}
+
+.stats-details-toolbar input {
+    flex: 1;
+
+    min-width: 0;
+
+    padding: 9px 11px;
+
+    border: 1px solid #263b53;
+    border-radius: 6px;
+
+    background: #091523;
+    color: #e8eef5;
+
+    outline: none;
+}
+
+.stats-details-toolbar input:focus {
+    border-color: #b88a20;
+}
+
+.stats-details-refresh {
+    padding: 9px 12px;
+
+    border: 1px solid #263b53;
+    border-radius: 6px;
+
+    background: #101f31;
+    color: #d9e2ec;
+
+    cursor: pointer;
+}
+
+.stats-details-refresh:hover {
+    border-color: #f5c84c;
+    color: #f5c84c;
+}
+
+.stats-details-status-filters {
+    display: flex;
+    gap: 6px;
+
+    padding: 10px 16px;
+
+    overflow-x: auto;
+
+    border-bottom: 1px solid #1c3047;
+}
+
+.stats-details-status-filters button {
+    flex: 0 0 auto;
+
+    padding: 6px 10px;
+
+    border: 1px solid #263b53;
+    border-radius: 6px;
+
+    background: #101f31;
+    color: #aebed0;
+
+    font-size: 12px;
+
+    cursor: pointer;
+}
+
+.stats-details-status-filters button.active {
+    border-color: #f5c84c;
+    color: #f5c84c;
+}
+
+.stats-details-message {
+    min-height: 0;
+
+    padding: 0 16px;
+
+    color: #9eafc3;
+    font-size: 13px;
+}
+
+.stats-details-table-wrap {
+    flex: 1;
+
+    overflow: auto;
+
+    min-height: 180px;
+}
+
+.stats-details-table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    white-space: nowrap;
+}
+
+.stats-details-table th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+
+    padding: 9px 11px;
+
+    background: #0b1727;
+    border-bottom: 1px solid #263b53;
+
+    color: #9eafc3;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    text-align: left;
+}
+
+.stats-details-table td {
+    padding: 9px 11px;
+
+    border-bottom: 1px solid #172a40;
+
+    color: #d9e2ec;
+
+    font-size: 13px;
+}
+
+.stats-details-table tr:hover td {
+    background: #101f31;
+}
+
+.stats-details-empty {
+    padding: 30px !important;
+
+    text-align: center !important;
+
+    color: #7f91a6 !important;
+}
+
+.stats-details-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+
+    padding: 12px 16px;
+
+    background: #0c1727;
+    border-top: 1px solid #1c3047;
+}
+
+.stats-details-pagination button {
+    padding: 7px 11px;
+
+    border: 1px solid #263b53;
+    border-radius: 6px;
+
+    background: #101f31;
+    color: #c9d5e3;
+
+    cursor: pointer;
+}
+
+.stats-details-pagination button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.stats-details-pagination span {
+    min-width: 70px;
+
+    text-align: center;
+
+    color: #aebed0;
+    font-size: 13px;
+}
+
+@media (max-width: 600px) {
+
+    .stats-details-modal {
+        padding: 8px;
+    }
+
+    .stats-details-box {
+        max-height: 94vh;
+    }
+
+    .stats-details-toolbar {
+        padding: 10px;
+    }
+
+    .stats-details-table th,
+    .stats-details-table td {
+        padding: 8px;
+        font-size: 12px;
+    }
+
+    .stats-details-pagination {
+        padding: 10px;
+    }
+
+}
+     
 /* =========================================================
    FOOTER
 ========================================================= */
@@ -1492,6 +1783,162 @@ My Crypto Faucet · Secure Administration Panel
         </div>
     </div>
 </div> 
+
+    <!-- =====================================================
+     ADMIN STATISTICS DETAILS MODAL
+===================================================== -->
+
+<div
+    id="statsDetailsModal"
+    class="stats-details-modal"
+    aria-hidden="true"
+>
+
+    <div class="stats-details-box">
+
+        <div class="stats-details-header">
+
+            <div>
+                <h2 id="statsDetailsTitle">
+                    Details
+                </h2>
+
+                <div
+                    id="statsDetailsCount"
+                    class="stats-details-count"
+                >
+                    0 records
+                </div>
+            </div>
+
+            <button
+                type="button"
+                class="stats-details-close"
+                onclick="closeStatsDetails()"
+                aria-label="Close"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="stats-details-toolbar">
+
+            <input
+                type="search"
+                id="statsDetailsSearch"
+                placeholder="Search..."
+                autocomplete="off"
+            >
+
+            <button
+                type="button"
+                class="stats-details-refresh"
+                onclick="loadStatsDetails()"
+            >
+                ↻ Refresh
+            </button>
+
+        </div>
+
+
+        <div
+            id="statsDetailsStatusFilters"
+            class="stats-details-status-filters"
+            style="display:none;"
+        >
+
+            <button
+                type="button"
+                data-status="all"
+                onclick="changeStatsDetailsStatus('all')"
+            >
+                All
+            </button>
+
+            <button
+                type="button"
+                data-status="pending"
+                onclick="changeStatsDetailsStatus('pending')"
+            >
+                Pending
+            </button>
+
+            <button
+                type="button"
+                data-status="processing"
+                onclick="changeStatsDetailsStatus('processing')"
+            >
+                Processing
+            </button>
+
+            <button
+                type="button"
+                data-status="approved"
+                onclick="changeStatsDetailsStatus('approved')"
+            >
+                Approved
+            </button>
+
+            <button
+                type="button"
+                data-status="rejected"
+                onclick="changeStatsDetailsStatus('rejected')"
+            >
+                Rejected
+            </button>
+
+        </div>
+
+
+        <div
+            id="statsDetailsMessage"
+            class="stats-details-message"
+        ></div>
+
+
+        <div class="stats-details-table-wrap">
+
+            <table class="stats-details-table">
+
+                <thead id="statsDetailsHead"></thead>
+
+                <tbody id="statsDetailsBody"></tbody>
+
+            </table>
+
+        </div>
+
+
+        <div class="stats-details-pagination">
+
+            <button
+                type="button"
+                id="statsDetailsPrev"
+                onclick="statsDetailsPreviousPage()"
+            >
+                ← Previous
+            </button>
+
+            <span id="statsDetailsPage">
+                Page 1
+            </span>
+
+            <button
+                type="button"
+                id="statsDetailsNext"
+                onclick="statsDetailsNextPage()"
+            >
+                Next →
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+    
     <script>  
   
 /* =========================================================  
@@ -2694,4 +3141,607 @@ document
    SUPPORT INITIAL LOAD
 ========================================================= */
 loadSupportTickets();
+
+/* =====================================================
+   STATISTICS CARD DETAILS
+===================================================== */
+
+let statsDetailsType = "";
+let statsDetailsStatus = "all";
+let statsDetailsPage = 1;
+let statsDetailsTotalPages = 1;
+
+const statsDetailsLimit = 20;
+
+
+/* =====================================================
+   OPEN DETAILS
+===================================================== */
+
+function openStatsDetails(type, title, status = "all") {
+
+    statsDetailsType = type;
+    statsDetailsStatus = status;
+    statsDetailsPage = 1;
+
+    document.getElementById(
+        "statsDetailsTitle"
+    ).textContent = title;
+
+    const statusFilters =
+        document.getElementById(
+            "statsDetailsStatusFilters"
+        );
+
+    if (type === "withdrawals") {
+
+        statusFilters.style.display = "flex";
+
+        updateStatsDetailsStatusButtons();
+
+    } else {
+
+        statusFilters.style.display = "none";
+    }
+
+
+    const modal =
+        document.getElementById(
+            "statsDetailsModal"
+        );
+
+    modal.classList.add("active");
+
+    modal.setAttribute(
+        "aria-hidden",
+        "false"
+    );
+
+
+    document.getElementById(
+        "statsDetailsSearch"
+    ).value = "";
+
+
+    loadStatsDetails();
+}
+
+
+/* =====================================================
+   CLOSE DETAILS
+===================================================== */
+
+function closeStatsDetails() {
+
+    const modal =
+        document.getElementById(
+            "statsDetailsModal"
+        );
+
+    modal.classList.remove("active");
+
+    modal.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+}
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+function changeStatsDetailsStatus(status) {
+
+    statsDetailsStatus = status;
+    statsDetailsPage = 1;
+
+    updateStatsDetailsStatusButtons();
+
+    loadStatsDetails();
+}
+
+
+function updateStatsDetailsStatusButtons() {
+
+    document
+        .querySelectorAll(
+            "#statsDetailsStatusFilters button"
+        )
+        .forEach(button => {
+
+            button.classList.toggle(
+                "active",
+                button.dataset.status ===
+                statsDetailsStatus
+            );
+
+        });
+}
+
+
+/* =====================================================
+   LOAD DETAILS
+===================================================== */
+
+async function loadStatsDetails() {
+
+    const body =
+        document.getElementById(
+            "statsDetailsBody"
+        );
+
+    const head =
+        document.getElementById(
+            "statsDetailsHead"
+        );
+
+    const message =
+        document.getElementById(
+            "statsDetailsMessage"
+        );
+
+
+    body.innerHTML = "";
+
+    head.innerHTML = "";
+
+    message.textContent =
+        "Loading...";
+
+
+    const search =
+        document.getElementById(
+            "statsDetailsSearch"
+        ).value.trim();
+
+
+    try {
+
+        const params =
+            new URLSearchParams({
+
+                type:
+                    statsDetailsType,
+
+                status:
+                    statsDetailsStatus,
+
+                page:
+                    String(
+                        statsDetailsPage
+                    ),
+
+                limit:
+                    String(
+                        statsDetailsLimit
+                    ),
+
+                search:
+                    search
+
+            });
+
+
+        const response =
+            await fetch(
+                "/api/admin/details?" +
+                params.toString(),
+                {
+                    method: "GET",
+                    credentials: "same-origin",
+                    cache: "no-store"
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            throw new Error(
+                data.error ||
+                "Unable to load details."
+            );
+        }
+
+
+        statsDetailsTotalPages =
+            Math.max(
+                1,
+                Number(
+                    data.totalPages || 1
+                )
+            );
+
+
+        document.getElementById(
+            "statsDetailsCount"
+        ).textContent =
+            `${Number(data.total || 0)} records`;
+
+
+        renderStatsDetails(data);
+
+
+        updateStatsDetailsPagination();
+
+
+        message.textContent = "";
+
+
+    } catch (error) {
+
+        console.error(
+            "Stats details error:",
+            error
+        );
+
+
+        message.textContent =
+            error.message ||
+            "Unable to load details.";
+    }
+}
+
+
+/* =====================================================
+   RENDER
+===================================================== */
+
+function renderStatsDetails(data) {
+
+    const head =
+        document.getElementById(
+            "statsDetailsHead"
+        );
+
+    const body =
+        document.getElementById(
+            "statsDetailsBody"
+        );
+
+
+    if (data.type === "users") {
+
+        head.innerHTML = `
+            <tr>
+                <th>ID</th>
+                <th>Email</th>
+                <th>Balance</th>
+            </tr>
+        `;
+
+
+        if (!data.users.length) {
+
+            body.innerHTML = `
+                <tr>
+                    <td
+                        colspan="3"
+                        class="stats-details-empty"
+                    >
+                        No users found.
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+
+        body.innerHTML =
+            data.users.map(user => `
+                <tr>
+                    <td>${escapeHtml(user.id)}</td>
+
+                    <td>
+                        ${escapeHtml(user.email)}
+                    </td>
+
+                    <td>
+                        ${formatBTC(user.balance)}
+                    </td>
+                </tr>
+            `).join("");
+
+
+        return;
+    }
+
+
+    if (data.type === "claims") {
+
+        head.innerHTML = `
+            <tr>
+                <th>ID</th>
+                <th>User</th>
+                <th>Reward</th>
+                <th>Date</th>
+            </tr>
+        `;
+
+
+        if (!data.claims.length) {
+
+            body.innerHTML = `
+                <tr>
+                    <td
+                        colspan="4"
+                        class="stats-details-empty"
+                    >
+                        No claims found.
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+
+        body.innerHTML =
+            data.claims.map(claim => `
+                <tr>
+
+                    <td>
+                        ${escapeHtml(claim.id)}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(claim.email)}
+                    </td>
+
+                    <td>
+                        ${formatBTC(claim.reward)}
+                    </td>
+
+                    <td>
+                        ${formatDate(
+                            claim.claimed_at
+                        )}
+                    </td>
+
+                </tr>
+            `).join("");
+
+
+        return;
+    }
+
+
+    if (data.type === "withdrawals") {
+
+        head.innerHTML = `
+            <tr>
+                <th>ID</th>
+                <th>User</th>
+                <th>Amount</th>
+                <th>Balance Before</th>
+                <th>Current Balance</th>
+                <th>Wallet</th>
+                <th>Status</th>
+                <th>Payout ID</th>
+                <th>TXID</th>
+                <th>Created</th>
+                <th>Processed</th>
+            </tr>
+        `;
+
+
+        if (!data.withdrawals.length) {
+
+            body.innerHTML = `
+                <tr>
+                    <td
+                        colspan="11"
+                        class="stats-details-empty"
+                    >
+                        No withdrawals found.
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+
+        body.innerHTML =
+            data.withdrawals.map(item => `
+                <tr>
+
+                    <td>
+                        ${escapeHtml(item.id)}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(item.email)}
+                    </td>
+
+                    <td>
+                        ${formatBTC(item.amount)}
+                    </td>
+
+                    <td>
+                        ${formatBTC(
+                            item.balance_before
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatBTC(
+                            item.current_balance
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            item.wallet_address
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            item.status
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            item.payout_id || "-"
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            item.txid || "-"
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatDate(
+                            item.created_at
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatDate(
+                            item.processed_at
+                        )}
+                    </td>
+
+                </tr>
+            `).join("");
+    }
+}
+
+
+/* =====================================================
+   PAGINATION
+===================================================== */
+
+function updateStatsDetailsPagination() {
+
+    document.getElementById(
+        "statsDetailsPage"
+    ).textContent =
+        `Page ${statsDetailsPage} / ${statsDetailsTotalPages}`;
+
+
+    document.getElementById(
+        "statsDetailsPrev"
+    ).disabled =
+        statsDetailsPage <= 1;
+
+
+    document.getElementById(
+        "statsDetailsNext"
+    ).disabled =
+        statsDetailsPage >=
+        statsDetailsTotalPages;
+}
+
+
+function statsDetailsPreviousPage() {
+
+    if (
+        statsDetailsPage <= 1
+    ) {
+        return;
+    }
+
+
+    statsDetailsPage--;
+
+    loadStatsDetails();
+}
+
+
+function statsDetailsNextPage() {
+
+    if (
+        statsDetailsPage >=
+        statsDetailsTotalPages
+    ) {
+        return;
+    }
+
+
+    statsDetailsPage++;
+
+    loadStatsDetails();
+}
+
+
+/* =====================================================
+   SEARCH
+===================================================== */
+
+document
+    .getElementById(
+        "statsDetailsSearch"
+    )
+    .addEventListener(
+        "input",
+        function () {
+
+            clearTimeout(
+                window.statsDetailsSearchTimer
+            );
+
+
+            window.statsDetailsSearchTimer =
+                setTimeout(
+                    () => {
+
+                        statsDetailsPage = 1;
+
+                        loadStatsDetails();
+
+                    },
+                    350
+                );
+        }
+    );
+
+
+/* =====================================================
+   MODAL CLOSE
+===================================================== */
+
+document
+    .getElementById(
+        "statsDetailsModal"
+    )
+    .addEventListener(
+        "click",
+        function (event) {
+
+            if (
+                event.target === this
+            ) {
+                closeStatsDetails();
+            }
+
+        }
+    );
+
+
+document.addEventListener(
+    "keydown",
+    function (event) {
+
+        if (
+            event.key === "Escape"
+        ) {
+            closeStatsDetails();
+        }
+
+    }
+);
+        
 </script>  </body>  </html>
