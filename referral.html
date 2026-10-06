@@ -465,6 +465,108 @@
 
 
         /* =========================================
+           REFERRED USERS
+        ========================================= */
+
+        .referred-users {
+
+            display: grid;
+
+            gap: 9px;
+        }
+
+        .referred-user {
+
+            padding:
+                13px 14px;
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.07);
+
+            border-radius: 13px;
+
+            background:
+                rgba(2, 6, 23, 0.34);
+        }
+
+        .referred-user-top {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 10px;
+        }
+
+        .referred-user-name {
+
+            color: #e2e8f0;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+            overflow: hidden;
+
+            white-space: nowrap;
+
+            text-overflow: ellipsis;
+        }
+
+        .referred-user-claims {
+
+            color: #fbbf24;
+
+            font-size: 12px;
+
+            font-weight: bold;
+
+            white-space: nowrap;
+        }
+
+        .referred-user-progress {
+
+            margin-top: 7px;
+
+            color: #64748b;
+
+            font-size: 11px;
+        }
+
+        .referred-user-reward {
+
+            margin-top: 4px;
+
+            color: #94a3b8;
+
+            font-size: 11px;
+        }
+
+        .referred-empty {
+
+            padding: 14px;
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.07);
+
+            border-radius: 13px;
+
+            background:
+                rgba(2, 6, 23, 0.30);
+
+            color: #64748b;
+
+            font-size: 12px;
+
+            text-align: center;
+        }
+
+
+        /* =========================================
            INFO
         ========================================= */
 
@@ -743,6 +845,24 @@
 
 
         <!-- =====================================
+             REFERRED USERS
+        ====================================== -->
+
+        <div class="milestone-title">
+            👥 Your Referred Users
+        </div>
+
+        <div
+            id="referralUsers"
+            class="referred-users"
+        >
+            <div class="referred-empty">
+                Loading referral details...
+            </div>
+        </div>
+
+
+        <!-- =====================================
              MILESTONES
         ====================================== -->
 
@@ -861,8 +981,7 @@
 <script>
 
 /* =========================================
-   TEMPORARY UI DATA
-   API WILL BE CONNECTED LATER
+   REFERRAL LINK
 ========================================= */
 
 const referralLink =
@@ -874,6 +993,7 @@ const copyButton =
     document.getElementById(
         "copyButton"
     );
+
 
 /* =========================================
    LOAD REFERRAL LINK
@@ -940,6 +1060,237 @@ async function loadReferralLink() {
 }
 
 loadReferralLink();
+
+
+/* =========================================
+   LOAD REFERRAL DETAILS
+========================================= */
+
+const referralUsers =
+    document.getElementById(
+        "referralUsers"
+    );
+
+const referralCount =
+    document.getElementById(
+        "referralCount"
+    );
+
+const referralEarnings =
+    document.getElementById(
+        "referralEarnings"
+    );
+
+
+function escapeHtml(value) {
+
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+
+function getNextMilestone(
+    claimCount
+) {
+
+    const milestones = [
+        1,
+        5,
+        10,
+        20,
+        50
+    ];
+
+    return milestones.find(
+        milestone =>
+            claimCount < milestone
+    );
+}
+
+
+async function loadReferralDetails() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/referral/list",
+                {
+                    method: "GET",
+                    cache: "no-store",
+                    headers: {
+                        "Cache-Control":
+                            "no-cache"
+                    }
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            result.success !== true
+        ) {
+
+            referralUsers.innerHTML =
+                `<div class="referred-empty">
+                    Unable to load referral details.
+                </div>`;
+
+            return;
+        }
+
+
+        const referrals =
+            Array.isArray(
+                result.referrals
+            )
+                ? result.referrals
+                : [];
+
+
+        referralCount.innerText =
+            String(
+                Number(
+                    result.totalReferrals ?? 0
+                )
+            );
+
+
+        referralEarnings.innerText =
+            Number(
+                result.totalRewardSats ?? 0
+            ) +
+            " sats";
+
+
+        if (referrals.length === 0) {
+
+            referralUsers.innerHTML =
+                `<div class="referred-empty">
+                    No referrals yet.
+                </div>`;
+
+            return;
+        }
+
+
+        referralUsers.innerHTML =
+            referrals
+                .map(referral => {
+
+                    const claimCount =
+                        Number(
+                            referral.claimCount ?? 0
+                        );
+
+                    const rewardSats =
+                        Number(
+                            referral.rewardSats ?? 0
+                        );
+
+                    const nextMilestone =
+                        getNextMilestone(
+                            claimCount
+                        );
+
+
+                    let progressText;
+
+
+                    if (
+                        nextMilestone
+                    ) {
+
+                        const remaining =
+                            nextMilestone -
+                            claimCount;
+
+                        progressText =
+                            "🎯 " +
+                            remaining +
+                            " claim" +
+                            (
+                                remaining === 1
+                                    ? ""
+                                    : "s"
+                            ) +
+                            " to next milestone";
+
+                    } else {
+
+                        progressText =
+                            "🎯 All referral milestones completed";
+                    }
+
+
+                    return `
+                        <div class="referred-user">
+
+                            <div
+                                class="referred-user-top"
+                            >
+
+                                <div
+                                    class="referred-user-name"
+                                >
+                                    ${escapeHtml(
+                                        referral.name
+                                    )}
+                                </div>
+
+                                <div
+                                    class="referred-user-claims"
+                                >
+                                    ${claimCount}
+                                    claim${claimCount === 1 ? "" : "s"}
+                                </div>
+
+                            </div>
+
+                            <div
+                                class="referred-user-progress"
+                            >
+                                ${progressText}
+                            </div>
+
+                            <div
+                                class="referred-user-reward"
+                            >
+                                💰 Referral reward earned:
+                                ${rewardSats} sats
+                            </div>
+
+                        </div>
+                    `;
+                })
+                .join("");
+
+
+    } catch (error) {
+
+        console.error(
+            "Referral details error:",
+            error
+        );
+
+
+        referralUsers.innerHTML =
+            `<div class="referred-empty">
+                Unable to load referral details.
+            </div>`;
+    }
+}
+
+
+loadReferralDetails();
 
 
 /* =========================================
