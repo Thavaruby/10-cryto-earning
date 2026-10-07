@@ -1,21 +1,30 @@
-<!-- file-converter.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
 <link rel="icon" type="image/png" href="assets/favico.png">
 
 <title>Free File Converter — My Crypto Faucet</title>
 
 <meta name="description"
-content="Free private file converter. Convert supported files directly in your browser without uploading them.">
+content="Free private file converter. Convert documents, PDFs and images directly in your browser without uploading files.">
 
 <link rel="canonical"
 href="https://myfaucetcrypto.com/file-converter.html">
 
+<meta property="og:title"
+content="Free File Converter — My Crypto Faucet">
+
+<meta property="og:description"
+content="Convert supported files privately in your browser.">
+
+<meta property="og:url"
+content="https://myfaucetcrypto.com/file-converter.html">
+
 <style>
+
 *{
   box-sizing:border-box;
 }
@@ -29,7 +38,7 @@ body{
 }
 
 .wrap{
-  width:min(920px,94%);
+  width:min(940px,94%);
   margin:auto;
   padding:28px 0 50px;
 }
@@ -43,15 +52,15 @@ h1{
 .sub{
   text-align:center;
   color:#b9c5dc;
-  margin:10px auto 26px;
   line-height:1.5;
+  margin:10px auto 25px;
 }
 
 .card{
   background:#fff;
   color:#14213d;
   border-radius:18px;
-  padding:24px;
+  padding:22px;
   box-shadow:0 12px 35px #0005;
 }
 
@@ -118,7 +127,7 @@ input{
 label{
   font-weight:700;
   display:block;
-  margin-bottom:9px;
+  margin-bottom:8px;
 }
 
 select,
@@ -153,7 +162,8 @@ button:disabled{
   text-align:center;
   font-size:14px;
   color:#667085;
-  min-height:20px;
+  min-height:22px;
+  line-height:1.5;
 }
 
 .privacy{
@@ -163,12 +173,8 @@ button:disabled{
   font-size:13px;
 }
 
-.privacy b{
-  color:#273858;
-}
-
 .note{
-  margin-top:20px;
+  margin-top:18px;
   padding:14px;
   border-radius:10px;
   background:#fff7df;
@@ -192,6 +198,7 @@ button:disabled{
   }
 
 }
+
 </style>
 </head>
 
@@ -202,8 +209,8 @@ button:disabled{
 <h1>Free File Converter</h1>
 
 <p class="sub">
-Choose or drag a file. Your browser detects the file type
-and shows compatible conversion options.
+Convert supported documents, PDFs and images directly in your browser.
+Your files are not uploaded.
 </p>
 
 <section class="card">
@@ -216,7 +223,7 @@ role="button"
 aria-label="Choose a file"
 >
 
-<strong>📁 Choose file or drag & drop</strong>
+<strong>📁 Choose file or drag &amp; drop</strong>
 
 <span>
 One file at a time • Free • Private
@@ -236,13 +243,13 @@ class="file"
 >
 
 <div
-class="name"
-id="fileName">
+id="fileName"
+class="name">
 </div>
 
 <div
-class="meta"
-id="fileMeta">
+id="fileMeta"
+class="meta">
 </div>
 
 </div>
@@ -264,7 +271,7 @@ Convert to
 id="convert"
 type="button"
 >
-Convert
+Convert &amp; Download
 </button>
 
 </div>
@@ -282,17 +289,18 @@ class="status">
 
 <br>
 
-It is not uploaded to our server.
+No file upload. No server-side conversion.
 
 </div>
 
 
 <div class="note">
 
-This converter processes supported files locally in
-your browser. Additional PDF and document conversion
-engines will be enabled only when reliable browser-side
-conversion is available.
+<b>Private browser conversion:</b>
+Your selected file is processed locally.
+Some conversion engines may download their
+JavaScript/WASM libraries to your browser,
+but your selected file is not uploaded to our server.
 
 </div>
 
@@ -301,7 +309,7 @@ conversion is available.
 </main>
 
 
-<script>
+<script type="module">
 
 const input =
 document.getElementById("fileInput");
@@ -330,181 +338,153 @@ document.getElementById("convert");
 const status =
 document.getElementById("status");
 
+
 let currentFile = null;
 
-
-/* =========================================
-SUPPORTED OUTPUT MAP
-========================================= */
-
-const extMap = {
-
-  jpg:[
-    "jpg",
-    "jpeg",
-    "png",
-    "webp",
-    "avif",
-    "pdf"
-  ],
-
-  jpeg:[
-    "jpg",
-    "png",
-    "webp",
-    "avif",
-    "pdf"
-  ],
-
-  png:[
-    "jpg",
-    "jpeg",
-    "webp",
-    "avif",
-    "pdf"
-  ],
-
-  webp:[
-    "jpg",
-    "jpeg",
-    "png",
-    "avif",
-    "pdf"
-  ],
-
-  avif:[
-    "jpg",
-    "jpeg",
-    "png",
-    "webp",
-    "pdf"
-  ],
-
-  bmp:[
-    "jpg",
-    "jpeg",
-    "png",
-    "webp",
-    "pdf"
-  ],
-
-  gif:[
-    "png",
-    "webp",
-    "pdf"
-  ],
-
-  svg:[
-    "png",
-    "jpg",
-    "webp",
-    "pdf"
-  ],
-
-  txt:[
-    "pdf"
-  ],
-
-  csv:[
-    "pdf"
-  ],
-
-  html:[
-    "pdf"
-  ],
-
-  htm:[
-    "pdf"
-  ],
-
-  pdf:[
-    "txt",
-    "jpg",
-    "png",
-    "webp"
-  ],
-
-  doc:[
-    "pdf"
-  ],
-
-  docx:[
-    "pdf"
-  ],
-
-  xls:[
-    "pdf"
-  ],
-
-  xlsx:[
-    "pdf"
-  ],
-
-  ppt:[
-    "pdf"
-  ],
-
-  pptx:[
-    "pdf"
-  ],
-
-  odt:[
-    "pdf"
-  ],
-
-  ods:[
-    "pdf"
-  ],
-
-  odp:[
-    "pdf"
-  ],
-
-  rtf:[
-    "pdf"
-  ]
-
-};
+let downloadUrl = null;
 
 
-/* =========================================
-FILE EXTENSION
-========================================= */
+/* =====================================================
+SUPPORTED TYPES
+===================================================== */
+
+const IMAGE_TYPES = [
+  "jpg",
+  "jpeg",
+  "png",
+  "webp",
+  "avif",
+  "bmp",
+  "gif"
+];
+
+const OFFICE_TYPES = [
+  "doc",
+  "docx",
+  "xls",
+  "xlsx",
+  "ppt",
+  "pptx",
+  "pdf"
+];
+
+const TEXT_TYPES = [
+  "txt",
+  "csv",
+  "html",
+  "htm",
+  "rtf"
+];
+
+const BASIC_PDF_TYPES = [
+  "txt",
+  "csv",
+  "html",
+  "htm",
+  "rtf"
+];
+
+
+/* =====================================================
+EXTENSION
+===================================================== */
 
 function extension(name){
 
   const parts =
   name.toLowerCase().split(".");
 
-  return parts.length > 1
-    ? parts.pop()
-    : "";
+  if(parts.length < 2)
+    return "";
+
+  return parts.pop();
 
 }
 
 
-/* =========================================
-FILE SIZE
-========================================= */
+/* =====================================================
+SIZE
+===================================================== */
 
-function bytes(size){
+function formatBytes(size){
 
   if(size < 1024)
     return size + " B";
 
-  if(size < 1048576)
-    return (size / 1024).toFixed(1) + " KB";
+  if(size < 1024 * 1024)
+    return (
+      size / 1024
+    ).toFixed(1) + " KB";
 
-  return (size / 1048576).toFixed(2) + " MB";
+  if(size < 1024 * 1024 * 1024)
+    return (
+      size / 1024 / 1024
+    ).toFixed(2) + " MB";
+
+  return (
+    size / 1024 / 1024 / 1024
+  ).toFixed(2) + " GB";
 
 }
 
 
-/* =========================================
-FILE TYPE DETECTION
-========================================= */
+/* =====================================================
+MIME → EXTENSION
+===================================================== */
 
-function detect(file){
+function mimeExtension(file){
+
+  const mime =
+  (file.type || "").toLowerCase();
+
+  const map = {
+
+    "image/jpeg":"jpg",
+
+    "image/png":"png",
+
+    "image/webp":"webp",
+
+    "image/avif":"avif",
+
+    "image/bmp":"bmp",
+
+    "image/gif":"gif",
+
+    "application/pdf":"pdf",
+
+    "text/plain":"txt",
+
+    "text/csv":"csv",
+
+    "text/html":"html",
+
+    "application/rtf":"rtf",
+
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document":"docx",
+
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":"xlsx",
+
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation":"pptx",
+
+    "application/msword":"doc",
+
+    "application/vnd.ms-excel":"xls",
+
+    "application/vnd.ms-powerpoint":"ppt"
+
+  };
+
+  return map[mime] || "";
+
+}
+
+
+/* =====================================================
+DETECT TYPE
+===================================================== */
+
+function detectType(file){
 
   const ext =
   extension(file.name);
@@ -512,54 +492,76 @@ function detect(file){
   if(ext)
     return ext;
 
-
-  const mime =
-  (file.type || "").toLowerCase();
-
-
-  if(mime === "image/jpeg")
-    return "jpeg";
-
-  if(mime === "image/png")
-    return "png";
-
-  if(mime === "image/webp")
-    return "webp";
-
-  if(mime === "image/avif")
-    return "avif";
-
-  if(mime === "image/bmp")
-    return "bmp";
-
-  if(mime === "image/svg+xml")
-    return "svg";
-
-  if(mime === "application/pdf")
-    return "pdf";
-
-  if(mime === "text/plain")
-    return "txt";
-
-  if(mime === "text/csv")
-    return "csv";
-
-
-  return "unknown";
+  return mimeExtension(file) || "unknown";
 
 }
 
 
-/* =========================================
+/* =====================================================
+OUTPUT OPTIONS
+===================================================== */
+
+function getOutputs(type){
+
+  /*
+   * Images
+   */
+
+  if(IMAGE_TYPES.includes(type)){
+
+    return IMAGE_TYPES
+      .filter(item => item !== type)
+      .concat(["pdf"]);
+
+  }
+
+
+  /*
+   * Office / PDF
+   */
+
+  if(OFFICE_TYPES.includes(type)){
+
+    return [
+      "pdf",
+      "svg",
+      "html",
+      "md",
+      "docx",
+      "xlsx"
+    ];
+
+  }
+
+
+  /*
+   * Text / simple documents
+   */
+
+  if(BASIC_PDF_TYPES.includes(type)){
+
+    return [
+      "pdf"
+    ];
+
+  }
+
+
+  return [];
+
+}
+
+
+/* =====================================================
 SHOW FILE
-========================================= */
+===================================================== */
 
 function showFile(file){
 
   currentFile = file;
 
-  const detected =
-  detect(file);
+  const type =
+  detectType(file);
 
 
   nameEl.textContent =
@@ -567,11 +569,11 @@ function showFile(file){
 
 
   metaEl.textContent =
-  (file.type || "Unknown type")
+  (file.type || "Unknown MIME type")
   + " • "
-  + bytes(file.size)
+  + formatBytes(file.size)
   + " • detected: "
-  + detected.toUpperCase();
+  + type.toUpperCase();
 
 
   info.classList.add("show");
@@ -581,7 +583,7 @@ function showFile(file){
 
 
   const outputs =
-  extMap[detected] || [];
+  getOutputs(type);
 
 
   outputs.forEach(output => {
@@ -619,20 +621,13 @@ function showFile(file){
 }
 
 
-/* =========================================
-FILE PICKER
-========================================= */
-
-function chooseFile(){
-
-  input.click();
-
-}
-
+/* =====================================================
+PICKER
+===================================================== */
 
 drop.addEventListener(
   "click",
-  chooseFile
+  () => input.click()
 );
 
 
@@ -645,7 +640,9 @@ drop.addEventListener(
       event.key === " "
     ){
 
-      chooseFile();
+      event.preventDefault();
+
+      input.click();
 
     }
 
@@ -657,19 +654,16 @@ input.addEventListener(
   "change",
   () => {
 
-    if(input.files[0]){
-
+    if(input.files[0])
       showFile(input.files[0]);
-
-    }
 
   }
 );
 
 
-/* =========================================
-DRAG & DROP
-========================================= */
+/* =====================================================
+DRAG DROP
+===================================================== */
 
 ["dragenter","dragover"].forEach(
   eventName => {
@@ -725,151 +719,1187 @@ drop.addEventListener(
 );
 
 
-/* =========================================
+/* =====================================================
+DYNAMIC LIBRARY LOADER
+===================================================== */
+
+async function loadLibrary(url){
+
+  return import(url);
+
+}
+
+
+/* =====================================================
 DOWNLOAD
-========================================= */
+===================================================== */
 
-function download(blob,name){
+function downloadBlob(blob,name){
 
-  const url =
+  if(downloadUrl){
+
+    URL.revokeObjectURL(
+      downloadUrl
+    );
+
+  }
+
+
+  downloadUrl =
   URL.createObjectURL(blob);
 
-  const a =
+
+  const link =
   document.createElement("a");
 
-  a.href = url;
 
-  a.download = name;
+  link.href =
+  downloadUrl;
 
-  document.body.appendChild(a);
+  link.download =
+  name;
 
-  a.click();
 
-  a.remove();
+  document.body.appendChild(link);
+
+  link.click();
+
+  link.remove();
+
 
   setTimeout(
-    () => URL.revokeObjectURL(url),
-    1000
+    () => {
+
+      if(downloadUrl){
+
+        URL.revokeObjectURL(
+          downloadUrl
+        );
+
+        downloadUrl = null;
+
+      }
+
+    },
+    5000
   );
 
 }
 
 
-/* =========================================
-IMAGE CONVERSION
-========================================= */
+/* =====================================================
+IMAGE MIME
+===================================================== */
 
-function imageOutput(
+function imageMime(output){
+
+  const map = {
+
+    jpg:"image/jpeg",
+
+    jpeg:"image/jpeg",
+
+    png:"image/png",
+
+    webp:"image/webp",
+
+    avif:"image/avif",
+
+    bmp:"image/bmp",
+
+    gif:"image/gif"
+
+  };
+
+  return map[output] || "";
+
+}
+
+
+/* =====================================================
+IMAGE → IMAGE
+===================================================== */
+
+async function imageToImage(
   file,
   output
 ){
 
-  return new Promise(
-    (resolve,reject) => {
-
-      const image =
-      new Image();
-
-      const url =
-      URL.createObjectURL(file);
+  const image =
+  new Image();
 
 
-      image.onload = () => {
-
-        const canvas =
-        document.createElement("canvas");
+  const objectUrl =
+  URL.createObjectURL(file);
 
 
-        canvas.width =
-        image.naturalWidth;
+  try{
 
-        canvas.height =
-        image.naturalHeight;
+    await new Promise(
+      (resolve,reject) => {
 
+        image.onload =
+        resolve;
 
-        const ctx =
-        canvas.getContext("2d");
-
-
-        ctx.drawImage(
-          image,
-          0,
-          0
-        );
-
-
-        const mime = {
-
-          jpg:"image/jpeg",
-          jpeg:"image/jpeg",
-          png:"image/png",
-          webp:"image/webp",
-          avif:"image/avif"
-
-        }[output];
-
-
-        canvas.toBlob(
-
-          blob => {
-
-            URL.revokeObjectURL(url);
-
-
-            if(!blob){
-
-              reject(
-                new Error(
-                  "This browser cannot create "
-                  + output.toUpperCase()
-                  + " output."
-                )
-              );
-
-              return;
-
-            }
-
-
-            resolve(blob);
-
-          },
-
-          mime,
-
-          output === "png"
-            ? undefined
-            : 0.92
-
-        );
-
-      };
-
-
-      image.onerror = () => {
-
-        URL.revokeObjectURL(url);
-
-        reject(
+        image.onerror =
+        () => reject(
           new Error(
-            "The image could not be read by this browser."
+            "The image could not be decoded."
           )
         );
 
-      };
+        image.src =
+        objectUrl;
+
+      }
+    );
 
 
-      image.src = url;
+    const canvas =
+    document.createElement("canvas");
 
+
+    canvas.width =
+    image.naturalWidth;
+
+    canvas.height =
+    image.naturalHeight;
+
+
+    const ctx =
+    canvas.getContext("2d");
+
+
+    if(
+      output === "jpg" ||
+      output === "jpeg"
+    ){
+
+      ctx.fillStyle =
+      "#ffffff";
+
+      ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
+
+    }
+
+
+    ctx.drawImage(
+      image,
+      0,
+      0
+    );
+
+
+    const mime =
+    imageMime(output);
+
+
+    const blob =
+    await new Promise(
+      resolve => {
+
+        canvas.toBlob(
+          resolve,
+          mime,
+          output === "png"
+            ? undefined
+            : 0.92
+        );
+
+      }
+    );
+
+
+    if(!blob){
+
+      throw new Error(
+        output.toUpperCase()
+        + " encoding is not supported by this browser."
+      );
+
+    }
+
+
+    if(blob.type !== mime){
+
+      throw new Error(
+        "Browser did not create the requested "
+        + output.toUpperCase()
+        + " format."
+      );
+
+    }
+
+
+    return blob;
+
+  }
+  finally{
+
+    URL.revokeObjectURL(
+      objectUrl
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+IMAGE → PDF
+===================================================== */
+
+async function imageToPdf(file){
+
+  const {
+    PDFDocument
+  } =
+  await loadLibrary(
+    "https://esm.sh/pdf-lib@1.17.1?bundle"
+  );
+
+
+  const pdf =
+  await PDFDocument.create();
+
+
+  const bytes =
+  new Uint8Array(
+    await file.arrayBuffer()
+  );
+
+
+  const type =
+  detectType(file);
+
+
+  let image;
+
+
+  if(
+    type === "jpg" ||
+    type === "jpeg"
+  ){
+
+    image =
+    await pdf.embedJpg(bytes);
+
+  }
+
+  else if(type === "png"){
+
+    image =
+    await pdf.embedPng(bytes);
+
+  }
+
+  else{
+
+    const png =
+    await imageToImage(
+      file,
+      "png"
+    );
+
+
+    image =
+    await pdf.embedPng(
+      new Uint8Array(
+        await png.arrayBuffer()
+      )
+    );
+
+  }
+
+
+  const maxWidth = 595;
+
+  const maxHeight = 842;
+
+
+  const scale =
+  Math.min(
+    1,
+    maxWidth / image.width,
+    maxHeight / image.height
+  );
+
+
+  const width =
+  image.width * scale;
+
+  const height =
+  image.height * scale;
+
+
+  const page =
+  pdf.addPage([
+    width,
+    height
+  ]);
+
+
+  page.drawImage(
+    image,
+    {
+      x:0,
+      y:0,
+      width,
+      height
+    }
+  );
+
+
+  return new Blob(
+    [
+      await pdf.save()
+    ],
+    {
+      type:"application/pdf"
     }
   );
 
 }
 
 
-/* =========================================
-CONVERT
-========================================= */
+/* =====================================================
+PDF → IMAGE
+===================================================== */
+
+async function pdfToImage(
+  file,
+  output
+){
+
+  const pdfjs =
+  await loadLibrary(
+    "https://esm.sh/pdfjs-dist@5.4.149/build/pdf.mjs?bundle"
+  );
+
+
+  const data =
+  new Uint8Array(
+    await file.arrayBuffer()
+  );
+
+
+  const pdf =
+  await pdfjs.getDocument({
+    data,
+    disableWorker:true
+  }).promise;
+
+
+  const blobs = [];
+
+
+  for(
+    let pageNumber = 1;
+    pageNumber <= pdf.numPages;
+    pageNumber++
+  ){
+
+    const page =
+    await pdf.getPage(
+      pageNumber
+    );
+
+
+    const viewport =
+    page.getViewport({
+      scale:1.6
+    });
+
+
+    const canvas =
+    document.createElement(
+      "canvas"
+    );
+
+
+    canvas.width =
+    Math.ceil(
+      viewport.width
+    );
+
+    canvas.height =
+    Math.ceil(
+      viewport.height
+    );
+
+
+    const context =
+    canvas.getContext("2d");
+
+
+    await page.render({
+      canvasContext:context,
+      viewport
+    }).promise;
+
+
+    const mime =
+    output === "jpg"
+      ? "image/jpeg"
+      : output === "webp"
+        ? "image/webp"
+        : "image/png";
+
+
+    const blob =
+    await new Promise(
+      resolve => {
+
+        canvas.toBlob(
+          resolve,
+          mime,
+          0.92
+        );
+
+      }
+    );
+
+
+    if(!blob){
+
+      throw new Error(
+        "Could not create "
+        + output.toUpperCase()
+        + " image."
+      );
+
+    }
+
+
+    blobs.push(blob);
+
+  }
+
+
+  /*
+   * One-page PDF:
+   * direct image download
+   */
+
+  if(blobs.length === 1){
+
+    return {
+      blob:blobs[0],
+      extension:output
+    };
+
+  }
+
+
+  /*
+   * Multi-page PDF:
+   * ZIP all images.
+   */
+
+  const {
+    zipSync
+  } =
+  await loadLibrary(
+    "https://esm.sh/fflate@0.8.2?bundle"
+  );
+
+
+  const files = {};
+
+
+  for(
+    let i=0;
+    i<blobs.length;
+    i++
+  ){
+
+    files[
+      "page-" +
+      (i+1) +
+      "." +
+      output
+    ] =
+    new Uint8Array(
+      await blobs[i].arrayBuffer()
+    );
+
+  }
+
+
+  return {
+
+    blob:
+    new Blob(
+      [
+        zipSync(files)
+      ],
+      {
+        type:"application/zip"
+      }
+    ),
+
+    extension:"zip"
+
+  };
+
+}
+
+
+/* =====================================================
+PDF → TEXT
+===================================================== */
+
+async function pdfToText(file){
+
+  const pdfjs =
+  await loadLibrary(
+    "https://esm.sh/pdfjs-dist@5.4.149/build/pdf.mjs?bundle"
+  );
+
+
+  const data =
+  new Uint8Array(
+    await file.arrayBuffer()
+  );
+
+
+  const pdf =
+  await pdfjs.getDocument({
+    data,
+    disableWorker:true
+  }).promise;
+
+
+  let text = "";
+
+
+  for(
+    let pageNumber = 1;
+    pageNumber <= pdf.numPages;
+    pageNumber++
+  ){
+
+    const page =
+    await pdf.getPage(
+      pageNumber
+    );
+
+
+    const content =
+    await page.getTextContent();
+
+
+    text +=
+      "\n--- Page "
+      + pageNumber
+      + " ---\n";
+
+
+    text +=
+    content.items
+      .map(
+        item => item.str || ""
+      )
+      .join(" ");
+
+  }
+
+
+  return new Blob(
+    [
+      text.trim() +
+      "\n"
+    ],
+    {
+      type:
+      "text/plain;charset=utf-8"
+    }
+  );
+
+}
+
+
+/* =====================================================
+TEXT → PDF
+===================================================== */
+
+async function textToPdf(text){
+
+  const {
+    PDFDocument,
+    StandardFonts,
+    rgb
+  } =
+  await loadLibrary(
+    "https://esm.sh/pdf-lib@1.17.1?bundle"
+  );
+
+
+  const pdf =
+  await PDFDocument.create();
+
+
+  const font =
+  await pdf.embedFont(
+    StandardFonts.Helvetica
+  );
+
+
+  const lines =
+  String(text)
+    .replace(/\r\n/g,"\n")
+    .split("\n");
+
+
+  let page;
+
+  let y;
+
+
+  function newPage(){
+
+    page =
+    pdf.addPage([
+      595,
+      842
+    ]);
+
+    y = 800;
+
+  }
+
+
+  newPage();
+
+
+  for(
+    const rawLine of lines
+  ){
+
+    if(y < 45){
+
+      newPage();
+
+    }
+
+
+    /*
+     * Prevent extremely long
+     * lines from exceeding page width.
+     */
+
+    let remaining =
+    rawLine || " ";
+
+
+    while(
+      remaining.length > 95
+    ){
+
+      const part =
+      remaining.slice(
+        0,
+        95
+      );
+
+
+      page.drawText(
+        part,
+        {
+          x:40,
+          y,
+          size:10,
+          font,
+          color:
+          rgb(
+            0.08,
+            0.10,
+            0.16
+          )
+        }
+      );
+
+
+      y -= 14;
+
+      if(y < 45)
+        newPage();
+
+
+      remaining =
+      remaining.slice(95);
+
+    }
+
+
+    page.drawText(
+      remaining || " ",
+      {
+        x:40,
+        y,
+        size:10,
+        font,
+        color:
+        rgb(
+          0.08,
+          0.10,
+          0.16
+        )
+      }
+    );
+
+
+    y -= 14;
+
+  }
+
+
+  return new Blob(
+    [
+      await pdf.save()
+    ],
+    {
+      type:"application/pdf"
+    }
+  );
+
+}
+
+
+/* =====================================================
+CSV → PDF
+===================================================== */
+
+async function csvToPdf(file){
+
+  const text =
+  await file.text();
+
+
+  return textToPdf(
+    text
+  );
+
+}
+
+
+/* =====================================================
+HTML → PDF
+===================================================== */
+
+async function htmlToPdf(file){
+
+  const html =
+  await file.text();
+
+
+  const container =
+  document.createElement(
+    "div"
+  );
+
+
+  container.innerHTML =
+  html;
+
+
+  const text =
+  container.innerText ||
+  container.textContent ||
+  "";
+
+
+  return textToPdf(
+    text
+  );
+
+}
+
+
+/* =====================================================
+RTF → TEXT
+===================================================== */
+
+function rtfToText(text){
+
+  return text
+
+    .replace(
+      /\\'[0-9a-fA-F]{2}/g,
+      ""
+    )
+
+    .replace(
+      /\\par[d]?/g,
+      "\n"
+    )
+
+    .replace(
+      /\\tab/g,
+      "\t"
+    )
+
+    .replace(
+      /\\[a-zA-Z]+-?\d* ?/g,
+      ""
+    )
+
+    .replace(
+      /[{}]/g,
+      ""
+    )
+
+    .replace(
+      /\n{3,}/g,
+      "\n\n"
+    )
+
+    .trim();
+
+}
+
+
+/* =====================================================
+RTF → PDF
+===================================================== */
+
+async function rtfToPdf(file){
+
+  const text =
+  await file.text();
+
+
+  return textToPdf(
+    rtfToText(text)
+  );
+
+}
+
+
+/* =====================================================
+OFFICE / PDF → TARGET
+===================================================== */
+
+async function reamConvert(
+  file,
+  target
+){
+
+  const {
+    Ream
+  } =
+  await loadLibrary(
+    "https://esm.sh/reamkit@latest?bundle"
+  );
+
+
+  const bytes =
+  new Uint8Array(
+    await file.arrayBuffer()
+  );
+
+
+  const doc =
+  Ream.parse(
+    bytes
+  );
+
+
+  const output =
+  await doc.convert(
+    target
+  );
+
+
+  const mime = {
+
+    pdf:
+    "application/pdf",
+
+    svg:
+    "image/svg+xml",
+
+    html:
+    "text/html;charset=utf-8",
+
+    md:
+    "text/markdown;charset=utf-8",
+
+    docx:
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+
+    xlsx:
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+
+  }[target];
+
+
+  return new Blob(
+    [
+      output
+    ],
+    {
+      type:mime ||
+      "application/octet-stream"
+    }
+  );
+
+}
+
+
+/* =====================================================
+MAIN CONVERSION ROUTER
+===================================================== */
+
+async function convertFile(
+  file,
+  output
+){
+
+  const from =
+  detectType(file);
+
+
+  /*
+   * IMAGE → IMAGE
+   */
+
+  if(
+    IMAGE_TYPES.includes(from) &&
+    IMAGE_TYPES.includes(output)
+  ){
+
+    return {
+
+      blob:
+      await imageToImage(
+        file,
+        output
+      ),
+
+      extension:
+      output
+
+    };
+
+  }
+
+
+  /*
+   * IMAGE → PDF
+   */
+
+  if(
+    IMAGE_TYPES.includes(from) &&
+    output === "pdf"
+  ){
+
+    return {
+
+      blob:
+      await imageToPdf(
+        file
+      ),
+
+      extension:
+      "pdf"
+
+    };
+
+  }
+
+
+  /*
+   * PDF → IMAGE
+   */
+
+  if(
+    from === "pdf" &&
+    (
+      output === "jpg" ||
+      output === "png" ||
+      output === "webp"
+    )
+  ){
+
+    return await pdfToImage(
+      file,
+      output
+    );
+
+  }
+
+
+  /*
+   * PDF → TEXT
+   */
+
+  if(
+    from === "pdf" &&
+    output === "txt"
+  ){
+
+    return {
+
+      blob:
+      await pdfToText(
+        file
+      ),
+
+      extension:
+      "txt"
+
+    };
+
+  }
+
+
+  /*
+   * TXT → PDF
+   */
+
+  if(
+    from === "txt" &&
+    output === "pdf"
+  ){
+
+    return {
+
+      blob:
+      await textToPdf(
+        await file.text()
+      ),
+
+      extension:
+      "pdf"
+
+    };
+
+  }
+
+
+  /*
+   * CSV → PDF
+   */
+
+  if(
+    from === "csv" &&
+    output === "pdf"
+  ){
+
+    return {
+
+      blob:
+      await csvToPdf(
+        file
+      ),
+
+      extension:
+      "pdf"
+
+    };
+
+  }
+
+
+  /*
+   * HTML → PDF
+   */
+
+  if(
+    (
+      from === "html" ||
+      from === "htm"
+    ) &&
+    output === "pdf"
+  ){
+
+    return {
+
+      blob:
+      await htmlToPdf(
+        file
+      ),
+
+      extension:
+      "pdf"
+
+    };
+
+  }
+
+
+  /*
+   * RTF → PDF
+   */
+
+  if(
+    from === "rtf" &&
+    output === "pdf"
+  ){
+
+    return {
+
+      blob:
+      await rtfToPdf(
+        file
+      ),
+
+      extension:
+      "pdf"
+
+    };
+
+  }
+
+
+  /*
+   * OFFICE / PDF
+   *
+   * DOC
+   * DOCX
+   * XLS
+   * XLSX
+   * PPT
+   * PPTX
+   * PDF
+   */
+
+  if(
+    OFFICE_TYPES.includes(from)
+  ){
+
+    return {
+
+      blob:
+      await reamConvert(
+        file,
+        output
+      ),
+
+      extension:
+      output
+
+    };
+
+  }
+
+
+  throw new Error(
+    "This conversion is not available."
+  );
+
+}
+
+
+/* =====================================================
+CONVERT BUTTON
+===================================================== */
 
 convert.addEventListener(
   "click",
@@ -879,87 +1909,69 @@ convert.addEventListener(
       return;
 
 
-    const from =
-    detect(currentFile);
-
     const output =
     format.value;
 
 
-    convert.disabled = true;
+    if(!output)
+      return;
+
+
+    convert.disabled =
+    true;
+
 
     status.textContent =
-    "Converting locally…";
+    "Preparing local conversion engine…";
 
 
     try{
 
-      if(
+      const result =
+      await convertFile(
+        currentFile,
+        output
+      );
 
-        [
-          "jpg",
-          "jpeg",
-          "png",
-          "webp",
-          "avif",
-          "bmp"
-        ].includes(from)
 
-        &&
-
-        [
-          "jpg",
-          "jpeg",
-          "png",
-          "webp",
-          "avif"
-        ].includes(output)
-
-      ){
-
-        const blob =
-        await imageOutput(
-          currentFile,
-          output
+      const base =
+      currentFile.name
+        .replace(
+          /\.[^.]+$/,
+          ""
         );
 
 
-        const base =
-        currentFile.name
-        .replace(/\.[^.]+$/,"");
+      downloadBlob(
+        result.blob,
+        base +
+        "." +
+        result.extension
+      );
 
 
-        download(
-          blob,
-          base + "." + output
-        );
-
-
-        status.textContent =
-        "Done — converted file downloaded.";
-
-      }
-
-      else{
-
-        status.textContent =
-        "This conversion engine is not enabled yet. Your file stays on your device.";
-
-      }
+      status.textContent =
+      "Done — converted file downloaded.";
 
     }
 
     catch(error){
 
+      console.error(
+        error
+      );
+
+
       status.textContent =
-      error.message ||
-      "Conversion failed.";
+      error?.message ||
+      "Conversion failed. The file may be unsupported or damaged.";
 
     }
 
     finally{
 
-      convert.disabled = false;
+      convert.disabled =
+      false;
 
     }
 
@@ -969,4 +1981,4 @@ convert.addEventListener(
 </script>
 
 </body>
-</html>
+  </html>
