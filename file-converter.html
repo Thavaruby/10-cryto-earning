@@ -1,356 +1,300 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link rel="icon" type="image/png" href="assets/favico.png">
 
 <title>Free File Converter — My Crypto Faucet</title>
 
-<meta name="description"
-content="Free private file converter. Convert documents, PDFs and images directly in your browser without uploading files.">
+<meta
+  name="description"
+  content="Free online file converter. Convert images, PDFs and text files directly in your browser. Files are processed locally and are not uploaded."
+>
 
-<link rel="canonical"
-href="https://myfaucetcrypto.com/file-converter.html">
-
-<meta property="og:title"
-content="Free File Converter — My Crypto Faucet">
-
-<meta property="og:description"
-content="Convert supported files privately in your browser.">
-
-<meta property="og:url"
-content="https://myfaucetcrypto.com/file-converter.html">
+<meta name="robots" content="index, follow">
 
 <style>
-
-*{
-  box-sizing:border-box;
+* {
+  box-sizing: border-box;
 }
 
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#07152f;
-  color:#fff;
-  min-height:100vh;
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #07152f;
+  color: #111827;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
 }
 
-.wrap{
-  width:min(940px,94%);
-  margin:auto;
-  padding:28px 0 50px;
+.converter-card {
+  width: 100%;
+  max-width: 720px;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
 }
 
-h1{
-  margin:0;
-  text-align:center;
-  font-size:30px;
+h1 {
+  margin: 0 0 10px;
+  text-align: center;
+  color: #0b1f4b;
+  font-size: 28px;
 }
 
-.sub{
-  text-align:center;
-  color:#b9c5dc;
-  line-height:1.5;
-  margin:10px auto 25px;
+.subtitle {
+  margin: 0 auto 24px;
+  text-align: center;
+  color: #64748b;
+  line-height: 1.5;
+  font-size: 15px;
 }
 
-.card{
-  background:#fff;
-  color:#14213d;
-  border-radius:18px;
-  padding:22px;
-  box-shadow:0 12px 35px #0005;
+.drop-zone {
+  border: 2px dashed #9ca3af;
+  border-radius: 14px;
+  padding: 34px 20px;
+  text-align: center;
+  cursor: pointer;
+  background: #f8fafc;
+  transition: 0.2s ease;
 }
 
-.drop{
-  border:2px dashed #6679a5;
-  border-radius:16px;
-  padding:42px 18px;
-  text-align:center;
-  background:#f7f9fd;
-  cursor:pointer;
+.drop-zone:hover,
+.drop-zone.dragover {
+  border-color: #2563eb;
+  background: #eff6ff;
 }
 
-.drop.drag{
-  border-color:#7b3ff2;
-  background:#f1edff;
+.drop-icon {
+  font-size: 42px;
+  margin-bottom: 10px;
 }
 
-.drop strong{
-  display:block;
-  font-size:20px;
-  margin-bottom:8px;
+.drop-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1e293b;
 }
 
-.drop span{
-  color:#667085;
+.drop-text {
+  margin-top: 7px;
+  font-size: 14px;
+  color: #64748b;
 }
 
-input{
-  display:none;
+#fileInput {
+  display: none;
 }
 
-.file{
-  display:none;
-  margin-top:18px;
-  padding:16px;
-  border-radius:12px;
-  background:#eef2f8;
+.file-info {
+  display: none;
+  margin-top: 18px;
+  padding: 13px 15px;
+  border-radius: 10px;
+  background: #f1f5f9;
+  color: #334155;
+  font-size: 14px;
+  word-break: break-word;
 }
 
-.file.show{
-  display:block;
+.controls {
+  display: none;
+  margin-top: 20px;
 }
 
-.name{
-  font-weight:700;
-  overflow-wrap:anywhere;
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+  color: #1e293b;
 }
 
-.meta{
-  font-size:13px;
-  color:#667085;
-  margin-top:5px;
+select {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #ffffff;
+  font-size: 15px;
+  outline: none;
 }
 
-.options{
-  display:none;
-  margin-top:20px;
+select:focus {
+  border-color: #2563eb;
 }
 
-.options.show{
-  display:block;
+button {
+  width: 100%;
+  margin-top: 16px;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background: #f59e0b;
+  color: #111827;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
 }
 
-label{
-  font-weight:700;
-  display:block;
-  margin-bottom:8px;
+button:hover {
+  background: #d97706;
+  color: #ffffff;
 }
 
-select,
-button{
-  width:100%;
-  border-radius:10px;
-  padding:13px;
-  font-size:16px;
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
-select{
-  border:1px solid #ccd4e3;
-  background:#fff;
+.status {
+  display: none;
+  margin-top: 18px;
+  padding: 13px 15px;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.5;
+  word-break: break-word;
 }
 
-button{
-  border:0;
-  background:#6f35d9;
-  color:#fff;
-  font-weight:700;
-  margin-top:14px;
-  cursor:pointer;
+.status.info {
+  display: block;
+  background: #eff6ff;
+  color: #1d4ed8;
 }
 
-button:disabled{
-  opacity:.5;
-  cursor:not-allowed;
+.status.success {
+  display: block;
+  background: #ecfdf5;
+  color: #047857;
 }
 
-.status{
-  margin-top:16px;
-  text-align:center;
-  font-size:14px;
-  color:#667085;
-  min-height:22px;
-  line-height:1.5;
+.status.error {
+  display: block;
+  background: #fef2f2;
+  color: #b91c1c;
 }
 
-.privacy{
-  margin-top:18px;
-  text-align:center;
-  color:#667085;
-  font-size:13px;
+.privacy-note {
+  margin-top: 22px;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #64748b;
 }
 
-.note{
-  margin-top:18px;
-  padding:14px;
-  border-radius:10px;
-  background:#fff7df;
-  color:#6a5312;
-  font-size:13px;
-  line-height:1.5;
+.footer {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 13px;
 }
 
-@media(max-width:600px){
+.footer a {
+  color: #2563eb;
+  text-decoration: none;
+}
 
-  h1{
-    font-size:25px;
+.footer a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  body {
+    padding: 14px;
   }
 
-  .card{
-    padding:16px;
+  .converter-card {
+    padding: 20px;
   }
 
-  .drop{
-    padding:34px 14px;
+  h1 {
+    font-size: 24px;
   }
-
 }
-
 </style>
 </head>
 
 <body>
 
-<main class="wrap">
+<div class="converter-card">
 
-<h1>Free File Converter</h1>
+  <h1>Free File Converter</h1>
 
-<p class="sub">
-Convert supported documents, PDFs and images directly in your browser.
-Your files are not uploaded.
-</p>
+  <p class="subtitle">
+    Convert images, PDFs and text files directly in your browser.
+    Your files are processed locally and are not uploaded.
+  </p>
 
-<section class="card">
+  <div class="drop-zone" id="dropZone">
+    <div class="drop-icon">📁</div>
 
-<div
-id="drop"
-class="drop"
-tabindex="0"
-role="button"
-aria-label="Choose a file"
->
+    <div class="drop-title">
+      Drop your file here
+    </div>
 
-<strong>📁 Choose file or drag &amp; drop</strong>
+    <div class="drop-text">
+      or click to choose a file
+    </div>
 
-<span>
-One file at a time • Free • Private
-</span>
+    <input
+      type="file"
+      id="fileInput"
+      accept=".jpg,.jpeg,.png,.webp,.avif,.bmp,.gif,.pdf,.txt,.csv,.html,.htm,.rtf"
+    >
+  </div>
 
-<input
-id="fileInput"
-type="file"
->
+  <div class="file-info" id="fileInfo"></div>
 
-</div>
+  <div class="controls" id="controls">
 
+    <label for="outputFormat">
+      Convert to
+    </label>
 
-<div
-id="fileInfo"
-class="file"
->
+    <select id="outputFormat"></select>
 
-<div
-id="fileName"
-class="name">
-</div>
+    <button id="convertBtn">
+      Convert &amp; Download
+    </button>
 
-<div
-id="fileMeta"
-class="meta">
-</div>
+  </div>
 
-</div>
+  <div class="status" id="status"></div>
 
+  <div class="privacy-note">
+    🔒 Privacy-friendly:
+    files are processed in your browser whenever possible.
+    They are not uploaded to our server.
+  </div>
 
-<div
-id="options"
-class="options"
->
-
-<label for="format">
-Convert to
-</label>
-
-<select id="format">
-</select>
-
-<button
-id="convert"
-type="button"
->
-Convert &amp; Download
-</button>
+  <div class="footer">
+    <a href="index.html">← Back to My Crypto Faucet</a>
+  </div>
 
 </div>
-
-
-<div
-id="status"
-class="status">
-</div>
-
-
-<div class="privacy">
-
-🔒 <b>Your file stays in your browser.</b>
-
-<br>
-
-No file upload. No server-side conversion.
-
-</div>
-
-
-<div class="note">
-
-<b>Private browser conversion:</b>
-Your selected file is processed locally.
-Conversion libraries may be downloaded to your browser,
-but your selected file is not uploaded to our server.
-
-</div>
-
-</section>
-
-</main>
 
 
 <script type="module">
 
-/* =====================================================
-ELEMENTS
-===================================================== */
+/* =========================================================
+   CONFIG
+========================================================= */
 
-const input =
-document.getElementById("fileInput");
-
-const drop =
-document.getElementById("drop");
-
-const info =
-document.getElementById("fileInfo");
-
-const nameEl =
-document.getElementById("fileName");
-
-const metaEl =
-document.getElementById("fileMeta");
-
-const options =
-document.getElementById("options");
-
-const format =
-document.getElementById("format");
-
-const convert =
-document.getElementById("convert");
-
-const status =
-document.getElementById("status");
+const PDFJS_VERSION = "5.4.149";
+const DOCX_VERSION = "9.9.0";
+const PDFLIB_VERSION = "1.17.1";
 
 
-let currentFile = null;
-
-let downloadUrl = null;
-
-
-/* =====================================================
-SUPPORTED TYPES
-===================================================== */
+/* =========================================================
+   FILE TYPES
+========================================================= */
 
 const IMAGE_TYPES = [
   "jpg",
@@ -371,422 +315,175 @@ const TEXT_TYPES = [
 ];
 
 
-/* =====================================================
-EXTENSION
-===================================================== */
+/* =========================================================
+   DOM
+========================================================= */
 
-function extension(name){
+const dropZone = document.getElementById("dropZone");
+const fileInput = document.getElementById("fileInput");
+const fileInfo = document.getElementById("fileInfo");
+const controls = document.getElementById("controls");
+const outputFormat = document.getElementById("outputFormat");
+const convertBtn = document.getElementById("convertBtn");
+const statusBox = document.getElementById("status");
 
-  const parts =
-    String(name)
-      .toLowerCase()
-      .split(".");
+let selectedFile = null;
 
-  if(parts.length < 2)
-    return "";
 
-  return parts.pop();
+/* =========================================================
+   LIBRARY LOADER
+========================================================= */
 
+async function loadLibrary(url) {
+  return await import(url);
 }
 
 
-/* =====================================================
-SIZE
-===================================================== */
+/* =========================================================
+   PDF.JS LOADER
+   IMPORTANT:
+   Worker is explicitly configured here.
+========================================================= */
 
-function formatBytes(size){
+let pdfJsPromise = null;
 
-  if(size < 1024)
-    return size + " B";
+async function loadPdfJs() {
 
+  if (!pdfJsPromise) {
 
-  if(size < 1024 * 1024){
+    pdfJsPromise = (async () => {
 
-    return (
-      size / 1024
-    ).toFixed(1) + " KB";
-
-  }
-
-
-  if(size < 1024 * 1024 * 1024){
-
-    return (
-      size / 1024 / 1024
-    ).toFixed(2) + " MB";
-
-  }
-
-
-  return (
-    size / 1024 / 1024 / 1024
-  ).toFixed(2) + " GB";
-
-}
-
-
-/* =====================================================
-MIME → EXTENSION
-===================================================== */
-
-function mimeExtension(file){
-
-  const mime =
-    (file.type || "").toLowerCase();
-
-
-  const map = {
-
-    "image/jpeg":
-      "jpg",
-
-    "image/png":
-      "png",
-
-    "image/webp":
-      "webp",
-
-    "image/avif":
-      "avif",
-
-    "image/bmp":
-      "bmp",
-
-    "image/gif":
-      "gif",
-
-    "application/pdf":
-      "pdf",
-
-    "text/plain":
-      "txt",
-
-    "text/csv":
-      "csv",
-
-    "text/html":
-      "html",
-
-    "application/rtf":
-      "rtf",
-
-    "application/msword":
-      "doc",
-
-    "application/vnd.ms-excel":
-      "xls",
-
-    "application/vnd.ms-powerpoint":
-      "ppt",
-
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-      "docx",
-
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-      "xlsx",
-
-    "application/vnd.openxmlformats-officedocument.presentationml.presentation":
-      "pptx"
-
-  };
-
-
-  return map[mime] || "";
-
-}
-
-
-/* =====================================================
-DETECT TYPE
-===================================================== */
-
-function detectType(file){
-
-  const ext =
-    extension(file.name);
-
-
-  if(ext)
-    return ext;
-
-
-  return mimeExtension(file) || "unknown";
-
-}
-
-
-/* =====================================================
-OUTPUT OPTIONS
-===================================================== */
-
-function getOutputs(type){
-
-  /*
-   * IMAGE
-   */
-
-  if(IMAGE_TYPES.includes(type)){
-
-    return IMAGE_TYPES
-      .filter(item => item !== type)
-      .concat(["pdf"]);
-
-  }
-
-
-  /*
-   * PDF
-   */
-
-  if(type === "pdf"){
-
-    return [
-      "jpg",
-      "png",
-      "webp",
-      "txt",
-      "docx"
-    ];
-
-  }
-
-
-  /*
-   * SIMPLE TEXT FILES
-   */
-
-  if(TEXT_TYPES.includes(type)){
-
-    return [
-      "pdf"
-    ];
-
-  }
-
-
-  return [];
-
-}
-
-
-/* =====================================================
-SHOW FILE
-===================================================== */
-
-function showFile(file){
-
-  currentFile = file;
-
-
-  const type =
-    detectType(file);
-
-
-  nameEl.textContent =
-    file.name;
-
-
-  metaEl.textContent =
-    (file.type || "Unknown MIME type")
-    + " • "
-    + formatBytes(file.size)
-    + " • detected: "
-    + type.toUpperCase();
-
-
-  info.classList.add("show");
-
-
-  format.innerHTML = "";
-
-
-  const outputs =
-    getOutputs(type);
-
-
-  outputs.forEach(output => {
-
-    const option =
-      document.createElement("option");
-
-
-    option.value =
-      output;
-
-
-    option.textContent =
-      output.toUpperCase();
-
-
-    format.appendChild(option);
-
-  });
-
-
-  if(!outputs.length){
-
-    options.classList.remove("show");
-
-
-    status.textContent =
-      "This file type is not supported yet.";
-
-
-    return;
-
-  }
-
-
-  options.classList.add("show");
-
-  status.textContent = "";
-
-}
-
-
-/* =====================================================
-FILE PICKER
-===================================================== */
-
-drop.addEventListener(
-  "click",
-  () => input.click()
-);
-
-
-drop.addEventListener(
-  "keydown",
-  event => {
-
-    if(
-      event.key === "Enter" ||
-      event.key === " "
-    ){
-
-      event.preventDefault();
-
-      input.click();
-
-    }
-
-  }
-);
-
-
-input.addEventListener(
-  "change",
-  () => {
-
-    if(input.files[0]){
-
-      showFile(
-        input.files[0]
+      const pdfjs = await loadLibrary(
+        `https://esm.sh/pdfjs-dist@${PDFJS_VERSION}/build/pdf.mjs?bundle`
       );
 
-    }
+      /*
+       * This fixes:
+       *
+       * No "GlobalWorkerOptions.workerSrc" specified.
+       *
+       * The worker version MUST match the PDF.js version.
+       */
+
+      pdfjs.GlobalWorkerOptions.workerSrc =
+        `https://esm.sh/pdfjs-dist@${PDFJS_VERSION}/build/pdf.worker.mjs?bundle`;
+
+      return pdfjs;
+
+    })();
 
   }
-);
 
-
-/* =====================================================
-DRAG & DROP
-===================================================== */
-
-["dragenter","dragover"].forEach(
-  eventName => {
-
-    drop.addEventListener(
-      eventName,
-      event => {
-
-        event.preventDefault();
-
-        drop.classList.add("drag");
-
-      }
-    );
-
-  }
-);
-
-
-["dragleave","drop"].forEach(
-  eventName => {
-
-    drop.addEventListener(
-      eventName,
-      event => {
-
-        event.preventDefault();
-
-        drop.classList.remove("drag");
-
-      }
-    );
-
-  }
-);
-
-
-drop.addEventListener(
-  "drop",
-  event => {
-
-    const file =
-      event.dataTransfer.files[0];
-
-
-    if(file)
-      showFile(file);
-
-  }
-);
-
-
-/* =====================================================
-LIBRARY LOADER
-===================================================== */
-
-async function loadLibrary(url){
-
-  return import(url);
-
+  return await pdfJsPromise;
 }
 
 
-/* =====================================================
-DOWNLOAD
-===================================================== */
+/* =========================================================
+   PDF-LIB LOADER
+========================================================= */
 
-function downloadBlob(blob,name){
+let pdfLibPromise = null;
 
-  if(downloadUrl){
+async function loadPdfLib() {
 
-    URL.revokeObjectURL(
-      downloadUrl
+  if (!pdfLibPromise) {
+
+    pdfLibPromise = loadLibrary(
+      `https://esm.sh/pdf-lib@${PDFLIB_VERSION}?bundle`
     );
-
-    downloadUrl = null;
 
   }
 
-
-  downloadUrl =
-    URL.createObjectURL(blob);
-
-
-  const link =
-    document.createElement("a");
+  return await pdfLibPromise;
+}
 
 
-  link.href =
-    downloadUrl;
+/* =========================================================
+   DOCX LOADER
+========================================================= */
+
+let docxPromise = null;
+
+async function loadDocx() {
+
+  if (!docxPromise) {
+
+    docxPromise = loadLibrary(
+      `https://esm.sh/docx@${DOCX_VERSION}?bundle`
+    );
+
+  }
+
+  return await docxPromise;
+}
 
 
-  link.download =
-    name;
+/* =========================================================
+   HELPERS
+========================================================= */
 
+function getExtension(filename) {
+
+  const parts = filename.toLowerCase().split(".");
+
+  if (parts.length < 2) {
+    return "";
+  }
+
+  return parts.pop();
+}
+
+
+function getBaseName(filename) {
+
+  return filename.replace(/\.[^/.]+$/, "");
+}
+
+
+function formatBytes(bytes) {
+
+  if (bytes < 1024) {
+    return bytes + " B";
+  }
+
+  if (bytes < 1024 * 1024) {
+    return (bytes / 1024).toFixed(1) + " KB";
+  }
+
+  if (bytes < 1024 * 1024 * 1024) {
+    return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+  }
+
+  return (bytes / (1024 * 1024 * 1024)).toFixed(1) + " GB";
+}
+
+
+function showStatus(message, type) {
+
+  statusBox.className = "status " + type;
+  statusBox.textContent = message;
+}
+
+
+function clearStatus() {
+
+  statusBox.className = "status";
+  statusBox.textContent = "";
+}
+
+
+/* =========================================================
+   DOWNLOAD
+========================================================= */
+
+function downloadBlob(blob, filename) {
+
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = filename;
 
   document.body.appendChild(link);
 
@@ -794,146 +491,181 @@ function downloadBlob(blob,name){
 
   link.remove();
 
-
-  setTimeout(
-    () => {
-
-      if(downloadUrl){
-
-        URL.revokeObjectURL(
-          downloadUrl
-        );
-
-        downloadUrl = null;
-
-      }
-
-    },
-    5000
-  );
-
+  setTimeout(() => {
+    URL.revokeObjectURL(url);
+  }, 1000);
 }
 
 
-/* =====================================================
-IMAGE MIME
-===================================================== */
+/* =========================================================
+   FILE SELECTION
+========================================================= */
 
-function imageMime(output){
+function handleFile(file) {
 
-  const map = {
+  if (!file) {
+    return;
+  }
 
-    jpg:
-      "image/jpeg",
+  selectedFile = file;
 
-    jpeg:
-      "image/jpeg",
+  const ext = getExtension(file.name);
 
-    png:
-      "image/png",
+  if (
+    !IMAGE_TYPES.includes(ext) &&
+    ext !== "pdf" &&
+    !TEXT_TYPES.includes(ext)
+  ) {
 
-    webp:
-      "image/webp",
+    selectedFile = null;
 
-    avif:
-      "image/avif",
+    fileInfo.style.display = "none";
+    controls.style.display = "none";
 
-    bmp:
-      "image/bmp",
-
-    gif:
-      "image/gif"
-
-  };
-
-
-  return map[output] || "";
-
-}
-
-
-/* =====================================================
-IMAGE → IMAGE
-===================================================== */
-
-async function imageToImage(
-  file,
-  output
-){
-
-  const image =
-    new Image();
-
-
-  const objectUrl =
-    URL.createObjectURL(file);
-
-
-  try{
-
-    await new Promise(
-      (resolve,reject) => {
-
-        image.onload =
-          resolve;
-
-
-        image.onerror =
-          () => reject(
-            new Error(
-              "The image could not be decoded."
-            )
-          );
-
-
-        image.src =
-          objectUrl;
-
-      }
+    showStatus(
+      "This file type is not supported.",
+      "error"
     );
 
+    return;
+  }
 
-    const canvas =
-      document.createElement(
-        "canvas"
+  clearStatus();
+
+  fileInfo.style.display = "block";
+
+  fileInfo.textContent =
+    `Selected file: ${file.name} (${formatBytes(file.size)})`;
+
+  controls.style.display = "block";
+
+  populateOutputOptions(ext);
+}
+
+
+/* =========================================================
+   OUTPUT OPTIONS
+========================================================= */
+
+function populateOutputOptions(ext) {
+
+  outputFormat.innerHTML = "";
+
+  let options = [];
+
+  if (IMAGE_TYPES.includes(ext)) {
+
+    options = [
+      {
+        value: "jpg",
+        label: "JPG / JPEG"
+      },
+      {
+        value: "png",
+        label: "PNG"
+      },
+      {
+        value: "webp",
+        label: "WEBP"
+      },
+      {
+        value: "pdf",
+        label: "PDF"
+      }
+    ];
+
+  } else if (ext === "pdf") {
+
+    options = [
+      {
+        value: "jpg",
+        label: "JPG / JPEG"
+      },
+      {
+        value: "png",
+        label: "PNG"
+      },
+      {
+        value: "webp",
+        label: "WEBP"
+      },
+      {
+        value: "txt",
+        label: "TXT"
+      },
+      {
+        value: "docx",
+        label: "DOCX / Word"
+      }
+    ];
+
+  } else if (TEXT_TYPES.includes(ext)) {
+
+    options = [
+      {
+        value: "pdf",
+        label: "PDF"
+      }
+    ];
+
+  }
+
+  for (const option of options) {
+
+    const element = document.createElement("option");
+
+    element.value = option.value;
+    element.textContent = option.label;
+
+    outputFormat.appendChild(element);
+
+  }
+}
+
+
+/* =========================================================
+   IMAGE → IMAGE
+========================================================= */
+
+async function imageToImage(file, targetFormat) {
+
+  const imageUrl = URL.createObjectURL(file);
+
+  try {
+
+    const image = new Image();
+
+    await new Promise((resolve, reject) => {
+
+      image.onload = resolve;
+      image.onerror = () => reject(
+        new Error("Unable to read this image.")
       );
 
+      image.src = imageUrl;
 
-    canvas.width =
-      image.naturalWidth;
+    });
 
+    const canvas = document.createElement("canvas");
 
-    canvas.height =
-      image.naturalHeight;
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
 
+    const ctx = canvas.getContext("2d");
 
-    const ctx =
-      canvas.getContext(
-        "2d"
-      );
-
-
-    if(!ctx){
-
-      throw new Error(
-        "The browser could not create a canvas."
-      );
-
+    if (!ctx) {
+      throw new Error("Canvas is not supported by this browser.");
     }
 
-
     /*
-     * JPEG does not support transparency.
+     * JPG does not support transparency.
+     * White background is used when converting transparent
+     * images to JPG.
      */
 
-    if(
-      output === "jpg" ||
-      output === "jpeg"
-    ){
+    if (targetFormat === "jpg") {
 
-      ctx.fillStyle =
-        "#ffffff";
-
+      ctx.fillStyle = "#ffffff";
 
       ctx.fillRect(
         0,
@@ -944,1172 +676,935 @@ async function imageToImage(
 
     }
 
-
     ctx.drawImage(
       image,
       0,
-      0
+      0,
+      canvas.width,
+      canvas.height
     );
 
+    let mimeType = "image/png";
 
-    const mime =
-      imageMime(output);
-
-
-    const blob =
-      await new Promise(
-        resolve => {
-
-          canvas.toBlob(
-            resolve,
-            mime,
-            output === "png"
-              ? undefined
-              : 0.92
-          );
-
-        }
-      );
-
-
-    if(!blob){
-
-      throw new Error(
-        output.toUpperCase()
-        + " encoding is not supported by this browser."
-      );
-
+    if (targetFormat === "jpg") {
+      mimeType = "image/jpeg";
     }
 
-
-    if(blob.type !== mime){
-
-      throw new Error(
-        "The browser did not create the requested "
-        + output.toUpperCase()
-        + " format."
-      );
-
+    if (targetFormat === "webp") {
+      mimeType = "image/webp";
     }
 
+    const blob = await new Promise((resolve, reject) => {
+
+      canvas.toBlob(
+        result => {
+
+          if (!result) {
+            reject(
+              new Error(
+                "This browser could not create the requested image format."
+              )
+            );
+
+            return;
+          }
+
+          resolve(result);
+
+        },
+        mimeType,
+        0.92
+      );
+
+    });
 
     return blob;
 
-  }
+  } finally {
 
-  finally{
-
-    URL.revokeObjectURL(
-      objectUrl
-    );
+    URL.revokeObjectURL(imageUrl);
 
   }
-
 }
 
 
-/* =====================================================
-IMAGE → PDF
-===================================================== */
+/* =========================================================
+   IMAGE → PDF
+========================================================= */
 
-async function imageToPdf(file){
+async function imageToPdf(file) {
 
   const {
     PDFDocument
-  } =
-    await loadLibrary(
-      "https://esm.sh/pdf-lib@1.17.1?bundle"
-    );
+  } = await loadPdfLib();
 
+  const bytes = new Uint8Array(
+    await file.arrayBuffer()
+  );
 
-  const pdf =
-    await PDFDocument.create();
+  const pdfDoc = await PDFDocument.create();
 
-
-  const bytes =
-    new Uint8Array(
-      await file.arrayBuffer()
-    );
-
-
-  const type =
-    detectType(file);
-
+  const ext = getExtension(file.name);
 
   let image;
 
+  if (
+    ext === "jpg" ||
+    ext === "jpeg"
+  ) {
 
-  if(
-    type === "jpg" ||
-    type === "jpeg"
-  ){
+    image = await pdfDoc.embedJpg(bytes);
 
-    image =
-      await pdf.embedJpg(bytes);
+  } else if (ext === "png") {
 
-  }
+    image = await pdfDoc.embedPng(bytes);
 
-  else if(type === "png"){
+  } else {
 
-    image =
-      await pdf.embedPng(bytes);
+    /*
+     * Browser canvas is used to normalize formats such as
+     * WEBP, AVIF, BMP and GIF before embedding into PDF.
+     */
 
-  }
+    const imageUrl = URL.createObjectURL(file);
 
-  else{
+    try {
 
-    const png =
-      await imageToImage(
-        file,
-        "png"
-      );
+      const img = new Image();
 
+      await new Promise((resolve, reject) => {
 
-    image =
-      await pdf.embedPng(
-        new Uint8Array(
-          await png.arrayBuffer()
-        )
-      );
+        img.onload = resolve;
+        img.onerror = () => reject(
+          new Error("Unable to read this image.")
+        );
 
-  }
-
-
-  const maxWidth =
-    595;
-
-
-  const maxHeight =
-    842;
-
-
-  const scale =
-    Math.min(
-      1,
-      maxWidth / image.width,
-      maxHeight / image.height
-    );
-
-
-  const width =
-    image.width * scale;
-
-
-  const height =
-    image.height * scale;
-
-
-  const page =
-    pdf.addPage([
-      width,
-      height
-    ]);
-
-
-  page.drawImage(
-    image,
-    {
-      x:0,
-      y:0,
-      width,
-      height
-    }
-  );
-
-
-  return new Blob(
-    [
-      await pdf.save()
-    ],
-    {
-      type:
-        "application/pdf"
-    }
-  );
-
-}
-
-
-/* =====================================================
-PDF → IMAGE
-===================================================== */
-
-async function pdfToImage(
-  file,
-  output
-){
-
-  const pdfjs =
-    await loadLibrary(
-      "https://esm.sh/pdfjs-dist@5.4.149/build/pdf.mjs?bundle"
-    );
-
-
-  const data =
-    new Uint8Array(
-      await file.arrayBuffer()
-    );
-
-
-  const pdf =
-    await pdfjs.getDocument({
-      data,
-      disableWorker:true
-    }).promise;
-
-
-  const blobs = [];
-
-
-  for(
-    let pageNumber = 1;
-    pageNumber <= pdf.numPages;
-    pageNumber++
-  ){
-
-    const page =
-      await pdf.getPage(
-        pageNumber
-      );
-
-
-    const viewport =
-      page.getViewport({
-        scale:1.6
+        img.src = imageUrl;
       });
 
+      const canvas = document.createElement("canvas");
 
-    const canvas =
-      document.createElement(
-        "canvas"
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+
+      const ctx = canvas.getContext("2d");
+
+      if (!ctx) {
+        throw new Error("Canvas is not supported.");
+      }
+
+      ctx.drawImage(
+        img,
+        0,
+        0,
+        canvas.width,
+        canvas.height
       );
 
-
-    canvas.width =
-      Math.ceil(
-        viewport.width
-      );
-
-
-    canvas.height =
-      Math.ceil(
-        viewport.height
-      );
-
-
-    const context =
-      canvas.getContext(
-        "2d"
-      );
-
-
-    if(!context){
-
-      throw new Error(
-        "Could not create PDF rendering canvas."
-      );
-
-    }
-
-
-    await page.render({
-      canvasContext:context,
-      viewport
-    }).promise;
-
-
-    const mime =
-      output === "jpg"
-        ? "image/jpeg"
-        : output === "webp"
-          ? "image/webp"
-          : "image/png";
-
-
-    const blob =
-      await new Promise(
-        resolve => {
+      const pngBlob = await new Promise(
+        (resolve, reject) => {
 
           canvas.toBlob(
-            resolve,
-            mime,
-            0.92
+            blob => {
+
+              if (!blob) {
+                reject(
+                  new Error(
+                    "Unable to convert image to PNG."
+                  )
+                );
+
+                return;
+              }
+
+              resolve(blob);
+            },
+            "image/png"
           );
 
         }
       );
 
+      const pngBytes = new Uint8Array(
+        await pngBlob.arrayBuffer()
+      );
 
-    if(!blob){
+      image = await pdfDoc.embedPng(
+        pngBytes
+      );
 
-      throw new Error(
-        "Could not create "
-        + output.toUpperCase()
-        + " image."
+    } finally {
+
+      URL.revokeObjectURL(imageUrl);
+
+    }
+  }
+
+  const width = image.width;
+  const height = image.height;
+
+  const page = pdfDoc.addPage([
+    width,
+    height
+  ]);
+
+  page.drawImage(image, {
+    x: 0,
+    y: 0,
+    width,
+    height
+  });
+
+  const pdfBytes = await pdfDoc.save();
+
+  return new Blob(
+    [pdfBytes],
+    {
+      type: "application/pdf"
+    }
+  );
+}
+
+
+/* =========================================================
+   PDF → IMAGE
+========================================================= */
+
+async function pdfToImage(file, targetFormat) {
+
+  const pdfjs = await loadPdfJs();
+
+  const data = new Uint8Array(
+    await file.arrayBuffer()
+  );
+
+  /*
+   * Worker is enabled and configured by loadPdfJs().
+   */
+
+  const pdf = await pdfjs.getDocument({
+    data
+  }).promise;
+
+  /*
+   * For a multi-page PDF, each page is converted separately.
+   * A ZIP library is intentionally not added here.
+   *
+   * To keep this converter lightweight, the first page is
+   * downloaded.
+   */
+
+  const page = await pdf.getPage(1);
+
+  const viewport = page.getViewport({
+    scale: 2
+  });
+
+  const canvas = document.createElement("canvas");
+
+  canvas.width = Math.ceil(viewport.width);
+  canvas.height = Math.ceil(viewport.height);
+
+  const ctx = canvas.getContext("2d");
+
+  if (!ctx) {
+    throw new Error("Canvas is not supported.");
+  }
+
+  await page.render({
+    canvasContext: ctx,
+    viewport
+  }).promise;
+
+  let mimeType = "image/png";
+
+  if (targetFormat === "jpg") {
+    mimeType = "image/jpeg";
+  }
+
+  if (targetFormat === "webp") {
+    mimeType = "image/webp";
+  }
+
+  const blob = await new Promise(
+    (resolve, reject) => {
+
+      canvas.toBlob(
+        result => {
+
+          if (!result) {
+
+            reject(
+              new Error(
+                "Unable to create the output image."
+              )
+            );
+
+            return;
+          }
+
+          resolve(result);
+
+        },
+        mimeType,
+        0.92
       );
 
     }
+  );
 
-
-    blobs.push(blob);
-
-  }
-
-
-  /*
-   * ONE PAGE
-   */
-
-  if(blobs.length === 1){
-
-    return {
-
-      blob:
-        blobs[0],
-
-      extension:
-        output
-
-    };
-
-  }
-
-
-  /*
-   * MULTI PAGE → ZIP
-   */
-
-  const {
-    zipSync
-  } =
-    await loadLibrary(
-      "https://esm.sh/fflate@0.8.2?bundle"
-    );
-
-
-  const files = {};
-
-
-  for(
-    let i = 0;
-    i < blobs.length;
-    i++
-  ){
-
-    files[
-      "page-" +
-      (i + 1) +
-      "." +
-      output
-    ] =
-      new Uint8Array(
-        await blobs[i].arrayBuffer()
-      );
-
-  }
-
-
-  return {
-
-    blob:
-      new Blob(
-        [
-          zipSync(files)
-        ],
-        {
-          type:
-            "application/zip"
-        }
-      ),
-
-    extension:
-      "zip"
-
-  };
-
+  return blob;
 }
 
 
-/* =====================================================
-PDF → TEXT
-===================================================== */
+/* =========================================================
+   PDF → TEXT
+========================================================= */
 
-async function pdfToText(file){
+async function pdfToText(file) {
 
-  const pdfjs =
-    await loadLibrary(
-      "https://esm.sh/pdfjs-dist@5.4.149/build/pdf.mjs?bundle"
-    );
+  const pdfjs = await loadPdfJs();
 
+  const data = new Uint8Array(
+    await file.arrayBuffer()
+  );
 
-  const data =
-    new Uint8Array(
-      await file.arrayBuffer()
-    );
+  const pdf = await pdfjs.getDocument({
+    data
+  }).promise;
 
+  const pages = [];
 
-  const pdf =
-    await pdfjs.getDocument({
-      data,
-      disableWorker:true
-    }).promise;
-
-
-  let text = "";
-
-
-  for(
+  for (
     let pageNumber = 1;
     pageNumber <= pdf.numPages;
     pageNumber++
-  ){
+  ) {
 
-    const page =
-      await pdf.getPage(
-        pageNumber
-      );
+    const page = await pdf.getPage(
+      pageNumber
+    );
 
-
-    const content =
+    const textContent =
       await page.getTextContent();
 
+    const lines = [];
 
-    text +=
-      "\n--- Page "
-      + pageNumber
-      + " ---\n";
+    let currentLine = "";
+    let lastY = null;
 
+    for (const item of textContent.items) {
 
-    text +=
-      content.items
-        .map(
-          item => item.str || ""
-        )
-        .join(" ");
+      if (!("str" in item)) {
+        continue;
+      }
+
+      const text = item.str || "";
+
+      const y =
+        item.transform &&
+        item.transform.length > 5
+          ? item.transform[5]
+          : null;
+
+      /*
+       * Detect a new visual line.
+       */
+
+      if (
+        lastY !== null &&
+        y !== null &&
+        Math.abs(y - lastY) > 5
+      ) {
+
+        if (currentLine.trim()) {
+          lines.push(
+            currentLine.trim()
+          );
+        }
+
+        currentLine = text;
+
+      } else {
+
+        currentLine += text;
+
+      }
+
+      lastY = y;
+    }
+
+    if (currentLine.trim()) {
+      lines.push(
+        currentLine.trim()
+      );
+    }
+
+    pages.push(
+      lines.join("\n")
+    );
+  }
+
+  const result = pages
+    .map((pageText, index) => {
+
+      return (
+        `--- Page ${index + 1} ---\n\n` +
+        pageText
+      );
+
+    })
+    .join("\n\n");
+
+  if (!result.replace(/--- Page \d+ ---/g, "").trim()) {
+
+    throw new Error(
+      "No selectable text was found in this PDF. " +
+      "This may be a scanned or image-only PDF. OCR is required for scanned PDFs."
+    );
 
   }
 
-
-  return text.trim();
-
+  return result;
 }
 
 
-/* =====================================================
-PDF → DOCX
-===================================================== */
+/* =========================================================
+   PDF → DOCX
+========================================================= */
 
-async function pdfToDocx(file){
+async function pdfToDocx(file) {
+
+  const text = await pdfToText(file);
 
   const {
     Document,
     Packer,
     Paragraph,
-    TextRun,
-    HeadingLevel
-  } =
-    await loadLibrary(
-      "https://esm.sh/docx@9.9.0?bundle"
-    );
+    TextRun
+  } = await loadDocx();
 
-
-  const text =
-    await pdfToText(file);
-
-
-  if(!text.trim()){
-
-    throw new Error(
-      "No selectable text was found in this PDF. This may be a scanned or image-only PDF."
-    );
-
-  }
-
-
-  const rawPages =
-    text.split(
-      /\n--- Page \d+ ---\n/
-    );
-
+  const pageTexts = text.split(
+    /--- Page \d+ ---/g
+  );
 
   const children = [];
 
+  for (
+    let i = 0;
+    i < pageTexts.length;
+    i++
+  ) {
 
-  rawPages.forEach(
-    (pageText,pageIndex) => {
+    const pageText =
+      pageTexts[i].trim();
 
-      const clean =
-        pageText.trim();
+    if (!pageText) {
+      continue;
+    }
 
+    /*
+     * Add page heading.
+     */
 
-      if(!clean)
-        return;
-
-
-      if(pageIndex > 0){
-
-        children.push(
-          new Paragraph({
-            text:"",
-            pageBreakBefore:true
+    children.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: `Page ${i}`,
+            bold: true
           })
-        );
-
-      }
-
-
-      const lines =
-        clean.split("\n");
-
-
-      lines.forEach(
-        line => {
-
-          const value =
-            line.trim();
-
-
-          if(!value){
-
-            children.push(
-              new Paragraph({
-                children:[
-                  new TextRun({
-                    text:""
-                  })
-                ]
-              })
-            );
-
-            return;
-
-          }
-
-
-          children.push(
-            new Paragraph({
-              children:[
-                new TextRun({
-                  text:value
-                })
-              ],
-              spacing:{
-                after:120
-              }
-            })
-          );
-
+        ],
+        spacing: {
+          after: 200
         }
+      })
+    );
+
+    const lines = pageText.split(
+      /\r?\n/
+    );
+
+    for (const line of lines) {
+
+      children.push(
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: line
+            })
+          ]
+        })
       );
 
     }
-  );
+  }
 
+  const document = new Document({
+    sections: [
+      {
+        properties: {},
+        children
+      }
+    ]
+  });
 
-  const document =
-    new Document({
+  const blob =
+    await Packer.toBlob(document);
 
-      sections:[
-        {
-          properties:{
-            page:{
-              margin:{
-                top:720,
-                right:720,
-                bottom:720,
-                left:720
-              }
-            }
-          },
-
-          children
-
-        }
-      ]
-
-    });
-
-
-  return Packer.toBlob(
-    document
-  );
-
+  return blob;
 }
 
 
-/* =====================================================
-TEXT → PDF
-===================================================== */
+/* =========================================================
+   TEXT → PDF
+========================================================= */
 
-async function textToPdf(text){
+async function textToPdf(file) {
 
   const {
     PDFDocument,
     StandardFonts,
     rgb
-  } =
-    await loadLibrary(
-      "https://esm.sh/pdf-lib@1.17.1?bundle"
-    );
+  } = await loadPdfLib();
 
+  const text = await file.text();
 
-  const pdf =
+  const pdfDoc =
     await PDFDocument.create();
 
-
   const font =
-    await pdf.embedFont(
+    await pdfDoc.embedFont(
       StandardFonts.Helvetica
     );
 
+  /*
+   * A4 size in PDF points.
+   */
 
-  const lines =
-    String(text)
-      .replace(/\r\n/g,"\n")
-      .split("\n");
+  const pageWidth = 595.28;
+  const pageHeight = 841.89;
 
+  const margin = 50;
 
-  let page;
-  let y;
+  const fontSize = 11;
+  const lineHeight = 15;
 
+  const usableWidth =
+    pageWidth - margin * 2;
 
-  function newPage(){
+  const lines = [];
 
-    page =
-      pdf.addPage([
-        595,
-        842
-      ]);
+  /*
+   * Normalize line endings.
+   */
 
+  const normalized =
+    text.replace(/\r\n/g, "\n")
+        .replace(/\r/g, "\n");
 
-    y = 800;
+  const rawLines =
+    normalized.split("\n");
 
-  }
+  /*
+   * Simple word wrapping.
+   */
 
+  for (const rawLine of rawLines) {
 
-  newPage();
+    if (rawLine === "") {
 
+      lines.push("");
 
-  for(
-    const rawLine of lines
-  ){
+      continue;
+    }
 
-    if(y < 45)
-      newPage();
+    const words =
+      rawLine.split(/\s+/);
 
+    let current = "";
 
-    let remaining =
-      rawLine || " ";
+    for (const word of words) {
 
+      const test =
+        current
+          ? current + " " + word
+          : word;
 
-    while(
-      remaining.length > 95
-    ){
-
-      const part =
-        remaining.slice(
-          0,
-          95
+      const width =
+        font.widthOfTextAtSize(
+          test,
+          fontSize
         );
 
+      if (
+        width > usableWidth &&
+        current
+      ) {
+
+        lines.push(current);
+
+        current = word;
+
+      } else {
+
+        current = test;
+
+      }
+    }
+
+    if (current) {
+      lines.push(current);
+    }
+  }
+
+  let page = pdfDoc.addPage([
+    pageWidth,
+    pageHeight
+  ]);
+
+  let y =
+    pageHeight - margin;
+
+  for (const line of lines) {
+
+    if (
+      y < margin
+    ) {
+
+      page = pdfDoc.addPage([
+        pageWidth,
+        pageHeight
+      ]);
+
+      y =
+        pageHeight - margin;
+    }
+
+    if (line) {
 
       page.drawText(
-        part,
+        line,
         {
-          x:40,
+          x: margin,
           y,
-          size:10,
+          size: fontSize,
           font,
-          color:
-            rgb(
-              0.08,
-              0.10,
-              0.16
-            )
+          color: rgb(
+            0,
+            0,
+            0
+          )
         }
       );
 
-
-      y -= 14;
-
-
-      if(y < 45)
-        newPage();
-
-
-      remaining =
-        remaining.slice(95);
-
     }
 
-
-    page.drawText(
-      remaining || " ",
-      {
-        x:40,
-        y,
-        size:10,
-        font,
-        color:
-          rgb(
-            0.08,
-            0.10,
-            0.16
-          )
-      }
-    );
-
-
-    y -= 14;
-
+    y -= lineHeight;
   }
 
+  const pdfBytes =
+    await pdfDoc.save();
 
   return new Blob(
-    [
-      await pdf.save()
-    ],
+    [pdfBytes],
     {
-      type:
-        "application/pdf"
+      type: "application/pdf"
     }
   );
-
 }
 
 
-/* =====================================================
-CSV → PDF
-===================================================== */
+/* =========================================================
+   MAIN CONVERSION
+========================================================= */
 
-async function csvToPdf(file){
+async function convertFile() {
 
-  const text =
-    await file.text();
+  if (!selectedFile) {
 
-
-  return textToPdf(
-    text
-  );
-
-}
-
-
-/* =====================================================
-HTML → PDF
-===================================================== */
-
-async function htmlToPdf(file){
-
-  const html =
-    await file.text();
-
-
-  const container =
-    document.createElement(
-      "div"
+    showStatus(
+      "Please select a file first.",
+      "error"
     );
 
-
-  container.innerHTML =
-    html;
-
-
-  const text =
-    container.innerText ||
-    container.textContent ||
-    "";
-
-
-  return textToPdf(
-    text
-  );
-
-}
-
-
-/* =====================================================
-RTF → TEXT
-===================================================== */
-
-function rtfToText(text){
-
-  return text
-
-    .replace(
-      /\\'[0-9a-fA-F]{2}/g,
-      ""
-    )
-
-    .replace(
-      /\\par[d]?/g,
-      "\n"
-    )
-
-    .replace(
-      /\\tab/g,
-      "\t"
-    )
-
-    .replace(
-      /\\[a-zA-Z]+-?\d* ?/g,
-      ""
-    )
-
-    .replace(
-      /[{}]/g,
-      ""
-    )
-
-    .replace(
-      /\n{3,}/g,
-      "\n\n"
-    )
-
-    .trim();
-
-}
-
-
-/* =====================================================
-RTF → PDF
-===================================================== */
-
-async function rtfToPdf(file){
-
-  const text =
-    await file.text();
-
-
-  return textToPdf(
-    rtfToText(text)
-  );
-
-}
-
-
-/* =====================================================
-MAIN CONVERSION ROUTER
-===================================================== */
-
-async function convertFile(
-  file,
-  output
-){
-
-  const from =
-    detectType(file);
-
-
-  /* ---------------------------------------------------
-   * IMAGE → IMAGE
-   * --------------------------------------------------- */
-
-  if(
-    IMAGE_TYPES.includes(from) &&
-    IMAGE_TYPES.includes(output)
-  ){
-
-    return {
-
-      blob:
-        await imageToImage(
-          file,
-          output
-        ),
-
-      extension:
-        output
-
-    };
-
+    return;
   }
 
-
-  /* ---------------------------------------------------
-   * IMAGE → PDF
-   * --------------------------------------------------- */
-
-  if(
-    IMAGE_TYPES.includes(from) &&
-    output === "pdf"
-  ){
-
-    return {
-
-      blob:
-        await imageToPdf(
-          file
-        ),
-
-      extension:
-        "pdf"
-
-    };
-
-  }
-
-
-  /* ---------------------------------------------------
-   * PDF → IMAGE
-   * --------------------------------------------------- */
-
-  if(
-    from === "pdf" &&
-    (
-      output === "jpg" ||
-      output === "png" ||
-      output === "webp"
-    )
-  ){
-
-    return await pdfToImage(
-      file,
-      output
+  const sourceExt =
+    getExtension(
+      selectedFile.name
     );
 
+  const target =
+    outputFormat.value;
+
+  if (!target) {
+
+    showStatus(
+      "Please select an output format.",
+      "error"
+    );
+
+    return;
   }
 
+  convertBtn.disabled = true;
 
-  /* ---------------------------------------------------
-   * PDF → TXT
-   * --------------------------------------------------- */
-
-  if(
-    from === "pdf" &&
-    output === "txt"
-  ){
-
-    return {
-
-      blob:
-        new Blob(
-          [
-            await pdfToText(file)
-          ],
-          {
-            type:
-              "text/plain;charset=utf-8"
-          }
-        ),
-
-      extension:
-        "txt"
-
-    };
-
-  }
-
-
-  /* ---------------------------------------------------
-   * PDF → DOCX
-   * --------------------------------------------------- */
-
-  if(
-    from === "pdf" &&
-    output === "docx"
-  ){
-
-    return {
-
-      blob:
-        await pdfToDocx(
-          file
-        ),
-
-      extension:
-        "docx"
-
-    };
-
-  }
-
-
-  /* ---------------------------------------------------
-   * TXT → PDF
-   * --------------------------------------------------- */
-
-  if(
-    from === "txt" &&
-    output === "pdf"
-  ){
-
-    return {
-
-      blob:
-        await textToPdf(
-          await file.text()
-        ),
-
-      extension:
-        "pdf"
-
-    };
-
-  }
-
-
-  /* ---------------------------------------------------
-   * CSV → PDF
-   * --------------------------------------------------- */
-
-  if(
-    from === "csv" &&
-    output === "pdf"
-  ){
-
-    return {
-
-      blob:
-        await csvToPdf(
-          file
-        ),
-
-      extension:
-        "pdf"
-
-    };
-
-  }
-
-
-  /* ---------------------------------------------------
-   * HTML → PDF
-   * --------------------------------------------------- */
-
-  if(
-    (
-      from === "html" ||
-      from === "htm"
-    ) &&
-    output === "pdf"
-  ){
-
-    return {
-
-      blob:
-        await htmlToPdf(
-          file
-        ),
-
-      extension:
-        "pdf"
-
-    };
-
-  }
-
-
-  /* ---------------------------------------------------
-   * RTF → PDF
-   * --------------------------------------------------- */
-
-  if(
-    from === "rtf" &&
-    output === "pdf"
-  ){
-
-    return {
-
-      blob:
-        await rtfToPdf(
-          file
-        ),
-
-      extension:
-        "pdf"
-
-    };
-
-  }
-
-
-  throw new Error(
-    "This conversion is not available."
+  showStatus(
+    "Converting your file… Please wait.",
+    "info"
   );
 
-}
+  try {
 
+    let blob;
+    let outputExtension;
 
-/* =====================================================
-CONVERT BUTTON
-===================================================== */
+    /* -----------------------------------------
+       IMAGE
+    ----------------------------------------- */
 
-convert.addEventListener(
-  "click",
-  async () => {
+    if (
+      IMAGE_TYPES.includes(sourceExt)
+    ) {
 
-    if(!currentFile)
-      return;
+      if (
+        target === "pdf"
+      ) {
 
-
-    const output =
-      format.value;
-
-
-    if(!output)
-      return;
-
-
-    convert.disabled =
-      true;
-
-
-    status.textContent =
-      "Preparing local conversion engine…";
-
-
-    try{
-
-      const result =
-        await convertFile(
-          currentFile,
-          output
-        );
-
-
-      const base =
-        currentFile.name
-          .replace(
-            /\.[^.]+$/,
-            ""
+        blob =
+          await imageToPdf(
+            selectedFile
           );
 
+        outputExtension =
+          "pdf";
 
-      downloadBlob(
-        result.blob,
-        base +
-        "." +
-        result.extension
-      );
+      } else {
 
+        blob =
+          await imageToImage(
+            selectedFile,
+            target
+          );
 
-      status.textContent =
-        "Done — converted file downloaded.";
-
-    }
-
-    catch(error){
-
-      console.error(
-        error
-      );
-
-
-      status.textContent =
-        error?.message ||
-        "Conversion failed. The file may be unsupported or damaged.";
+        outputExtension =
+          target;
+      }
 
     }
 
-    finally{
+    /* -----------------------------------------
+       PDF
+    ----------------------------------------- */
 
-      convert.disabled =
-        false;
+    else if (
+      sourceExt === "pdf"
+    ) {
 
+      if (
+        target === "txt"
+      ) {
+
+        const text =
+          await pdfToText(
+            selectedFile
+          );
+
+        blob =
+          new Blob(
+            [text],
+            {
+              type: "text/plain;charset=utf-8"
+            }
+          );
+
+        outputExtension =
+          "txt";
+
+      } else if (
+        target === "docx"
+      ) {
+
+        blob =
+          await pdfToDocx(
+            selectedFile
+          );
+
+        outputExtension =
+          "docx";
+
+      } else {
+
+        blob =
+          await pdfToImage(
+            selectedFile,
+            target
+          );
+
+        outputExtension =
+          target;
+      }
+
+    }
+
+    /* -----------------------------------------
+       TEXT
+    ----------------------------------------- */
+
+    else if (
+      TEXT_TYPES.includes(sourceExt)
+    ) {
+
+      if (
+        target === "pdf"
+      ) {
+
+        blob =
+          await textToPdf(
+            selectedFile
+          );
+
+        outputExtension =
+          "pdf";
+
+      } else {
+
+        throw new Error(
+          "This conversion is not supported."
+        );
+      }
+
+    }
+
+    else {
+
+      throw new Error(
+        "Unsupported file type."
+      );
+    }
+
+    const baseName =
+      getBaseName(
+        selectedFile.name
+      );
+
+    const filename =
+      `${baseName}.${outputExtension}`;
+
+    downloadBlob(
+      blob,
+      filename
+    );
+
+    showStatus(
+      `Conversion completed successfully. ${filename} is ready.`,
+      "success"
+    );
+
+  } catch (error) {
+
+    console.error(
+      "File conversion error:",
+      error
+    );
+
+    showStatus(
+      error?.message ||
+      "Conversion failed. Please try another file.",
+      "error"
+    );
+
+  } finally {
+
+    convertBtn.disabled = false;
+
+  }
+}
+
+
+/* =========================================================
+   DRAG & DROP
+========================================================= */
+
+dropZone.addEventListener(
+  "click",
+  () => {
+    fileInput.click();
+  }
+);
+
+
+fileInput.addEventListener(
+  "change",
+  () => {
+
+    const file =
+      fileInput.files?.[0];
+
+    if (file) {
+      handleFile(file);
     }
 
   }
+);
+
+
+dropZone.addEventListener(
+  "dragover",
+  event => {
+
+    event.preventDefault();
+
+    dropZone.classList.add(
+      "dragover"
+    );
+
+  }
+);
+
+
+dropZone.addEventListener(
+  "dragleave",
+  () => {
+
+    dropZone.classList.remove(
+      "dragover"
+    );
+
+  }
+);
+
+
+dropZone.addEventListener(
+  "drop",
+  event => {
+
+    event.preventDefault();
+
+    dropZone.classList.remove(
+      "dragover"
+    );
+
+    const file =
+      event.dataTransfer?.files?.[0];
+
+    if (file) {
+      handleFile(file);
+    }
+
+  }
+);
+
+
+/* =========================================================
+   CONVERT BUTTON
+========================================================= */
+
+convertBtn.addEventListener(
+  "click",
+  convertFile
 );
 
 </script>
