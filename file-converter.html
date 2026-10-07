@@ -233,6 +233,7 @@ button:disabled {
   </p>
 
   <div class="drop-zone" id="dropZone">
+
     <div class="drop-icon">📁</div>
 
     <div class="drop-title">
@@ -248,6 +249,7 @@ button:disabled {
       id="fileInput"
       accept=".jpg,.jpeg,.png,.webp,.avif,.bmp,.gif,.pdf,.txt,.csv,.html,.htm,.rtf"
     >
+
   </div>
 
   <div class="file-info" id="fileInfo"></div>
@@ -319,13 +321,26 @@ const TEXT_TYPES = [
    DOM
 ========================================================= */
 
-const dropZone = document.getElementById("dropZone");
-const fileInput = document.getElementById("fileInput");
-const fileInfo = document.getElementById("fileInfo");
-const controls = document.getElementById("controls");
-const outputFormat = document.getElementById("outputFormat");
-const convertBtn = document.getElementById("convertBtn");
-const statusBox = document.getElementById("status");
+const dropZone =
+  document.getElementById("dropZone");
+
+const fileInput =
+  document.getElementById("fileInput");
+
+const fileInfo =
+  document.getElementById("fileInfo");
+
+const controls =
+  document.getElementById("controls");
+
+const outputFormat =
+  document.getElementById("outputFormat");
+
+const convertBtn =
+  document.getElementById("convertBtn");
+
+const statusBox =
+  document.getElementById("status");
 
 let selectedFile = null;
 
@@ -340,9 +355,7 @@ async function loadLibrary(url) {
 
 
 /* =========================================================
-   PDF.JS LOADER
-   IMPORTANT:
-   Worker is explicitly configured here.
+   PDF.JS
 ========================================================= */
 
 let pdfJsPromise = null;
@@ -356,14 +369,6 @@ async function loadPdfJs() {
       const pdfjs = await loadLibrary(
         `https://esm.sh/pdfjs-dist@${PDFJS_VERSION}/build/pdf.mjs?bundle`
       );
-
-      /*
-       * This fixes:
-       *
-       * No "GlobalWorkerOptions.workerSrc" specified.
-       *
-       * The worker version MUST match the PDF.js version.
-       */
 
       pdfjs.GlobalWorkerOptions.workerSrc =
         `https://esm.sh/pdfjs-dist@${PDFJS_VERSION}/build/pdf.worker.mjs?bundle`;
@@ -379,7 +384,7 @@ async function loadPdfJs() {
 
 
 /* =========================================================
-   PDF-LIB LOADER
+   PDF-LIB
 ========================================================= */
 
 let pdfLibPromise = null;
@@ -399,7 +404,7 @@ async function loadPdfLib() {
 
 
 /* =========================================================
-   DOCX LOADER
+   DOCX
 ========================================================= */
 
 let docxPromise = null;
@@ -424,7 +429,8 @@ async function loadDocx() {
 
 function getExtension(filename) {
 
-  const parts = filename.toLowerCase().split(".");
+  const parts =
+    filename.toLowerCase().split(".");
 
   if (parts.length < 2) {
     return "";
@@ -436,7 +442,10 @@ function getExtension(filename) {
 
 function getBaseName(filename) {
 
-  return filename.replace(/\.[^/.]+$/, "");
+  return filename.replace(
+    /\.[^/.]+$/,
+    ""
+  );
 }
 
 
@@ -447,28 +456,40 @@ function formatBytes(bytes) {
   }
 
   if (bytes < 1024 * 1024) {
-    return (bytes / 1024).toFixed(1) + " KB";
+    return (
+      bytes / 1024
+    ).toFixed(1) + " KB";
   }
 
   if (bytes < 1024 * 1024 * 1024) {
-    return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+    return (
+      bytes / (1024 * 1024)
+    ).toFixed(1) + " MB";
   }
 
-  return (bytes / (1024 * 1024 * 1024)).toFixed(1) + " GB";
+  return (
+    bytes / (1024 * 1024 * 1024)
+  ).toFixed(1) + " GB";
 }
 
 
 function showStatus(message, type) {
 
-  statusBox.className = "status " + type;
-  statusBox.textContent = message;
+  statusBox.className =
+    "status " + type;
+
+  statusBox.textContent =
+    message;
 }
 
 
 function clearStatus() {
 
-  statusBox.className = "status";
-  statusBox.textContent = "";
+  statusBox.className =
+    "status";
+
+  statusBox.textContent =
+    "";
 }
 
 
@@ -478,9 +499,11 @@ function clearStatus() {
 
 function downloadBlob(blob, filename) {
 
-  const url = URL.createObjectURL(blob);
+  const url =
+    URL.createObjectURL(blob);
 
-  const link = document.createElement("a");
+  const link =
+    document.createElement("a");
 
   link.href = url;
   link.download = filename;
@@ -492,7 +515,9 @@ function downloadBlob(blob, filename) {
   link.remove();
 
   setTimeout(() => {
+
     URL.revokeObjectURL(url);
+
   }, 1000);
 }
 
@@ -509,7 +534,8 @@ function handleFile(file) {
 
   selectedFile = file;
 
-  const ext = getExtension(file.name);
+  const ext =
+    getExtension(file.name);
 
   if (
     !IMAGE_TYPES.includes(ext) &&
@@ -519,8 +545,11 @@ function handleFile(file) {
 
     selectedFile = null;
 
-    fileInfo.style.display = "none";
-    controls.style.display = "none";
+    fileInfo.style.display =
+      "none";
+
+    controls.style.display =
+      "none";
 
     showStatus(
       "This file type is not supported.",
@@ -532,12 +561,14 @@ function handleFile(file) {
 
   clearStatus();
 
-  fileInfo.style.display = "block";
+  fileInfo.style.display =
+    "block";
 
   fileInfo.textContent =
     `Selected file: ${file.name} (${formatBytes(file.size)})`;
 
-  controls.style.display = "block";
+  controls.style.display =
+    "block";
 
   populateOutputOptions(ext);
 }
@@ -549,7 +580,8 @@ function handleFile(file) {
 
 function populateOutputOptions(ext) {
 
-  outputFormat.innerHTML = "";
+  outputFormat.innerHTML =
+    "";
 
   let options = [];
 
@@ -574,7 +606,9 @@ function populateOutputOptions(ext) {
       }
     ];
 
-  } else if (ext === "pdf") {
+  }
+
+  else if (ext === "pdf") {
 
     options = [
       {
@@ -599,7 +633,9 @@ function populateOutputOptions(ext) {
       }
     ];
 
-  } else if (TEXT_TYPES.includes(ext)) {
+  }
+
+  else if (TEXT_TYPES.includes(ext)) {
 
     options = [
       {
@@ -612,12 +648,18 @@ function populateOutputOptions(ext) {
 
   for (const option of options) {
 
-    const element = document.createElement("option");
+    const element =
+      document.createElement("option");
 
-    element.value = option.value;
-    element.textContent = option.label;
+    element.value =
+      option.value;
 
-    outputFormat.appendChild(element);
+    element.textContent =
+      option.label;
+
+    outputFormat.appendChild(
+      element
+    );
 
   }
 }
@@ -627,45 +669,64 @@ function populateOutputOptions(ext) {
    IMAGE → IMAGE
 ========================================================= */
 
-async function imageToImage(file, targetFormat) {
+async function imageToImage(
+  file,
+  targetFormat
+) {
 
-  const imageUrl = URL.createObjectURL(file);
+  const imageUrl =
+    URL.createObjectURL(file);
 
   try {
 
-    const image = new Image();
+    const image =
+      new Image();
 
-    await new Promise((resolve, reject) => {
+    await new Promise(
+      (resolve, reject) => {
 
-      image.onload = resolve;
-      image.onerror = () => reject(
-        new Error("Unable to read this image.")
+        image.onload =
+          resolve;
+
+        image.onerror = () =>
+          reject(
+            new Error(
+              "Unable to read this image."
+            )
+          );
+
+        image.src =
+          imageUrl;
+
+      }
+    );
+
+    const canvas =
+      document.createElement(
+        "canvas"
       );
 
-      image.src = imageUrl;
+    canvas.width =
+      image.naturalWidth;
 
-    });
+    canvas.height =
+      image.naturalHeight;
 
-    const canvas = document.createElement("canvas");
-
-    canvas.width = image.naturalWidth;
-    canvas.height = image.naturalHeight;
-
-    const ctx = canvas.getContext("2d");
+    const ctx =
+      canvas.getContext("2d");
 
     if (!ctx) {
-      throw new Error("Canvas is not supported by this browser.");
-    }
 
-    /*
-     * JPG does not support transparency.
-     * White background is used when converting transparent
-     * images to JPG.
-     */
+      throw new Error(
+        "Canvas is not supported by this browser."
+      );
+
+    }
 
     if (targetFormat === "jpg") {
 
-      ctx.fillStyle = "#ffffff";
+      ctx.fillStyle =
+        "#ffffff";
 
       ctx.fillRect(
         0,
@@ -684,45 +745,64 @@ async function imageToImage(file, targetFormat) {
       canvas.height
     );
 
-    let mimeType = "image/png";
+    let mimeType =
+      "image/png";
 
-    if (targetFormat === "jpg") {
-      mimeType = "image/jpeg";
+    if (
+      targetFormat === "jpg"
+    ) {
+
+      mimeType =
+        "image/jpeg";
+
     }
 
-    if (targetFormat === "webp") {
-      mimeType = "image/webp";
+    if (
+      targetFormat === "webp"
+    ) {
+
+      mimeType =
+        "image/webp";
+
     }
 
-    const blob = await new Promise((resolve, reject) => {
+    const blob =
+      await new Promise(
+        (resolve, reject) => {
 
-      canvas.toBlob(
-        result => {
+          canvas.toBlob(
+            result => {
 
-          if (!result) {
-            reject(
-              new Error(
-                "This browser could not create the requested image format."
-              )
-            );
+              if (!result) {
 
-            return;
-          }
+                reject(
+                  new Error(
+                    "This browser could not create the requested image format."
+                  )
+                );
 
-          resolve(result);
+                return;
+              }
 
-        },
-        mimeType,
-        0.92
+              resolve(result);
+
+            },
+            mimeType,
+            0.92
+          );
+
+        }
       );
-
-    });
 
     return blob;
 
-  } finally {
+  }
 
-    URL.revokeObjectURL(imageUrl);
+  finally {
+
+    URL.revokeObjectURL(
+      imageUrl
+    );
 
   }
 }
@@ -738,13 +818,16 @@ async function imageToPdf(file) {
     PDFDocument
   } = await loadPdfLib();
 
-  const bytes = new Uint8Array(
-    await file.arrayBuffer()
-  );
+  const bytes =
+    new Uint8Array(
+      await file.arrayBuffer()
+    );
 
-  const pdfDoc = await PDFDocument.create();
+  const pdfDoc =
+    await PDFDocument.create();
 
-  const ext = getExtension(file.name);
+  const ext =
+    getExtension(file.name);
 
   let image;
 
@@ -753,44 +836,71 @@ async function imageToPdf(file) {
     ext === "jpeg"
   ) {
 
-    image = await pdfDoc.embedJpg(bytes);
+    image =
+      await pdfDoc.embedJpg(
+        bytes
+      );
 
-  } else if (ext === "png") {
+  }
 
-    image = await pdfDoc.embedPng(bytes);
+  else if (ext === "png") {
 
-  } else {
+    image =
+      await pdfDoc.embedPng(
+        bytes
+      );
 
-    /*
-     * Browser canvas is used to normalize formats such as
-     * WEBP, AVIF, BMP and GIF before embedding into PDF.
-     */
+  }
 
-    const imageUrl = URL.createObjectURL(file);
+  else {
+
+    const imageUrl =
+      URL.createObjectURL(file);
 
     try {
 
-      const img = new Image();
+      const img =
+        new Image();
 
-      await new Promise((resolve, reject) => {
+      await new Promise(
+        (resolve, reject) => {
 
-        img.onload = resolve;
-        img.onerror = () => reject(
-          new Error("Unable to read this image.")
+          img.onload =
+            resolve;
+
+          img.onerror = () =>
+            reject(
+              new Error(
+                "Unable to read this image."
+              )
+            );
+
+          img.src =
+            imageUrl;
+
+        }
+      );
+
+      const canvas =
+        document.createElement(
+          "canvas"
         );
 
-        img.src = imageUrl;
-      });
+      canvas.width =
+        img.naturalWidth;
 
-      const canvas = document.createElement("canvas");
+      canvas.height =
+        img.naturalHeight;
 
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-
-      const ctx = canvas.getContext("2d");
+      const ctx =
+        canvas.getContext("2d");
 
       if (!ctx) {
-        throw new Error("Canvas is not supported.");
+
+        throw new Error(
+          "Canvas is not supported."
+        );
+
       }
 
       ctx.drawImage(
@@ -801,61 +911,79 @@ async function imageToPdf(file) {
         canvas.height
       );
 
-      const pngBlob = await new Promise(
-        (resolve, reject) => {
+      const pngBlob =
+        await new Promise(
+          (resolve, reject) => {
 
-          canvas.toBlob(
-            blob => {
+            canvas.toBlob(
+              blob => {
 
-              if (!blob) {
-                reject(
-                  new Error(
-                    "Unable to convert image to PNG."
-                  )
-                );
+                if (!blob) {
 
-                return;
-              }
+                  reject(
+                    new Error(
+                      "Unable to convert image to PNG."
+                    )
+                  );
 
-              resolve(blob);
-            },
-            "image/png"
-          );
+                  return;
+                }
 
-        }
-      );
+                resolve(blob);
 
-      const pngBytes = new Uint8Array(
-        await pngBlob.arrayBuffer()
-      );
+              },
+              "image/png"
+            );
 
-      image = await pdfDoc.embedPng(
-        pngBytes
-      );
+          }
+        );
 
-    } finally {
+      const pngBytes =
+        new Uint8Array(
+          await pngBlob.arrayBuffer()
+        );
 
-      URL.revokeObjectURL(imageUrl);
+      image =
+        await pdfDoc.embedPng(
+          pngBytes
+        );
 
     }
+
+    finally {
+
+      URL.revokeObjectURL(
+        imageUrl
+      );
+
+    }
+
   }
 
-  const width = image.width;
-  const height = image.height;
+  const width =
+    image.width;
 
-  const page = pdfDoc.addPage([
-    width,
-    height
-  ]);
+  const height =
+    image.height;
 
-  page.drawImage(image, {
-    x: 0,
-    y: 0,
-    width,
-    height
-  });
+  const page =
+    pdfDoc.addPage([
+      width,
+      height
+    ]);
 
-  const pdfBytes = await pdfDoc.save();
+  page.drawImage(
+    image,
+    {
+      x: 0,
+      y: 0,
+      width,
+      height
+    }
+  );
+
+  const pdfBytes =
+    await pdfDoc.save();
 
   return new Blob(
     [pdfBytes],
@@ -870,45 +998,56 @@ async function imageToPdf(file) {
    PDF → IMAGE
 ========================================================= */
 
-async function pdfToImage(file, targetFormat) {
+async function pdfToImage(
+  file,
+  targetFormat
+) {
 
-  const pdfjs = await loadPdfJs();
+  const pdfjs =
+    await loadPdfJs();
 
-  const data = new Uint8Array(
-    await file.arrayBuffer()
-  );
+  const data =
+    new Uint8Array(
+      await file.arrayBuffer()
+    );
 
-  /*
-   * Worker is enabled and configured by loadPdfJs().
-   */
+  const pdf =
+    await pdfjs.getDocument({
+      data
+    }).promise;
 
-  const pdf = await pdfjs.getDocument({
-    data
-  }).promise;
+  const page =
+    await pdf.getPage(1);
 
-  /*
-   * For a multi-page PDF, each page is converted separately.
-   * A ZIP library is intentionally not added here.
-   *
-   * To keep this converter lightweight, the first page is
-   * downloaded.
-   */
+  const viewport =
+    page.getViewport({
+      scale: 2
+    });
 
-  const page = await pdf.getPage(1);
+  const canvas =
+    document.createElement(
+      "canvas"
+    );
 
-  const viewport = page.getViewport({
-    scale: 2
-  });
+  canvas.width =
+    Math.ceil(
+      viewport.width
+    );
 
-  const canvas = document.createElement("canvas");
+  canvas.height =
+    Math.ceil(
+      viewport.height
+    );
 
-  canvas.width = Math.ceil(viewport.width);
-  canvas.height = Math.ceil(viewport.height);
-
-  const ctx = canvas.getContext("2d");
+  const ctx =
+    canvas.getContext("2d");
 
   if (!ctx) {
-    throw new Error("Canvas is not supported.");
+
+    throw new Error(
+      "Canvas is not supported."
+    );
+
   }
 
   await page.render({
@@ -916,42 +1055,54 @@ async function pdfToImage(file, targetFormat) {
     viewport
   }).promise;
 
-  let mimeType = "image/png";
+  let mimeType =
+    "image/png";
 
-  if (targetFormat === "jpg") {
-    mimeType = "image/jpeg";
+  if (
+    targetFormat === "jpg"
+  ) {
+
+    mimeType =
+      "image/jpeg";
+
   }
 
-  if (targetFormat === "webp") {
-    mimeType = "image/webp";
+  if (
+    targetFormat === "webp"
+  ) {
+
+    mimeType =
+      "image/webp";
+
   }
 
-  const blob = await new Promise(
-    (resolve, reject) => {
+  const blob =
+    await new Promise(
+      (resolve, reject) => {
 
-      canvas.toBlob(
-        result => {
+        canvas.toBlob(
+          result => {
 
-          if (!result) {
+            if (!result) {
 
-            reject(
-              new Error(
-                "Unable to create the output image."
-              )
-            );
+              reject(
+                new Error(
+                  "Unable to create the output image."
+                )
+              );
 
-            return;
-          }
+              return;
+            }
 
-          resolve(result);
+            resolve(result);
 
-        },
-        mimeType,
-        0.92
-      );
+          },
+          mimeType,
+          0.92
+        );
 
-    }
-  );
+      }
+    );
 
   return blob;
 }
@@ -961,19 +1112,24 @@ async function pdfToImage(file, targetFormat) {
    PDF → TEXT
 ========================================================= */
 
-async function pdfToText(file) {
+async function extractPdfPages(file) {
 
-  const pdfjs = await loadPdfJs();
+  const pdfjs =
+    await loadPdfJs();
 
-  const data = new Uint8Array(
-    await file.arrayBuffer()
-  );
+  const data =
+    new Uint8Array(
+      await file.arrayBuffer()
+    );
 
-  const pdf = await pdfjs.getDocument({
-    data
-  }).promise;
+  const pdf =
+    await pdfjs.getDocument({
+      data
+    }).promise;
 
   const pages = [];
+
+  let hasText = false;
 
   for (
     let pageNumber = 1;
@@ -981,178 +1137,475 @@ async function pdfToText(file) {
     pageNumber++
   ) {
 
-    const page = await pdf.getPage(
-      pageNumber
-    );
+    const page =
+      await pdf.getPage(
+        pageNumber
+      );
 
     const textContent =
       await page.getTextContent();
 
-    const lines = [];
+    const items = [];
 
-    let currentLine = "";
-    let lastY = null;
+    for (
+      const item of textContent.items
+    ) {
 
-    for (const item of textContent.items) {
-
-      if (!("str" in item)) {
+      if (
+        !("str" in item)
+      ) {
         continue;
       }
 
-      const text = item.str || "";
+      const value =
+        item.str || "";
 
-      const y =
-        item.transform &&
-        item.transform.length > 5
-          ? item.transform[5]
-          : null;
-
-      /*
-       * Detect a new visual line.
-       */
-
-      if (
-        lastY !== null &&
-        y !== null &&
-        Math.abs(y - lastY) > 5
-      ) {
-
-        if (currentLine.trim()) {
-          lines.push(
-            currentLine.trim()
-          );
-        }
-
-        currentLine = text;
-
-      } else {
-
-        currentLine += text;
-
+      if (value.trim()) {
+        hasText = true;
       }
 
-      lastY = y;
+      items.push({
+        text: value,
+        x:
+          item.transform?.[4] ?? 0,
+        y:
+          item.transform?.[5] ?? 0,
+        width:
+          item.width ?? 0,
+        height:
+          item.height ??
+          Math.abs(
+            item.transform?.[3] ?? 0
+          )
+      });
+
     }
 
-    if (currentLine.trim()) {
-      lines.push(
-        currentLine.trim()
-      );
-    }
-
-    pages.push(
-      lines.join("\n")
-    );
-  }
-
-  const result = pages
-    .map((pageText, index) => {
-
-      return (
-        `--- Page ${index + 1} ---\n\n` +
-        pageText
-      );
-
-    })
-    .join("\n\n");
-
-  if (!result.replace(/--- Page \d+ ---/g, "").trim()) {
-
-    throw new Error(
-      "No selectable text was found in this PDF. " +
-      "This may be a scanned or image-only PDF. OCR is required for scanned PDFs."
-    );
+    pages.push({
+      pageNumber,
+      width:
+        page.view[2] -
+        page.view[0],
+      height:
+        page.view[3] -
+        page.view[1],
+      items
+    });
 
   }
 
-  return result;
+  return {
+    pages,
+    hasText
+  };
 }
 
 
 /* =========================================================
-   PDF → DOCX
+   PDF → DOCX HYBRID
 ========================================================= */
 
 async function pdfToDocx(file) {
 
-  const text = await pdfToText(file);
+  showStatus(
+    "Preparing PDF pages for Word… Please wait.",
+    "info"
+  );
 
   const {
     Document,
     Packer,
     Paragraph,
-    TextRun
+    TextRun,
+    ImageRun,
+    PageBreak
   } = await loadDocx();
 
-  const pageTexts = text.split(
-    /--- Page \d+ ---/g
-  );
+  const pdfData =
+    await extractPdfPages(file);
 
-  const children = [];
+  /*
+   * ---------------------------------------------------------
+   * SCANNED / IMAGE-ONLY PDF
+   * ---------------------------------------------------------
+   *
+   * If there is no selectable text, preserve every page
+   * visually as a high-resolution image.
+   */
 
-  for (
-    let i = 0;
-    i < pageTexts.length;
-    i++
-  ) {
+  if (!pdfData.hasText) {
 
-    const pageText =
-      pageTexts[i].trim();
+    const pdfjs =
+      await loadPdfJs();
 
-    if (!pageText) {
-      continue;
-    }
+    const data =
+      new Uint8Array(
+        await file.arrayBuffer()
+      );
 
-    /*
-     * Add page heading.
-     */
+    const pdf =
+      await pdfjs.getDocument({
+        data
+      }).promise;
 
-    children.push(
-      new Paragraph({
-        children: [
-          new TextRun({
-            text: `Page ${i}`,
-            bold: true
-          })
-        ],
-        spacing: {
-          after: 200
-        }
-      })
-    );
+    const children = [];
 
-    const lines = pageText.split(
-      /\r?\n/
-    );
+    for (
+      let pageNumber = 1;
+      pageNumber <= pdf.numPages;
+      pageNumber++
+    ) {
 
-    for (const line of lines) {
+      showStatus(
+        `Preserving PDF page ${pageNumber} of ${pdf.numPages}…`,
+        "info"
+      );
+
+      const page =
+        await pdf.getPage(
+          pageNumber
+        );
+
+      const viewport =
+        page.getViewport({
+          scale: 2
+        });
+
+      const canvas =
+        document.createElement(
+          "canvas"
+        );
+
+      canvas.width =
+        Math.ceil(
+          viewport.width
+        );
+
+      canvas.height =
+        Math.ceil(
+          viewport.height
+        );
+
+      const ctx =
+        canvas.getContext("2d");
+
+      if (!ctx) {
+        throw new Error(
+          "Canvas is not supported."
+        );
+      }
+
+      await page.render({
+        canvasContext: ctx,
+        viewport
+      }).promise;
+
+      const blob =
+        await new Promise(
+          (resolve, reject) => {
+
+            canvas.toBlob(
+              result => {
+
+                if (!result) {
+
+                  reject(
+                    new Error(
+                      "Unable to render PDF page."
+                    )
+                  );
+
+                  return;
+                }
+
+                resolve(result);
+
+              },
+              "image/png"
+            );
+
+          }
+        );
+
+      const imageBuffer =
+        await blob.arrayBuffer();
 
       children.push(
         new Paragraph({
           children: [
-            new TextRun({
-              text: line
+            new ImageRun({
+              data: imageBuffer,
+              transformation: {
+                width: 595,
+                height:
+                  Math.round(
+                    595 *
+                    (
+                      viewport.height /
+                      viewport.width
+                    )
+                  )
+              }
             })
+          ],
+          spacing: {
+            before: 0,
+            after: 0
+          }
+        })
+      );
+
+      if (
+        pageNumber <
+        pdf.numPages
+      ) {
+
+        children.push(
+          new Paragraph({
+            children: [
+              new PageBreak()
+            ]
+          })
+        );
+
+      }
+
+    }
+
+    const document =
+      new Document({
+        sections: [
+          {
+            properties: {},
+            children
+          }
+        ]
+      });
+
+    return await Packer.toBlob(
+      document
+    );
+  }
+
+
+  /*
+   * ---------------------------------------------------------
+   * TEXT PDF
+   * ---------------------------------------------------------
+   *
+   * Extract the text and place it in Word.
+   *
+   * The extracted text remains editable.
+   */
+
+  const children = [];
+
+  for (
+    let pageIndex = 0;
+    pageIndex <
+    pdfData.pages.length;
+    pageIndex++
+  ) {
+
+    const page =
+      pdfData.pages[
+        pageIndex
+      ];
+
+    showStatus(
+      `Converting PDF page ${page.pageNumber} of ${pdfData.pages.length}…`,
+      "info"
+    );
+
+    /*
+     * Sort text approximately in visual reading order.
+     */
+
+    const items =
+      [...page.items].sort(
+        (a, b) => {
+
+          const yDifference =
+            Math.abs(
+              b.y - a.y
+            );
+
+          if (
+            yDifference > 5
+          ) {
+
+            return b.y - a.y;
+
+          }
+
+          return a.x - b.x;
+
+        }
+      );
+
+    /*
+     * Group text into visual lines.
+     */
+
+    const lines = [];
+
+    for (
+      const item of items
+    ) {
+
+      if (
+        !item.text.trim()
+      ) {
+        continue;
+      }
+
+      let line =
+        null;
+
+      for (
+        const existing of lines
+      ) {
+
+        if (
+          Math.abs(
+            existing.y - item.y
+          ) <= 5
+        ) {
+
+          line =
+            existing;
+
+          break;
+        }
+
+      }
+
+      if (!line) {
+
+        line = {
+          y: item.y,
+          items: []
+        };
+
+        lines.push(line);
+
+      }
+
+      line.items.push(item);
+
+    }
+
+    lines.sort(
+      (a, b) =>
+        b.y - a.y
+    );
+
+    for (
+      const line of lines
+    ) {
+
+      line.items.sort(
+        (a, b) =>
+          a.x - b.x
+      );
+
+      let lineText = "";
+
+      let previousRight =
+        null;
+
+      for (
+        const item of line.items
+      ) {
+
+        const gap =
+          previousRight === null
+            ? 0
+            : item.x -
+              previousRight;
+
+        /*
+         * Preserve normal visual spacing.
+         */
+
+        if (
+          gap > 3 &&
+          lineText
+        ) {
+
+          lineText += " ";
+
+        }
+
+        lineText +=
+          item.text;
+
+        previousRight =
+          item.x +
+          item.width;
+
+      }
+
+      if (
+        lineText.trim()
+      ) {
+
+        children.push(
+          new Paragraph({
+            children: [
+              new TextRun({
+                text:
+                  lineText,
+                font:
+                  "Arial",
+                size:
+                  22
+              })
+            ],
+            spacing: {
+              after: 40
+            }
+          })
+        );
+
+      }
+
+    }
+
+    /*
+     * Page break.
+     */
+
+    if (
+      pageIndex <
+      pdfData.pages.length - 1
+    ) {
+
+      children.push(
+        new Paragraph({
+          children: [
+            new PageBreak()
           ]
         })
       );
 
     }
+
   }
 
-  const document = new Document({
-    sections: [
-      {
-        properties: {},
-        children
-      }
-    ]
-  });
+  const document =
+    new Document({
+      sections: [
+        {
+          properties: {},
+          children
+        }
+      ]
+    });
 
-  const blob =
-    await Packer.toBlob(document);
-
-  return blob;
+  return await Packer.toBlob(
+    document
+  );
 }
 
 
@@ -1168,7 +1621,8 @@ async function textToPdf(file) {
     rgb
   } = await loadPdfLib();
 
-  const text = await file.text();
+  const text =
+    await file.text();
 
   const pdfDoc =
     await PDFDocument.create();
@@ -1178,39 +1632,38 @@ async function textToPdf(file) {
       StandardFonts.Helvetica
     );
 
-  /*
-   * A4 size in PDF points.
-   */
+  const pageWidth =
+    595.28;
 
-  const pageWidth = 595.28;
-  const pageHeight = 841.89;
+  const pageHeight =
+    841.89;
 
-  const margin = 50;
+  const margin =
+    50;
 
-  const fontSize = 11;
-  const lineHeight = 15;
+  const fontSize =
+    11;
+
+  const lineHeight =
+    15;
 
   const usableWidth =
-    pageWidth - margin * 2;
+    pageWidth -
+    margin * 2;
 
   const lines = [];
 
-  /*
-   * Normalize line endings.
-   */
-
   const normalized =
-    text.replace(/\r\n/g, "\n")
-        .replace(/\r/g, "\n");
+    text
+      .replace(/\r\n/g, "\n")
+      .replace(/\r/g, "\n");
 
   const rawLines =
     normalized.split("\n");
 
-  /*
-   * Simple word wrapping.
-   */
-
-  for (const rawLine of rawLines) {
+  for (
+    const rawLine of rawLines
+  ) {
 
     if (rawLine === "") {
 
@@ -1222,13 +1675,18 @@ async function textToPdf(file) {
     const words =
       rawLine.split(/\s+/);
 
-    let current = "";
+    let current =
+      "";
 
-    for (const word of words) {
+    for (
+      const word of words
+    ) {
 
       const test =
         current
-          ? current + " " + word
+          ? current +
+            " " +
+            word
           : word;
 
       const width =
@@ -1238,47 +1696,63 @@ async function textToPdf(file) {
         );
 
       if (
-        width > usableWidth &&
+        width >
+          usableWidth &&
         current
       ) {
 
-        lines.push(current);
+        lines.push(
+          current
+        );
 
-        current = word;
-
-      } else {
-
-        current = test;
+        current =
+          word;
 
       }
+
+      else {
+
+        current =
+          test;
+
+      }
+
     }
 
     if (current) {
       lines.push(current);
     }
+
   }
 
-  let page = pdfDoc.addPage([
-    pageWidth,
-    pageHeight
-  ]);
+  let page =
+    pdfDoc.addPage([
+      pageWidth,
+      pageHeight
+    ]);
 
   let y =
-    pageHeight - margin;
+    pageHeight -
+    margin;
 
-  for (const line of lines) {
+  for (
+    const line of lines
+  ) {
 
     if (
       y < margin
     ) {
 
-      page = pdfDoc.addPage([
-        pageWidth,
-        pageHeight
-      ]);
+      page =
+        pdfDoc.addPage([
+          pageWidth,
+          pageHeight
+        ]);
 
       y =
-        pageHeight - margin;
+        pageHeight -
+        margin;
+
     }
 
     if (line) {
@@ -1301,6 +1775,7 @@ async function textToPdf(file) {
     }
 
     y -= lineHeight;
+
   }
 
   const pdfBytes =
@@ -1309,7 +1784,8 @@ async function textToPdf(file) {
   return new Blob(
     [pdfBytes],
     {
-      type: "application/pdf"
+      type:
+        "application/pdf"
     }
   );
 }
@@ -1349,7 +1825,8 @@ async function convertFile() {
     return;
   }
 
-  convertBtn.disabled = true;
+  convertBtn.disabled =
+    true;
 
   showStatus(
     "Converting your file… Please wait.",
@@ -1361,12 +1838,15 @@ async function convertFile() {
     let blob;
     let outputExtension;
 
-    /* -----------------------------------------
+
+    /* =========================================
        IMAGE
-    ----------------------------------------- */
+    ========================================= */
 
     if (
-      IMAGE_TYPES.includes(sourceExt)
+      IMAGE_TYPES.includes(
+        sourceExt
+      )
     ) {
 
       if (
@@ -1381,7 +1861,9 @@ async function convertFile() {
         outputExtension =
           "pdf";
 
-      } else {
+      }
+
+      else {
 
         blob =
           await imageToImage(
@@ -1391,13 +1873,15 @@ async function convertFile() {
 
         outputExtension =
           target;
+
       }
 
     }
 
-    /* -----------------------------------------
+
+    /* =========================================
        PDF
-    ----------------------------------------- */
+    ========================================= */
 
     else if (
       sourceExt === "pdf"
@@ -1407,23 +1891,87 @@ async function convertFile() {
         target === "txt"
       ) {
 
-        const text =
-          await pdfToText(
+        const extracted =
+          await extractPdfPages(
             selectedFile
           );
+
+        if (
+          !extracted.hasText
+        ) {
+
+          throw new Error(
+            "No selectable text was found in this PDF. This appears to be a scanned or image-only PDF. Use DOCX conversion to preserve its appearance."
+          );
+
+        }
+
+        const pageTexts =
+          extracted.pages.map(
+            page => {
+
+              const items =
+                [...page.items].sort(
+                  (a, b) => {
+
+                    const yDifference =
+                      Math.abs(
+                        b.y - a.y
+                      );
+
+                    if (
+                      yDifference > 5
+                    ) {
+
+                      return (
+                        b.y -
+                        a.y
+                      );
+
+                    }
+
+                    return (
+                      a.x -
+                      b.x
+                    );
+
+                  }
+                );
+
+              return items
+                .map(
+                  item =>
+                    item.text
+                )
+                .join(" ");
+
+            }
+          );
+
+        const text =
+          pageTexts
+            .map(
+              (value, index) =>
+                `--- Page ${index + 1} ---\n\n${value}`
+            )
+            .join("\n\n");
 
         blob =
           new Blob(
             [text],
             {
-              type: "text/plain;charset=utf-8"
+              type:
+                "text/plain;charset=utf-8"
             }
           );
 
         outputExtension =
           "txt";
 
-      } else if (
+      }
+
+
+      else if (
         target === "docx"
       ) {
 
@@ -1435,7 +1983,10 @@ async function convertFile() {
         outputExtension =
           "docx";
 
-      } else {
+      }
+
+
+      else {
 
         blob =
           await pdfToImage(
@@ -1445,16 +1996,20 @@ async function convertFile() {
 
         outputExtension =
           target;
+
       }
 
     }
 
-    /* -----------------------------------------
+
+    /* =========================================
        TEXT
-    ----------------------------------------- */
+    ========================================= */
 
     else if (
-      TEXT_TYPES.includes(sourceExt)
+      TEXT_TYPES.includes(
+        sourceExt
+      )
     ) {
 
       if (
@@ -1469,21 +2024,31 @@ async function convertFile() {
         outputExtension =
           "pdf";
 
-      } else {
+      }
+
+      else {
 
         throw new Error(
           "This conversion is not supported."
         );
+
       }
 
     }
+
 
     else {
 
       throw new Error(
         "Unsupported file type."
       );
+
     }
+
+
+    /* =========================================
+       DOWNLOAD
+    ========================================= */
 
     const baseName =
       getBaseName(
@@ -1503,7 +2068,9 @@ async function convertFile() {
       "success"
     );
 
-  } catch (error) {
+  }
+
+  catch (error) {
 
     console.error(
       "File conversion error:",
@@ -1516,11 +2083,15 @@ async function convertFile() {
       "error"
     );
 
-  } finally {
+  }
 
-    convertBtn.disabled = false;
+  finally {
+
+    convertBtn.disabled =
+      false;
 
   }
+
 }
 
 
@@ -1531,7 +2102,9 @@ async function convertFile() {
 dropZone.addEventListener(
   "click",
   () => {
+
     fileInput.click();
+
   }
 );
 
@@ -1544,7 +2117,9 @@ fileInput.addEventListener(
       fileInput.files?.[0];
 
     if (file) {
+
       handleFile(file);
+
     }
 
   }
@@ -1588,10 +2163,13 @@ dropZone.addEventListener(
     );
 
     const file =
-      event.dataTransfer?.files?.[0];
+      event.dataTransfer
+        ?.files?.[0];
 
     if (file) {
+
       handleFile(file);
+
     }
 
   }
