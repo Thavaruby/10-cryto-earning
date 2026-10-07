@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="icon" type="image/png" href="assets/favico.png">
+
+<title>Image Converter - Free JPG PNG WebP Converter | My Crypto Faucet</title>
+
+<meta name="description" content="Free online image converter. Convert JPG, JPEG, PNG and WebP images directly in your browser. No upload, no registration and no server processing.">
+
+<link rel="canonical" href="https://myfaucetcrypto.com/image-converter.html">
+
+<meta property="og:title" content="Free Image Converter - JPG PNG WebP">
+<meta property="og:description" content="Convert images directly in your browser. Free, private and no upload required.">
+<meta property="og:url" content="https://myfaucetcrypto.com/image-converter.html">
+<meta property="og:type" content="website">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Free Image Converter - JPG PNG WebP">
+<meta name="twitter:description" content="Convert JPG, PNG and WebP images directly in your browser.">
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #07152f;
+  color: #ffffff;
+}
+
+header {
+  padding: 18px 20px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+
+.logo {
+  color: #f5c542;
+  font-size: 22px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.container {
+  width: min(760px, calc(100% - 30px));
+  margin: 35px auto 50px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 30px;
+}
+
+.subtitle {
+  text-align: center;
+  color: #b9c5dc;
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+.converter-card {
+  background: #0d2044;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 15px 45px rgba(0,0,0,0.25);
+}
+
+.drop-zone {
+  border: 2px dashed #50658c;
+  border-radius: 16px;
+  padding: 38px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.drop-zone:hover,
+.drop-zone.dragover {
+  border-color: #f5c542;
+  background: rgba(245,197,66,0.06);
+}
+
+.drop-icon {
+  font-size: 45px;
+  margin-bottom: 10px;
+}
+
+.drop-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.drop-text {
+  margin-top: 8px;
+  color: #aebbd3;
+  font-size: 14px;
+}
+
+#fileInput {
+  display: none;
+}
+
+.file-info {
+  display: none;
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 12px;
+  background: #091a38;
+}
+
+.file-name {
+  font-weight: 700;
+  word-break: break-word;
+}
+
+.file-meta {
+  color: #9eacc7;
+  font-size: 13px;
+  margin-top: 5px;
+}
+
+.preview {
+  display: none;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.preview img {
+  max-width: 100%;
+  max-height: 350px;
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 4px;
+}
+
+.controls {
+  display: none;
+  margin-top: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+select,
+input[type="range"] {
+  width: 100%;
+}
+
+select {
+  padding: 13px;
+  border-radius: 10px;
+  border: 1px solid #53698f;
+  background: #07152f;
+  color: #ffffff;
+  font-size: 15px;
+}
+
+.quality-box {
+  margin-top: 18px;
+  display: none;
+}
+
+.quality-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.quality-value {
+  color: #f5c542;
+  font-weight: 700;
+}
+
+input[type="range"] {
+  accent-color: #f5c542;
+}
+
+.convert-btn,
+.download-btn,
+.reset-btn {
+  width: 100%;
+  border: 0;
+  border-radius: 10px;
+  padding: 14px;
+  margin-top: 18px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.convert-btn {
+  background: #f5c542;
+  color: #07152f;
+}
+
+.convert-btn:hover {
+  background: #ffd95e;
+}
+
+.download-btn {
+  display: none;
+  background: #20c997;
+  color: #ffffff;
+  text-decoration: none;
+  text-align: center;
+}
+
+.reset-btn {
+  background: #263b61;
+  color: #ffffff;
+}
+
+.status {
+  display: none;
+  margin-top: 18px;
+  padding: 13px;
+  border-radius: 10px;
+  background: #091a38;
+  color: #b9c5dc;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.privacy {
+  margin-top: 22px;
+  padding: 15px;
+  border-radius: 12px;
+  background: rgba(32,201,151,0.08);
+  border: 1px solid rgba(32,201,151,0.25);
+  color: #b9c5dc;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+footer {
+  text-align: center;
+  padding: 25px 15px;
+  color: #8493ae;
+  font-size: 13px;
+}
+
+footer a {
+  color: #b8c5df;
+  text-decoration: none;
+}
+
+@media (max-width: 600px) {
+  h1 {
+    font-size: 25px;
+  }
+
+  .container {
+    margin-top: 25px;
+  }
+
+  .converter-card {
+    padding: 16px;
+  }
+
+  .drop-zone {
+    padding: 32px 15px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <a class="logo" href="/">₿ My Crypto Faucet</a>
+</header>
+
+<main class="container">
+
+  <h1>Free Image Converter</h1>
+
+  <p class="subtitle">
+    Convert JPG, JPEG, PNG and WebP images directly in your browser.
+    No upload. No registration. No server processing.
+  </p>
+
+  <section class="converter-card">
+
+    <div class="drop-zone" id="dropZone">
+      <div class="drop-icon">🖼️</div>
+
+      <div class="drop-title">
+        Drop your image here
+      </div>
+
+      <div class="drop-text">
+        or tap to choose an image
+      </div>
+
+      <input
+        type="file"
+        id="fileInput"
+        accept="image/jpeg,image/png,image/webp"
+      >
+    </div>
+
+    <div class="file-info" id="fileInfo">
+      <div class="file-name" id="fileName"></div>
+      <div class="file-meta" id="fileMeta"></div>
+    </div>
+
+    <div class="preview" id="preview">
+      <img id="previewImage" alt="Selected image preview">
+    </div>
+
+    <div class="controls" id="controls">
+
+      <label for="outputFormat">
+        Convert to
+      </label>
+
+      <select id="outputFormat">
+      </select>
+
+      <div class="quality-box" id="qualityBox">
+
+        <div class="quality-row">
+          <span>Quality</span>
+          <span class="quality-value" id="qualityValue">90%</span>
+        </div>
+
+        <input
+          type="range"
+          id="quality"
+          min="10"
+          max="100"
+          value="90"
+        >
+
+      </div>
+
+      <button class="convert-btn" id="convertBtn">
+        Convert Image
+      </button>
+
+      <div class="status" id="status"></div>
+
+      <a
+        class="download-btn"
+        id="downloadBtn"
+        download
+      >
+        Download Converted Image
+      </a>
+
+      <button class="reset-btn" id="resetBtn">
+        Convert Another Image
+      </button>
+
+    </div>
+
+    <div class="privacy">
+      🔒 <strong>Private by design:</strong>
+      Your image is processed locally in your browser.
+      It is not uploaded to My Crypto Faucet.
+    </div>
+
+  </section>
+
+</main>
+
+<footer>
+  © 2026 My Crypto Faucet ·
+  <a href="/privacy.html">Privacy</a> ·
+  <a href="/terms.html">Terms</a>
+</footer>
+
+<script>
+"use strict";
+
+const dropZone = document.getElementById("dropZone");
+const fileInput = document.getElementById("fileInput");
+
+const fileInfo = document.getElementById("fileInfo");
+const fileName = document.getElementById("fileName");
+const fileMeta = document.getElementById("fileMeta");
+
+const preview = document.getElementById("preview");
+const previewImage = document.getElementById("previewImage");
+
+const controls = document.getElementById("controls");
+const outputFormat = document.getElementById("outputFormat");
+
+const qualityBox = document.getElementById("qualityBox");
+const quality = document.getElementById("quality");
+const qualityValue = document.getElementById("qualityValue");
+
+const convertBtn = document.getElementById("convertBtn");
+const downloadBtn = document.getElementById("downloadBtn");
+const resetBtn = document.getElementById("resetBtn");
+
+const statusBox = document.getElementById("status");
+
+let selectedFile = null;
+let selectedImage = null;
+let previewUrl = null;
+let downloadUrl = null;
+
+const supportedInputTypes = [
+  "image/jpeg",
+  "image/png",
+  "image/webp"
+];
+
+const formatInfo = {
+  jpg: {
+    mime: "image/jpeg",
+    extension: "jpg",
+    label: "JPG"
+  },
+  png: {
+    mime: "image/png",
+    extension: "png",
+    label: "PNG"
+  },
+  webp: {
+    mime: "image/webp",
+    extension: "webp",
+    label: "WebP"
+  }
+};
+
+function getExtension(name) {
+  const parts = name.toLowerCase().split(".");
+  return parts.length > 1 ? parts.pop() : "";
+}
+
+function formatBytes(bytes) {
+  if (bytes < 1024) {
+    return bytes + " B";
+  }
+
+  if (bytes < 1024 * 1024) {
+    return (bytes / 1024).toFixed(1) + " KB";
+  }
+
+  return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+}
+
+function setStatus(message, show = true) {
+  statusBox.textContent = message;
+  statusBox.style.display = show ? "block" : "none";
+}
+
+function clearDownload() {
+  if (downloadUrl) {
+    URL.revokeObjectURL(downloadUrl);
+    downloadUrl = null;
+  }
+
+  downloadBtn.style.display = "none";
+  downloadBtn.removeAttribute("href");
+}
+
+function resetConverter() {
+
+  if (previewUrl) {
+    URL.revokeObjectURL(previewUrl);
+    previewUrl = null;
+  }
+
+  clearDownload();
+
+  selectedFile = null;
+  selectedImage = null;
+
+  fileInput.value = "";
+
+  fileInfo.style.display = "none";
+  preview.style.display = "none";
+  controls.style.display = "none";
+
+  qualityBox.style.display = "none";
+
+  outputFormat.innerHTML = "";
+
+  setStatus("", false);
+}
+
+function populateFormats(inputExtension) {
+
+  outputFormat.innerHTML = "";
+
+  const current = inputExtension === "jpeg"
+    ? "jpg"
+    : inputExtension;
+
+  const formats = Object.keys(formatInfo);
+
+  formats.forEach(format => {
+
+    if (format === current) {
+      return;
+    }
+
+    const option = document.createElement("option");
+
+    option.value = format;
+    option.textContent = formatInfo[format].label;
+
+    outputFormat.appendChild(option);
+  });
+
+  if (outputFormat.options.length === 0) {
+    controls.style.display = "none";
+    return;
+  }
+
+  updateQualityVisibility();
+}
+
+function updateQualityVisibility() {
+
+  const format = outputFormat.value;
+
+  if (format === "jpg" || format === "webp") {
+    qualityBox.style.display = "block";
+  } else {
+    qualityBox.style.display = "none";
+  }
+}
+
+function loadFile(file) {
+
+  if (!file) {
+    return;
+  }
+
+  if (!supportedInputTypes.includes(file.type)) {
+
+    setStatus(
+      "Please choose a JPG, JPEG, PNG or WebP image.",
+      true
+    );
+
+    return;
+  }
+
+  selectedFile = file;
+
+  const extension = getExtension(file.name);
+
+  fileName.textContent = file.name;
+
+  fileMeta.textContent =
+    (file.type || extension.toUpperCase()) +
+    " • " +
+    formatBytes(file.size);
+
+  fileInfo.style.display = "block";
+
+  if (previewUrl) {
+    URL.revokeObjectURL(previewUrl);
+  }
+
+  previewUrl = URL.createObjectURL(file);
+
+  previewImage.onload = () => {
+
+    selectedImage = previewImage;
+
+    preview.style.display = "block";
+    controls.style.display = "block";
+
+    populateFormats(extension);
+
+    setStatus("", false);
+  };
+
+  previewImage.onerror = () => {
+
+    selectedImage = null;
+
+    preview.style.display = "none";
+    controls.style.display = "none";
+
+    setStatus(
+      "This image could not be decoded by your browser.",
+      true
+    );
+  };
+
+  previewImage.src = previewUrl;
+}
+
+dropZone.addEventListener("click", () => {
+  fileInput.click();
+});
+
+fileInput.addEventListener("change", () => {
+
+  const file = fileInput.files[0];
+
+  if (file) {
+    loadFile(file);
+  }
+});
+
+dropZone.addEventListener("dragover", event => {
+
+  event.preventDefault();
+
+  dropZone.classList.add("dragover");
+});
+
+dropZone.addEventListener("dragleave", () => {
+
+  dropZone.classList.remove("dragover");
+});
+
+dropZone.addEventListener("drop", event => {
+
+  event.preventDefault();
+
+  dropZone.classList.remove("dragover");
+
+  const file = event.dataTransfer.files[0];
+
+  if (file) {
+    loadFile(file);
+  }
+});
+
+outputFormat.addEventListener("change", () => {
+
+  clearDownload();
+  updateQualityVisibility();
+});
+
+quality.addEventListener("input", () => {
+
+  qualityValue.textContent =
+    quality.value + "%";
+});
+
+convertBtn.addEventListener("click", () => {
+
+  if (!selectedFile || !selectedImage) {
+
+    setStatus(
+      "Please choose an image first.",
+      true
+    );
+
+    return;
+  }
+
+  const format = outputFormat.value;
+  const info = formatInfo[format];
+
+  if (!info) {
+    return;
+  }
+
+  clearDownload();
+
+  setStatus(
+    "Converting image locally...",
+    true
+  );
+
+  convertBtn.disabled = true;
+
+  requestAnimationFrame(() => {
+
+    try {
+
+      const canvas = document.createElement("canvas");
+
+      const width = selectedImage.naturalWidth;
+      const height = selectedImage.naturalHeight;
+
+      if (!width || !height) {
+        throw new Error("Invalid image dimensions.");
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+
+      const context = canvas.getContext("2d");
+
+      if (!context) {
+        throw new Error("Canvas is not supported.");
+      }
+
+      /*
+       * JPEG does not support transparency.
+       * Use white background when converting transparent
+       * images to JPG.
+       */
+      if (format === "jpg") {
+
+        context.fillStyle = "#ffffff";
+
+        context.fillRect(
+          0,
+          0,
+          width,
+          height
+        );
+      }
+
+      context.drawImage(
+        selectedImage,
+        0,
+        0,
+        width,
+        height
+      );
+
+      const qualityValueNumber =
+        Number(quality.value) / 100;
+
+      const encoderQuality =
+        format === "png"
+          ? undefined
+          : qualityValueNumber;
+
+      canvas.toBlob(
+        blob => {
+
+          convertBtn.disabled = false;
+
+          if (!blob) {
+
+            setStatus(
+              "Your browser could not create the converted image.",
+              true
+            );
+
+            return;
+          }
+
+          /*
+           * Verify that the requested encoder actually produced
+           * the requested MIME type.
+           */
+          if (blob.type !== info.mime) {
+
+            setStatus(
+              "This browser does not support " +
+              info.label +
+              " output.",
+              true
+            );
+
+            return;
+          }
+
+          downloadUrl =
+            URL.createObjectURL(blob);
+
+          const originalName =
+            selectedFile.name
+              .replace(/\.[^/.]+$/, "");
+
+          downloadBtn.href =
+            downloadUrl;
+
+          downloadBtn.download =
+            originalName +
+            "." +
+            info.extension;
+
+          downloadBtn.style.display =
+            "block";
+
+          setStatus(
+            "Conversion complete • " +
+            formatBytes(blob.size),
+            true
+          );
+
+        },
+        info.mime,
+        encoderQuality
+      );
+
+    } catch (error) {
+
+      convertBtn.disabled = false;
+
+      console.error(error);
+
+      setStatus(
+        "Conversion failed. Please try another image.",
+        true
+      );
+    }
+
+  });
+});
+
+resetBtn.addEventListener("click", () => {
+
+  resetConverter();
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+});
+
+window.addEventListener("beforeunload", () => {
+
+  if (previewUrl) {
+    URL.revokeObjectURL(previewUrl);
+  }
+
+  if (downloadUrl) {
+    URL.revokeObjectURL(downloadUrl);
+  }
+});
+</script>
+
+</body>
+  </html>
