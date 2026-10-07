@@ -1,0 +1,970 @@
+<!-- file-converter.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Free File Converter — My Crypto Faucet</title>
+
+<meta name="description"
+content="Free private file converter. Convert supported files directly in your browser without uploading them.">
+
+<link rel="canonical"
+href="https://myfaucetcrypto.com/file-converter.html">
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#07152f;
+  color:#fff;
+  min-height:100vh;
+}
+
+.wrap{
+  width:min(920px,94%);
+  margin:auto;
+  padding:28px 0 50px;
+}
+
+h1{
+  margin:0;
+  text-align:center;
+  font-size:30px;
+}
+
+.sub{
+  text-align:center;
+  color:#b9c5dc;
+  margin:10px auto 26px;
+  line-height:1.5;
+}
+
+.card{
+  background:#fff;
+  color:#14213d;
+  border-radius:18px;
+  padding:24px;
+  box-shadow:0 12px 35px #0005;
+}
+
+.drop{
+  border:2px dashed #6679a5;
+  border-radius:16px;
+  padding:42px 18px;
+  text-align:center;
+  background:#f7f9fd;
+  cursor:pointer;
+}
+
+.drop.drag{
+  border-color:#7b3ff2;
+  background:#f1edff;
+}
+
+.drop strong{
+  display:block;
+  font-size:20px;
+  margin-bottom:8px;
+}
+
+.drop span{
+  color:#667085;
+}
+
+input{
+  display:none;
+}
+
+.file{
+  display:none;
+  margin-top:18px;
+  padding:16px;
+  border-radius:12px;
+  background:#eef2f8;
+}
+
+.file.show{
+  display:block;
+}
+
+.name{
+  font-weight:700;
+  overflow-wrap:anywhere;
+}
+
+.meta{
+  font-size:13px;
+  color:#667085;
+  margin-top:5px;
+}
+
+.options{
+  display:none;
+  margin-top:20px;
+}
+
+.options.show{
+  display:block;
+}
+
+label{
+  font-weight:700;
+  display:block;
+  margin-bottom:9px;
+}
+
+select,
+button{
+  width:100%;
+  border-radius:10px;
+  padding:13px;
+  font-size:16px;
+}
+
+select{
+  border:1px solid #ccd4e3;
+  background:#fff;
+}
+
+button{
+  border:0;
+  background:#6f35d9;
+  color:#fff;
+  font-weight:700;
+  margin-top:14px;
+  cursor:pointer;
+}
+
+button:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+}
+
+.status{
+  margin-top:16px;
+  text-align:center;
+  font-size:14px;
+  color:#667085;
+  min-height:20px;
+}
+
+.privacy{
+  margin-top:18px;
+  text-align:center;
+  color:#667085;
+  font-size:13px;
+}
+
+.privacy b{
+  color:#273858;
+}
+
+.note{
+  margin-top:20px;
+  padding:14px;
+  border-radius:10px;
+  background:#fff7df;
+  color:#6a5312;
+  font-size:13px;
+  line-height:1.5;
+}
+
+@media(max-width:600px){
+
+  h1{
+    font-size:25px;
+  }
+
+  .card{
+    padding:16px;
+  }
+
+  .drop{
+    padding:34px 14px;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<main class="wrap">
+
+<h1>Free File Converter</h1>
+
+<p class="sub">
+Choose or drag a file. Your browser detects the file type
+and shows compatible conversion options.
+</p>
+
+<section class="card">
+
+<div
+id="drop"
+class="drop"
+tabindex="0"
+role="button"
+aria-label="Choose a file"
+>
+
+<strong>📁 Choose file or drag & drop</strong>
+
+<span>
+One file at a time • Free • Private
+</span>
+
+<input
+id="fileInput"
+type="file"
+>
+
+</div>
+
+
+<div
+id="fileInfo"
+class="file"
+>
+
+<div
+class="name"
+id="fileName">
+</div>
+
+<div
+class="meta"
+id="fileMeta">
+</div>
+
+</div>
+
+
+<div
+id="options"
+class="options"
+>
+
+<label for="format">
+Convert to
+</label>
+
+<select id="format">
+</select>
+
+<button
+id="convert"
+type="button"
+>
+Convert
+</button>
+
+</div>
+
+
+<div
+id="status"
+class="status">
+</div>
+
+
+<div class="privacy">
+
+🔒 <b>Your file stays in your browser.</b>
+
+<br>
+
+It is not uploaded to our server.
+
+</div>
+
+
+<div class="note">
+
+This converter processes supported files locally in
+your browser. Additional PDF and document conversion
+engines will be enabled only when reliable browser-side
+conversion is available.
+
+</div>
+
+</section>
+
+</main>
+
+
+<script>
+
+const input =
+document.getElementById("fileInput");
+
+const drop =
+document.getElementById("drop");
+
+const info =
+document.getElementById("fileInfo");
+
+const nameEl =
+document.getElementById("fileName");
+
+const metaEl =
+document.getElementById("fileMeta");
+
+const options =
+document.getElementById("options");
+
+const format =
+document.getElementById("format");
+
+const convert =
+document.getElementById("convert");
+
+const status =
+document.getElementById("status");
+
+let currentFile = null;
+
+
+/* =========================================
+SUPPORTED OUTPUT MAP
+========================================= */
+
+const extMap = {
+
+  jpg:[
+    "jpg",
+    "jpeg",
+    "png",
+    "webp",
+    "avif",
+    "pdf"
+  ],
+
+  jpeg:[
+    "jpg",
+    "png",
+    "webp",
+    "avif",
+    "pdf"
+  ],
+
+  png:[
+    "jpg",
+    "jpeg",
+    "webp",
+    "avif",
+    "pdf"
+  ],
+
+  webp:[
+    "jpg",
+    "jpeg",
+    "png",
+    "avif",
+    "pdf"
+  ],
+
+  avif:[
+    "jpg",
+    "jpeg",
+    "png",
+    "webp",
+    "pdf"
+  ],
+
+  bmp:[
+    "jpg",
+    "jpeg",
+    "png",
+    "webp",
+    "pdf"
+  ],
+
+  gif:[
+    "png",
+    "webp",
+    "pdf"
+  ],
+
+  svg:[
+    "png",
+    "jpg",
+    "webp",
+    "pdf"
+  ],
+
+  txt:[
+    "pdf"
+  ],
+
+  csv:[
+    "pdf"
+  ],
+
+  html:[
+    "pdf"
+  ],
+
+  htm:[
+    "pdf"
+  ],
+
+  pdf:[
+    "txt",
+    "jpg",
+    "png",
+    "webp"
+  ],
+
+  doc:[
+    "pdf"
+  ],
+
+  docx:[
+    "pdf"
+  ],
+
+  xls:[
+    "pdf"
+  ],
+
+  xlsx:[
+    "pdf"
+  ],
+
+  ppt:[
+    "pdf"
+  ],
+
+  pptx:[
+    "pdf"
+  ],
+
+  odt:[
+    "pdf"
+  ],
+
+  ods:[
+    "pdf"
+  ],
+
+  odp:[
+    "pdf"
+  ],
+
+  rtf:[
+    "pdf"
+  ]
+
+};
+
+
+/* =========================================
+FILE EXTENSION
+========================================= */
+
+function extension(name){
+
+  const parts =
+  name.toLowerCase().split(".");
+
+  return parts.length > 1
+    ? parts.pop()
+    : "";
+
+}
+
+
+/* =========================================
+FILE SIZE
+========================================= */
+
+function bytes(size){
+
+  if(size < 1024)
+    return size + " B";
+
+  if(size < 1048576)
+    return (size / 1024).toFixed(1) + " KB";
+
+  return (size / 1048576).toFixed(2) + " MB";
+
+}
+
+
+/* =========================================
+FILE TYPE DETECTION
+========================================= */
+
+function detect(file){
+
+  const ext =
+  extension(file.name);
+
+  if(ext)
+    return ext;
+
+
+  const mime =
+  (file.type || "").toLowerCase();
+
+
+  if(mime === "image/jpeg")
+    return "jpeg";
+
+  if(mime === "image/png")
+    return "png";
+
+  if(mime === "image/webp")
+    return "webp";
+
+  if(mime === "image/avif")
+    return "avif";
+
+  if(mime === "image/bmp")
+    return "bmp";
+
+  if(mime === "image/svg+xml")
+    return "svg";
+
+  if(mime === "application/pdf")
+    return "pdf";
+
+  if(mime === "text/plain")
+    return "txt";
+
+  if(mime === "text/csv")
+    return "csv";
+
+
+  return "unknown";
+
+}
+
+
+/* =========================================
+SHOW FILE
+========================================= */
+
+function showFile(file){
+
+  currentFile = file;
+
+  const detected =
+  detect(file);
+
+
+  nameEl.textContent =
+  file.name;
+
+
+  metaEl.textContent =
+  (file.type || "Unknown type")
+  + " • "
+  + bytes(file.size)
+  + " • detected: "
+  + detected.toUpperCase();
+
+
+  info.classList.add("show");
+
+
+  format.innerHTML = "";
+
+
+  const outputs =
+  extMap[detected] || [];
+
+
+  outputs.forEach(output => {
+
+    const option =
+    document.createElement("option");
+
+    option.value =
+    output;
+
+    option.textContent =
+    output.toUpperCase();
+
+    format.appendChild(option);
+
+  });
+
+
+  if(!outputs.length){
+
+    options.classList.remove("show");
+
+    status.textContent =
+    "This file type is not supported yet.";
+
+    return;
+
+  }
+
+
+  options.classList.add("show");
+
+  status.textContent = "";
+
+}
+
+
+/* =========================================
+FILE PICKER
+========================================= */
+
+function chooseFile(){
+
+  input.click();
+
+}
+
+
+drop.addEventListener(
+  "click",
+  chooseFile
+);
+
+
+drop.addEventListener(
+  "keydown",
+  event => {
+
+    if(
+      event.key === "Enter" ||
+      event.key === " "
+    ){
+
+      chooseFile();
+
+    }
+
+  }
+);
+
+
+input.addEventListener(
+  "change",
+  () => {
+
+    if(input.files[0]){
+
+      showFile(input.files[0]);
+
+    }
+
+  }
+);
+
+
+/* =========================================
+DRAG & DROP
+========================================= */
+
+["dragenter","dragover"].forEach(
+  eventName => {
+
+    drop.addEventListener(
+      eventName,
+      event => {
+
+        event.preventDefault();
+
+        drop.classList.add("drag");
+
+      }
+    );
+
+  }
+);
+
+
+["dragleave","drop"].forEach(
+  eventName => {
+
+    drop.addEventListener(
+      eventName,
+      event => {
+
+        event.preventDefault();
+
+        drop.classList.remove("drag");
+
+      }
+    );
+
+  }
+);
+
+
+drop.addEventListener(
+  "drop",
+  event => {
+
+    if(
+      event.dataTransfer.files[0]
+    ){
+
+      showFile(
+        event.dataTransfer.files[0]
+      );
+
+    }
+
+  }
+);
+
+
+/* =========================================
+DOWNLOAD
+========================================= */
+
+function download(blob,name){
+
+  const url =
+  URL.createObjectURL(blob);
+
+  const a =
+  document.createElement("a");
+
+  a.href = url;
+
+  a.download = name;
+
+  document.body.appendChild(a);
+
+  a.click();
+
+  a.remove();
+
+  setTimeout(
+    () => URL.revokeObjectURL(url),
+    1000
+  );
+
+}
+
+
+/* =========================================
+IMAGE CONVERSION
+========================================= */
+
+function imageOutput(
+  file,
+  output
+){
+
+  return new Promise(
+    (resolve,reject) => {
+
+      const image =
+      new Image();
+
+      const url =
+      URL.createObjectURL(file);
+
+
+      image.onload = () => {
+
+        const canvas =
+        document.createElement("canvas");
+
+
+        canvas.width =
+        image.naturalWidth;
+
+        canvas.height =
+        image.naturalHeight;
+
+
+        const ctx =
+        canvas.getContext("2d");
+
+
+        ctx.drawImage(
+          image,
+          0,
+          0
+        );
+
+
+        const mime = {
+
+          jpg:"image/jpeg",
+          jpeg:"image/jpeg",
+          png:"image/png",
+          webp:"image/webp",
+          avif:"image/avif"
+
+        }[output];
+
+
+        canvas.toBlob(
+
+          blob => {
+
+            URL.revokeObjectURL(url);
+
+
+            if(!blob){
+
+              reject(
+                new Error(
+                  "This browser cannot create "
+                  + output.toUpperCase()
+                  + " output."
+                )
+              );
+
+              return;
+
+            }
+
+
+            resolve(blob);
+
+          },
+
+          mime,
+
+          output === "png"
+            ? undefined
+            : 0.92
+
+        );
+
+      };
+
+
+      image.onerror = () => {
+
+        URL.revokeObjectURL(url);
+
+        reject(
+          new Error(
+            "The image could not be read by this browser."
+          )
+        );
+
+      };
+
+
+      image.src = url;
+
+    }
+  );
+
+}
+
+
+/* =========================================
+CONVERT
+========================================= */
+
+convert.addEventListener(
+  "click",
+  async () => {
+
+    if(!currentFile)
+      return;
+
+
+    const from =
+    detect(currentFile);
+
+    const output =
+    format.value;
+
+
+    convert.disabled = true;
+
+    status.textContent =
+    "Converting locally…";
+
+
+    try{
+
+      if(
+
+        [
+          "jpg",
+          "jpeg",
+          "png",
+          "webp",
+          "avif",
+          "bmp"
+        ].includes(from)
+
+        &&
+
+        [
+          "jpg",
+          "jpeg",
+          "png",
+          "webp",
+          "avif"
+        ].includes(output)
+
+      ){
+
+        const blob =
+        await imageOutput(
+          currentFile,
+          output
+        );
+
+
+        const base =
+        currentFile.name
+        .replace(/\.[^.]+$/,"");
+
+
+        download(
+          blob,
+          base + "." + output
+        );
+
+
+        status.textContent =
+        "Done — converted file downloaded.";
+
+      }
+
+      else{
+
+        status.textContent =
+        "This conversion engine is not enabled yet. Your file stays on your device.";
+
+      }
+
+    }
+
+    catch(error){
+
+      status.textContent =
+      error.message ||
+      "Conversion failed.";
+
+    }
+
+    finally{
+
+      convert.disabled = false;
+
+    }
+
+  }
+);
+
+</script>
+
+</body>
+</html>
