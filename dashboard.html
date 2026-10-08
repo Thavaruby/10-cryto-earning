@@ -1510,18 +1510,21 @@ select:focus{
     🎁 Referral
 </button>
 
-<div class="menu-divider"></div>
-
-<div class="menu-item free-tools-parent">
-    🛠️ Free Tools
-</div>
-
 <button
     type="button"
-    class="menu-item free-tool-child"
-    onclick="window.location.href='/image-converter.html'">
-    🖼️ Image Converter
+    class="menu-item"
+    onclick="toggleFreeTools()">
+    🛠️ Free Tools
 </button>
+
+<div id="freeToolsSubmenu" style="display:none; padding-left:18px;">
+    <button
+        type="button"
+        class="menu-item"
+        onclick="window.location.href='/image-converter.html'">
+        🖼️ Image Converter
+    </button>
+</div>
             <div class="menu-divider"></div>
             <button
                 type="button"
@@ -4206,6 +4209,19 @@ if(adSlider){
     );
 }
 
+/* =========================================================
+   Free Tools
+========================================================= */
+function toggleFreeTools() {
+    const submenu = document.getElementById('freeToolsSubmenu');
+
+    if (submenu.style.display === 'none') {
+        submenu.style.display = 'block';
+    } else {
+        submenu.style.display = 'none';
+    }
+}
+   
 /* =========================================================
    INITIAL LOAD
 ========================================================= */
