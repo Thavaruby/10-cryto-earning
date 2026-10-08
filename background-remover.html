@@ -935,20 +935,18 @@ removeButton.addEventListener(
 
         } catch (error) {
 
-            console.error(
-                "Background removal failed:",
-                error
-            );
+    console.error(
+        "BACKGROUND REMOVAL ERROR:",
+        error
+    );
 
+    hideProgress();
 
-            hideProgress();
-
-
-            setStatus(
-                "Sorry, background removal failed. Please try another image or browser."
-            );
-
-        } finally {
+    setStatus(
+        "ERROR: " +
+        (error?.message || String(error))
+    );
+} finally {
 
             removeButton.disabled =
                 false;
