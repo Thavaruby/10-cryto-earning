@@ -8,1062 +8,687 @@
 
 <title>PDF to Word — My Crypto Faucet</title>
 
-<style>
-:root{
-    --bg:#071426;
-    --card:#0d1d34;
-    --border:#294463;
-    --gold:#f5c542;
-    --gold2:#ffd968;
-    --text:#f5f7fb;
-    --muted:#aebbd0;
-    --green:#39dc7d;
-    --red:#ff6875;
-}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs"
+        type="module"></script>
 
-*{
-    box-sizing:border-box;
-}
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/docx@9.5.1/build/index.umd.js"></script>
+
+<style>
+*{box-sizing:border-box}
 
 body{
     margin:0;
-    min-height:100vh;
-    padding:24px 14px 50px;
-    background:linear-gradient(180deg,#061224,#0b1b31);
-    color:var(--text);
-    font-family:Arial,Helvetica,sans-serif;
+    font-family:Arial,sans-serif;
+    background:#07152f;
+    color:#fff;
 }
 
-.wrapper{
-    width:100%;
-    max-width:820px;
+.wrap{
+    max-width:900px;
     margin:auto;
-}
-
-header{
-    text-align:center;
-    margin-bottom:24px;
-}
-
-.logo{
-    width:58px;
-    height:58px;
-    object-fit:contain;
-    background:#fff;
-    border-radius:50%;
-    padding:5px;
+    padding:30px 16px 60px;
 }
 
 h1{
-    margin:12px 0 6px;
-    color:var(--gold);
-    font-size:28px;
+    text-align:center;
+    color:#f5c542;
+    margin:10px 0 8px;
 }
 
-.subtitle{
-    color:var(--muted);
-    font-size:14px;
+.sub{
+    text-align:center;
+    color:#b9c5d8;
+    margin-bottom:28px;
 }
 
 .card{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:18px;
+    background:#0d2144;
+    border:1px solid #27436e;
+    border-radius:16px;
     padding:22px;
-    box-shadow:0 18px 50px rgba(0,0,0,.3);
+    box-shadow:0 12px 35px rgba(0,0,0,.25);
 }
 
 .drop{
-    min-height:230px;
-    border:2px dashed #355578;
-    border-radius:16px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
+    border:2px dashed #f5c542;
+    border-radius:14px;
+    padding:45px 20px;
     text-align:center;
     cursor:pointer;
-    padding:25px;
+    background:#091a36;
 }
 
-.drop.drag{
-    border-color:var(--gold);
-    background:rgba(245,197,66,.05);
+.drop:hover{
+    background:#10264b;
 }
 
-.icon{
-    font-size:50px;
-    margin-bottom:12px;
-}
-
-.title{
-    font-size:18px;
-    font-weight:bold;
-}
-
-.help{
-    color:var(--muted);
-    font-size:13px;
-    margin-top:8px;
-}
-
-input{
+input[type=file]{
     display:none;
-}
-
-.info{
-    display:none;
-    margin-top:16px;
-    padding:14px;
-    border-radius:12px;
-    background:#102541;
-    border:1px solid var(--border);
-}
-
-.name{
-    font-weight:bold;
-    word-break:break-word;
-}
-
-.size{
-    margin-top:5px;
-    color:var(--muted);
-    font-size:12px;
-}
-
-.controls{
-    display:none;
-    margin-top:18px;
 }
 
 button{
     width:100%;
-    padding:14px;
-    margin-top:12px;
     border:0;
-    border-radius:12px;
-    font-size:15px;
+    border-radius:10px;
+    padding:14px;
+    margin-top:14px;
+    font-size:16px;
     font-weight:bold;
     cursor:pointer;
 }
 
-.convert{
-    background:linear-gradient(135deg,var(--gold),var(--gold2));
-    color:#17120a;
+.primary{
+    background:#f5c542;
+    color:#07152f;
 }
 
-.reset{
-    background:#172d49;
-    color:#fff;
-    border:1px solid #345271;
-}
-
-button:disabled{
+.primary:disabled{
     opacity:.45;
     cursor:not-allowed;
 }
 
-.progress{
-    display:none;
+.status{
     margin-top:18px;
+    padding:14px;
+    border-radius:10px;
+    background:#07152f;
+    color:#dce5f4;
+    white-space:pre-wrap;
+    line-height:1.5;
 }
 
-.progressTop{
-    display:flex;
-    justify-content:space-between;
-    color:var(--muted);
-    font-size:13px;
-    margin-bottom:7px;
-}
-
-.track{
+.progress{
+    width:100%;
     height:9px;
-    background:#152941;
+    margin-top:14px;
+    background:#07152f;
     border-radius:20px;
     overflow:hidden;
 }
 
 .bar{
-    width:0;
+    width:0%;
     height:100%;
-    background:linear-gradient(90deg,#f5c542,#ffe38b);
-    transition:width .25s;
+    background:#f5c542;
+    transition:width .2s;
 }
 
-.status{
-    display:none;
-    margin-top:15px;
-    padding:12px;
-    border-radius:10px;
-    font-size:13px;
-    line-height:1.5;
-}
-
-.status.info{
-    display:block;
-    background:#102844;
-    color:#bdd5f2;
-}
-
-.status.success{
-    display:block;
-    background:#0c3020;
-    color:#83efb1;
-}
-
-.status.error{
-    display:block;
-    background:#35151b;
-    color:#ff9da5;
-}
-
-.note{
-    margin-top:18px;
-    color:#8fa3be;
-    text-align:center;
-    font-size:11px;
-    line-height:1.5;
-}
-
-footer{
-    margin-top:20px;
-    text-align:center;
-    color:#71849d;
-    font-size:11px;
+.file{
+    margin-top:14px;
+    color:#f5c542;
+    word-break:break-word;
 }
 </style>
 </head>
 
 <body>
 
-<div class="wrapper">
-
-<header>
-
-<img
-    src="assets/favico.png"
-    class="logo"
-    alt="My Crypto Faucet">
+<div class="wrap">
 
 <h1>PDF → Word</h1>
 
-<div class="subtitle">
-Convert PDF into an editable Word document
+<div class="sub">
+Convert PDF pages into an editable Word document locally in your browser.
 </div>
-
-</header>
 
 <div class="card">
 
-<div
-    id="drop"
-    class="drop">
+<label class="drop" id="drop">
+    <strong>Choose PDF</strong><br><br>
+    Tap here or drag & drop your PDF
+    <input id="file" type="file" accept="application/pdf,.pdf">
+</label>
 
-<div class="icon">📄</div>
+<div class="file" id="filename"></div>
 
-<div class="title">
-Drop PDF here
-</div>
-
-<div class="help">
-or tap to choose a PDF file
-</div>
-
-<input
-    id="file"
-    type="file"
-    accept=".pdf,application/pdf">
-
-</div>
-
-
-<div
-    id="info"
-    class="info">
-
-<div
-    id="name"
-    class="name">
-</div>
-
-<div
-    id="size"
-    class="size">
-</div>
-
-</div>
-
-
-<div
-    id="controls"
-    class="controls">
-
-<button
-    id="convert"
-    class="convert">
-
-Convert to editable Word
-
+<button class="primary" id="convert" disabled>
+    Convert to Word
 </button>
 
-<button
-    id="reset"
-    class="reset">
-
-Choose another PDF
-
-</button>
-
+<div class="progress">
+    <div class="bar" id="bar"></div>
 </div>
 
-
-<div
-    id="progress"
-    class="progress">
-
-<div class="progressTop">
-
-<span id="progressText">
-Preparing...
-</span>
-
-<span id="percent">
-0%
-</span>
-
-</div>
-
-<div class="track">
-
-<div
-    id="bar"
-    class="bar">
+<div class="status" id="status">
+Select a PDF to begin.
 </div>
 
 </div>
-
 </div>
-
-
-<div
-    id="status"
-    class="status">
-</div>
-
-
-<div class="note">
-
-Your PDF is processed locally in the browser.
-No PDF upload to your website server is required.
-
-</div>
-
-</div>
-
-<footer>
-My Crypto Faucet — Free Tools
-</footer>
-
-</div>
-
 
 <script type="module">
 
-/*
-=========================================================
-PDF → DOCX ENGINE
-=========================================================
+import * as pdfjsLib
+from "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs";
 
-This uses pdf2docx-wasm rather than:
-    PDF page image + fake text overlay.
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs";
 
-The package contains:
-    pdf2docx
-    PyMuPDF
-    python-docx
-    Pyodide
+const {
+    Document,
+    Packer,
+    Paragraph,
+    TextRun,
+    ImageRun,
+    AlignmentType
+} = window.docx;
 
-and is intended for client-side WASM conversion.
-=========================================================
-*/
-
-import * as PDF2DOCX
-from "https://cdn.jsdelivr.net/npm/pdf2docx-wasm@0.1.0/index.js";
-
-
-const drop =
-    document.getElementById("drop");
-
-const fileInput =
-    document.getElementById("file");
-
-const info =
-    document.getElementById("info");
-
-const nameBox =
-    document.getElementById("name");
-
-const sizeBox =
-    document.getElementById("size");
-
-const controls =
-    document.getElementById("controls");
-
-const convertBtn =
-    document.getElementById("convert");
-
-const resetBtn =
-    document.getElementById("reset");
-
-const progress =
-    document.getElementById("progress");
-
-const progressText =
-    document.getElementById("progressText");
-
-const percent =
-    document.getElementById("percent");
-
-const bar =
-    document.getElementById("bar");
-
-const status =
-    document.getElementById("status");
-
+const fileInput = document.getElementById("file");
+const drop = document.getElementById("drop");
+const convertBtn = document.getElementById("convert");
+const statusBox = document.getElementById("status");
+const filenameBox = document.getElementById("filename");
+const bar = document.getElementById("bar");
 
 let selectedFile = null;
 
+drop.addEventListener("click", () => {
+    fileInput.click();
+});
 
-/* =====================================================
-   HELPERS
-===================================================== */
+fileInput.addEventListener("change", () => {
+    if(fileInput.files.length){
+        selectedFile = fileInput.files[0];
 
-function setStatus(
-    text,
-    type="info"
-){
+        filenameBox.textContent =
+            selectedFile.name;
 
-    status.className =
-        "status " + type;
+        convertBtn.disabled = false;
 
-    status.textContent =
-        text;
-}
-
-
-function setProgress(
-    value,
-    text
-){
-
-    const p =
-        Math.max(
-            0,
-            Math.min(
-                100,
-                value
-            )
-        );
-
-    progress.style.display =
-        "block";
-
-    bar.style.width =
-        p + "%";
-
-    percent.textContent =
-        Math.round(p) + "%";
-
-    progressText.textContent =
-        text;
-}
-
-
-function bytes(
-    value
-){
-
-    if(value < 1024)
-        return value + " B";
-
-    if(value < 1024*1024)
-        return (
-            value / 1024
-        ).toFixed(1) + " KB";
-
-    return (
-        value / 1024 / 1024
-    ).toFixed(2) + " MB";
-}
-
-
-function baseName(
-    name
-){
-
-    return name
-        .replace(
-            /\.pdf$/i,
-            ""
-        )
-        .replace(
-            /[<>:"/\\|?*]/g,
-            "_"
-        )
-        .trim()
-        || "converted";
-}
-
-
-function download(
-    data,
-    filename
-){
-
-    const blob =
-        data instanceof Blob
-            ? data
-            : new Blob([
-                data
-            ],{
-                type:
-                "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            });
-
-    const url =
-        URL.createObjectURL(
-            blob
-        );
-
-    const a =
-        document.createElement(
-            "a"
-        );
-
-    a.href = url;
-    a.download = filename;
-
-    document.body.appendChild(a);
-
-    a.click();
-
-    a.remove();
-
-    setTimeout(
-        () =>
-            URL.revokeObjectURL(
-                url
-            ),
-        5000
-    );
-}
-
-
-/* =====================================================
-   FILE SELECTION
-===================================================== */
-
-drop.addEventListener(
-    "click",
-    () => fileInput.click()
-);
-
-
-fileInput.addEventListener(
-    "change",
-    () => {
-
-        const f =
-            fileInput.files?.[0];
-
-        if(f)
-            selectFile(f);
-
+        statusBox.textContent =
+            "PDF selected.\nReady to convert.";
     }
-);
+});
 
+drop.addEventListener("dragover", e => {
+    e.preventDefault();
+});
 
-drop.addEventListener(
-    "dragover",
-    e => {
+drop.addEventListener("drop", e => {
+    e.preventDefault();
 
-        e.preventDefault();
+    const files = e.dataTransfer.files;
 
-        drop.classList.add(
-            "drag"
-        );
+    if(!files.length) return;
 
-    }
-);
-
-
-drop.addEventListener(
-    "dragleave",
-    () => {
-
-        drop.classList.remove(
-            "drag"
-        );
-
-    }
-);
-
-
-drop.addEventListener(
-    "drop",
-    e => {
-
-        e.preventDefault();
-
-        drop.classList.remove(
-            "drag"
-        );
-
-        const f =
-            e.dataTransfer
-             ?.files?.[0];
-
-        if(f)
-            selectFile(f);
-
-    }
-);
-
-
-/* =====================================================
-   SELECT PDF
-===================================================== */
-
-function selectFile(
-    file
-){
+    const file = files[0];
 
     if(
-        file.type !==
-        "application/pdf" &&
-        !/\.pdf$/i.test(
-            file.name
-        )
+        file.type !== "application/pdf" &&
+        !file.name.toLowerCase().endsWith(".pdf")
     ){
-
-        setStatus(
-            "Please select a PDF file.",
-            "error"
-        );
-
+        statusBox.textContent =
+            "Please select a PDF file.";
         return;
     }
 
-    selectedFile =
-        file;
+    selectedFile = file;
 
-    nameBox.textContent =
-        file.name;
+    filenameBox.textContent =
+        selectedFile.name;
 
-    sizeBox.textContent =
-        bytes(file.size);
+    convertBtn.disabled = false;
 
-    info.style.display =
-        "block";
+    statusBox.textContent =
+        "PDF selected.\nReady to convert.";
+});
 
-    controls.style.display =
-        "block";
+function setProgress(value){
+    bar.style.width = value + "%";
+}
 
-    progress.style.display =
-        "none";
+function setStatus(text){
+    statusBox.textContent = text;
+}
+
+function escapeText(text){
+    return String(text || "")
+        .replace(/\u0000/g,"")
+        .trim();
+}
+
+/*
+=========================================================
+TEXT PDF DETECTION
+=========================================================
+*/
+
+async function extractPDFText(page){
+
+    const content =
+        await page.getTextContent();
+
+    return content.items
+        .map(item => item.str || "")
+        .join(" ")
+        .trim();
+}
+
+/*
+=========================================================
+RENDER PAGE FOR OCR
+=========================================================
+*/
+
+async function renderPage(page){
+
+    const viewport =
+        page.getViewport({scale:2.5});
+
+    const canvas =
+        document.createElement("canvas");
+
+    const context =
+        canvas.getContext("2d");
+
+    canvas.width =
+        Math.ceil(viewport.width);
+
+    canvas.height =
+        Math.ceil(viewport.height);
+
+    await page.render({
+        canvasContext:context,
+        viewport
+    }).promise;
+
+    return {
+        canvas,
+        width:viewport.width,
+        height:viewport.height
+    };
+}
+
+/*
+=========================================================
+OCR
+=========================================================
+*/
+
+async function OCRPage(canvas, pageNumber){
 
     setStatus(
-        "PDF ready.",
-        "info"
+        "OCR processing page " +
+        pageNumber +
+        "..."
     );
+
+    const worker =
+        await Tesseract.createWorker("eng+fra");
+
+    const result =
+        await worker.recognize(canvas);
+
+    await worker.terminate();
+
+    return result.data;
 }
 
+/*
+=========================================================
+BUILD EDITABLE DOCX FROM OCR WORD BOXES
+=========================================================
+*/
 
-/* =====================================================
-   RESET
-===================================================== */
+function buildOCRParagraphs(data){
 
-resetBtn.addEventListener(
-    "click",
-    () => {
+    const words =
+        data.words || [];
 
-        selectedFile =
-            null;
+    if(!words.length){
 
-        fileInput.value =
-            "";
+        const text =
+            escapeText(data.text);
 
-        info.style.display =
-            "none";
-
-        controls.style.display =
-            "none";
-
-        progress.style.display =
-            "none";
-
-        status.className =
-            "status";
-
-        status.textContent =
-            "";
-
+        return [
+            new Paragraph({
+                children:[
+                    new TextRun({
+                        text
+                    })
+                ]
+            })
+        ];
     }
-);
 
+    const lines = [];
 
-/* =====================================================
-   FIND CONVERTER
-===================================================== */
+    for(const word of words){
 
-function findConverter(
-    module
-){
+        const text =
+            escapeText(word.text);
 
-    /*
-     * Different WASM package builds can expose
-     * their public function differently.
+        if(!text) continue;
 
-     * Check the known exported names rather than
-     * silently pretending conversion succeeded.
-     */
+        const box =
+            word.bbox || {};
 
-    const candidates = [
+        const top =
+            Number(box.y0 || 0);
 
-        "convert",
+        let line =
+            lines.find(
+                l =>
+                    Math.abs(l.top - top) < 24
+            );
 
-        "convertPDFToDOCX",
+        if(!line){
 
-        "convertPdfToDocx",
+            line = {
+                top,
+                words:[]
+            };
 
-        "pdfToDocx",
-
-        "PDFToDOCX",
-
-        "PDF2DOCX",
-
-        "Pdf2Docx"
-
-    ];
-
-
-    for(
-        const key of candidates
-    ){
-
-        if(
-            typeof module[key] ===
-            "function"
-        ){
-
-            return module[key];
-
+            lines.push(line);
         }
 
+        line.words.push({
+            text,
+            left:Number(box.x0 || 0)
+        });
     }
 
+    lines.sort(
+        (a,b)=>a.top-b.top
+    );
 
-    if(
-        module.default &&
-        typeof module.default ===
-        "function"
-    ){
+    return lines.map(line => {
 
-        return module.default;
+        line.words.sort(
+            (a,b)=>a.left-b.left
+        );
 
-    }
-
-
-    if(
-        module.default &&
-        typeof module.default.convert ===
-        "function"
-    ){
-
-        return module.default.convert;
-
-    }
-
-
-    return null;
+        return new Paragraph({
+            children:
+                line.words.map(
+                    (word,index)=>
+                        new TextRun({
+                            text:
+                                (index ? " " : "") +
+                                word.text,
+                            size:20
+                        })
+                ),
+            spacing:{
+                after:80
+            }
+        });
+    });
 }
 
+/*
+=========================================================
+CREATE DOCX
+=========================================================
+*/
 
-/* =====================================================
-   CONVERSION
-===================================================== */
+async function createDocx(pages){
 
-convertBtn.addEventListener(
-    "click",
-    convert
-);
+    const sections = [];
 
+    for(const page of pages){
 
-async function convert(){
+        const children = [];
 
-    if(!selectedFile)
-        return;
+        if(page.mode === "text"){
 
+            const lines =
+                page.items;
 
-    convertBtn.disabled =
-        true;
+            for(const line of lines){
 
-    resetBtn.disabled =
-        true;
-
-
-    try{
-
-        setProgress(
-            5,
-            "Loading PDF → Word engine..."
-        );
-
-
-        /*
-         * The WASM package itself contains
-         * PyMuPDF/pdf2docx/python-docx.
-         */
-
-        const converter =
-            findConverter(
-                PDF2DOCX
-            );
-
-
-        if(!converter){
-
-            /*
-             * Do NOT generate a fake DOCX.
-             * If the package export differs,
-             * stop with a real error.
-             */
-
-            throw new Error(
-                "The PDF → Word WASM engine could not be initialized."
-            );
-        }
-
-
-        setProgress(
-            20,
-            "Reading PDF..."
-        );
-
-
-        const input =
-            new Uint8Array(
-                await selectedFile.arrayBuffer()
-            );
-
-
-        setProgress(
-            35,
-            "Converting PDF layout..."
-        );
-
-
-        /*
-         * Try the common binary API first.
-         */
-
-        let result;
-
-
-        try{
-
-            result =
-                await converter(
-                    input
-                );
-
-        }catch(firstError){
-
-            /*
-             * Some builds expose an object-style API.
-             */
-
-            try{
-
-                result =
-                    await converter({
-                        input,
-                        output:"docx",
-                        format:"docx"
-                    });
-
-            }catch(secondError){
-
-                console.error(
-                    firstError
-                );
-
-                console.error(
-                    secondError
-                );
-
-                throw new Error(
-                    "PDF → Word conversion engine rejected this PDF."
+                children.push(
+                    new Paragraph({
+                        children:[
+                            new TextRun({
+                                text:line,
+                                size:20
+                            })
+                        ],
+                        spacing:{
+                            after:100
+                        }
+                    })
                 );
             }
 
-        }
+        }else{
 
-
-        setProgress(
-            75,
-            "Creating editable DOCX..."
-        );
-
-
-        /*
-         * Accept common binary return types.
-         */
-
-        let output;
-
-
-        if(
-            result instanceof Blob
-        ){
-
-            output =
-                result;
-
-        }
-        else if(
-            result instanceof Uint8Array
-        ){
-
-            output =
-                new Blob(
-                    [result],
-                    {
-                        type:
-                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                    }
-                );
-
-        }
-        else if(
-            result instanceof ArrayBuffer
-        ){
-
-            output =
-                new Blob(
-                    [result],
-                    {
-                        type:
-                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                    }
-                );
-
-        }
-        else if(
-            result?.data
-        ){
-
-            const data =
-                result.data;
-
-            output =
-                new Blob(
-                    [data],
-                    {
-                        type:
-                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                    }
-                );
-
-        }
-        else if(
-            result?.docx
-        ){
-
-            output =
-                new Blob(
-                    [result.docx],
-                    {
-                        type:
-                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                    }
-                );
-
-        }
-        else{
-
-            console.error(
-                "Unexpected converter result:",
-                result
-            );
-
-            throw new Error(
-                "The converter returned an unsupported DOCX result."
+            children.push(
+                ...buildOCRParagraphs(
+                    page.ocr
+                )
             );
         }
 
+        sections.push({
+            properties:{
+                page:{
+                    size:{
+                        width:11906,
+                        height:16838
+                    },
+                    margin:{
+                        top:720,
+                        bottom:720,
+                        left:720,
+                        right:720
+                    }
+                }
+            },
+            children
+        });
+    }
 
-        setProgress(
-            95,
-            "Preparing Word download..."
-        );
+    const doc =
+        new Document({
+            sections
+        });
 
+    return Packer.toBlob(doc);
+}
 
-        download(
-            output,
-            baseName(
-                selectedFile.name
-            ) +
-            "-editable.docx"
-        );
+/*
+=========================================================
+MAIN CONVERSION
+=========================================================
+*/
 
+convertBtn.addEventListener("click", async ()=>{
 
-        setProgress(
-            100,
-            "Completed."
-        );
+    if(!selectedFile) return;
 
+    convertBtn.disabled = true;
+
+    try{
+
+        setProgress(5);
 
         setStatus(
-            "PDF → Word conversion completed.",
-            "success"
+            "Reading PDF..."
         );
 
+        const buffer =
+            await selectedFile.arrayBuffer();
+
+        const pdf =
+            await pdfjsLib.getDocument({
+                data:buffer
+            }).promise;
+
+        const pages = [];
+
+        let totalCharacters = 0;
+
+        /*
+        ---------------------------------------------
+        FIRST PASS
+        Detect whether PDF contains real text.
+        ---------------------------------------------
+        */
+
+        for(let i=1;i<=pdf.numPages;i++){
+
+            const page =
+                await pdf.getPage(i);
+
+            const text =
+                await extractPDFText(page);
+
+            totalCharacters +=
+                text.length;
+
+            pages.push({
+                page,
+                text
+            });
+
+            setProgress(
+                5 +
+                Math.round(
+                    (i/pdf.numPages)*20
+                )
+            );
+        }
+
+        /*
+        ---------------------------------------------
+        TEXT PDF
+        ---------------------------------------------
+        */
+
+        if(totalCharacters > 20){
+
+            setStatus(
+                "Real text detected.\n" +
+                "Creating editable Word text..."
+            );
+
+            for(const page of pages){
+
+                const clean =
+                    escapeText(page.text);
+
+                page.mode = "text";
+
+                page.items =
+                    clean
+                    .split(/\s{2,}|\n+/)
+                    .filter(Boolean);
+            }
+
+        }else{
+
+            /*
+            -----------------------------------------
+            SCANNED / IMAGE PDF
+            -----------------------------------------
+            */
+
+            setStatus(
+                "Scanned/image PDF detected.\n" +
+                "Starting OCR..."
+            );
+
+            for(
+                let i=0;
+                i<pages.length;
+                i++
+            ){
+
+                const rendered =
+                    await renderPage(
+                        pages[i].page
+                    );
+
+                const ocr =
+                    await OCRPage(
+                        rendered.canvas,
+                        i+1
+                    );
+
+                pages[i].mode =
+                    "ocr";
+
+                pages[i].ocr =
+                    ocr;
+
+                setProgress(
+                    25 +
+                    Math.round(
+                        ((i+1)/pages.length)*55
+                    )
+                );
+            }
+        }
+
+        setStatus(
+            "Building editable Word document..."
+        );
+
+        setProgress(85);
+
+        const blob =
+            await createDocx(pages);
+
+        setProgress(95);
+
+        const url =
+            URL.createObjectURL(blob);
+
+        const a =
+            document.createElement("a");
+
+        const base =
+            selectedFile.name
+                .replace(/\.pdf$/i,"");
+
+        a.href = url;
+
+        a.download =
+            base + "-editable.docx";
+
+        document.body.appendChild(a);
+
+        a.click();
+
+        a.remove();
+
+        setTimeout(
+            ()=>URL.revokeObjectURL(url),
+            5000
+        );
+
+        setProgress(100);
+
+        setStatus(
+            "Conversion complete.\n\n" +
+            "The Word file contains real editable text.\n" +
+            "No PDF upload/server conversion was used."
+        );
 
     }catch(error){
 
-        console.error(
-            "PDF → Word error:",
-            error
-        );
+        console.error(error);
 
-
-        setProgress(
-            0,
-            "Conversion failed."
-        );
-
+        setProgress(0);
 
         setStatus(
-            error?.message ||
-            "PDF → Word conversion failed.",
-            "error"
+            "Conversion failed.\n\n" +
+            (error?.message ||
+             "The PDF could not be processed.")
         );
-
 
     }finally{
 
-        convertBtn.disabled =
-            false;
-
-        resetBtn.disabled =
-            false;
-
+        convertBtn.disabled = false;
     }
 
-}
+});
 
 </script>
 
 </body>
-</html>
+    </html>
