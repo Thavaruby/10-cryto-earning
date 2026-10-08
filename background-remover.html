@@ -566,10 +566,13 @@ removeBtn.addEventListener(
 
             try {
 
-                const output =
-                    await model(
-                        imageUrl
-                    );
+                const { RawImage } = await import(
+    "https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.1"
+);
+
+const image = await RawImage.fromBlob(selectedFile);
+
+const output = await model(image);
 
 
                 if (
