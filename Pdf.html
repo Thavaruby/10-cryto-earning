@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Smart PDF Converter</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .card {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        p.subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 24px;
+        }
+
+        .drop-zone {
+            border: 2px dashed #0066ff;
+            border-radius: 12px;
+            padding: 35px 20px;
+            cursor: pointer;
+            background: #f8fafe;
+            transition: all 0.2s ease;
+        }
+
+        .drop-zone:hover, .drop-zone--over {
+            background: #edf3ff;
+            border-color: #0044cc;
+        }
+
+        .drop-zone__prompt {
+            color: #555;
+            font-size: 15px;
+        }
+
+        .browse-link {
+            color: #0066ff;
+            font-weight: 600;
+        }
+
+        .drop-zone__input {
+            display: none;
+        }
+
+        .file-info {
+            margin-top: 15px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #00875a;
+            word-break: break-all;
+        }
+
+        .format-group {
+            margin: 24px 0;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 15px;
+            outline: none;
+            background-color: #fff;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: #0066ff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .btn:hover {
+            background: #0052cc;
+        }
+
+        .btn:disabled {
+            background: #a5adba;
+            cursor: not-allowed;
+        }
+
+        .status {
+            margin-top: 16px;
+            font-size: 14px;
+            color: #444;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h1>PDF Converter</h1>
+        <p class="subtitle">Convert Scanned, Forms & Image PDFs to Editable Documents</p>
+
+        <!-- Drop Zone -->
+        <div id="drop-zone" class="drop-zone">
+            <span class="drop-zone__prompt">Drag & Drop PDF here or <span class="browse-link">Browse</span></span>
+            <input type="file" name="file" id="file-input" class="drop-zone__input" accept=".pdf">
+        </div>
+
+        <div id="file-info" class="file-info"></div>
+
+        <!-- Format Options -->
+        <div class="format-group">
+            <label for="format">Select Output Format:</label>
+            <select id="format">
+                <option value="docx">Word Document (.docx)</option>
+                <option value="xlsx">Excel Spreadsheet (.xlsx)</option>
+                <option value="pptx">PowerPoint Presentation (.pptx)</option>
+                <option value="txt">Text File (.txt)</option>
+            </select>
+        </div>
+
+        <button id="convert-btn" class="btn">Convert & Download</button>
+        <div id="status" class="status"></div>
+    </div>
+
+    <script>
+        // BACKEND API URL (Render / Railway-il deploy seidhadhum indha URL-ai replace seiyyangal)
+        const BACKEND_URL = 'http://localhost:5000/convert';
+
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const fileInfo = document.getElementById('file-info');
+        const convertBtn = document.getElementById('convert-btn');
+        const statusDiv = document.getElementById('status');
+        let selectedFile = null;
+
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length) {
+                selectedFile = fileInput.files[0];
+                updateFileInfo();
+            }
+        });
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('drop-zone--over');
+        });
+
+        ['dragleave', 'dragend'].forEach(type => {
+            dropZone.addEventListener(type, () => dropZone.classList.remove('drop-zone--over'));
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drop-zone--over');
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                selectedFile = e.dataTransfer.files[0];
+                updateFileInfo();
+            }
+        });
+
+        function updateFileInfo() {
+            fileInfo.textContent = `Selected: ${selectedFile.name} (${(selectedFile.size / 1024 / 1024).toFixed(2)} MB)`;
+        }
+
+        convertBtn.addEventListener('click', async () => {
+            if (!selectedFile) {
+                alert('Please upload a PDF file first!');
+                return;
+            }
+
+            const format = document.getElementById('format').value;
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            formData.append('format', format);
+
+            statusDiv.style.color = '#333';
+            statusDiv.textContent = 'Processing PDF with OCR... Please wait.';
+            convertBtn.disabled = true;
+
+            try {
+                const response = await fetch(BACKEND_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Conversion failed on server.');
+                }
+
+                const blob = await response.blob();
+                const downloadUrl = window.URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = `converted_${selectedFile.name.replace('.pdf', '')}.${format}`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                
+                statusDiv.style.color = '#00875a';
+                statusDiv.textContent = 'Conversion Successful! Download started.';
+            } catch (err) {
+                console.error(err);
+                statusDiv.style.color = '#de350b';
+                statusDiv.textContent = 'Error during conversion. Check server connection.';
+            } finally {
+                convertBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
