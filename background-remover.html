@@ -596,7 +596,39 @@ async function loadModel() {
             "Preparing background-removal AI..."
         );
 
+const testFiles = [
+    "/models/Xenova/modnet/config.json",
+    "/models/Xenova/modnet/preprocessor_config.json",
+    "/models/Xenova/modnet/onnx/model_quantized.onnx",
+    "/wasm/ort-wasm-simd-threaded.jsep.mjs",
+    "/wasm/ort-wasm-simd-threaded.jsep.wasm"
+];
 
+for (const file of testFiles) {
+    const response = await fetch(file, {
+        cache: "no-store"
+    });
+
+    console.log(
+        "LOCAL FILE:",
+        file,
+        "STATUS:",
+        response.status,
+        "OK:",
+        response.ok
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            "LOCAL FILE FAILED: " +
+            file +
+            " (" +
+            response.status +
+            ")"
+        );
+    }
+}
+        
         const model =
             await transformers.pipeline(
                 "background-removal",
