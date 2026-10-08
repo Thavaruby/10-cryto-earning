@@ -420,7 +420,8 @@ async function loadModel() {
 
         transformers.env.localModelPath = "/models/";
 
-        transformers.env.backends.onnx.wasm.wasmPaths = "/wasm/";
+        transformers.env.backends.onnx.wasm.wasmPaths =
+    "https://myfaucetcrypto.com/wasm/";
 
         const model = await transformers.pipeline(
             "background-removal",
