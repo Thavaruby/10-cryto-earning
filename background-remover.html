@@ -10,7 +10,7 @@
 
 <meta
     name="description"
-    content="Remove image backgrounds online for free. Create transparent PNG images directly in your browser."
+    content="Remove image backgrounds for free directly in your browser. Create transparent PNG images without uploading your photos to a server."
 >
 
 <meta
@@ -23,279 +23,228 @@
     href="https://myfaucetcrypto.com/background-remover"
 >
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="Free Background Remover Online">
+<meta
+    property="og:title"
+    content="Free Background Remover Online"
+>
+
 <meta
     property="og:description"
-    content="Remove image backgrounds online for free and download transparent PNG images."
+    content="Remove image backgrounds directly in your browser and download a transparent PNG for free."
 >
+
 <meta
     property="og:url"
     content="https://myfaucetcrypto.com/background-remover"
 >
-<meta property="og:site_name" content="My Crypto Faucet">
+
+<meta
+    property="og:type"
+    content="website"
+>
 
 <style>
+
 * {
     box-sizing: border-box;
 }
 
-html,
 body {
     margin: 0;
-    padding: 0;
-    min-height: 100%;
-}
-
-body {
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-    background:
-        linear-gradient(
-            180deg,
-            #07152f 0%,
-            #0b1f42 55%,
-            #07152f 100%
-        );
-    color: #ffffff;
-}
-
-.container {
-    width: min(960px, calc(100% - 30px));
-    margin: 0 auto;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f5f7fb;
+    color: #172033;
 }
 
 header {
-    padding: 25px 0 15px;
+    background: #071b49;
+    color: white;
+    padding: 20px;
     text-align: center;
 }
 
-.logo {
-    width: 58px;
-    height: 58px;
-    object-fit: contain;
-    margin-bottom: 8px;
+header h1 {
+    margin: 0;
+    font-size: 27px;
 }
 
-h1 {
-    margin: 5px 0 8px;
-    font-size: clamp(25px, 5vw, 40px);
-    line-height: 1.15;
-    color: #f5c542;
+header p {
+    margin: 8px 0 0;
+    font-size: 14px;
+    opacity: .9;
 }
 
-.subtitle {
-    margin: 0 auto;
-    max-width: 680px;
-    color: #d9e3f4;
-    line-height: 1.6;
-    font-size: 15px;
+.container {
+    width: min(960px, 94%);
+    margin: 30px auto;
 }
 
-.tool-card {
-    margin: 25px auto 35px;
-    background: #ffffff;
-    color: #17233d;
-    border-radius: 18px;
-    padding: 22px;
-    box-shadow:
-        0 15px 45px rgba(0, 0, 0, 0.28);
+.card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 8px 30px rgba(0,0,0,.08);
+    margin-bottom: 22px;
 }
 
-.upload-area {
-    border: 2px dashed #b7c2d6;
-    border-radius: 15px;
-    padding: 28px 18px;
+.upload-box {
+    border: 2px dashed #b8c2d6;
+    border-radius: 14px;
+    padding: 35px 20px;
     text-align: center;
-    background: #f7f9fc;
-    transition: 0.2s ease;
+    background: #fafcff;
 }
 
-.upload-area:hover {
-    border-color: #6879d8;
-    background: #f2f5ff;
-}
-
-.upload-area input {
+.upload-box input {
     display: none;
 }
 
-.upload-label {
+.upload-button {
     display: inline-block;
-    cursor: pointer;
-    background: #5d63d8;
-    color: #ffffff;
+    background: #071b49;
+    color: white;
     padding: 13px 22px;
-    border-radius: 10px;
-    font-weight: 700;
-    font-size: 15px;
+    border-radius: 9px;
+    cursor: pointer;
+    font-weight: 600;
 }
 
-.upload-label:hover {
-    background: #4c52c7;
-}
-
-.file-info {
-    margin-top: 12px;
-    color: #5f6b7d;
-    font-size: 14px;
-    word-break: break-word;
+.upload-button:hover {
+    opacity: .92;
 }
 
 .status {
-    margin: 18px 0 0;
-    padding: 12px 14px;
-    border-radius: 10px;
-    background: #eef3ff;
-    color: #34436b;
+    margin-top: 18px;
+    padding: 13px;
+    border-radius: 9px;
+    background: #eef3fb;
+    text-align: center;
     font-size: 14px;
-    line-height: 1.5;
+    min-height: 20px;
+}
+
+.progress-wrap {
+    margin-top: 12px;
     display: none;
 }
 
-.status.show {
-    display: block;
+.progress {
+    width: 100%;
+    height: 8px;
+    background: #e4e8ef;
+    border-radius: 10px;
+    overflow: hidden;
 }
 
-.status.error {
-    background: #fff0f0;
-    color: #a12626;
-}
-
-.status.success {
-    background: #edf9f0;
-    color: #176b32;
+.progress-bar {
+    width: 0%;
+    height: 100%;
+    background: #e0a900;
+    transition: width .2s ease;
 }
 
 .preview-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 18px;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
     margin-top: 22px;
 }
 
 .preview-box {
-    border: 1px solid #dce2ec;
-    border-radius: 14px;
-    overflow: hidden;
-    background: #ffffff;
-}
-
-.preview-title {
-    padding: 11px 14px;
-    background: #f4f6fa;
-    font-weight: 700;
-    font-size: 14px;
-    color: #34405a;
-}
-
-.preview-content {
-    min-height: 260px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    border: 1px solid #dfe4ec;
+    border-radius: 12px;
     padding: 15px;
-    background:
-        repeating-conic-gradient(
-            #eeeeee 0% 25%,
-            #ffffff 0% 50%
-        )
-        50% / 20px 20px;
+    background: #fff;
 }
 
-.preview-content.original {
-    background: #f5f6f8;
+.preview-box h3 {
+    margin-top: 0;
+    font-size: 17px;
 }
 
-.preview-content img {
-    display: block;
+.preview-area {
+    min-height: 280px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    border-radius: 9px;
+    background: #f2f4f7;
+}
+
+.preview-area.checkerboard {
+    background-color: #fff;
+    background-image:
+        linear-gradient(45deg, #e9e9e9 25%, transparent 25%),
+        linear-gradient(-45deg, #e9e9e9 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #e9e9e9 75%),
+        linear-gradient(-45deg, transparent 75%, #e9e9e9 75%);
+    background-size: 24px 24px;
+    background-position:
+        0 0,
+        0 12px,
+        12px -12px,
+        -12px 0;
+}
+
+.preview-area img {
     max-width: 100%;
-    max-height: 420px;
-    object-fit: contain;
-    border-radius: 7px;
-}
-
-.placeholder {
-    color: #8993a5;
-    text-align: center;
-    font-size: 14px;
+    max-height: 450px;
+    display: block;
 }
 
 .actions {
     display: flex;
-    flex-wrap: wrap;
+    gap: 12px;
     justify-content: center;
-    gap: 10px;
-    margin-top: 22px;
+    flex-wrap: wrap;
+    margin-top: 20px;
 }
 
-button {
+.action-button {
     border: 0;
+    border-radius: 9px;
+    padding: 12px 20px;
     cursor: pointer;
-    border-radius: 10px;
-    padding: 13px 20px;
-    font-size: 15px;
-    font-weight: 700;
+    font-weight: 600;
+    font-size: 14px;
 }
 
-.remove-btn {
-    background: #5d63d8;
-    color: #ffffff;
+.remove-button {
+    background: #071b49;
+    color: white;
 }
 
-.remove-btn:hover:not(:disabled) {
-    background: #4c52c7;
+.download-button {
+    background: #d99b00;
+    color: white;
+    display: none;
 }
 
-.download-btn {
-    background: #e4ad22;
-    color: #171717;
+.reset-button {
+    background: #e9edf3;
+    color: #172033;
 }
 
-.download-btn:hover:not(:disabled) {
-    background: #d39d16;
-}
-
-.reset-btn {
-    background: #e8ebf1;
-    color: #28344c;
-}
-
-.reset-btn:hover:not(:disabled) {
-    background: #d9dee8;
-}
-
-button:disabled {
-    opacity: 0.48;
+.action-button:disabled {
+    opacity: .5;
     cursor: not-allowed;
 }
 
 .info {
-    margin-top: 28px;
-    padding: 18px;
-    background: #f7f8fb;
-    border-radius: 13px;
-    color: #465168;
-    line-height: 1.65;
-    font-size: 14px;
+    line-height: 1.7;
+    color: #465066;
 }
 
-.info strong {
-    color: #26334d;
+.info h2 {
+    color: #071b49;
 }
 
 footer {
     text-align: center;
-    padding: 15px 0 35px;
-    color: #aebbd1;
+    padding: 25px;
     font-size: 13px;
-}
-
-footer a {
-    color: #f5c542;
-    text-decoration: none;
+    color: #687386;
 }
 
 @media (max-width: 700px) {
@@ -304,165 +253,210 @@ footer a {
         grid-template-columns: 1fr;
     }
 
-    .preview-content {
-        min-height: 220px;
+    header h1 {
+        font-size: 23px;
     }
 
-    .tool-card {
-        padding: 15px;
+    .card {
+        padding: 18px;
+    }
+
+}
+
+</style>
+
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Free Background Remover",
+    "url": "https://myfaucetcrypto.com/background-remover",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "Web Browser",
+    "description": "Free browser-based image background remover that creates transparent PNG images.",
+    "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
     }
 }
-</style>
+</script>
+
 </head>
 
 <body>
 
-<div class="container">
-
 <header>
-
-    <img
-        src="assets/favico.png"
-        alt="My Crypto Faucet"
-        class="logo"
-    >
 
     <h1>✂️ Free Background Remover</h1>
 
-    <p class="subtitle">
-        Remove the background from your image and create a transparent PNG
-        directly in your browser.
+    <p>
+        Remove image backgrounds directly in your browser
     </p>
 
 </header>
 
-<main class="tool-card">
 
-    <div class="upload-area">
+<main class="container">
 
-        <label
-            for="fileInput"
-            class="upload-label"
-        >
-            📁 Choose Image
-        </label>
+    <section class="card">
 
-        <input
-            id="fileInput"
-            type="file"
-            accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
-        >
+        <div class="upload-box">
+
+            <input
+                type="file"
+                id="imageInput"
+                accept="image/png,image/jpeg,image/jpg,image/webp"
+            >
+
+            <label
+                for="imageInput"
+                class="upload-button"
+            >
+                Choose Image
+            </label>
+
+            <p>
+                JPG, JPEG, PNG or WebP
+            </p>
+
+            <p>
+                Your image is processed in your browser.
+            </p>
+
+        </div>
+
 
         <div
-            id="fileInfo"
-            class="file-info"
+            id="status"
+            class="status"
         >
-            JPG, JPEG, PNG or WebP
+            Choose an image to start.
         </div>
 
-    </div>
 
-    <div
-        id="status"
-        class="status"
-        role="status"
-        aria-live="polite"
-    ></div>
+        <div
+            id="progressWrap"
+            class="progress-wrap"
+        >
 
-    <div class="preview-grid">
+            <div class="progress">
 
-        <div class="preview-box">
+                <div
+                    id="progressBar"
+                    class="progress-bar"
+                ></div>
 
-            <div class="preview-title">
-                Original Image
             </div>
 
-            <div
-                id="originalPreview"
-                class="preview-content original"
+        </div>
+
+
+        <div class="actions">
+
+            <button
+                id="removeButton"
+                class="action-button remove-button"
+                disabled
             >
-                <div class="placeholder">
-                    Your uploaded image will appear here
-                </div>
-            </div>
+                ✂️ Remove Background
+            </button>
 
-        </div>
-
-        <div class="preview-box">
-
-            <div class="preview-title">
-                Transparent Background
-            </div>
-
-            <div
-                id="resultPreview"
-                class="preview-content"
+            <button
+                id="downloadButton"
+                class="action-button download-button"
             >
-                <div class="placeholder">
-                    Your transparent image will appear here
+                ⬇️ Download PNG
+            </button>
+
+            <button
+                id="resetButton"
+                class="action-button reset-button"
+            >
+                Reset
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <section
+        id="previewSection"
+        class="card"
+        style="display:none;"
+    >
+
+        <div class="preview-grid">
+
+            <div class="preview-box">
+
+                <h3>Original Image</h3>
+
+                <div class="preview-area">
+
+                    <img
+                        id="originalPreview"
+                        alt="Original uploaded image"
+                    >
+
                 </div>
+
+            </div>
+
+
+            <div class="preview-box">
+
+                <h3>Transparent Background</h3>
+
+                <div
+                    class="preview-area checkerboard"
+                >
+
+                    <img
+                        id="resultPreview"
+                        alt="Image with background removed"
+                    >
+
+                </div>
+
             </div>
 
         </div>
 
-    </div>
+    </section>
 
-    <div class="actions">
 
-        <button
-            id="removeBtn"
-            class="remove-btn"
-            type="button"
-            disabled
-        >
-            ✂️ Remove Background
-        </button>
+    <section class="card info">
 
-        <button
-            id="downloadBtn"
-            class="download-btn"
-            type="button"
-            disabled
-        >
-            ⬇️ Download PNG
-        </button>
+        <h2>Free Online Background Remover</h2>
 
-        <button
-            id="resetBtn"
-            class="reset-btn"
-            type="button"
-        >
-            ↻ Reset
-        </button>
+        <p>
+            Remove the background from an image and create a
+            transparent PNG directly in your web browser.
+        </p>
 
-    </div>
+        <p>
+            The background-removal AI runs locally in your browser,
+            so your image does not need to be uploaded to our server
+            for processing.
+        </p>
 
-    <div class="info">
+        <p>
+            After processing, download the result as a transparent PNG.
+        </p>
 
-        <strong>How it works</strong><br>
-
-        1. Choose an image.<br>
-        2. The AI model runs directly in your browser.<br>
-        3. Your image is processed locally on your device.<br>
-        4. Download the result as a transparent PNG.
-
-        <br><br>
-
-        <strong>Privacy:</strong>
-        Your uploaded image is not sent to our server for background removal.
-
-    </div>
+    </section>
 
 </main>
 
+
 <footer>
 
-    © 2026 My Crypto Faucet ·
-    <a href="/">Home</a>
+    © My Crypto Faucet
 
 </footer>
 
-</div>
 
 <script type="module">
 
@@ -470,21 +464,22 @@ let segmenter = null;
 let loadingPromise = null;
 
 let originalFile = null;
-let originalURL = null;
-let resultURL = null;
+let resultBlob = null;
 
 
-/* =========================================================
-   ELEMENTS
-   ========================================================= */
+const imageInput =
+    document.getElementById("imageInput");
 
-const fileInput =
-    document.getElementById("fileInput");
+const removeButton =
+    document.getElementById("removeButton");
 
-const fileInfo =
-    document.getElementById("fileInfo");
+const downloadButton =
+    document.getElementById("downloadButton");
 
-const statusBox =
+const resetButton =
+    document.getElementById("resetButton");
+
+const status =
     document.getElementById("status");
 
 const originalPreview =
@@ -493,35 +488,41 @@ const originalPreview =
 const resultPreview =
     document.getElementById("resultPreview");
 
-const removeBtn =
-    document.getElementById("removeBtn");
+const previewSection =
+    document.getElementById("previewSection");
 
-const downloadBtn =
-    document.getElementById("downloadBtn");
+const progressWrap =
+    document.getElementById("progressWrap");
 
-const resetBtn =
-    document.getElementById("resetBtn");
+const progressBar =
+    document.getElementById("progressBar");
 
 
-/* =========================================================
-   STATUS
-   ========================================================= */
+function setStatus(message) {
 
-function setStatus(message, type = "") {
+    status.textContent = message;
 
-    statusBox.textContent = message;
-
-    statusBox.className = "status show";
-
-    if (type) {
-        statusBox.classList.add(type);
-    }
 }
 
 
-/* =========================================================
-   LOAD MODEL
-   ========================================================= */
+function setProgress(value) {
+
+    progressWrap.style.display = "block";
+
+    progressBar.style.width =
+        Math.max(0, Math.min(100, value)) + "%";
+
+}
+
+
+function hideProgress() {
+
+    progressWrap.style.display = "none";
+
+    progressBar.style.width = "0%";
+
+}
+
 
 async function loadModel() {
 
@@ -533,47 +534,117 @@ async function loadModel() {
         return loadingPromise;
     }
 
+
     loadingPromise = (async () => {
 
         setStatus(
             "Loading AI model. Please wait..."
         );
 
-        const transformers = await import(
-            "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1"
-        );
+        setProgress(5);
+
+
+        const transformers =
+            await import(
+                "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1"
+            );
+
 
         /*
-         * Load model files from our own website.
+         * Use models hosted on our own website.
          */
         transformers.env.allowLocalModels = true;
+
         transformers.env.allowRemoteModels = false;
-        transformers.env.localModelPath = "/models/";
+
+        transformers.env.localModelPath =
+            "/models/";
+
 
         /*
-         * IMPORTANT:
-         * Transformers.js expects a DIRECTORY here.
-         * It then loads the required WASM files from this path.
+         * IMPORTANT
+         *
+         * Explicitly point ONNX Runtime to the
+         * WASM files hosted on our own website.
          */
-        transformers.env.backends.onnx.wasm.wasmPaths =
-            "/wasm/";
+        transformers.env.backends.onnx.wasm.wasmPaths = {
 
-        /*
-         * Use the quantized model with WASM.
-         */
+            mjs:
+                new URL(
+                    "/wasm/ort-wasm-simd-threaded.jsep.mjs",
+                    window.location.origin
+                ).href,
+
+            wasm:
+                new URL(
+                    "/wasm/ort-wasm-simd-threaded.jsep.wasm",
+                    window.location.origin
+                ).href
+
+        };
+
+
+        console.log(
+            "WASM PATH:",
+            transformers.env.backends.onnx.wasm.wasmPaths
+        );
+
+
+        setProgress(15);
+
+        setStatus(
+            "Preparing background-removal AI..."
+        );
+
+
         const model =
             await transformers.pipeline(
                 "background-removal",
                 "Xenova/modnet",
                 {
                     dtype: "q8",
-                    device: "wasm"
+                    device: "wasm",
+
+                    progress_callback: (progress) => {
+
+                        if (
+                            progress &&
+                            typeof progress.progress === "number"
+                        ) {
+
+                            const value =
+                                15 +
+                                (
+                                    progress.progress * 0.65
+                                );
+
+                            setProgress(value);
+
+                        }
+
+                    }
+
                 }
             );
+
+
+        setProgress(100);
+
+        setStatus(
+            "AI model ready."
+        );
+
+
+        setTimeout(
+            hideProgress,
+            500
+        );
+
 
         return model;
 
     })();
+
 
     try {
 
@@ -585,303 +656,389 @@ async function loadModel() {
     } catch (error) {
 
         loadingPromise = null;
+
         segmenter = null;
 
+        hideProgress();
+
+        console.error(
+            "Background remover model error:",
+            error
+        );
+
         throw error;
+
     }
+
 }
 
 
-/* =========================================================
-   FILE SELECT
-   ========================================================= */
-
-fileInput.addEventListener(
+imageInput.addEventListener(
     "change",
-    function () {
+    () => {
 
         const file =
-            this.files && this.files[0];
+            imageInput.files &&
+            imageInput.files[0];
+
 
         if (!file) {
             return;
         }
 
-        const supportedTypes = [
-            "image/jpeg",
-            "image/png",
-            "image/webp"
-        ];
 
-        if (!supportedTypes.includes(file.type)) {
+        if (
+            !file.type.startsWith("image/")
+        ) {
 
             setStatus(
-                "Please choose a JPG, JPEG, PNG or WebP image.",
-                "error"
+                "Please choose an image file."
             );
 
             return;
+
         }
+
 
         originalFile = file;
 
-        if (originalURL) {
-            URL.revokeObjectURL(originalURL);
-        }
+        resultBlob = null;
 
-        originalURL =
+
+        downloadButton.style.display =
+            "none";
+
+
+        const url =
             URL.createObjectURL(file);
 
-        if (resultURL) {
-            URL.revokeObjectURL(resultURL);
-            resultURL = null;
-        }
 
-        downloadBtn.disabled = true;
+        originalPreview.src = url;
 
-        resultPreview.innerHTML = `
-            <div class="placeholder">
-                Your transparent image will appear here
-            </div>
-        `;
+        resultPreview.removeAttribute(
+            "src"
+        );
 
-        originalPreview.innerHTML = "";
 
-        const image =
-            document.createElement("img");
+        previewSection.style.display =
+            "block";
 
-        image.src = originalURL;
 
-        image.alt =
-            "Original uploaded image";
+        removeButton.disabled =
+            false;
 
-        originalPreview.appendChild(image);
-
-        const sizeMB =
-            file.size / (1024 * 1024);
-
-        fileInfo.textContent =
-            `${file.name} · ${sizeMB.toFixed(2)} MB`;
-
-        removeBtn.disabled = false;
 
         setStatus(
-            "Image ready. Click “Remove Background”.",
-            "success"
+            "Image selected. Click Remove Background."
         );
+
     }
 );
 
 
-/* =========================================================
-   REMOVE BACKGROUND
-   ========================================================= */
-
-removeBtn.addEventListener(
+removeButton.addEventListener(
     "click",
-    async function () {
+    async () => {
 
         if (!originalFile) {
+
+            setStatus(
+                "Please choose an image first."
+            );
+
             return;
+
         }
 
-        removeBtn.disabled = true;
-        downloadBtn.disabled = true;
 
-        let inputURL = null;
+        removeButton.disabled =
+            true;
+
+        downloadButton.style.display =
+            "none";
+
 
         try {
 
             setStatus(
-                "Loading AI background-removal model..."
+                "Loading AI model..."
             );
+
 
             const model =
                 await loadModel();
 
-            setStatus(
-                "Removing background. Please wait..."
-            );
-
-            inputURL =
-                URL.createObjectURL(originalFile);
-
-            const output =
-                await model(inputURL);
-
-            if (
-                !output ||
-                !output[0]
-            ) {
-                throw new Error(
-                    "The AI model returned no result."
-                );
-            }
-
-            const blob =
-                await output[0].toBlob();
-
-            if (!blob) {
-                throw new Error(
-                    "Could not create PNG output."
-                );
-            }
-
-            if (resultURL) {
-                URL.revokeObjectURL(resultURL);
-            }
-
-            resultURL =
-                URL.createObjectURL(blob);
-
-            resultPreview.innerHTML = "";
-
-            const resultImage =
-                document.createElement("img");
-
-            resultImage.src =
-                resultURL;
-
-            resultImage.alt =
-                "Image with background removed";
-
-            resultPreview.appendChild(
-                resultImage
-            );
-
-            downloadBtn.disabled = false;
 
             setStatus(
-                "Background removed successfully. Your PNG is ready to download.",
-                "success"
+                "Removing background..."
             );
+
+            setProgress(80);
+
+
+            /*
+             * Create a local object URL.
+             *
+             * The image remains on the user's device.
+             */
+            const imageURL =
+                URL.createObjectURL(
+                    originalFile
+                );
+
+
+            try {
+
+                const output =
+                    await model(
+                        imageURL
+                    );
+
+
+                if (
+                    !output ||
+                    !output[0]
+                ) {
+
+                    throw new Error(
+                        "The AI model returned no output."
+                    );
+
+                }
+
+
+                /*
+                 * Transformers.js Image object.
+                 */
+                const image =
+                    output[0];
+
+
+                let blob = null;
+
+
+                /*
+                 * Preferred method.
+                 */
+                if (
+                    typeof image.toBlob ===
+                    "function"
+                ) {
+
+                    blob =
+                        await image.toBlob();
+
+                }
+
+
+                /*
+                 * Fallback through canvas.
+                 */
+                if (!blob) {
+
+                    if (
+                        typeof image.toCanvas !==
+                        "function"
+                    ) {
+
+                        throw new Error(
+                            "Unable to create output image."
+                        );
+
+                    }
+
+
+                    const canvas =
+                        image.toCanvas();
+
+
+                    blob =
+                        await new Promise(
+                            (resolve, reject) => {
+
+                                canvas.toBlob(
+                                    (result) => {
+
+                                        if (result) {
+                                            resolve(result);
+                                        } else {
+                                            reject(
+                                                new Error(
+                                                    "PNG conversion failed."
+                                                )
+                                            );
+                                        }
+
+                                    },
+                                    "image/png"
+                                );
+
+                            }
+                        );
+
+                }
+
+
+                if (!blob) {
+
+                    throw new Error(
+                        "Background removal produced no PNG."
+                    );
+
+                }
+
+
+                resultBlob =
+                    blob;
+
+
+                const resultURL =
+                    URL.createObjectURL(
+                        resultBlob
+                    );
+
+
+                resultPreview.src =
+                    resultURL;
+
+
+                previewSection.style.display =
+                    "block";
+
+
+                downloadButton.style.display =
+                    "inline-block";
+
+
+                setProgress(100);
+
+
+                setStatus(
+                    "Background removed successfully."
+                );
+
+
+                setTimeout(
+                    hideProgress,
+                    500
+                );
+
+
+            } finally {
+
+                URL.revokeObjectURL(
+                    imageURL
+                );
+
+            }
+
 
         } catch (error) {
 
             console.error(
-                "Background removal error:",
+                "Background removal failed:",
                 error
             );
 
-            let message =
-                "Background removal failed.";
 
-            if (
-                error &&
-                error.message
-            ) {
-                message +=
-                    " " + error.message;
-            }
+            hideProgress();
+
 
             setStatus(
-                message,
-                "error"
+                "Sorry, background removal failed. Please try another image or browser."
             );
 
         } finally {
 
-            if (inputURL) {
-                URL.revokeObjectURL(inputURL);
-            }
+            removeButton.disabled =
+                false;
 
-            removeBtn.disabled = false;
         }
+
     }
 );
 
 
-/* =========================================================
-   DOWNLOAD
-   ========================================================= */
-
-downloadBtn.addEventListener(
+downloadButton.addEventListener(
     "click",
-    function () {
+    () => {
 
-        if (!resultURL) {
+        if (!resultBlob) {
             return;
         }
+
+
+        const url =
+            URL.createObjectURL(
+                resultBlob
+            );
+
 
         const link =
             document.createElement("a");
 
-        link.href =
-            resultURL;
+
+        link.href = url;
 
         link.download =
             "background-removed.png";
+
 
         document.body.appendChild(link);
 
         link.click();
 
         link.remove();
+
+
+        setTimeout(
+            () => URL.revokeObjectURL(url),
+            1000
+        );
+
     }
 );
 
 
-/* =========================================================
-   RESET
-   ========================================================= */
-
-resetBtn.addEventListener(
+resetButton.addEventListener(
     "click",
-    function () {
+    () => {
 
-        if (originalURL) {
-            URL.revokeObjectURL(originalURL);
-            originalURL = null;
-        }
-
-        if (resultURL) {
-            URL.revokeObjectURL(resultURL);
-            resultURL = null;
-        }
+        imageInput.value = "";
 
         originalFile = null;
 
-        fileInput.value = "";
-
-        fileInfo.textContent =
-            "JPG, JPEG, PNG or WebP";
-
-        originalPreview.innerHTML = `
-            <div class="placeholder">
-                Your uploaded image will appear here
-            </div>
-        `;
-
-        resultPreview.innerHTML = `
-            <div class="placeholder">
-                Your transparent image will appear here
-            </div>
-        `;
-
-        removeBtn.disabled = true;
-        downloadBtn.disabled = true;
-
-        statusBox.textContent = "";
-        statusBox.className = "status";
-    }
-);
+        resultBlob = null;
 
 
-/* =========================================================
-   CLEANUP
-   ========================================================= */
+        originalPreview.removeAttribute(
+            "src"
+        );
 
-window.addEventListener(
-    "beforeunload",
-    function () {
+        resultPreview.removeAttribute(
+            "src"
+        );
 
-        if (originalURL) {
-            URL.revokeObjectURL(originalURL);
-        }
 
-        if (resultURL) {
-            URL.revokeObjectURL(resultURL);
-        }
+        previewSection.style.display =
+            "none";
+
+
+        removeButton.disabled =
+            true;
+
+
+        downloadButton.style.display =
+            "none";
+
+
+        hideProgress();
+
+
+        setStatus(
+            "Choose an image to start."
+        );
+
     }
 );
 
