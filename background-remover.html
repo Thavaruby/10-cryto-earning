@@ -299,6 +299,7 @@ footer a {
 }
 
 @media (max-width: 700px) {
+
     .preview-grid {
         grid-template-columns: 1fr;
     }
@@ -465,11 +466,6 @@ footer a {
 
 <script type="module">
 
-/* =========================================================
-   BACKGROUND REMOVER
-   Browser-side MODNet + Transformers.js
-   ========================================================= */
-
 let segmenter = null;
 let loadingPromise = null;
 
@@ -540,46 +536,40 @@ async function loadModel() {
     loadingPromise = (async () => {
 
         setStatus(
-            "Loading AI model. Please wait...",
-            ""
+            "Loading AI model. Please wait..."
         );
 
-        /*
-         * Transformers.js 3.8.1
-         */
         const transformers = await import(
             "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1"
         );
 
         /*
-         * Use our own Cloudflare Pages model files.
-         *
-         * /models/Xenova/modnet/
+         * Load model files from our own website.
          */
         transformers.env.allowLocalModels = true;
-
         transformers.env.allowRemoteModels = false;
-
-        transformers.env.localModelPath =
-            "/models/";
+        transformers.env.localModelPath = "/models/";
 
         /*
-         * Use our own ONNX Runtime WASM files.
+         * IMPORTANT:
+         * Transformers.js expects a DIRECTORY here.
+         * It then loads the required WASM files from this path.
          */
         transformers.env.backends.onnx.wasm.wasmPaths =
             "/wasm/";
 
         /*
-         * q8 is intended for quantized WASM inference.
+         * Use the quantized model with WASM.
          */
-        const model = await transformers.pipeline(
-            "background-removal",
-            "Xenova/modnet",
-            {
-                dtype: "q8",
-                device: "wasm"
-            }
-        );
+        const model =
+            await transformers.pipeline(
+                "background-removal",
+                "Xenova/modnet",
+                {
+                    dtype: "q8",
+                    device: "wasm"
+                }
+            );
 
         return model;
 
@@ -587,14 +577,14 @@ async function loadModel() {
 
     try {
 
-        segmenter = await loadingPromise;
+        segmenter =
+            await loadingPromise;
 
         return segmenter;
 
     } catch (error) {
 
         loadingPromise = null;
-
         segmenter = null;
 
         throw error;
@@ -608,21 +598,22 @@ async function loadModel() {
 
 fileInput.addEventListener(
     "change",
-    async function () {
+    function () {
 
-        const file = this.files && this.files[0];
+        const file =
+            this.files && this.files[0];
 
         if (!file) {
             return;
         }
 
-        if (
-            ![
-                "image/jpeg",
-                "image/png",
-                "image/webp"
-            ].includes(file.type)
-        ) {
+        const supportedTypes = [
+            "image/jpeg",
+            "image/png",
+            "image/webp"
+        ];
+
+        if (!supportedTypes.includes(file.type)) {
 
             setStatus(
                 "Please choose a JPG, JPEG, PNG or WebP image.",
@@ -634,9 +625,6 @@ fileInput.addEventListener(
 
         originalFile = file;
 
-        /*
-         * Revoke previous original URL.
-         */
         if (originalURL) {
             URL.revokeObjectURL(originalURL);
         }
@@ -644,9 +632,6 @@ fileInput.addEventListener(
         originalURL =
             URL.createObjectURL(file);
 
-        /*
-         * Revoke previous result.
-         */
         if (resultURL) {
             URL.revokeObjectURL(resultURL);
             resultURL = null;
@@ -660,9 +645,6 @@ fileInput.addEventListener(
             </div>
         `;
 
-        /*
-         * Display original.
-         */
         originalPreview.innerHTML = "";
 
         const image =
@@ -670,13 +652,11 @@ fileInput.addEventListener(
 
         image.src = originalURL;
 
-        image.alt = "Original uploaded image";
+        image.alt =
+            "Original uploaded image";
 
         originalPreview.appendChild(image);
 
-        /*
-         * File information.
-         */
         const sizeMB =
             file.size / (1024 * 1024);
 
@@ -706,8 +686,9 @@ removeBtn.addEventListener(
         }
 
         removeBtn.disabled = true;
-
         downloadBtn.disabled = true;
+
+        let inputURL = null;
 
         try {
 
@@ -722,76 +703,58 @@ removeBtn.addEventListener(
                 "Removing background. Please wait..."
             );
 
-            /*
-             * Use the local browser file directly.
-             */
-            const inputURL =
+            inputURL =
                 URL.createObjectURL(originalFile);
 
-            try {
+            const output =
+                await model(inputURL);
 
-                const output =
-                    await model(inputURL);
-
-                if (
-                    !output ||
-                    !output[0]
-                ) {
-                    throw new Error(
-                        "The AI model returned no result."
-                    );
-                }
-
-                /*
-                 * Transformers.js Image object.
-                 */
-                const blob =
-                    await output[0].toBlob();
-
-                if (!blob) {
-                    throw new Error(
-                        "Could not create PNG output."
-                    );
-                }
-
-                /*
-                 * Clean old result URL.
-                 */
-                if (resultURL) {
-                    URL.revokeObjectURL(resultURL);
-                }
-
-                resultURL =
-                    URL.createObjectURL(blob);
-
-                /*
-                 * Display result.
-                 */
-                resultPreview.innerHTML = "";
-
-                const resultImage =
-                    document.createElement("img");
-
-                resultImage.src = resultURL;
-
-                resultImage.alt =
-                    "Image with background removed";
-
-                resultPreview.appendChild(
-                    resultImage
+            if (
+                !output ||
+                !output[0]
+            ) {
+                throw new Error(
+                    "The AI model returned no result."
                 );
-
-                downloadBtn.disabled = false;
-
-                setStatus(
-                    "Background removed successfully. Your PNG is ready to download.",
-                    "success"
-                );
-
-            } finally {
-
-                URL.revokeObjectURL(inputURL);
             }
+
+            const blob =
+                await output[0].toBlob();
+
+            if (!blob) {
+                throw new Error(
+                    "Could not create PNG output."
+                );
+            }
+
+            if (resultURL) {
+                URL.revokeObjectURL(resultURL);
+            }
+
+            resultURL =
+                URL.createObjectURL(blob);
+
+            resultPreview.innerHTML = "";
+
+            const resultImage =
+                document.createElement("img");
+
+            resultImage.src =
+                resultURL;
+
+            resultImage.alt =
+                "Image with background removed";
+
+            resultPreview.appendChild(
+                resultImage
+            );
+
+            downloadBtn.disabled = false;
+
+            setStatus(
+                "Background removed successfully. Your PNG is ready to download.",
+                "success"
+            );
 
         } catch (error) {
 
@@ -803,7 +766,10 @@ removeBtn.addEventListener(
             let message =
                 "Background removal failed.";
 
-            if (error && error.message) {
+            if (
+                error &&
+                error.message
+            ) {
                 message +=
                     " " + error.message;
             }
@@ -814,6 +780,10 @@ removeBtn.addEventListener(
             );
 
         } finally {
+
+            if (inputURL) {
+                URL.revokeObjectURL(inputURL);
+            }
 
             removeBtn.disabled = false;
         }
@@ -836,7 +806,8 @@ downloadBtn.addEventListener(
         const link =
             document.createElement("a");
 
-        link.href = resultURL;
+        link.href =
+            resultURL;
 
         link.download =
             "background-removed.png";
@@ -888,11 +859,9 @@ resetBtn.addEventListener(
         `;
 
         removeBtn.disabled = true;
-
         downloadBtn.disabled = true;
 
         statusBox.textContent = "";
-
         statusBox.className = "status";
     }
 );
