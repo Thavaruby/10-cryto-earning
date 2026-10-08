@@ -1,36 +1,52 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="icon" type="image/png" href="assets/favico.png"><title>Free Image Converter - JPG, PNG & WebP | My Crypto Faucet</title><meta
-name="description"
-content="Free online image converter for JPG, JPEG, PNG and WebP. Convert images directly in your browser with no upload, no registration and no server processing."
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-«»
+<link rel="icon" type="image/png" href="assets/favico.png">
+
+<title>Free Image Converter - JPG, PNG & WebP | My Crypto Faucet</title>
 
 <meta
-name="keywords"
-content="free image converter, JPG converter, PNG converter, WebP converter, JPG PNG WebP converter, online image converter"
-
-«»
-
-                                                                                                                                                                                                         
-<meta name="robots" content="index, follow, max-image-preview:large"><link
-  rel="canonical"
-  href="https://myfaucetcrypto.com/image-converter"
-
-  <meta
   name="description"
   content="Free online image converter for JPG, JPEG, PNG and WebP. Convert images directly in your browser with no upload, no registration and no server processing."
->                                                                   
-><!-- Open Graph -->
+>
+
+<meta
+  name="keywords"
+  content="free image converter, JPG converter, PNG converter, WebP converter, JPG PNG WebP converter, online image converter"
+>
+
+<meta
+  name="robots"
+  content="index, follow, max-image-preview:large"
+>
+
+<link
+  rel="canonical"
+  href="https://myfaucetcrypto.com/image-converter"
+>
+
+<!-- Open Graph -->
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://myfaucetcrypto.com/image-converter.html">
-<meta property="og:title" content="Free Image Converter - JPG, PNG & WebP">
+<meta
+  property="og:url"
+  content="https://myfaucetcrypto.com/image-converter"
+>
+<meta
+  property="og:title"
+  content="Free Image Converter - JPG, PNG & WebP"
+>
 <meta
   property="og:description"
   content="Convert JPG, PNG and WebP images directly in your browser. Free, private and no upload required."
 >
-<meta property="og:site_name" content="My Crypto Faucet"><!-- Twitter --><meta name="twitter:card" content="summary">
+<meta property="og:site_name" content="My Crypto Faucet">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary">
 <meta
   name="twitter:title"
   content="Free Image Converter - JPG, PNG & WebP"
@@ -38,12 +54,15 @@ content="free image converter, JPG converter, PNG converter, WebP converter, JPG
 <meta
   name="twitter:description"
   content="Convert JPG, PNG and WebP images directly in your browser. Free, private and no upload required."
-><!-- WebApplication structured data --><script type="application/ld+json">
+>
+
+<!-- WebApplication structured data -->
+<script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "WebApplication",
   "name": "Free Image Converter",
-  "url": "https://myfaucetcrypto.com/image-converter.html",
+  "url": "https://myfaucetcrypto.com/image-converter",
   "description": "Free online image converter for JPG, JPEG, PNG and WebP images. Conversion is performed locally in the browser.",
   "applicationCategory": "MultimediaApplication",
   "operatingSystem": "Any",
@@ -63,7 +82,9 @@ content="free image converter, JPG converter, PNG converter, WebP converter, JPG
     "Local image processing"
   ]
 }
-</script><style>
+</script>
+
+<style>
 * {
   box-sizing: border-box;
 }
@@ -337,156 +358,184 @@ footer a {
     padding: 32px 15px;
   }
 }
-</style></head><body><header>
+</style>
+
+</head>
+
+<body>
+
+<header>
   <a class="logo" href="/">₿ My Crypto Faucet</a>
-</header><main class="container">  <h1>Free Image Converter - JPG, PNG & WebP</h1>  <p class="subtitle">
+</header>
+
+<main class="container">
+
+  <h1>Free Image Converter - JPG, PNG & WebP</h1>
+
+  <p class="subtitle">
     Convert JPG, JPEG, PNG and WebP images directly in your browser.
     No upload. No registration. No server processing.
-  </p>  <section class="converter-card"><div class="drop-zone" id="dropZone">
+  </p>
 
-  <div class="drop-icon">🖼️</div>
+  <section class="converter-card">
 
-  <div class="drop-title">
-    Drop your image here
-  </div>
+    <div class="drop-zone" id="dropZone">
 
-  <div class="drop-text">
-    or tap to choose an image
-  </div>
+      <div class="drop-icon">🖼️</div>
 
-  <input
-    type="file"
-    id="fileInput"
-    accept="image/jpeg,image/png,image/webp"
-  >
+      <div class="drop-title">
+        Drop your image here
+      </div>
 
-</div>
+      <div class="drop-text">
+        or tap to choose an image
+      </div>
 
-<div class="file-info" id="fileInfo">
-
-  <div class="file-name" id="fileName"></div>
-
-  <div class="file-meta" id="fileMeta"></div>
-
-</div>
-
-<div class="preview" id="preview">
-
-  <img
-    id="previewImage"
-    alt="Selected image preview"
-  >
-
-</div>
-
-<div class="controls" id="controls">
-
-  <label for="outputFormat">
-    Convert to
-  </label>
-
-  <select id="outputFormat"></select>
-
-  <div class="quality-box" id="qualityBox">
-
-    <div class="quality-row">
-
-      <span>Quality</span>
-
-      <span
-        class="quality-value"
-        id="qualityValue"
+      <input
+        type="file"
+        id="fileInput"
+        accept="image/jpeg,image/png,image/webp"
       >
-        90%
-      </span>
 
     </div>
 
-    <input
-      type="range"
-      id="quality"
-      min="10"
-      max="100"
-      value="90"
-    >
+    <div class="file-info" id="fileInfo">
 
-  </div>
+      <div class="file-name" id="fileName"></div>
 
-  <button
-    class="convert-btn"
-    id="convertBtn"
-    type="button"
-  >
-    Convert Image
-  </button>
+      <div class="file-meta" id="fileMeta"></div>
 
-  <div
-    class="status"
-    id="status"
-    aria-live="polite"
-  ></div>
+    </div>
 
-  <a
-    class="download-btn"
-    id="downloadBtn"
-    download
-  >
-    Download Converted Image
-  </a>
+    <div class="preview" id="preview">
 
-  <button
-    class="reset-btn"
-    id="resetBtn"
-    type="button"
-  >
-    Convert Another Image
-  </button>
+      <img
+        id="previewImage"
+        alt="Selected image preview"
+      >
 
-</div>
+    </div>
 
-<div class="privacy">
-  🔒 <strong>Private by design:</strong>
-  Your image is processed locally in your browser.
-  It is not uploaded to My Crypto Faucet.
-</div>
+    <div class="controls" id="controls">
 
-  </section>  <!-- SEO CONTENT -->  <section class="seo-content"><h2>Free Online Image Converter</h2>
+      <label for="outputFormat">
+        Convert to
+      </label>
 
-<p>
-  Convert images between JPG, PNG and WebP formats quickly and
-  easily with this free online image converter. No registration
-  or software installation is required.
-</p>
+      <select id="outputFormat"></select>
 
-<h2>Convert JPG, PNG and WebP Images</h2>
+      <div class="quality-box" id="qualityBox">
 
-<p>
-  Choose an image from your device and select the format you want.
-  You can convert JPG, JPEG, PNG and WebP images directly in your
-  web browser.
-</p>
+        <div class="quality-row">
 
-<h2>Private Browser-Based Conversion</h2>
+          <span>Quality</span>
 
-<p>
-  Your image is processed locally in your browser. The image is
-  not uploaded to our server for conversion, helping keep your
-  files private.
-</p>
+          <span
+            class="quality-value"
+            id="qualityValue"
+          >
+            90%
+          </span>
 
-<h2>Supported Image Formats</h2>
+        </div>
 
-<ul>
-  <li>JPG / JPEG</li>
-  <li>PNG</li>
-  <li>WebP</li>
-</ul>
+        <input
+          type="range"
+          id="quality"
+          min="10"
+          max="100"
+          value="90"
+        >
 
-  </section></main><footer>
+      </div>
+
+      <button
+        class="convert-btn"
+        id="convertBtn"
+        type="button"
+      >
+        Convert Image
+      </button>
+
+      <div
+        class="status"
+        id="status"
+        aria-live="polite"
+      ></div>
+
+      <a
+        class="download-btn"
+        id="downloadBtn"
+        download
+      >
+        Download Converted Image
+      </a>
+
+      <button
+        class="reset-btn"
+        id="resetBtn"
+        type="button"
+      >
+        Convert Another Image
+      </button>
+
+    </div>
+
+    <div class="privacy">
+      🔒 <strong>Private by design:</strong>
+      Your image is processed locally in your browser.
+      It is not uploaded to My Crypto Faucet.
+    </div>
+
+  </section>
+
+  <!-- SEO CONTENT -->
+
+  <section class="seo-content">
+
+    <h2>Free Online Image Converter</h2>
+
+    <p>
+      Convert images between JPG, PNG and WebP formats quickly and
+      easily with this free online image converter. No registration
+      or software installation is required.
+    </p>
+
+    <h2>Convert JPG, PNG and WebP Images</h2>
+
+    <p>
+      Choose an image from your device and select the format you want.
+      You can convert JPG, JPEG, PNG and WebP images directly in your
+      web browser.
+    </p>
+
+    <h2>Private Browser-Based Conversion</h2>
+
+    <p>
+      Your image is processed locally in your browser. The image is
+      not uploaded to our server for conversion, helping keep your
+      files private.
+    </p>
+
+    <h2>Supported Image Formats</h2>
+
+    <ul>
+      <li>JPG / JPEG</li>
+      <li>PNG</li>
+      <li>WebP</li>
+    </ul>
+
+  </section>
+
+</main>
+
+<footer>
   © 2026 My Crypto Faucet ·
   <a href="/privacy.html">Privacy</a> ·
   <a href="/terms.html">Terms</a>
-</footer><script>
+</footer>
+
+<script>
 "use strict";
 
 const dropZone = document.getElementById("dropZone");
@@ -1021,5 +1070,7 @@ window.addEventListener(
     }
   }
 );
-</script></body>
+</script>
+
+</body>
 </html>
