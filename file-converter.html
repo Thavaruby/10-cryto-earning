@@ -3,15 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
 <title>PDF to Word Converter</title>
 
-<!-- PDF.js CDN -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-
-<!-- Tesseract.js for OCR -->
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-
-<!-- docx.js for generating Word Files -->
 <script src="https://cdn.jsdelivr.net/npm/docx@9.5.1/build/index.umd.js"></script>
 
 <style>
@@ -58,9 +54,14 @@ h1{
     cursor:pointer;
     background:#091a36;
     display:block;
+    transition:.2s;
 }
 
 .drop:hover{
+    background:#10264b;
+}
+
+.drop.active{
     background:#10264b;
 }
 
@@ -126,21 +127,34 @@ button{
 <body>
 
 <div class="wrap">
+
     <h1>PDF → Word</h1>
+
     <div class="sub">
         Convert PDF pages into an editable Word document locally in your browser.
     </div>
 
     <div class="card">
-        <label class="drop" id="drop">
-            <strong>Choose PDF</strong><br><br>
+
+        <div class="drop" id="drop">
+            <strong>Choose PDF</strong>
+            <br><br>
             Tap here or drag & drop your PDF
-            <input id="file" type="file" accept="application/pdf,.pdf">
-        </label>
+        </div>
+
+        <input
+            id="file"
+            type="file"
+            accept="application/pdf,.pdf"
+        >
 
         <div class="file" id="filename"></div>
 
-        <button class="primary" id="convert" disabled>
+        <button
+            class="primary"
+            id="convert"
+            disabled
+        >
             Convert to Word
         </button>
 
@@ -148,234 +162,933 @@ button{
             <div class="bar" id="bar"></div>
         </div>
 
-        <div class="status" id="status">Select a PDF to begin.</div>
+        <div class="status" id="status">
+Select a PDF to begin.
+        </div>
+
     </div>
 </div>
 
 <script>
-// Configure PDF.js Worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
-const { Document, Packer, Paragraph, TextRun } = window.docx;
+/* =========================================================
+   PDF.JS WORKER
+========================================================= */
 
-const fileInput = document.getElementById("file");
-const drop = document.getElementById("drop");
-const convertBtn = document.getElementById("convert");
-const statusBox = document.getElementById("status");
-const filenameBox = document.getElementById("filename");
-const bar = document.getElementById("bar");
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+
+/* =========================================================
+   DOCX
+========================================================= */
+
+const {
+    Document,
+    Packer,
+    Paragraph,
+    TextRun
+} = window.docx;
+
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const fileInput =
+    document.getElementById("file");
+
+const drop =
+    document.getElementById("drop");
+
+const convertBtn =
+    document.getElementById("convert");
+
+const statusBox =
+    document.getElementById("status");
+
+const filenameBox =
+    document.getElementById("filename");
+
+const bar =
+    document.getElementById("bar");
+
 
 let selectedFile = null;
 
-fileInput.addEventListener("change", (e) => {
-    if (e.target.files.length) {
-        handleSelectedFile(e.target.files[0]);
-    }
+
+/* =========================================================
+   OPEN FILE PICKER
+========================================================= */
+
+drop.addEventListener("click", () => {
+
+    fileInput.click();
+
 });
 
-drop.addEventListener("dragover", e => e.preventDefault());
 
-drop.addEventListener("drop", e => {
-    e.preventDefault();
-    if (!e.dataTransfer.files.length) return;
-    const file = e.dataTransfer.files[0];
-    if (file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")) {
-        handleSelectedFile(file);
-    } else {
-        setStatus("Please select a valid PDF file.");
-    }
+/* =========================================================
+   FILE PICKER
+========================================================= */
+
+fileInput.addEventListener("change", event => {
+
+    const file =
+        event.target.files &&
+        event.target.files[0];
+
+    if (!file) return;
+
+    handleSelectedFile(file);
+
 });
 
-function handleSelectedFile(file) {
-    selectedFile = file;
-    filenameBox.textContent = selectedFile.name;
-    convertBtn.disabled = false;
-    setStatus("PDF selected.\nReady to convert.");
+
+/* =========================================================
+   DRAG OVER
+========================================================= */
+
+drop.addEventListener("dragover", event => {
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    drop.classList.add("active");
+
+});
+
+
+/* =========================================================
+   DRAG LEAVE
+========================================================= */
+
+drop.addEventListener("dragleave", event => {
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    drop.classList.remove("active");
+
+});
+
+
+/* =========================================================
+   DROP
+========================================================= */
+
+drop.addEventListener("drop", event => {
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    drop.classList.remove("active");
+
+    const files =
+        event.dataTransfer &&
+        event.dataTransfer.files;
+
+    if (!files || !files.length) {
+
+        setStatus("No file selected.");
+
+        return;
+    }
+
+    const file = files[0];
+
+    if (!isPDF(file)) {
+
+        selectedFile = null;
+
+        filenameBox.textContent = "";
+
+        convertBtn.disabled = true;
+
+        setStatus(
+            "Please select a valid PDF file."
+        );
+
+        return;
+    }
+
+    handleSelectedFile(file);
+
+});
+
+
+/* =========================================================
+   PDF CHECK
+========================================================= */
+
+function isPDF(file){
+
+    if (!file) return false;
+
+    return (
+        file.type === "application/pdf" ||
+        file.name.toLowerCase().endsWith(".pdf")
+    );
+
 }
+
+
+/* =========================================================
+   FILE SELECTED
+========================================================= */
+
+function handleSelectedFile(file){
+
+    if (!isPDF(file)){
+
+        selectedFile = null;
+
+        filenameBox.textContent = "";
+
+        convertBtn.disabled = true;
+
+        setStatus(
+            "Please select a valid PDF file."
+        );
+
+        return;
+    }
+
+    selectedFile = file;
+
+    filenameBox.textContent =
+        file.name +
+        " (" +
+        formatFileSize(file.size) +
+        ")";
+
+    convertBtn.disabled = false;
+
+    setProgress(0);
+
+    setStatus(
+        "PDF selected.\n" +
+        "Ready to convert."
+    );
+
+}
+
+
+/* =========================================================
+   FILE SIZE
+========================================================= */
+
+function formatFileSize(bytes){
+
+    if (bytes < 1024){
+
+        return bytes + " B";
+
+    }
+
+    if (bytes < 1024 * 1024){
+
+        return (
+            bytes / 1024
+        ).toFixed(1) + " KB";
+
+    }
+
+    return (
+        bytes / (1024 * 1024)
+    ).toFixed(2) + " MB";
+
+}
+
+
+/* =========================================================
+   PROGRESS
+========================================================= */
 
 function setProgress(value){
-    bar.style.width = value + "%";
+
+    const safe =
+        Math.max(
+            0,
+            Math.min(100, Number(value) || 0)
+        );
+
+    bar.style.width =
+        safe + "%";
+
 }
+
+
+/* =========================================================
+   STATUS
+========================================================= */
 
 function setStatus(text){
-    statusBox.textContent = text;
+
+    statusBox.textContent =
+        String(text || "");
+
 }
 
-function escapeText(text){
-    return String(text || "").replace(/\u0000/g,"").trim();
+
+/* =========================================================
+   CLEAN TEXT
+========================================================= */
+
+function cleanText(text){
+
+    return String(text || "")
+        .replace(/\u0000/g, "")
+        .replace(/\r/g, "")
+        .trim();
+
 }
 
-/* EXTRACT DIRECT TEXT FROM PDF PAGE */
+
+/* =========================================================
+   EXTRACT DIRECT PDF TEXT
+========================================================= */
+
 async function extractPDFText(page){
-    const content = await page.getTextContent();
-    let lastY, text = '';
-    
-    for (let item of content.items) {
-        if (lastY == null || Math.abs(item.transform[5] - lastY) < 5) {
-            text += ' ' + item.str;
-        } else {
-            text += '\n' + item.str;
+
+    const content =
+        await page.getTextContent();
+
+    let result = "";
+
+    let lastY = null;
+
+    for (const item of content.items){
+
+        const value =
+            item.str || "";
+
+        if (!value) continue;
+
+        const y =
+            item.transform &&
+            item.transform.length > 5
+                ? item.transform[5]
+                : null;
+
+        if (
+            lastY !== null &&
+            y !== null &&
+            Math.abs(y - lastY) > 5
+        ){
+
+            result += "\n";
+
+        }else{
+
+            if (result && !result.endsWith("\n")){
+
+                result += " ";
+
+            }
+
         }
-        lastY = item.transform[5];
+
+        result += value;
+
+        if (y !== null){
+
+            lastY = y;
+
+        }
+
     }
-    return text.trim();
+
+    return cleanText(result);
+
 }
 
-/* RENDER PDF PAGE TO CANVAS FOR OCR */
+
+/* =========================================================
+   RENDER PDF PAGE
+========================================================= */
+
 async function renderPage(page){
-    const viewport = page.getViewport({ scale: 2.0 });
-    const canvas = document.createElement("canvas");
-    const context = canvas.getContext("2d");
-    canvas.width = Math.ceil(viewport.width);
-    canvas.height = Math.ceil(viewport.height);
 
-    await page.render({ canvasContext: context, viewport }).promise;
+    const viewport =
+        page.getViewport({
+            scale:2.5
+        });
+
+    const canvas =
+        document.createElement("canvas");
+
+    const context =
+        canvas.getContext(
+            "2d",
+            {
+                willReadFrequently:true
+            }
+        );
+
+    canvas.width =
+        Math.ceil(viewport.width);
+
+    canvas.height =
+        Math.ceil(viewport.height);
+
+    await page.render({
+
+        canvasContext:context,
+
+        viewport
+
+    }).promise;
+
     return canvas;
+
 }
 
-/* OCR PROCESS VIA TESSERACT */
-async function OCRPage(canvas, pageNumber, worker){
-    setStatus(`OCR processing page ${pageNumber}...`);
-    const result = await worker.recognize(canvas);
+
+/* =========================================================
+   OCR
+========================================================= */
+
+async function OCRPage(
+    canvas,
+    pageNumber,
+    worker
+){
+
+    setStatus(
+        "OCR processing page " +
+        pageNumber +
+        "..."
+    );
+
+    const result =
+        await worker.recognize(canvas);
+
     return result.data;
+
 }
 
-/* CREATE DOCX FILE */
+
+/* =========================================================
+   OCR → PARAGRAPHS
+========================================================= */
+
+function createOCRParagraphs(ocr){
+
+    const lines =
+        ocr &&
+        Array.isArray(ocr.lines)
+            ? ocr.lines
+            : [];
+
+    const paragraphs = [];
+
+    if (lines.length){
+
+        for (const line of lines){
+
+            const text =
+                cleanText(
+                    line.text
+                );
+
+            if (!text) continue;
+
+            paragraphs.push(
+
+                new Paragraph({
+
+                    children:[
+                        new TextRun({
+                            text:text,
+                            size:22
+                        })
+                    ],
+
+                    spacing:{
+                        after:80
+                    }
+
+                })
+
+            );
+
+        }
+
+        return paragraphs;
+
+    }
+
+
+    const fallback =
+        cleanText(
+            ocr && ocr.text
+                ? ocr.text
+                : ""
+        );
+
+    if (fallback){
+
+        const lines =
+            fallback.split("\n");
+
+        for (const line of lines){
+
+            const text =
+                cleanText(line);
+
+            if (!text) continue;
+
+            paragraphs.push(
+
+                new Paragraph({
+
+                    children:[
+                        new TextRun({
+                            text:text,
+                            size:22
+                        })
+                    ],
+
+                    spacing:{
+                        after:80
+                    }
+
+                })
+
+            );
+
+        }
+
+    }
+
+    return paragraphs;
+
+}
+
+
+/* =========================================================
+   DIRECT TEXT → PARAGRAPHS
+========================================================= */
+
+function createTextParagraphs(text){
+
+    const paragraphs = [];
+
+    const lines =
+        String(text || "")
+            .split(/\n+/);
+
+    for (const line of lines){
+
+        const value =
+            cleanText(line);
+
+        if (!value) continue;
+
+        paragraphs.push(
+
+            new Paragraph({
+
+                children:[
+                    new TextRun({
+                        text:value,
+                        size:22
+                    })
+                ],
+
+                spacing:{
+                    after:100
+                }
+
+            })
+
+        );
+
+    }
+
+    return paragraphs;
+
+}
+
+
+/* =========================================================
+   CREATE DOCX
+========================================================= */
+
 async function createDocx(pagesData){
+
     const sections = [];
 
-    for(const page of pagesData){
-        const children = [];
+    for (const page of pagesData){
 
-        if(page.mode === "text"){
-            const lines = page.text.split('\n');
-            for(const line of lines){
-                const cleanLine = escapeText(line);
-                if(cleanLine) {
-                    children.push(
-                        new Paragraph({
-                            children: [ new TextRun({ text: cleanLine, size: 22 }) ],
-                            spacing: { after: 120 }
-                        })
-                    );
-                }
-            }
-        } else if (page.mode === "ocr") {
-            const lines = page.ocr.lines || [];
-            if (lines.length > 0) {
-                for (const line of lines) {
-                    const cleanLine = escapeText(line.text);
-                    if (cleanLine) {
-                        children.push(
-                            new Paragraph({
-                                children: [ new TextRun({ text: cleanLine, size: 22 }) ],
-                                spacing: { after: 100 }
-                            })
-                        );
-                    }
-                }
-            } else {
-                children.push(
-                    new Paragraph({
-                        children: [ new TextRun({ text: escapeText(page.ocr.text), size: 22 }) ]
-                    })
+        let children = [];
+
+        if (page.mode === "text"){
+
+            children =
+                createTextParagraphs(
+                    page.text
                 );
-            }
+
         }
 
+        else if (page.mode === "ocr"){
+
+            children =
+                createOCRParagraphs(
+                    page.ocr
+                );
+
+        }
+
+
+        if (!children.length){
+
+            children = [
+
+                new Paragraph({
+
+                    children:[
+                        new TextRun({
+                            text:""
+                        })
+                    ]
+
+                })
+
+            ];
+
+        }
+
+
         sections.push({
-            properties: {
-                page: {
-                    margin: { top: 720, bottom: 720, left: 720, right: 720 }
+
+            properties:{
+
+                page:{
+
+                    margin:{
+                        top:720,
+                        bottom:720,
+                        left:720,
+                        right:720
+                    }
+
                 }
+
             },
+
             children
+
         });
+
     }
 
-    const doc = new Document({ sections });
-    return Packer.toBlob(doc);
+
+    const doc =
+        new Document({
+            sections
+        });
+
+
+    return await Packer.toBlob(doc);
+
 }
 
-/* MAIN CONVERSION LOGIC */
-convertBtn.addEventListener("click", async () => {
-    if(!selectedFile) return;
+
+/* =========================================================
+   MAIN CONVERSION
+========================================================= */
+
+convertBtn.addEventListener(
+"click",
+async () => {
+
+    if (!selectedFile){
+
+        setStatus(
+            "Please select a PDF first."
+        );
+
+        return;
+
+    }
+
 
     convertBtn.disabled = true;
 
-    try {
-        setProgress(5);
-        setStatus("Reading PDF file...");
 
-        const buffer = await selectedFile.arrayBuffer();
-        const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
+    try{
+
+        setProgress(3);
+
+        setStatus(
+            "Reading PDF file..."
+        );
+
+
+        const buffer =
+            await selectedFile.arrayBuffer();
+
+
+        setProgress(8);
+
+
+        const pdf =
+            await pdfjsLib
+                .getDocument({
+                    data:buffer
+                })
+                .promise;
+
 
         const pagesData = [];
+
         let totalCharacters = 0;
 
-        // First Pass: Check Text Content
-        for(let i = 1; i <= pdf.numPages; i++){
-            const page = await pdf.getPage(i);
-            const text = await extractPDFText(page);
-            totalCharacters += text.length;
 
-            pagesData.push({ page, text });
-            setProgress(5 + Math.round((i / pdf.numPages) * 20));
+        /* =========================================
+           FIRST PASS
+           Detect real PDF text
+        ========================================= */
+
+        for (
+            let i = 1;
+            i <= pdf.numPages;
+            i++
+        ){
+
+            const page =
+                await pdf.getPage(i);
+
+
+            const text =
+                await extractPDFText(page);
+
+
+            totalCharacters +=
+                text.length;
+
+
+            pagesData.push({
+
+                page:page,
+
+                text:text
+
+            });
+
+
+            setProgress(
+
+                8 +
+                Math.round(
+                    (i / pdf.numPages) * 22
+                )
+
+            );
+
         }
 
-        // Process based on text availability
-        if (totalCharacters > 30) {
-            setStatus("Direct text detected.\nGenerating Word document...");
-            for(const p of pagesData){
-                p.mode = "text";
+
+        /* =========================================
+           TEXT PDF
+        ========================================= */
+
+        if (totalCharacters > 30){
+
+            setStatus(
+                "Editable PDF text detected.\n" +
+                "Creating Word document..."
+            );
+
+
+            for (const page of pagesData){
+
+                page.mode = "text";
+
             }
-        } else {
-            setStatus("Scanned PDF / Image detected.\nInitializing OCR engine...");
-            const worker = await Tesseract.createWorker("eng");
 
-            for(let i = 0; i < pagesData.length; i++){
-                const canvas = await renderPage(pagesData[i].page);
-                const ocrResult = await OCRPage(canvas, i + 1, worker);
-                
-                pagesData[i].mode = "ocr";
-                pagesData[i].ocr = ocrResult;
-
-                setProgress(25 + Math.round(((i + 1) / pagesData.length) * 60));
-            }
-
-            await worker.terminate();
         }
 
-        setStatus("Building Word document (.docx)...");
-        setProgress(90);
 
-        const blob = await createDocx(pagesData);
-        setProgress(98);
+        /* =========================================
+           SCANNED PDF
+        ========================================= */
 
-        // Download
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        const baseName = selectedFile.name.replace(/\.pdf$/i, "");
-        a.href = url;
-        a.download = `${baseName}-converted.docx`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
+        else{
 
-        setTimeout(() => URL.revokeObjectURL(url), 5000);
+            setStatus(
+                "Scanned / image PDF detected.\n" +
+                "Starting OCR..."
+            );
+
+
+            /*
+             * One worker is reused for all pages.
+             * This is the recommended Tesseract.js
+             * approach for multiple images.
+             */
+
+            const worker =
+                await Tesseract.createWorker(
+                    "eng"
+                );
+
+
+            try{
+
+                for (
+                    let i = 0;
+                    i < pagesData.length;
+                    i++
+                ){
+
+                    const canvas =
+                        await renderPage(
+                            pagesData[i].page
+                        );
+
+
+                    const ocr =
+                        await OCRPage(
+                            canvas,
+                            i + 1,
+                            worker
+                        );
+
+
+                    pagesData[i].mode =
+                        "ocr";
+
+                    pagesData[i].ocr =
+                        ocr;
+
+
+                    setProgress(
+
+                        30 +
+                        Math.round(
+                            ((i + 1) /
+                            pagesData.length) *
+                            55
+                        )
+
+                    );
+
+                }
+
+            }finally{
+
+                await worker.terminate();
+
+            }
+
+        }
+
+
+        /* =========================================
+           CREATE WORD
+        ========================================= */
+
+        setStatus(
+            "Building editable Word document..."
+        );
+
+
+        setProgress(88);
+
+
+        const blob =
+            await createDocx(
+                pagesData
+            );
+
+
+        setProgress(96);
+
+
+        /* =========================================
+           DOWNLOAD
+        ========================================= */
+
+        const url =
+            URL.createObjectURL(blob);
+
+
+        const link =
+            document.createElement("a");
+
+
+        const baseName =
+            selectedFile.name
+                .replace(
+                    /\.pdf$/i,
+                    ""
+                );
+
+
+        link.href = url;
+
+        link.download =
+            baseName +
+            "-converted.docx";
+
+
+        document.body.appendChild(link);
+
+        link.click();
+
+        link.remove();
+
+
+        setTimeout(
+            () => URL.revokeObjectURL(url),
+            5000
+        );
+
 
         setProgress(100);
-        setStatus("Conversion Complete!\nYour Word document has been downloaded.");
 
-    } catch (error) {
-        console.error(error);
+
+        setStatus(
+            "Conversion complete.\n\n" +
+            "The Word document has been downloaded."
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "PDF → Word error:",
+            error
+        );
+
+
         setProgress(0);
-        setStatus("Error converting file:\n" + (error?.message || "Unknown error occurred."));
-    } finally {
+
+
+        setStatus(
+            "Error converting PDF.\n\n" +
+            (
+                error &&
+                error.message
+                    ? error.message
+                    : "Unknown error."
+            )
+        );
+
+
+    }finally{
+
         convertBtn.disabled = false;
+
     }
+
 });
+
 </script>
 
 </body>
-</html>
+    </html>
