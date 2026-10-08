@@ -2,806 +2,761 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
 <link rel="icon" type="image/png" href="assets/favico.png">
 
-<title>Free File Converter — My Crypto Faucet</title>
+<title>PDF to Word — My Crypto Faucet</title>
 
-<meta name="description" content="Free browser-based file converter. Convert PDF, Word, Excel, TXT and PowerPoint files locally in your browser.">
+<meta name="description"
+      content="Convert PDF files to editable Word documents while preserving the original page appearance.">
+
 <meta name="robots" content="index, follow">
-<meta name="theme-color" content="#071a36">
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.4.149/pdf.min.mjs"
-        type="module"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/6.0.1/tesseract.min.js"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/docx/9.9.0/index.iife.js"></script>
 
 <style>
-* {
-    box-sizing: border-box;
+:root{
+    --bg:#071426;
+    --card:#0d1d34;
+    --card2:#102541;
+    --gold:#f5c542;
+    --gold2:#ffd968;
+    --text:#f5f7fb;
+    --muted:#aebbd0;
+    --border:#243b5b;
+    --green:#37d67a;
+    --red:#ff6875;
 }
 
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #071a36;
-    color: #fff;
+*{
+    box-sizing:border-box;
 }
 
-header {
-    padding: 22px 16px;
-    text-align: center;
-    border-bottom: 1px solid rgba(255,255,255,.1);
+html,
+body{
+    margin:0;
+    padding:0;
+    min-height:100%;
+    font-family:Arial,Helvetica,sans-serif;
+    background:linear-gradient(180deg,#061224,#0a1930);
+    color:var(--text);
 }
 
-header h1 {
-    margin: 0;
-    color: #f5c542;
-    font-size: 27px;
+body{
+    display:flex;
+    justify-content:center;
+    padding:24px 14px 50px;
 }
 
-header p {
-    margin: 8px 0 0;
-    color: #cbd5e1;
+.wrapper{
+    width:100%;
+    max-width:850px;
 }
 
-.container {
-    width: min(960px, calc(100% - 28px));
-    margin: 30px auto 50px;
+header{
+    text-align:center;
+    margin-bottom:24px;
 }
 
-.card {
-    background: #0b2346;
-    border: 1px solid rgba(255,255,255,.1);
-    border-radius: 18px;
-    padding: 24px;
-    box-shadow: 0 12px 35px rgba(0,0,0,.25);
+.logo{
+    width:58px;
+    height:58px;
+    border-radius:50%;
+    object-fit:contain;
+    background:#fff;
+    padding:5px;
+    margin-bottom:10px;
 }
 
-.dropzone {
-    border: 2px dashed #f5c542;
-    border-radius: 16px;
-    padding: 45px 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: .2s;
+h1{
+    margin:0;
+    color:var(--gold);
+    font-size:28px;
+}
+
+.subtitle{
+    margin:8px 0 0;
+    color:var(--muted);
+    font-size:14px;
+}
+
+.card{
+    background:rgba(13,29,52,.96);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:22px;
+    box-shadow:0 16px 50px rgba(0,0,0,.28);
+}
+
+.dropzone{
+    border:2px dashed #355477;
+    border-radius:16px;
+    min-height:230px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    cursor:pointer;
+    transition:.2s;
+    padding:25px;
 }
 
 .dropzone:hover,
-.dropzone.dragover {
-    background: rgba(245,197,66,.08);
+.dropzone.drag{
+    border-color:var(--gold);
+    background:rgba(245,197,66,.05);
 }
 
-.dropzone strong {
-    display: block;
-    font-size: 20px;
-    margin-bottom: 10px;
+.drop-icon{
+    font-size:48px;
+    margin-bottom:10px;
 }
 
-.dropzone span {
-    color: #cbd5e1;
+.drop-title{
+    font-size:18px;
+    font-weight:bold;
 }
 
-input[type=file] {
-    display: none;
+.drop-help{
+    color:var(--muted);
+    margin-top:8px;
+    font-size:13px;
 }
 
-.file-info {
-    display: none;
-    margin-top: 18px;
-    padding: 14px;
-    background: #06162e;
-    border-radius: 10px;
-    word-break: break-word;
+input[type=file]{
+    display:none;
 }
 
-.options {
-    display: none;
-    margin-top: 20px;
+.file-info{
+    display:none;
+    margin-top:16px;
+    background:var(--card2);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:14px;
 }
 
-.options h2 {
-    font-size: 18px;
-    color: #f5c542;
+.file-name{
+    font-weight:bold;
+    word-break:break-word;
 }
 
-.format-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(130px,1fr));
-    gap: 10px;
+.file-size{
+    color:var(--muted);
+    font-size:12px;
+    margin-top:5px;
 }
 
-.format-btn {
-    border: 1px solid #34527b;
-    background: #102e57;
-    color: #fff;
-    padding: 13px 10px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: bold;
+.controls{
+    display:none;
+    margin-top:18px;
 }
 
-.format-btn:hover,
-.format-btn.active {
-    border-color: #f5c542;
-    background: #183c6b;
+.option{
+    background:#0a1930;
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:14px;
 }
 
-.convert-btn {
-    width: 100%;
-    margin-top: 20px;
-    border: 0;
-    background: #f5c542;
-    color: #071a36;
-    padding: 15px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 16px;
+.option-title{
+    font-weight:bold;
+    margin-bottom:5px;
 }
 
-.convert-btn:disabled {
-    opacity: .5;
-    cursor: not-allowed;
+.option-text{
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.5;
 }
 
-.progress {
-    display: none;
-    margin-top: 20px;
+button{
+    width:100%;
+    border:0;
+    border-radius:12px;
+    padding:14px 18px;
+    margin-top:16px;
+    background:linear-gradient(135deg,var(--gold),var(--gold2));
+    color:#17120a;
+    font-weight:800;
+    font-size:15px;
+    cursor:pointer;
 }
 
-.progress-bar {
-    width: 100%;
-    height: 10px;
-    background: #06162e;
-    border-radius: 20px;
-    overflow: hidden;
+button:disabled{
+    opacity:.45;
+    cursor:not-allowed;
 }
 
-.progress-fill {
-    width: 0;
-    height: 100%;
-    background: #f5c542;
-    transition: width .2s;
+.secondary{
+    background:#172b46;
+    color:#fff;
+    border:1px solid #315070;
 }
 
-.status {
-    margin-top: 10px;
-    color: #cbd5e1;
-    text-align: center;
+.progress{
+    display:none;
+    margin-top:18px;
 }
 
-.download {
-    display: none;
-    margin-top: 20px;
-    text-align: center;
+.progress-label{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    font-size:13px;
+    color:var(--muted);
+    margin-bottom:7px;
 }
 
-.download a {
-    display: inline-block;
-    background: #f5c542;
-    color: #071a36;
-    text-decoration: none;
-    padding: 13px 22px;
-    border-radius: 10px;
-    font-weight: bold;
+.progress-track{
+    width:100%;
+    height:9px;
+    border-radius:20px;
+    overflow:hidden;
+    background:#14263f;
 }
 
-.notice {
-    margin-top: 20px;
-    color: #94a3b8;
-    font-size: 13px;
-    line-height: 1.6;
-    text-align: center;
+.progress-bar{
+    width:0%;
+    height:100%;
+    background:linear-gradient(90deg,#f5c542,#ffe38b);
+    transition:width .2s;
 }
 
-footer {
-    text-align: center;
-    color: #64748b;
-    font-size: 13px;
-    padding: 25px;
+.status{
+    margin-top:15px;
+    padding:12px;
+    border-radius:10px;
+    display:none;
+    font-size:13px;
+    line-height:1.5;
 }
 
-.hidden {
-    display: none !important;
+.status.info{
+    display:block;
+    background:#102844;
+    color:#bcd5f2;
+}
+
+.status.success{
+    display:block;
+    background:#0d3020;
+    color:#83efb1;
+}
+
+.status.error{
+    display:block;
+    background:#35151b;
+    color:#ff9da5;
+}
+
+.note{
+    margin-top:18px;
+    color:#8fa3be;
+    font-size:11px;
+    line-height:1.55;
+    text-align:center;
+}
+
+footer{
+    text-align:center;
+    margin-top:20px;
+    color:#71849d;
+    font-size:11px;
+}
+
+.preview{
+    display:none;
+    margin-top:20px;
+}
+
+.preview-title{
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+.page-preview{
+    width:100%;
+    max-height:500px;
+    object-fit:contain;
+    background:#fff;
+    border-radius:8px;
+    border:1px solid #263d5a;
+}
+
+.hidden{
+    display:none!important;
 }
 </style>
 </head>
 
 <body>
 
-<header>
-    <h1>Free File Converter</h1>
-    <p>Convert your files locally in your browser</p>
-</header>
+<div class="wrapper">
 
-<div class="container">
+<header>
+    <img
+        class="logo"
+        src="assets/favico.png"
+        alt="My Crypto Faucet">
+
+    <h1>PDF → Word</h1>
+
+    <div class="subtitle">
+        Preserve the PDF appearance and make detected text editable.
+    </div>
+</header>
 
 <div class="card">
 
-<label class="dropzone" id="dropzone">
-    <strong>Drop your file here</strong>
-    <span>or tap to choose a file</span>
-    <input type="file" id="fileInput">
-</label>
+    <div id="dropzone" class="dropzone">
 
-<div class="file-info" id="fileInfo"></div>
+        <div class="drop-icon">📄</div>
 
-<div class="options" id="options">
-    <h2>Choose output format</h2>
-    <div class="format-grid" id="formatGrid"></div>
+        <div class="drop-title">
+            Drop your PDF here
+        </div>
 
-    <button class="convert-btn" id="convertBtn" disabled>
-        Convert
-    </button>
-</div>
+        <div class="drop-help">
+            or tap to choose a PDF file
+        </div>
 
-<div class="progress" id="progress">
-    <div class="progress-bar">
-        <div class="progress-fill" id="progressFill"></div>
+        <input
+            id="fileInput"
+            type="file"
+            accept="application/pdf,.pdf">
+
     </div>
-    <div class="status" id="status">Preparing...</div>
-</div>
 
-<div class="download" id="downloadBox">
-    <a id="downloadLink" href="#" download>Download file</a>
-</div>
+    <div id="fileInfo" class="file-info">
 
-<div class="notice">
-    Files are processed locally in your browser whenever supported.
-    No file is intentionally uploaded to our server.
-</div>
+        <div id="fileName" class="file-name"></div>
 
-</div>
+        <div id="fileSize" class="file-size"></div>
+
+    </div>
+
+    <div id="controls" class="controls">
+
+        <div class="option">
+
+            <div class="option-title">
+                Editable text mode
+            </div>
+
+            <div class="option-text">
+                The PDF page is preserved as the visual background.
+                Native PDF text is extracted when available.
+                Scanned pages are processed with OCR and the detected
+                text is placed into editable Word text boxes.
+            </div>
+
+        </div>
+
+        <button id="convertBtn">
+            Convert to editable Word
+        </button>
+
+        <button
+            id="resetBtn"
+            class="secondary">
+            Choose another PDF
+        </button>
+
+    </div>
+
+    <div id="progress" class="progress">
+
+        <div class="progress-label">
+            <span id="progressText">Preparing...</span>
+            <span id="progressPercent">0%</span>
+        </div>
+
+        <div class="progress-track">
+            <div
+                id="progressBar"
+                class="progress-bar">
+            </div>
+        </div>
+
+    </div>
+
+    <div id="status" class="status"></div>
+
+    <div id="preview" class="preview">
+
+        <div class="preview-title">
+            First page preview
+        </div>
+
+        <img
+            id="previewImage"
+            class="page-preview"
+            alt="PDF preview">
+
+    </div>
+
+    <div class="note">
+        Processing is performed locally in your browser.
+        The PDF is not uploaded to a server by this page.
+    </div>
+
 </div>
 
 <footer>
-    © My Crypto Faucet
+    My Crypto Faucet — Free Tools
 </footer>
+
+</div>
+
+
+<!-- =========================================================
+     PDF.JS
+     ========================================================= -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.4.149/pdf.min.mjs"
+        type="module"></script>
+
+
+<!-- =========================================================
+     TESSERACT.JS
+     ========================================================= -->
+
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/tesseract.min.js"></script>
+
+
+<!-- =========================================================
+     JSZIP
+     Used to modify the generated DOCX XML.
+     ========================================================= -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+
+<!-- =========================================================
+     DOCX
+     ========================================================= -->
 
 <script type="module">
 
 import * as pdfjsLib
     from "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.4.149/pdf.min.mjs";
 
-pdfjsLib.GlobalWorkerOptions.workerSrc =
-    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.4.149/pdf.worker.min.mjs";
-
-const {
+import {
     Document,
     Packer,
     Paragraph,
-    TextRun,
     ImageRun,
-    AlignmentType,
-    PageBreak
-} = window.docx;
+    PageOrientation
+}
+from "https://cdn.jsdelivr.net/npm/docx@9.6.1/+esm";
 
-const fileInput = document.getElementById("fileInput");
-const dropzone = document.getElementById("dropzone");
-const fileInfo = document.getElementById("fileInfo");
-const options = document.getElementById("options");
-const formatGrid = document.getElementById("formatGrid");
-const convertBtn = document.getElementById("convertBtn");
-const progress = document.getElementById("progress");
-const progressFill = document.getElementById("progressFill");
-const status = document.getElementById("status");
-const downloadBox = document.getElementById("downloadBox");
-const downloadLink = document.getElementById("downloadLink");
+
+/* =========================================================
+   ELEMENTS
+   ========================================================= */
+
+const dropzone =
+    document.getElementById("dropzone");
+
+const fileInput =
+    document.getElementById("fileInput");
+
+const fileInfo =
+    document.getElementById("fileInfo");
+
+const fileName =
+    document.getElementById("fileName");
+
+const fileSize =
+    document.getElementById("fileSize");
+
+const controls =
+    document.getElementById("controls");
+
+const convertBtn =
+    document.getElementById("convertBtn");
+
+const resetBtn =
+    document.getElementById("resetBtn");
+
+const progress =
+    document.getElementById("progress");
+
+const progressBar =
+    document.getElementById("progressBar");
+
+const progressText =
+    document.getElementById("progressText");
+
+const progressPercent =
+    document.getElementById("progressPercent");
+
+const statusBox =
+    document.getElementById("status");
+
+const preview =
+    document.getElementById("preview");
+
+const previewImage =
+    document.getElementById("previewImage");
+
 
 let selectedFile = null;
-let selectedFormat = null;
 
-const imageTypes = ["image/jpeg", "image/png", "image/webp"];
 
-const extensionMap = {
-    pdf: ["application/pdf"],
-    docx: [
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "application/msword"
-    ],
-    xlsx: [
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "application/vnd.ms-excel"
-    ],
-    pptx: [
-        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-        "application/vnd.ms-powerpoint"
-    ],
-    txt: ["text/plain"]
-};
+/* =========================================================
+   PDF.JS WORKER
+   ========================================================= */
 
-dropzone.addEventListener("click", () => fileInput.click());
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.4.149/pdf.worker.min.mjs";
 
-fileInput.addEventListener("change", () => {
-    if (fileInput.files.length) {
-        selectFile(fileInput.files[0]);
-    }
-});
 
-dropzone.addEventListener("dragover", e => {
-    e.preventDefault();
-    dropzone.classList.add("dragover");
-});
+/* =========================================================
+   BASIC HELPERS
+   ========================================================= */
 
-dropzone.addEventListener("dragleave", () => {
-    dropzone.classList.remove("dragover");
-});
+function setStatus(message, type = "info") {
 
-dropzone.addEventListener("drop", e => {
-    e.preventDefault();
-    dropzone.classList.remove("dragover");
+    statusBox.className =
+        "status " + type;
 
-    if (e.dataTransfer.files.length) {
-        selectFile(e.dataTransfer.files[0]);
-    }
-});
-
-function selectFile(file) {
-
-    selectedFile = file;
-    selectedFormat = null;
-
-    downloadBox.style.display = "none";
-    convertBtn.disabled = true;
-
-    fileInfo.style.display = "block";
-
-    fileInfo.innerHTML =
-        `<strong>${escapeHtml(file.name)}</strong><br>
-         Type: ${escapeHtml(file.type || "Unknown")}<br>
-         Size: ${formatBytes(file.size)}`;
-
-    showFormats(file);
-
-    options.style.display = "block";
+    statusBox.textContent =
+        message;
 }
 
-function showFormats(file) {
 
-    formatGrid.innerHTML = "";
+function clearStatus() {
 
-    const type = normalizeType(file);
+    statusBox.className =
+        "status";
 
-    let formats = [];
+    statusBox.textContent =
+        "";
+}
 
-    if (type === "pdf") {
-        formats = ["docx", "txt", "png"];
+
+function setProgress(percent, text) {
+
+    const p =
+        Math.max(0, Math.min(100, percent));
+
+    progress.style.display =
+        "block";
+
+    progressBar.style.width =
+        p + "%";
+
+    progressPercent.textContent =
+        Math.round(p) + "%";
+
+    progressText.textContent =
+        text;
+}
+
+
+function formatBytes(bytes) {
+
+    if (!bytes)
+        return "0 Bytes";
+
+    const units =
+        ["Bytes","KB","MB","GB"];
+
+    const i =
+        Math.floor(
+            Math.log(bytes) /
+            Math.log(1024)
+        );
+
+    return (
+        bytes /
+        Math.pow(1024,i)
+    ).toFixed(i ? 2 : 0)
+    + " "
+    + units[i];
+}
+
+
+function escapeXml(value) {
+
+    return String(value)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&apos;");
+}
+
+
+function safeFileName(name) {
+
+    return name
+        .replace(/\.pdf$/i,"")
+        .replace(/[<>:"/\\|?*\x00-\x1F]/g,"_")
+        .trim()
+        || "converted";
+}
+
+
+/* =========================================================
+   FILE SELECTION
+   ========================================================= */
+
+dropzone.addEventListener(
+    "click",
+    () => fileInput.click()
+);
+
+
+fileInput.addEventListener(
+    "change",
+    () => {
+
+        if (
+            fileInput.files &&
+            fileInput.files.length
+        ) {
+
+            handleFile(
+                fileInput.files[0]
+            );
+        }
+
     }
+);
 
-    else if (imageTypes.includes(type)) {
-        formats = ["jpg", "png", "webp", "pdf"];
+
+dropzone.addEventListener(
+    "dragover",
+    event => {
+
+        event.preventDefault();
+
+        dropzone.classList.add("drag");
+
     }
+);
 
-    else if (type === "txt") {
-        formats = ["pdf", "docx"];
+
+dropzone.addEventListener(
+    "dragleave",
+    () => {
+
+        dropzone.classList.remove("drag");
+
     }
+);
 
-    else if (type === "docx") {
-        formats = ["pdf"];
+
+dropzone.addEventListener(
+    "drop",
+    event => {
+
+        event.preventDefault();
+
+        dropzone.classList.remove("drag");
+
+        const file =
+            event.dataTransfer.files?.[0];
+
+        if (file)
+            handleFile(file);
+
     }
+);
 
-    else if (type === "xlsx") {
-        formats = ["pdf"];
-    }
 
-    else if (type === "pptx") {
-        formats = ["pdf"];
-    }
+/* =========================================================
+   HANDLE FILE
+   ========================================================= */
 
-    else {
-        formats = [];
-    }
+function handleFile(file) {
 
-    if (!formats.length) {
+    clearStatus();
 
-        formatGrid.innerHTML =
-            `<div style="color:#fca5a5">
-                This file type is not supported in the current browser version.
-             </div>`;
+    if (
+        file.type !== "application/pdf" &&
+        !/\.pdf$/i.test(file.name)
+    ) {
+
+        setStatus(
+            "Please select a PDF file.",
+            "error"
+        );
 
         return;
     }
 
-    formats.forEach(format => {
+    selectedFile =
+        file;
 
-        const button = document.createElement("button");
+    fileName.textContent =
+        file.name;
 
-        button.type = "button";
-        button.className = "format-btn";
-        button.textContent = format.toUpperCase();
+    fileSize.textContent =
+        formatBytes(file.size);
 
-        button.addEventListener("click", () => {
+    fileInfo.style.display =
+        "block";
 
-            document.querySelectorAll(".format-btn")
-                .forEach(b => b.classList.remove("active"));
+    controls.style.display =
+        "block";
 
-            button.classList.add("active");
+    preview.style.display =
+        "none";
 
-            selectedFormat = format;
-            convertBtn.disabled = false;
-        });
-
-        formatGrid.appendChild(button);
-    });
+    setStatus(
+        "PDF ready. Tap Convert to editable Word.",
+        "info"
+    );
 }
 
-convertBtn.addEventListener("click", async () => {
 
-    if (!selectedFile || !selectedFormat) return;
+/* =========================================================
+   RESET
+   ========================================================= */
 
-    progress.style.display = "block";
-    downloadBox.style.display = "none";
-    convertBtn.disabled = true;
+resetBtn.addEventListener(
+    "click",
+    () => {
 
-    try {
+        selectedFile = null;
 
-        const type = normalizeType(selectedFile);
+        fileInput.value = "";
 
-        let result;
+        fileInfo.style.display =
+            "none";
 
-        if (type === "pdf" && selectedFormat === "docx") {
-            result = await pdfToEditableWord(selectedFile);
-        }
+        controls.style.display =
+            "none";
 
-        else if (type === "pdf" && selectedFormat === "txt") {
-            result = await pdfToText(selectedFile);
-        }
+        progress.style.display =
+            "none";
 
-        else if (type === "pdf" && selectedFormat === "png") {
-            result = await pdfToPng(selectedFile);
-        }
+        preview.style.display =
+            "none";
 
-        else if (imageTypes.includes(type) &&
-                 ["jpg","png","webp"].includes(selectedFormat)) {
+        clearStatus();
 
-            result = await imageToImage(selectedFile, selectedFormat);
-        }
-
-        else if (imageTypes.includes(type) &&
-                 selectedFormat === "pdf") {
-
-            result = await imageToPdf(selectedFile);
-        }
-
-        else if (type === "txt" && selectedFormat === "pdf") {
-            result = await textToPdf(selectedFile);
-        }
-
-        else if (type === "txt" && selectedFormat === "docx") {
-            result = await textToDocx(selectedFile);
-        }
-
-        else {
-            throw new Error(
-                "This conversion is not available in the current browser version."
-            );
-        }
-
-        showDownload(result);
-
-    } catch (error) {
-
-        console.error(error);
-
-        status.textContent =
-            error.message || "Conversion failed.";
-
-    } finally {
-
-        convertBtn.disabled = false;
     }
-});
+);
 
-async function pdfToEditableWord(file) {
 
-    /*
-     * IMPORTANT ARCHITECTURE
-     *
-     * Every PDF page becomes a high-resolution background image.
-     *
-     * Native PDF text is extracted where available.
-     * For scanned pages, OCR is used.
-     *
-     * The resulting DOCX therefore preserves the visual form.
-     *
-     * Editable OCR/native text is placed into Word paragraphs.
-     *
-     * This is intentionally conservative:
-     * it never destroys the original form background.
-     */
+/* =========================================================
+   PDF PAGE → HIGH RESOLUTION CANVAS
+   ========================================================= */
 
-    setProgress(5, "Reading PDF...");
-
-    const buffer = await file.arrayBuffer();
-
-    const pdf = await pdfjsLib.getDocument({
-        data: new Uint8Array(buffer)
-    }).promise;
-
-    const sections = [];
-
-    for (let pageNumber = 1;
-         pageNumber <= pdf.numPages;
-         pageNumber++) {
-
-        setProgress(
-            5 + Math.round((pageNumber / pdf.numPages) * 80),
-            `Processing page ${pageNumber} of ${pdf.numPages}...`
-        );
-
-        const page = await pdf.getPage(pageNumber);
-
-        const viewport = page.getViewport({
-            scale: 2
-        });
-
-        const canvas = document.createElement("canvas");
-
-        canvas.width = Math.ceil(viewport.width);
-        canvas.height = Math.ceil(viewport.height);
-
-        const context = canvas.getContext("2d", {
-            alpha: false
-        });
-
-        await page.render({
-            canvasContext: context,
-            viewport
-        }).promise;
-
-        const imageData = canvas.toDataURL(
-            "image/png"
-        );
-
-        let textContent = await page.getTextContent();
-
-        let textItems = textContent.items
-            .map(item => item.str)
-            .filter(Boolean);
-
-        let text = textItems.join(" ").trim();
-
-        /*
-         * Scanned/image-only page:
-         * use French OCR.
-         */
-
-        if (text.length < 10) {
-
-            setProgress(
-                10 + Math.round(
-                    (pageNumber / pdf.numPages) * 80
-                ),
-                `OCR page ${pageNumber}...`
-            );
-
-            const ocr = await Tesseract.recognize(
-                canvas,
-                "fra+eng",
-                {
-                    logger: message => {
-
-                        if (
-                            message.status ===
-                            "recognizing text" &&
-                            typeof message.progress === "number"
-                        ) {
-
-                            const percent =
-                                Math.round(
-                                    message.progress * 100
-                                );
-
-                            status.textContent =
-                                `OCR page ${pageNumber}: ${percent}%`;
-                        }
-                    }
-                }
-            );
-
-            text = ocr.data.text.trim();
-        }
-
-        sections.push({
-            imageData,
-            text,
-            width: viewport.width,
-            height: viewport.height
-        });
-    }
-
-    setProgress(90, "Building editable Word document...");
-
-    const children = [];
-
-    for (let i = 0; i < sections.length; i++) {
-
-        const section = sections[i];
-
-        const imageBuffer =
-            dataUrlToArrayBuffer(section.imageData);
-
-        children.push(
-            new Paragraph({
-                children: [
-                    new ImageRun({
-                        data: imageBuffer,
-                        transformation: {
-                            width: 595,
-                            height:
-                                Math.round(
-                                    595 *
-                                    section.height /
-                                    section.width
-                                )
-                        }
-                    })
-                ],
-                spacing: {
-                    before: 0,
-                    after: 0
-                }
-            })
-        );
-
-        /*
-         * Keep extracted/OCR text editable.
-         *
-         * The background image preserves the exact
-         * appearance of the source form.
-         */
-
-        if (section.text) {
-
-            children.push(
-                new Paragraph({
-                    children: [
-                        new TextRun({
-                            text: section.text,
-                            size: 18
-                        })
-                    ],
-                    spacing: {
-                        before: 0,
-                        after: 0
-                    }
-                })
-            );
-        }
-
-        if (i < sections.length - 1) {
-            children.push(
-                new Paragraph({
-                    children: [
-                        new PageBreak()
-                    ]
-                })
-            );
-        }
-    }
-
-    const doc = new Document({
-        sections: [
-            {
-                properties: {
-                    page: {
-                        size: {
-                            width: 11906,
-                            height: 16838
-                        },
-                        margin: {
-                            top: 0,
-                            bottom: 0,
-                            left: 0,
-                            right: 0
-                        }
-                    }
-                },
-                children
-            }
-        ]
-    });
-
-    const blob = await Packer.toBlob(doc);
-
-    setProgress(100, "Done.");
-
-    return {
-        blob,
-        name: replaceExtension(file.name, "docx")
-    };
-}
-
-async function pdfToText(file) {
-
-    setProgress(10, "Extracting PDF text...");
-
-    const buffer = await file.arrayBuffer();
-
-    const pdf = await pdfjsLib.getDocument({
-        data: new Uint8Array(buffer)
-    }).promise;
-
-    let output = "";
-
-    for (let i = 1; i <= pdf.numPages; i++) {
-
-        const page = await pdf.getPage(i);
-
-        const content =
-            await page.getTextContent();
-
-        let text = content.items
-            .map(item => item.str)
-            .join(" ")
-            .trim();
-
-        if (text.length < 10) {
-
-            const viewport =
-                page.getViewport({ scale: 2 });
-
-            const canvas =
-                document.createElement("canvas");
-
-            canvas.width =
-                Math.ceil(viewport.width);
-
-            canvas.height =
-                Math.ceil(viewport.height);
-
-            await page.render({
-                canvasContext:
-                    canvas.getContext("2d"),
-                viewport
-            }).promise;
-
-            const ocr =
-                await Tesseract.recognize(
-                    canvas,
-                    "fra+eng"
-                );
-
-            text = ocr.data.text;
-        }
-
-        output +=
-            `--- Page ${i} ---\n\n${text}\n\n`;
-    }
-
-    setProgress(100, "Done.");
-
-    return {
-        blob: new Blob(
-            [output],
-            { type: "text/plain;charset=utf-8" }
-        ),
-        name: replaceExtension(file.name, "txt")
-    };
-}
-
-async function pdfToPng(file) {
-
-    setProgress(20, "Rendering first PDF page...");
-
-    const buffer = await file.arrayBuffer();
-
-    const pdf =
-        await pdfjsLib.getDocument({
-            data: new Uint8Array(buffer)
-        }).promise;
-
-    const page =
-        await pdf.getPage(1);
+async function renderPdfPage(
+    page,
+    scale = 2.0
+) {
 
     const viewport =
-        page.getViewport({ scale: 2 });
+        page.getViewport({
+            scale
+        });
 
     const canvas =
         document.createElement("canvas");
@@ -812,420 +767,1745 @@ async function pdfToPng(file) {
     canvas.height =
         Math.ceil(viewport.height);
 
+    const context =
+        canvas.getContext("2d", {
+            alpha:false
+        });
+
     await page.render({
-        canvasContext:
-            canvas.getContext("2d"),
+        canvasContext:context,
         viewport
     }).promise;
 
-    const blob =
-        await canvasToBlob(
-            canvas,
-            "image/png"
-        );
-
-    setProgress(100, "Done.");
-
     return {
-        blob,
-        name: replaceExtension(file.name, "png")
+        canvas,
+        viewport
     };
 }
 
-async function imageToImage(file, format) {
 
-    setProgress(20, "Reading image...");
+/* =========================================================
+   NATIVE PDF TEXT EXTRACTION
+   ========================================================= */
 
-    const bitmap =
-        await createImageBitmap(file);
-
-    const canvas =
-        document.createElement("canvas");
-
-    canvas.width = bitmap.width;
-    canvas.height = bitmap.height;
-
-    const ctx =
-        canvas.getContext("2d");
-
-    if (format === "jpg") {
-
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
-    }
-
-    ctx.drawImage(bitmap, 0, 0);
-
-    const mime =
-        format === "jpg"
-            ? "image/jpeg"
-            : `image/${format}`;
-
-    const blob =
-        await canvasToBlob(
-            canvas,
-            mime,
-            format === "jpg" ? .92 : undefined
-        );
-
-    setProgress(100, "Done.");
-
-    return {
-        blob,
-        name: replaceExtension(
-            file.name,
-            format
-        )
-    };
-}
-
-async function imageToPdf(file) {
-
-    setProgress(20, "Creating PDF...");
-
-    const bitmap =
-        await createImageBitmap(file);
-
-    const canvas =
-        document.createElement("canvas");
-
-    canvas.width = bitmap.width;
-    canvas.height = bitmap.height;
-
-    const ctx =
-        canvas.getContext("2d");
-
-    ctx.drawImage(bitmap, 0, 0);
-
-    const png =
-        await canvasToBlob(
-            canvas,
-            "image/png"
-        );
-
-    const imageBytes =
-        new Uint8Array(
-            await png.arrayBuffer()
-        );
-
-    const pdfDoc =
-        await PDFLib.PDFDocument.create();
-
-    const image =
-        await pdfDoc.embedPng(imageBytes);
-
-    const page =
-        pdfDoc.addPage([
-            image.width,
-            image.height
-        ]);
-
-    page.drawImage(image, {
-        x: 0,
-        y: 0,
-        width: image.width,
-        height: image.height
-    });
-
-    const bytes =
-        await pdfDoc.save();
-
-    setProgress(100, "Done.");
-
-    return {
-        blob: new Blob(
-            [bytes],
-            { type: "application/pdf" }
-        ),
-        name: replaceExtension(
-            file.name,
-            "pdf"
-        )
-    };
-}
-
-async function textToPdf(file) {
-
-    setProgress(20, "Reading text...");
-
-    const text =
-        await file.text();
-
-    const pdfDoc =
-        await PDFLib.PDFDocument.create();
-
-    const font =
-        await pdfDoc.embedFont(
-            PDFLib.StandardFonts.Helvetica
-        );
-
-    const page =
-        pdfDoc.addPage();
-
-    const {
-        width,
-        height
-    } = page.getSize();
-
-    const lines =
-        text.split(/\r?\n/);
-
-    let y =
-        height - 50;
-
-    for (const line of lines) {
-
-        if (y < 40) {
-
-            y = height - 50;
-            pdfDoc.addPage();
-        }
-
-        page.drawText(
-            line.substring(0, 110),
-            {
-                x: 40,
-                y,
-                size: 10,
-                font
-            }
-        );
-
-        y -= 15;
-    }
-
-    const bytes =
-        await pdfDoc.save();
-
-    setProgress(100, "Done.");
-
-    return {
-        blob: new Blob(
-            [bytes],
-            { type: "application/pdf" }
-        ),
-        name: replaceExtension(
-            file.name,
-            "pdf"
-        )
-    };
-}
-
-async function textToDocx(file) {
-
-    setProgress(30, "Building Word document...");
-
-    const text =
-        await file.text();
-
-    const paragraphs =
-        text.split(/\r?\n/)
-        .map(line =>
-            new Paragraph({
-                children: [
-                    new TextRun(line)
-                ]
-            })
-        );
-
-    const doc =
-        new Document({
-            sections: [{
-                children: paragraphs
-            }]
-        });
-
-    const blob =
-        await Packer.toBlob(doc);
-
-    setProgress(100, "Done.");
-
-    return {
-        blob,
-        name: replaceExtension(
-            file.name,
-            "docx"
-        )
-    };
-}
-
-function normalizeType(file) {
-
-    if (file.type) {
-
-        if (file.type === "application/pdf")
-            return "pdf";
-
-        if (file.type === "text/plain")
-            return "txt";
-
-        if (imageTypes.includes(file.type))
-            return file.type;
-    }
-
-    const name =
-        file.name.toLowerCase();
-
-    if (name.endsWith(".pdf"))
-        return "pdf";
-
-    if (name.endsWith(".txt"))
-        return "txt";
-
-    if (name.endsWith(".jpg") ||
-        name.endsWith(".jpeg"))
-        return "image/jpeg";
-
-    if (name.endsWith(".png"))
-        return "image/png";
-
-    if (name.endsWith(".webp"))
-        return "image/webp";
-
-    if (name.endsWith(".docx"))
-        return "docx";
-
-    if (name.endsWith(".xlsx"))
-        return "xlsx";
-
-    if (name.endsWith(".pptx"))
-        return "pptx";
-
-    return "";
-}
-
-function setProgress(percent, message) {
-
-    progressFill.style.width =
-        `${Math.max(0, Math.min(100, percent))}%`;
-
-    status.textContent =
-        message;
-}
-
-function showDownload(result) {
-
-    const url =
-        URL.createObjectURL(result.blob);
-
-    downloadLink.href = url;
-    downloadLink.download = result.name;
-
-    downloadBox.style.display =
-        "block";
-
-    status.textContent =
-        "Conversion completed successfully.";
-}
-
-function canvasToBlob(
-    canvas,
-    type,
-    quality
+async function extractNativeText(
+    page
 ) {
 
-    return new Promise(
-        (resolve, reject) => {
+    const content =
+        await page.getTextContent({
+            normalizeWhitespace:false,
+            disableCombineTextItems:false
+        });
 
-            canvas.toBlob(
-                blob => {
+    const viewport =
+        page.getViewport({
+            scale:1
+        });
 
-                    if (blob) {
-                        resolve(blob);
-                    } else {
-                        reject(
-                            new Error(
-                                "Could not create output file."
-                            )
-                        );
-                    }
-                },
-                type,
-                quality
-            );
+    const items = [];
+
+    for (
+        const item of content.items
+    ) {
+
+        if (
+            !item ||
+            typeof item.str !== "string" ||
+            !item.str.trim()
+        ) {
+            continue;
         }
+
+        const transform =
+            pdfjsLib.Util.transform(
+                viewport.transform,
+                item.transform
+            );
+
+        const x =
+            transform[4];
+
+        const y =
+            transform[5];
+
+        const fontHeight =
+            Math.sqrt(
+                transform[2] *
+                transform[2] +
+                transform[3] *
+                transform[3]
+            );
+
+        const width =
+            Math.max(
+                1,
+                Math.abs(item.width)
+            );
+
+        const height =
+            Math.max(
+                1,
+                fontHeight
+            );
+
+        /*
+         * PDF.js coordinates use bottom-left.
+         * Word/VML positioning is easier from top-left.
+         */
+
+        const top =
+            viewport.height -
+            y -
+            height;
+
+        items.push({
+
+            text:item.str,
+
+            x,
+
+            y:top,
+
+            width,
+
+            height,
+
+            fontSize:height,
+
+            confidence:100,
+
+            source:"native"
+
+        });
+
+    }
+
+    return mergeNativeItems(
+        items
     );
 }
 
-function dataUrlToArrayBuffer(dataUrl) {
 
-    const base64 =
-        dataUrl.split(",")[1];
+/* =========================================================
+   MERGE NATIVE PDF ITEMS
+   ========================================================= */
 
-    const binary =
-        atob(base64);
+function mergeNativeItems(items) {
 
-    const bytes =
-        new Uint8Array(
-            binary.length
+    if (!items.length)
+        return [];
+
+    const sorted =
+        [...items].sort(
+            (a,b) => {
+
+                const dy =
+                    Math.abs(
+                        a.y-b.y
+                    );
+
+                if (dy < 3)
+                    return a.x-b.x;
+
+                return a.y-b.y;
+            }
         );
+
+    const result = [];
 
     for (
-        let i = 0;
-        i < binary.length;
-        i++
+        const item of sorted
     ) {
-        bytes[i] =
-            binary.charCodeAt(i);
+
+        const previous =
+            result[result.length-1];
+
+        if (
+            previous &&
+            Math.abs(
+                previous.y-item.y
+            ) <=
+            Math.max(
+                3,
+                previous.height * .35
+            ) &&
+            item.x <=
+            previous.x +
+            previous.width +
+            previous.height * .8
+        ) {
+
+            const gap =
+                Math.max(
+                    0,
+                    item.x -
+                    (
+                        previous.x +
+                        previous.width
+                    )
+                );
+
+            const separator =
+                gap >
+                previous.height * .20
+                    ? " "
+                    : "";
+
+            previous.text +=
+                separator +
+                item.text;
+
+            previous.width =
+                Math.max(
+                    previous.width,
+                    (
+                        item.x +
+                        item.width
+                    ) -
+                    previous.x
+                );
+
+            previous.height =
+                Math.max(
+                    previous.height,
+                    item.height
+                );
+
+        } else {
+
+            result.push({
+                ...item
+            });
+
+        }
     }
 
-    return bytes;
+    return result.filter(
+        item =>
+            item.text &&
+            item.text.trim()
+    );
 }
 
-function replaceExtension(
-    filename,
-    extension
+
+/* =========================================================
+   OCR
+   ========================================================= */
+
+async function createOcrWorker() {
+
+    if (
+        !window.Tesseract ||
+        !window.Tesseract.createWorker
+    ) {
+
+        throw new Error(
+            "OCR engine could not be loaded."
+        );
+    }
+
+    const worker =
+        await window.Tesseract.createWorker(
+            "fra+eng"
+        );
+
+    await worker.setParameters({
+
+        tessedit_pageseg_mode:
+            "3",
+
+        preserve_interword_spaces:
+            "1"
+
+    });
+
+    return worker;
+}
+
+
+/* =========================================================
+   OCR PAGE
+   ========================================================= */
+
+async function extractOcrText(
+    canvas,
+    worker
 ) {
 
-    return filename.replace(
-        /\.[^/.]+$/,
-        ""
-    ) + "." + extension;
+    const result =
+        await worker.recognize(
+            canvas,
+            {},
+            {
+                blocks:true,
+                text:true
+            }
+        );
+
+    const blocks =
+        result?.data?.blocks || [];
+
+    const output = [];
+
+    for (
+        const block of blocks
+    ) {
+
+        const paragraphs =
+            block.paragraphs || [];
+
+        for (
+            const paragraph of paragraphs
+        ) {
+
+            const lines =
+                paragraph.lines || [];
+
+            for (
+                const line of lines
+            ) {
+
+                const words =
+                    line.words || [];
+
+                for (
+                    const word of words
+                ) {
+
+                    if (
+                        !word ||
+                        !word.text ||
+                        !word.text.trim()
+                    ) {
+                        continue;
+                    }
+
+                    const bbox =
+                        word.bbox;
+
+                    if (!bbox)
+                        continue;
+
+                    output.push({
+
+                        text:word.text,
+
+                        x:bbox.x0,
+
+                        y:bbox.y0,
+
+                        width:
+                            Math.max(
+                                1,
+                                bbox.x1 -
+                                bbox.x0
+                            ),
+
+                        height:
+                            Math.max(
+                                1,
+                                bbox.y1 -
+                                bbox.y0
+                            ),
+
+                        fontSize:
+                            Math.max(
+                                6,
+                                bbox.y1 -
+                                bbox.y0
+                            ),
+
+                        confidence:
+                            Number(
+                                word.confidence ||
+                                0
+                            ),
+
+                        source:"ocr"
+
+                    });
+
+                }
+
+            }
+
+        }
+
+    }
+
+    return mergeOcrWords(
+        output
+    );
 }
 
-function formatBytes(bytes) {
 
-    if (!bytes)
-        return "0 Bytes";
+/* =========================================================
+   MERGE OCR WORDS INTO LINES
+   ========================================================= */
 
-    const units = [
-        "Bytes",
-        "KB",
-        "MB",
-        "GB"
-    ];
+function mergeOcrWords(words) {
 
-    const index =
-        Math.floor(
-            Math.log(bytes) /
-            Math.log(1024)
+    if (!words.length)
+        return [];
+
+    const sorted =
+        [...words].sort(
+            (a,b) => {
+
+                const tolerance =
+                    Math.max(
+                        3,
+                        Math.min(
+                            a.height,
+                            b.height
+                        ) * .45
+                    );
+
+                if (
+                    Math.abs(
+                        a.y-b.y
+                    ) <= tolerance
+                ) {
+                    return a.x-b.x;
+                }
+
+                return a.y-b.y;
+            }
         );
+
+    const lines = [];
+
+    for (
+        const word of sorted
+    ) {
+
+        let line = null;
+
+        for (
+            const candidate of lines
+        ) {
+
+            const tolerance =
+                Math.max(
+                    3,
+                    Math.min(
+                        candidate.height,
+                        word.height
+                    ) * .45
+                );
+
+            if (
+                Math.abs(
+                    candidate.y-word.y
+                ) <= tolerance
+            ) {
+
+                line =
+                    candidate;
+
+                break;
+            }
+        }
+
+        if (!line) {
+
+            lines.push({
+
+                text:word.text,
+
+                x:word.x,
+
+                y:word.y,
+
+                width:word.width,
+
+                height:word.height,
+
+                fontSize:word.fontSize,
+
+                confidence:
+                    word.confidence,
+
+                source:"ocr"
+
+            });
+
+        } else {
+
+            const gap =
+                word.x -
+                (
+                    line.x +
+                    line.width
+                );
+
+            const separator =
+                gap >
+                line.height * .12
+                    ? " "
+                    : "";
+
+            line.text +=
+                separator +
+                word.text;
+
+            line.width =
+                Math.max(
+                    line.width,
+                    (
+                        word.x +
+                        word.width
+                    ) -
+                    line.x
+                );
+
+            line.height =
+                Math.max(
+                    line.height,
+                    word.height
+                );
+
+            line.fontSize =
+                Math.max(
+                    line.fontSize,
+                    word.fontSize
+                );
+
+        }
+
+    }
+
+    return lines
+        .filter(
+            item =>
+                item.text &&
+                item.text.trim()
+        )
+        .sort(
+            (a,b) =>
+                a.y-b.y ||
+                a.x-b.x
+        );
+}
+
+
+/* =========================================================
+   DETERMINE WHETHER NATIVE TEXT IS GOOD ENOUGH
+   ========================================================= */
+
+function nativeTextLooksUsable(
+    items,
+    pageArea
+) {
+
+    if (!items.length)
+        return false;
+
+    const textLength =
+        items.reduce(
+            (sum,item) =>
+                sum +
+                item.text.length,
+            0
+        );
+
+    if (textLength < 3)
+        return false;
+
+    /*
+     * If the PDF contains only a tiny amount
+     * of extractable text while the page itself
+     * is large, treat it as a scanned/image PDF.
+     */
+
+    if (
+        pageArea > 100000 &&
+        textLength < 12
+    ) {
+        return false;
+    }
+
+    return true;
+}
+
+
+/* =========================================================
+   PDF → DOCX
+   ========================================================= */
+
+convertBtn.addEventListener(
+    "click",
+    convertPdfToWord
+);
+
+
+async function convertPdfToWord() {
+
+    if (!selectedFile)
+        return;
+
+    convertBtn.disabled =
+        true;
+
+    resetBtn.disabled =
+        true;
+
+    clearStatus();
+
+    try {
+
+        setProgress(
+            1,
+            "Opening PDF..."
+        );
+
+        const buffer =
+            await selectedFile.arrayBuffer();
+
+        const pdf =
+            await pdfjsLib.getDocument({
+                data:buffer
+            }).promise;
+
+        const totalPages =
+            pdf.numPages;
+
+        if (!totalPages) {
+
+            throw new Error(
+                "The PDF contains no pages."
+            );
+        }
+
+        /*
+         * Keep the generated document simple:
+         * one section with the same page size
+         * as the first PDF page.
+         */
+
+        const firstPage =
+            await pdf.getPage(1);
+
+        const firstViewport =
+            firstPage.getViewport({
+                scale:1
+            });
+
+        const firstWidthPt =
+            firstViewport.width;
+
+        const firstHeightPt =
+            firstViewport.height;
+
+        /*
+         * DOCX page dimensions are twips.
+         */
+
+        const pageWidthTwips =
+            Math.round(
+                firstWidthPt * 20
+            );
+
+        const pageHeightTwips =
+            Math.round(
+                firstHeightPt * 20
+            );
+
+
+        const children = [];
+
+        const pageData = [];
+
+
+        /*
+         * OCR worker is created lazily.
+         */
+
+        let ocrWorker = null;
+
+        let usedOcr = false;
+
+
+        for (
+            let pageNumber = 1;
+            pageNumber <= totalPages;
+            pageNumber++
+        ) {
+
+            const percent =
+                5 +
+                (
+                    (pageNumber-1) /
+                    totalPages
+                ) * 75;
+
+            setProgress(
+                percent,
+                `Processing page ${pageNumber} of ${totalPages}...`
+            );
+
+
+            const page =
+                pageNumber === 1
+                    ? firstPage
+                    : await pdf.getPage(
+                        pageNumber
+                    );
+
+
+            const viewport =
+                page.getViewport({
+                    scale:1
+                });
+
+
+            /*
+             * Render at 2x for better visual quality.
+             */
+
+            const rendered =
+                await renderPdfPage(
+                    page,
+                    2
+                );
+
+
+            const canvas =
+                rendered.canvas;
+
+
+            const pngBlob =
+                await new Promise(
+                    resolve =>
+                        canvas.toBlob(
+                            resolve,
+                            "image/png"
+                        )
+                );
+
+
+            if (!pngBlob)
+                throw new Error(
+                    "Could not render PDF page."
+                );
+
+
+            const pngBuffer =
+                await pngBlob.arrayBuffer();
+
+
+            /*
+             * Preview first page.
+             */
+
+            if (pageNumber === 1) {
+
+                previewImage.src =
+                    URL.createObjectURL(
+                        pngBlob
+                    );
+
+                preview.style.display =
+                    "block";
+            }
+
+
+            /*
+             * First try native PDF text.
+             */
+
+            let textItems =
+                await extractNativeText(
+                    page
+                );
+
+
+            const pageArea =
+                viewport.width *
+                viewport.height;
+
+
+            /*
+             * Scanned/image PDF:
+             * use OCR with bounding boxes.
+             */
+
+            if (
+                !nativeTextLooksUsable(
+                    textItems,
+                    pageArea
+                )
+            ) {
+
+                if (!ocrWorker) {
+
+                    setProgress(
+                        percent,
+                        "Starting French/English OCR..."
+                    );
+
+                    ocrWorker =
+                        await createOcrWorker();
+
+                    usedOcr = true;
+                }
+
+
+                setProgress(
+                    percent,
+                    `OCR page ${pageNumber} of ${totalPages}...`
+                );
+
+
+                textItems =
+                    await extractOcrText(
+                        canvas,
+                        ocrWorker
+                    );
+
+
+                /*
+                 * OCR coordinates are based on
+                 * the 2x rendered canvas.
+                 * Convert them back to PDF points.
+                 */
+
+                const scaleX =
+                    viewport.width /
+                    canvas.width;
+
+                const scaleY =
+                    viewport.height /
+                    canvas.height;
+
+
+                textItems =
+                    textItems.map(
+                        item => ({
+
+                            ...item,
+
+                            x:
+                                item.x *
+                                scaleX,
+
+                            y:
+                                item.y *
+                                scaleY,
+
+                            width:
+                                item.width *
+                                scaleX,
+
+                            height:
+                                item.height *
+                                scaleY,
+
+                            fontSize:
+                                item.fontSize *
+                                Math.min(
+                                    scaleX,
+                                    scaleY
+                                )
+
+                        })
+                    );
+
+            }
+
+
+            pageData.push({
+
+                pageNumber,
+
+                width:
+                    viewport.width,
+
+                height:
+                    viewport.height,
+
+                image:
+                    pngBuffer,
+
+                textItems
+
+            });
+
+
+            /*
+             * Add page image to DOCX.
+             *
+             * It becomes the visual base layer.
+             * Editable text boxes will be injected
+             * into document.xml afterwards.
+             */
+
+            children.push(
+
+                new Paragraph({
+
+                    spacing:{
+                        before:0,
+                        after:0,
+                        line:0
+                    },
+
+                    children:[
+
+                        new ImageRun({
+
+                            data:pngBuffer,
+
+                            transformation:{
+
+                                width:
+                                    viewport.width,
+
+                                height:
+                                    viewport.height
+
+                            },
+
+                            type:"png"
+
+                        })
+
+                    ]
+
+                })
+
+            );
+
+
+            /*
+             * Explicit page break between pages.
+             */
+
+            if (
+                pageNumber <
+                totalPages
+            ) {
+
+                children.push(
+                    new Paragraph({
+                        pageBreakBefore:true
+                    })
+                );
+            }
+
+        }
+
+
+        if (ocrWorker) {
+
+            await ocrWorker.terminate();
+
+            ocrWorker =
+                null;
+        }
+
+
+        setProgress(
+            82,
+            "Building editable Word document..."
+        );
+
+
+        /*
+         * Build DOCX.
+         */
+
+        const doc =
+            new Document({
+
+                sections:[{
+
+                    properties:{
+
+                        page:{
+
+                            width:
+                                pageWidthTwips,
+
+                            height:
+                                pageHeightTwips,
+
+                            margin:{
+
+                                top:0,
+
+                                right:0,
+
+                                bottom:0,
+
+                                left:0,
+
+                                header:0,
+
+                                footer:0,
+
+                                gutter:0
+
+                            }
+
+                        }
+
+                    },
+
+                    children
+
+                }]
+
+            });
+
+
+        let docxBlob =
+            await Packer.toBlob(
+                doc
+            );
+
+
+        /*
+         * Inject positioned editable text boxes
+         * into WordprocessingML.
+         */
+
+        setProgress(
+            88,
+            "Placing editable text..."
+        );
+
+
+        docxBlob =
+            await injectEditableTextBoxes(
+                docxBlob,
+                pageData,
+                pageWidthTwips,
+                pageHeightTwips
+            );
+
+
+        setProgress(
+            96,
+            "Preparing download..."
+        );
+
+
+        const outputName =
+            safeFileName(
+                selectedFile.name
+            )
+            + "-editable.docx";
+
+
+        const downloadUrl =
+            URL.createObjectURL(
+                docxBlob
+            );
+
+
+        const link =
+            document.createElement("a");
+
+        link.href =
+            downloadUrl;
+
+        link.download =
+            outputName;
+
+        document.body.appendChild(link);
+
+        link.click();
+
+        link.remove();
+
+
+        setTimeout(
+            () =>
+                URL.revokeObjectURL(
+                    downloadUrl
+                ),
+            10000
+        );
+
+
+        setProgress(
+            100,
+            "Conversion complete."
+        );
+
+
+        setStatus(
+            usedOcr
+                ? "Word file created. Scanned pages were processed with OCR and editable text boxes were positioned over the preserved page."
+                : "Word file created with editable positioned text.",
+            "success"
+        );
+
+
+    } catch(error) {
+
+        console.error(error);
+
+        setStatus(
+            error?.message ||
+            "PDF conversion failed.",
+            "error"
+        );
+
+        setProgress(
+            0,
+            "Conversion failed."
+        );
+
+    } finally {
+
+        convertBtn.disabled =
+            false;
+
+        resetBtn.disabled =
+            false;
+    }
+}
+
+
+/* =========================================================
+   INJECT EDITABLE TEXT BOXES
+   ========================================================= */
+
+async function injectEditableTextBoxes(
+    blob,
+    pages,
+    pageWidthTwips,
+    pageHeightTwips
+) {
+
+    const zip =
+        await JSZip.loadAsync(
+            blob
+        );
+
+
+    const documentFile =
+        zip.file(
+            "word/document.xml"
+        );
+
+
+    if (!documentFile) {
+
+        throw new Error(
+            "DOCX document.xml was not found."
+        );
+    }
+
+
+    let xml =
+        await documentFile.async(
+            "string"
+        );
+
+
+    /*
+     * Ensure VML / Office namespaces exist.
+     */
+
+    xml =
+        ensureNamespace(
+            xml,
+            "xmlns:v",
+            "urn:schemas-microsoft-com:vml"
+        );
+
+    xml =
+        ensureNamespace(
+            xml,
+            "xmlns:o",
+            "urn:schemas-microsoft-com:office:office"
+        );
+
+    xml =
+        ensureNamespace(
+            xml,
+            "xmlns:w10",
+            "urn:schemas-microsoft-com:office:word"
+        );
+
+
+    /*
+     * Locate body.
+     */
+
+    const bodyStart =
+        xml.indexOf(
+            "<w:body"
+        );
+
+    const bodyOpenEnd =
+        xml.indexOf(
+            ">",
+            bodyStart
+        );
+
+    const bodyEnd =
+        xml.lastIndexOf(
+            "</w:body>"
+        );
+
+
+    if (
+        bodyStart < 0 ||
+        bodyOpenEnd < 0 ||
+        bodyEnd < 0
+    ) {
+
+        throw new Error(
+            "Invalid Word document structure."
+        );
+    }
+
+
+    /*
+     * Existing body content is produced by docx.
+     * We insert text boxes immediately before
+     * the section properties.
+     *
+     * Each text box is absolutely positioned
+     * relative to the page.
+     */
+
+    const sectPrIndex =
+        xml.lastIndexOf(
+            "<w:sectPr"
+        );
+
+
+    if (
+        sectPrIndex < 0 ||
+        sectPrIndex > bodyEnd
+    ) {
+
+        throw new Error(
+            "Word section properties not found."
+        );
+    }
+
+
+    const allTextBoxes = [];
+
+
+    for (
+        let pageIndex = 0;
+        pageIndex < pages.length;
+        pageIndex++
+    ) {
+
+        const page =
+            pages[pageIndex];
+
+
+        /*
+         * Do not add text boxes outside
+         * the real page area.
+         */
+
+        const items =
+            page.textItems
+                .filter(
+                    item =>
+                        item.text &&
+                        item.text.trim() &&
+                        item.width > 0 &&
+                        item.height > 0 &&
+                        item.x >= -2 &&
+                        item.y >= -2 &&
+                        item.x <
+                            page.width + 2 &&
+                        item.y <
+                            page.height + 2
+                );
+
+
+        for (
+            let itemIndex = 0;
+            itemIndex < items.length;
+            itemIndex++
+        ) {
+
+            const item =
+                items[itemIndex];
+
+
+            /*
+             * Convert PDF points → Word points.
+             *
+             * PDF page coordinates are points.
+             * VML uses pt values.
+             */
+
+            const left =
+                Math.max(
+                    0,
+                    item.x
+                );
+
+            const top =
+                Math.max(
+                    0,
+                    item.y
+                );
+
+
+            const width =
+                Math.max(
+                    2,
+                    Math.min(
+                        item.width + 1.5,
+                        page.width -
+                        left
+                    )
+                );
+
+
+            const height =
+                Math.max(
+                    5,
+                    Math.min(
+                        Math.max(
+                            item.height * 1.20,
+                            item.fontSize * 1.35,
+                            7
+                        ),
+                        page.height -
+                        top
+                    )
+                );
+
+
+            /*
+             * PDF font size normally maps closely
+             * to Word pt.
+             */
+
+            const fontSize =
+                Math.max(
+                    5,
+                    Math.min(
+                        72,
+                        item.fontSize *
+                        0.98
+                    )
+                );
+
+
+            /*
+             * Text box ID.
+             */
+
+            const shapeId =
+                `_x0000_s${10000 +
+                pageIndex * 1000 +
+                itemIndex}`;
+
+
+            /*
+             * z-index:
+             * Background page image is below.
+             * Editable text is above it.
+             */
+
+            const zIndex =
+                100000 +
+                pageIndex * 1000 +
+                itemIndex;
+
+
+            allTextBoxes.push(
+
+                createVmlTextBox({
+
+                    id:shapeId,
+
+                    left,
+
+                    top,
+
+                    width,
+
+                    height,
+
+                    fontSize,
+
+                    text:item.text,
+
+                    zIndex
+
+                })
+
+            );
+
+        }
+
+    }
+
+
+    /*
+     * Insert all text boxes before sectPr.
+     *
+     * Word accepts absolutely positioned VML
+     * objects inside a body paragraph.
+     */
+
+    const injection =
+        createTextboxParagraph(
+            allTextBoxes
+        );
+
+
+    xml =
+        xml.slice(
+            0,
+            sectPrIndex
+        )
+        +
+        injection
+        +
+        xml.slice(
+            sectPrIndex
+        );
+
+
+    zip.file(
+        "word/document.xml",
+        xml
+    );
+
+
+    return await zip.generateAsync({
+        type:"blob",
+        mimeType:
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        compression:"DEFLATE"
+    });
+}
+
+
+/* =========================================================
+   ENSURE XML NAMESPACE
+   ========================================================= */
+
+function ensureNamespace(
+    xml,
+    attribute,
+    value
+) {
+
+    if (
+        xml.includes(
+            attribute + "="
+        )
+    ) {
+        return xml;
+    }
+
+    const documentTagEnd =
+        xml.indexOf(">");
+
+    if (
+        documentTagEnd < 0
+    ) {
+        return xml;
+    }
+
+    return (
+        xml.slice(
+            0,
+            documentTagEnd
+        )
+        +
+        ` ${attribute}="${value}"`
+        +
+        xml.slice(
+            documentTagEnd
+        )
+    );
+}
+
+
+/* =========================================================
+   CREATE PARAGRAPH CONTAINING ALL VML BOXES
+   ========================================================= */
+
+function createTextboxParagraph(
+    textboxes
+) {
+
+    if (!textboxes.length)
+        return "";
+
+    return (
+        `<w:p>` +
+            `<w:pPr>` +
+                `<w:spacing w:before="0" w:after="0"/>` +
+            `</w:pPr>` +
+            textboxes.join("") +
+        `</w:p>`
+    );
+}
+
+
+/* =========================================================
+   CREATE VML TEXT BOX
+   ========================================================= */
+
+function createVmlTextBox({
+    id,
+    left,
+    top,
+    width,
+    height,
+    fontSize,
+    text,
+    zIndex
+}) {
+
+    /*
+     * Word VML text boxes are used because they support
+     * absolute positioning and editable Word text.
+     *
+     * Reference structure:
+     *
+     * w:r
+     *   w:pict
+     *     v:shape
+     *       v:textbox
+     *         w:txbxContent
+     *           w:p
+     *             w:r
+     *               w:t
+     */
+
+    const escapedText =
+        escapeXml(
+            text
+        );
+
+
+    /*
+     * Prevent transparent text boxes from
+     * covering nearby content.
+     *
+     * The box itself has no fill and no border.
+     */
+
+    const style =
+        [
+            "position:absolute",
+
+            `margin-left:${round(left)}pt`,
+
+            `margin-top:${round(top)}pt`,
+
+            `width:${round(width)}pt`,
+
+            `height:${round(height)}pt`,
+
+            `z-index:${zIndex}`,
+
+            "visibility:visible",
+
+            "mso-wrap-style:none",
+
+            "mso-width-percent:0",
+
+            "mso-height-percent:0",
+
+            "mso-position-horizontal:absolute",
+
+            "mso-position-horizontal-relative:page",
+
+            "mso-position-vertical:absolute",
+
+            "mso-position-vertical-relative:page",
+
+            "mso-width-relative:page",
+
+            "mso-height-relative:page",
+
+            "v-text-anchor:top"
+        ].join(";");
+
+
+    const paragraphSpacing =
+        `<w:pPr>` +
+            `<w:spacing ` +
+                `w:before="0" ` +
+                `w:after="0" ` +
+                `w:line="240" ` +
+                `w:lineRule="auto"` +
+            `/>` +
+        `</w:pPr>`;
+
+
+    const runProperties =
+        `<w:rPr>` +
+            `<w:sz w:val="${Math.max(
+                10,
+                Math.round(fontSize * 2)
+            )}"/>` +
+            `<w:szCs w:val="${Math.max(
+                10,
+                Math.round(fontSize * 2)
+            )}"/>` +
+            `<w:noProof/>` +
+        `</w:rPr>`;
+
+
+    return (
+        `<w:r>` +
+
+            `<w:pict>` +
+
+                `<v:shape ` +
+
+                    `id="${id}" ` +
+
+                    `type="#_x0000_t202" ` +
+
+                    `style="${style}" ` +
+
+                    `filled="f" ` +
+
+                    `stroked="f" ` +
+
+                    `o:allowincell="f" ` +
+
+                    `o:allowoverlap="t"` +
+
+                `>` +
+
+                    `<v:textbox ` +
+                        `style="mso-fit-shape-to-text:f" ` +
+                        `inset="0,0,0,0"` +
+                    `>` +
+
+                        `<w:txbxContent>` +
+
+                            `<w:p>` +
+
+                                paragraphSpacing +
+
+                                `<w:r>` +
+
+                                    runProperties +
+
+                                    `<w:t xml:space="preserve">` +
+
+                                        escapedText +
+
+                                    `</w:t>` +
+
+                                `</w:r>` +
+
+                            `</w:p>` +
+
+                        `</w:txbxContent>` +
+
+                    `</v:textbox>` +
+
+                    `<w10:wrap ` +
+                        `type="none" ` +
+                        `anchorx="page" ` +
+                        `anchory="page"` +
+                    `/>` +
+
+                `</v:shape>` +
+
+            `</w:pict>` +
+
+        `</w:r>`
+    );
+}
+
+
+/* =========================================================
+   ROUND NUMBER
+   ========================================================= */
+
+function round(
+    value
+) {
 
     return (
         Math.round(
-            bytes /
-            Math.pow(1024, index) *
-            100
+            Number(value) * 100
         ) / 100
-    ) + " " + units[index];
+    ).toString();
 }
 
-function escapeHtml(value) {
 
-    return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+/* =========================================================
+   OPTIONAL SAFETY:
+   REMOVE DUPLICATE OCR BOXES
+   ========================================================= */
+
+function removeDuplicateTextBoxes(
+    items
+) {
+
+    const result = [];
+
+    for (
+        const item of items
+    ) {
+
+        const duplicate =
+            result.some(
+                existing =>
+
+                    Math.abs(
+                        existing.x -
+                        item.x
+                    ) < 1 &&
+
+                    Math.abs(
+                        existing.y -
+                        item.y
+                    ) < 1 &&
+
+                    existing.text.trim() ===
+                    item.text.trim()
+            );
+
+        if (!duplicate) {
+
+            result.push(item);
+
+        }
+    }
+
+    return result;
 }
+
+
+/* =========================================================
+   ERROR PROTECTION
+   ========================================================= */
+
+window.addEventListener(
+    "unhandledrejection",
+    event => {
+
+        console.error(
+            "Unhandled promise:",
+            event.reason
+        );
+
+    }
+);
 
 </script>
 
 </body>
- </html>
+            </html>
