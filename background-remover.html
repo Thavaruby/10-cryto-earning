@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,41 +8,22 @@
 <link rel="icon" type="image/png" href="assets/favico.png">
 
 <title>Free Background Remover — My Crypto Faucet</title>
-
-<meta
-    name="description"
-    content="Remove image backgrounds online for free and create transparent PNG images directly in your browser."
->
-
-<link
-    rel="canonical"
-    href="https://myfaucetcrypto.com/background-remover"
->
+<meta name="description" content="Remove image backgrounds online for free and create transparent PNG images directly in your browser.">
+<link rel="canonical" href="https://myfaucetcrypto.com/background-remover">
 
 <meta property="og:type" content="website">
-<meta
-    property="og:title"
-    content="Free Background Remover — My Crypto Faucet"
->
-<meta
-    property="og:description"
-    content="Remove image backgrounds online for free and create transparent PNG images directly in your browser."
->
-<meta
-    property="og:url"
-    content="https://myfaucetcrypto.com/background-remover"
->
+<meta property="og:title" content="Free Background Remover — My Crypto Faucet">
+<meta property="og:description" content="Remove image backgrounds online for free and create transparent PNG images directly in your browser.">
+<meta property="og:url" content="https://myfaucetcrypto.com/background-remover">
 
 <style>
-* {
-    box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
     margin: 0;
     font-family: Arial, sans-serif;
     background: #07152f;
-    color: #ffffff;
+    color: #fff;
 }
 
 .container {
@@ -95,7 +77,15 @@ body {
 }
 
 #fileInput {
-    display: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    overflow: hidden;
+}
+
+#fileInput:focus-visible + .upload-focus {
+    outline: 2px solid #fff;
 }
 
 .actions {
@@ -133,7 +123,7 @@ button {
 
 #resetBtn {
     background: #273c61;
-    color: #ffffff;
+    color: #fff;
 }
 
 .status {
@@ -155,17 +145,19 @@ button {
     color: #ffb8c0;
     font-size: 12px;
     line-height: 1.5;
-    word-break: break-word;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
 }
 
 .preview-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 20px;
     margin-top: 30px;
 }
 
 .preview-box {
+    min-width: 0;
     background: #081936;
     border: 1px solid #29486f;
     border-radius: 14px;
@@ -187,27 +179,26 @@ button {
     overflow: hidden;
     border-radius: 10px;
     background: #101f3a;
+    color: #cbd5e8;
+    text-align: center;
 }
 
 .preview img {
     display: block;
     max-width: 100%;
     max-height: 500px;
+    object-fit: contain;
 }
 
 .transparent-preview {
-    background-color: #ffffff;
+    background-color: #fff;
     background-image:
         linear-gradient(45deg, #d8d8d8 25%, transparent 25%),
         linear-gradient(-45deg, #d8d8d8 25%, transparent 25%),
         linear-gradient(45deg, transparent 75%, #d8d8d8 75%),
         linear-gradient(-45deg, transparent 75%, #d8d8d8 75%);
     background-size: 20px 20px;
-    background-position:
-        0 0,
-        0 10px,
-        10px -10px,
-        -10px 0;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0;
 }
 
 .info {
@@ -230,720 +221,319 @@ button {
 }
 
 @media (max-width: 700px) {
-
-    .header h1 {
-        font-size: 27px;
-    }
-
-    .tool-card {
-        padding: 18px;
-    }
-
-    .preview-grid {
-        grid-template-columns: 1fr;
-    }
+    .header h1 { font-size: 27px; }
+    .tool-card { padding: 18px; }
+    .preview-grid { grid-template-columns: 1fr; }
 }
 </style>
 </head>
 
 <body>
-
 <div class="container">
 
 <header class="header">
-
     <h1>✂️ Free Background Remover</h1>
-
-    <p>
-        Remove image backgrounds and create transparent PNG images
-        directly in your browser.
-    </p>
-
+    <p>Remove image backgrounds and create transparent PNG images directly in your browser.</p>
 </header>
-
 
 <main class="tool-card">
 
-    <label
-        class="upload-area"
-        for="fileInput"
-    >
+    <label class="upload-area" for="fileInput">
         <strong>📷 Upload an Image</strong>
-
-        <span>
-            JPG, JPEG, PNG or WebP
-        </span>
+        <span>JPG, JPEG, PNG or WebP</span>
     </label>
-
 
     <input
         id="fileInput"
         type="file"
-        accept="image/jpeg,image/png,image/webp"
+        accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
     >
 
-
     <div class="actions">
-
-        <button
-            id="removeBtn"
-            type="button"
-            disabled
-        >
-            ✂️ Remove Background
-        </button>
-
-
-        <button
-            id="downloadBtn"
-            type="button"
-        >
-            ⬇️ Download PNG
-        </button>
-
-
-        <button
-            id="resetBtn"
-            type="button"
-        >
-            Reset
-        </button>
-
+        <button id="removeBtn" type="button" disabled>✂️ Remove Background</button>
+        <button id="downloadBtn" type="button">⬇️ Download PNG</button>
+        <button id="resetBtn" type="button">Reset</button>
     </div>
 
-
-    <div
-        id="status"
-        class="status"
-        aria-live="polite"
-    ></div>
-
-
-    <div
-        id="errorBox"
-        class="error-box"
-    ></div>
-
+    <div id="status" class="status" aria-live="polite"></div>
+    <div id="errorBox" class="error-box" role="alert"></div>
 
     <div class="preview-grid">
-
         <section class="preview-box">
-
             <h2>Original Image</h2>
-
             <div class="preview">
-
-                <img
-                    id="originalPreview"
-                    alt="Original uploaded image"
-                    style="display:none"
-                >
-
-                <span id="originalPlaceholder">
-                    Upload an image
-                </span>
-
+                <img id="originalPreview" alt="Original uploaded image" hidden>
+                <span id="originalPlaceholder">Upload an image</span>
             </div>
-
         </section>
-
 
         <section class="preview-box">
-
             <h2>Transparent Background</h2>
-
             <div class="preview transparent-preview">
-
-                <img
-                    id="resultPreview"
-                    alt="Background removed image"
-                    style="display:none"
-                >
-
-                <span id="resultPlaceholder">
-                    Result will appear here
-                </span>
-
+                <img id="resultPreview" alt="Background removed image" hidden>
+                <span id="resultPlaceholder">Result will appear here</span>
             </div>
-
         </section>
-
     </div>
-
 </main>
 
-
 <section class="info">
-
     <h2>Free Online Background Remover</h2>
-
-    <p>
-        Remove the background from an image and create a transparent
-        PNG directly in your browser.
-    </p>
-
-    <p>
-        Your image is processed locally in your browser and does not
-        need to be uploaded to your website server.
-    </p>
-
-    <p>
-        The first use may take longer because the AI model needs
-        to download and initialize.
-    </p>
-
+    <p>Remove the background from an image and create a transparent PNG directly in your browser.</p>
+    <p>Your image is processed in your browser. It is not intentionally uploaded to your website server.</p>
+    <p>The first use may take longer because the AI model needs to download and initialize.</p>
 </section>
 
-
-<footer class="footer">
-    © 2026 My Crypto Faucet
-</footer>
-
+<footer class="footer">© 2026 My Crypto Faucet</footer>
 </div>
 
+<script>
+"use strict";
 
-<script type="module">
+/*
+ * Upload and preview run independently of the AI library.
+ * A model/CDN failure will not disable image selection.
+ */
 
-import {
-    pipeline
-} from "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1";
-    
-env.allowLocalModels = false;
-env.allowRemoteModels = true;
+const fileInput = document.getElementById("fileInput");
+const removeBtn = document.getElementById("removeBtn");
+const downloadBtn = document.getElementById("downloadBtn");
+const resetBtn = document.getElementById("resetBtn");
 
-const fileInput =
-    document.getElementById("fileInput");
-
-const removeBtn =
-    document.getElementById("removeBtn");
-
-const downloadBtn =
-    document.getElementById("downloadBtn");
-
-const resetBtn =
-    document.getElementById("resetBtn");
-
-const originalPreview =
-    document.getElementById("originalPreview");
-
-const resultPreview =
-    document.getElementById("resultPreview");
-
-const originalPlaceholder =
-    document.getElementById("originalPlaceholder");
-
-const resultPlaceholder =
-    document.getElementById("resultPlaceholder");
-
-const status =
-    document.getElementById("status");
-
-const errorBox =
-    document.getElementById("errorBox");
-
+const originalPreview = document.getElementById("originalPreview");
+const resultPreview = document.getElementById("resultPreview");
+const originalPlaceholder = document.getElementById("originalPlaceholder");
+const resultPlaceholder = document.getElementById("resultPlaceholder");
+const status = document.getElementById("status");
+const errorBox = document.getElementById("errorBox");
 
 let selectedFile = null;
-
 let originalUrl = null;
-
 let resultUrl = null;
-
 let resultBlob = null;
-
 let segmenter = null;
-
 let loadingPromise = null;
-
-
-/* =====================================================
-   STATUS
-===================================================== */
+let operationId = 0;
 
 function setStatus(message) {
-
-    status.textContent =
-        message;
+    status.textContent = message;
 }
-
-
-/* =====================================================
-   ERROR
-===================================================== */
-
-function showError(error) {
-
-    console.error(
-        "Background remover error:",
-        error
-    );
-
-    let message =
-        "Unknown error";
-
-    if (error instanceof Error) {
-
-        message =
-            error.stack ||
-            error.message ||
-            String(error);
-
-    } else {
-
-        message =
-            String(error);
-    }
-
-    errorBox.textContent =
-        message;
-
-    errorBox.style.display =
-        "block";
-}
-
 
 function clearError() {
-
-    errorBox.textContent =
-        "";
-
-    errorBox.style.display =
-        "none";
+    errorBox.textContent = "";
+    errorBox.style.display = "none";
 }
 
+function showError(error) {
+    console.error("Background remover error:", error);
 
-/* =====================================================
-   LOAD MODEL
-===================================================== */
+    const message = error && (error.stack || error.message)
+        ? (error.stack || error.message)
+        : String(error || "Unknown error");
+
+    errorBox.textContent = message;
+    errorBox.style.display = "block";
+}
+
+function revokeUrl(url) {
+    if (url) URL.revokeObjectURL(url);
+}
+
+function clearResult() {
+    revokeUrl(resultUrl);
+    resultUrl = null;
+    resultBlob = null;
+    resultPreview.removeAttribute("src");
+    resultPreview.hidden = true;
+    resultPlaceholder.hidden = false;
+    downloadBtn.style.display = "none";
+}
+
+function isSupportedImage(file) {
+    const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    ];
+
+    return allowedTypes.includes(file.type);
+}
+
+/* Upload and preview do not require Transformers.js. */
+fileInput.addEventListener("change", () => {
+    clearError();
+    clearResult();
+
+    const file = fileInput.files && fileInput.files[0];
+    if (!file) return;
+
+    if (!isSupportedImage(file)) {
+        selectedFile = null;
+        removeBtn.disabled = true;
+        setStatus("Please select a JPG, PNG or WebP image.");
+        return;
+    }
+
+    selectedFile = file;
+    removeBtn.disabled = true;
+
+    revokeUrl(originalUrl);
+    originalUrl = URL.createObjectURL(file);
+
+    originalPreview.onload = () => {
+        originalPreview.hidden = false;
+        originalPlaceholder.hidden = true;
+        removeBtn.disabled = false;
+        setStatus("Image ready. Click Remove Background.");
+    };
+
+    originalPreview.onerror = () => {
+        selectedFile = null;
+        originalPreview.hidden = true;
+        originalPlaceholder.hidden = false;
+        removeBtn.disabled = true;
+        setStatus("The selected image could not be previewed. Try another image.");
+        revokeUrl(originalUrl);
+        originalUrl = null;
+    };
+
+    originalPreview.src = originalUrl;
+});
 
 async function loadModel() {
+    if (segmenter) return segmenter;
+    if (loadingPromise) return loadingPromise;
 
-    if (segmenter) {
-        return segmenter;
-    }
+    loadingPromise = (async () => {
+        setStatus("Loading AI model. The first download may be large.");
 
-    if (loadingPromise) {
-        return loadingPromise;
-    }
+        /*
+         * Load the AI library only after the user clicks
+         * Remove Background. Upload preview remains available
+         * if this external import or model download fails.
+         */
+        const transformers = await import(
+            "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1"
+        );
 
-    setStatus(
-        "Loading AI model. Please wait..."
-    );
+        transformers.env.allowLocalModels = false;
+        transformers.env.allowRemoteModels = true;
 
-
-    loadingPromise =
-        pipeline(
+        const model = await transformers.pipeline(
             "background-removal",
             "Xenova/modnet",
             {
-                dtype: "fp32"
+                dtype: "fp32",
+                device: "wasm"
             }
         );
 
+        return model;
+    })();
 
     try {
-
-        segmenter =
-            await loadingPromise;
-
+        segmenter = await loadingPromise;
         return segmenter;
-
     } catch (error) {
-
-        loadingPromise =
-            null;
-
-        segmenter =
-            null;
-
+        loadingPromise = null;
+        segmenter = null;
         throw error;
     }
 }
 
+removeBtn.addEventListener("click", async () => {
+    if (!selectedFile) return;
 
-/* =====================================================
-   SELECT IMAGE
-===================================================== */
+    const thisOperation = ++operationId;
+    clearError();
+    clearResult();
+    removeBtn.disabled = true;
 
-fileInput.addEventListener(
-    "change",
-    () => {
+    let processingUrl = null;
 
-        clearError();
+    try {
+        const model = await loadModel();
 
-        const file =
-            fileInput.files?.[0];
+        if (thisOperation !== operationId) return;
 
-        if (!file) {
-            return;
+        setStatus("Removing background. Please wait...");
+
+        processingUrl = URL.createObjectURL(selectedFile);
+        const output = await model(processingUrl);
+
+        if (thisOperation !== operationId) return;
+
+        if (!output || !output[0] || typeof output[0].toBlob !== "function") {
+            throw new Error("The model returned no usable image output.");
         }
 
+        const blob = await output[0].toBlob();
 
-        if (!file.type.startsWith("image/")) {
+        if (thisOperation !== operationId) return;
 
-            setStatus(
-                "Please select a valid image."
-            );
-
-            return;
+        if (!blob || blob.size === 0) {
+            throw new Error("The model returned an empty image.");
         }
 
-
-        selectedFile =
-            file;
-
-
-        if (originalUrl) {
-
-            URL.revokeObjectURL(
-                originalUrl
-            );
-        }
-
-
-        originalUrl =
-            URL.createObjectURL(
-                selectedFile
-            );
-
-
-        originalPreview.src =
-            originalUrl;
-
-        originalPreview.style.display =
-            "block";
-
-        originalPlaceholder.style.display =
-            "none";
-
-
-        resultPreview.style.display =
-            "none";
-
-        resultPlaceholder.style.display =
-            "block";
-
-
-        downloadBtn.style.display =
-            "none";
-
-
-        resultBlob =
-            null;
-
-
-        if (resultUrl) {
-
-            URL.revokeObjectURL(
-                resultUrl
-            );
-
-            resultUrl =
-                null;
-        }
-
-
-        removeBtn.disabled =
-            false;
-
-
-        setStatus(
-            "Image ready. Click Remove Background."
-        );
-    }
-);
-
-
-/* =====================================================
-   REMOVE BACKGROUND
-===================================================== */
-
-removeBtn.addEventListener(
-    "click",
-    async () => {
-
-        if (!selectedFile) {
-            return;
-        }
-
-
-        clearError();
-
-
-        removeBtn.disabled =
-            true;
-
-        downloadBtn.style.display =
-            "none";
-
-
-        try {
-
-            /*
-             * Load official MODNet model.
-             */
-
-            const model =
-                await loadModel();
-
-
-            setStatus(
-                "Removing background..."
-            );
-
-
-            /*
-             * Use the selected local image
-             * through a temporary object URL.
-             *
-             * This follows the same ImageInput
-             * mechanism used by the official
-             * Transformers.js pipeline.
-             */
-
-            const imageUrl =
-                URL.createObjectURL(
-                    selectedFile
-                );
-
-
-            try {
-
-                const output =
-                    await model(
-                        imageUrl
-                    );
-
-
-                if (
-                    !output ||
-                    !output[0]
-                ) {
-
-                    throw new Error(
-                        "The AI model returned no output."
-                    );
-                }
-
-
-                /*
-                 * Official MODNet output is RawImage.
-                 */
-
-                const outputImage =
-                    output[0];
-
-
-                /*
-                 * Convert RawImage to PNG.
-                 */
-
-                const blob =
-                    await outputImage.toBlob();
-
-
-                if (!blob) {
-
-                    throw new Error(
-                        "The AI result could not be converted to PNG."
-                    );
-                }
-
-
-                resultBlob =
-                    blob;
-
-
-                if (resultUrl) {
-
-                    URL.revokeObjectURL(
-                        resultUrl
-                    );
-                }
-
-
-                resultUrl =
-                    URL.createObjectURL(
-                        resultBlob
-                    );
-
-
-                resultPreview.src =
-                    resultUrl;
-
-                resultPreview.style.display =
-                    "block";
-
-                resultPlaceholder.style.display =
-                    "none";
-
-
-                downloadBtn.style.display =
-                    "inline-block";
-
-
-                setStatus(
-                    "Background removed successfully."
-                );
-
-
-            } finally {
-
-                URL.revokeObjectURL(
-                    imageUrl
-                );
-            }
-
-
-        } catch (error) {
-
-            resultBlob =
-                null;
-
-
-            resultPreview.style.display =
-                "none";
-
-            resultPlaceholder.style.display =
-                "block";
-
-
-            setStatus(
-                "Background removal failed."
-            );
-
-
-            /*
-             * IMPORTANT:
-             * Show the real error instead of
-             * hiding it behind a generic message.
-             */
-
+        resultBlob = blob;
+        resultUrl = URL.createObjectURL(blob);
+
+        resultPreview.onload = () => {
+            resultPreview.hidden = false;
+            resultPlaceholder.hidden = true;
+        };
+
+        resultPreview.src = resultUrl;
+        downloadBtn.style.display = "inline-block";
+        setStatus("Background removal completed. Check the result preview.");
+
+    } catch (error) {
+        if (thisOperation === operationId) {
+            clearResult();
+            setStatus("Background removal failed. See the error below.");
             showError(error);
+        }
+    } finally {
+        revokeUrl(processingUrl);
 
-
-        } finally {
-
-            removeBtn.disabled =
-                !selectedFile;
+        if (thisOperation === operationId) {
+            removeBtn.disabled = !selectedFile;
         }
     }
-);
+});
 
+downloadBtn.addEventListener("click", () => {
+    if (!resultBlob || !resultUrl) return;
 
-/* =====================================================
-   DOWNLOAD
-===================================================== */
+    const link = document.createElement("a");
+    link.href = resultUrl;
+    link.download = "background-removed.png";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+});
 
-downloadBtn.addEventListener(
-    "click",
-    () => {
+resetBtn.addEventListener("click", () => {
+    operationId++;
 
-        if (
-            !resultBlob ||
-            !resultUrl
-        ) {
-            return;
-        }
+    fileInput.value = "";
+    selectedFile = null;
 
+    revokeUrl(originalUrl);
+    originalUrl = null;
 
-        const link =
-            document.createElement("a");
+    clearResult();
+    clearError();
 
+    originalPreview.onload = null;
+    originalPreview.onerror = null;
+    originalPreview.removeAttribute("src");
+    originalPreview.hidden = true;
+    originalPlaceholder.hidden = false;
 
-        link.href =
-            resultUrl;
-
-
-        link.download =
-            "background-removed.png";
-
-
-        document.body.appendChild(
-            link
-        );
-
-
-        link.click();
-
-
-        link.remove();
-    }
-);
-
-
-/* =====================================================
-   RESET
-===================================================== */
-
-resetBtn.addEventListener(
-    "click",
-    () => {
-
-        fileInput.value =
-            "";
-
-        selectedFile =
-            null;
-
-        resultBlob =
-            null;
-
-
-        removeBtn.disabled =
-            true;
-
-        downloadBtn.style.display =
-            "none";
-
-
-        if (originalUrl) {
-
-            URL.revokeObjectURL(
-                originalUrl
-            );
-
-            originalUrl =
-                null;
-        }
-
-
-        if (resultUrl) {
-
-            URL.revokeObjectURL(
-                resultUrl
-            );
-
-            resultUrl =
-                null;
-        }
-
-
-        originalPreview.src =
-            "";
-
-        originalPreview.style.display =
-            "none";
-
-        originalPlaceholder.style.display =
-            "block";
-
-
-        resultPreview.src =
-            "";
-
-        resultPreview.style.display =
-            "none";
-
-        resultPlaceholder.style.display =
-            "block";
-
-
-        setStatus("");
-
-        clearError();
-    }
-);
-
+    removeBtn.disabled = true;
+    setStatus("");
+});
 </script>
 
 </body>
