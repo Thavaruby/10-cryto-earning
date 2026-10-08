@@ -8,22 +8,16 @@
 
 <title>PDF to Word — My Crypto Faucet</title>
 
-<meta name="description"
-      content="Convert PDF files to editable Word documents while preserving the original page appearance.">
-
-<meta name="robots" content="index, follow">
-
 <style>
 :root{
     --bg:#071426;
     --card:#0d1d34;
-    --card2:#102541;
+    --border:#294463;
     --gold:#f5c542;
     --gold2:#ffd968;
     --text:#f5f7fb;
     --muted:#aebbd0;
-    --border:#243b5b;
-    --green:#37d67a;
+    --green:#39dc7d;
     --red:#ff6875;
 }
 
@@ -31,25 +25,19 @@
     box-sizing:border-box;
 }
 
-html,
 body{
     margin:0;
-    padding:0;
-    min-height:100%;
-    font-family:Arial,Helvetica,sans-serif;
-    background:linear-gradient(180deg,#061224,#0a1930);
-    color:var(--text);
-}
-
-body{
-    display:flex;
-    justify-content:center;
+    min-height:100vh;
     padding:24px 14px 50px;
+    background:linear-gradient(180deg,#061224,#0b1b31);
+    color:var(--text);
+    font-family:Arial,Helvetica,sans-serif;
 }
 
 .wrapper{
     width:100%;
-    max-width:850px;
+    max-width:820px;
+    margin:auto;
 }
 
 header{
@@ -60,91 +48,87 @@ header{
 .logo{
     width:58px;
     height:58px;
-    border-radius:50%;
     object-fit:contain;
     background:#fff;
+    border-radius:50%;
     padding:5px;
-    margin-bottom:10px;
 }
 
 h1{
-    margin:0;
+    margin:12px 0 6px;
     color:var(--gold);
     font-size:28px;
 }
 
 .subtitle{
-    margin:8px 0 0;
     color:var(--muted);
     font-size:14px;
 }
 
 .card{
-    background:rgba(13,29,52,.96);
+    background:var(--card);
     border:1px solid var(--border);
     border-radius:18px;
     padding:22px;
-    box-shadow:0 16px 50px rgba(0,0,0,.28);
+    box-shadow:0 18px 50px rgba(0,0,0,.3);
 }
 
-.dropzone{
-    border:2px dashed #355477;
-    border-radius:16px;
+.drop{
     min-height:230px;
+    border:2px dashed #355578;
+    border-radius:16px;
     display:flex;
     flex-direction:column;
-    justify-content:center;
     align-items:center;
+    justify-content:center;
     text-align:center;
     cursor:pointer;
-    transition:.2s;
     padding:25px;
 }
 
-.dropzone:hover,
-.dropzone.drag{
+.drop.drag{
     border-color:var(--gold);
     background:rgba(245,197,66,.05);
 }
 
-.drop-icon{
-    font-size:48px;
-    margin-bottom:10px;
+.icon{
+    font-size:50px;
+    margin-bottom:12px;
 }
 
-.drop-title{
+.title{
     font-size:18px;
     font-weight:bold;
 }
 
-.drop-help{
+.help{
     color:var(--muted);
-    margin-top:8px;
     font-size:13px;
+    margin-top:8px;
 }
 
-input[type=file]{
+input{
     display:none;
 }
 
-.file-info{
+.info{
     display:none;
     margin-top:16px;
-    background:var(--card2);
-    border:1px solid var(--border);
-    border-radius:12px;
     padding:14px;
+    border-radius:12px;
+    background:#102541;
+    border:1px solid var(--border);
 }
 
-.file-name{
+.name{
     font-weight:bold;
     word-break:break-word;
 }
 
-.file-size{
+.size{
+    margin-top:5px;
     color:var(--muted);
     font-size:12px;
-    margin-top:5px;
 }
 
 .controls{
@@ -152,35 +136,26 @@ input[type=file]{
     margin-top:18px;
 }
 
-.option{
-    background:#0a1930;
-    border:1px solid var(--border);
-    border-radius:12px;
-    padding:14px;
-}
-
-.option-title{
-    font-weight:bold;
-    margin-bottom:5px;
-}
-
-.option-text{
-    color:var(--muted);
-    font-size:13px;
-    line-height:1.5;
-}
-
 button{
     width:100%;
+    padding:14px;
+    margin-top:12px;
     border:0;
     border-radius:12px;
-    padding:14px 18px;
-    margin-top:16px;
+    font-size:15px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.convert{
     background:linear-gradient(135deg,var(--gold),var(--gold2));
     color:#17120a;
-    font-weight:800;
-    font-size:15px;
-    cursor:pointer;
+}
+
+.reset{
+    background:#172d49;
+    color:#fff;
+    border:1px solid #345271;
 }
 
 button:disabled{
@@ -188,46 +163,38 @@ button:disabled{
     cursor:not-allowed;
 }
 
-.secondary{
-    background:#172b46;
-    color:#fff;
-    border:1px solid #315070;
-}
-
 .progress{
     display:none;
     margin-top:18px;
 }
 
-.progress-label{
+.progressTop{
     display:flex;
     justify-content:space-between;
-    gap:10px;
-    font-size:13px;
     color:var(--muted);
+    font-size:13px;
     margin-bottom:7px;
 }
 
-.progress-track{
-    width:100%;
+.track{
     height:9px;
+    background:#152941;
     border-radius:20px;
     overflow:hidden;
-    background:#14263f;
 }
 
-.progress-bar{
-    width:0%;
+.bar{
+    width:0;
     height:100%;
     background:linear-gradient(90deg,#f5c542,#ffe38b);
-    transition:width .2s;
+    transition:width .25s;
 }
 
 .status{
+    display:none;
     margin-top:15px;
     padding:12px;
     border-radius:10px;
-    display:none;
     font-size:13px;
     line-height:1.5;
 }
@@ -235,12 +202,12 @@ button:disabled{
 .status.info{
     display:block;
     background:#102844;
-    color:#bcd5f2;
+    color:#bdd5f2;
 }
 
 .status.success{
     display:block;
-    background:#0d3020;
+    background:#0c3020;
     color:#83efb1;
 }
 
@@ -253,39 +220,16 @@ button:disabled{
 .note{
     margin-top:18px;
     color:#8fa3be;
-    font-size:11px;
-    line-height:1.55;
     text-align:center;
+    font-size:11px;
+    line-height:1.5;
 }
 
 footer{
-    text-align:center;
     margin-top:20px;
+    text-align:center;
     color:#71849d;
     font-size:11px;
-}
-
-.preview{
-    display:none;
-    margin-top:20px;
-}
-
-.preview-title{
-    font-weight:bold;
-    margin-bottom:10px;
-}
-
-.page-preview{
-    width:100%;
-    max-height:500px;
-    object-fit:contain;
-    background:#fff;
-    border-radius:8px;
-    border:1px solid #263d5a;
-}
-
-.hidden{
-    display:none!important;
 }
 </style>
 </head>
@@ -295,260 +239,239 @@ footer{
 <div class="wrapper">
 
 <header>
-    <img
-        class="logo"
-        src="assets/favico.png"
-        alt="My Crypto Faucet">
 
-    <h1>PDF → Word</h1>
+<img
+    src="assets/favico.png"
+    class="logo"
+    alt="My Crypto Faucet">
 
-    <div class="subtitle">
-        Preserve the PDF appearance and make detected text editable.
-    </div>
+<h1>PDF → Word</h1>
+
+<div class="subtitle">
+Convert PDF into an editable Word document
+</div>
+
 </header>
 
 <div class="card">
 
-    <div id="dropzone" class="dropzone">
+<div
+    id="drop"
+    class="drop">
 
-        <div class="drop-icon">📄</div>
+<div class="icon">📄</div>
 
-        <div class="drop-title">
-            Drop your PDF here
-        </div>
+<div class="title">
+Drop PDF here
+</div>
 
-        <div class="drop-help">
-            or tap to choose a PDF file
-        </div>
+<div class="help">
+or tap to choose a PDF file
+</div>
 
-        <input
-            id="fileInput"
-            type="file"
-            accept="application/pdf,.pdf">
+<input
+    id="file"
+    type="file"
+    accept=".pdf,application/pdf">
 
-    </div>
+</div>
 
-    <div id="fileInfo" class="file-info">
 
-        <div id="fileName" class="file-name"></div>
+<div
+    id="info"
+    class="info">
 
-        <div id="fileSize" class="file-size"></div>
+<div
+    id="name"
+    class="name">
+</div>
 
-    </div>
+<div
+    id="size"
+    class="size">
+</div>
 
-    <div id="controls" class="controls">
+</div>
 
-        <div class="option">
 
-            <div class="option-title">
-                Editable text mode
-            </div>
+<div
+    id="controls"
+    class="controls">
 
-            <div class="option-text">
-                The PDF page is preserved as the visual background.
-                Native PDF text is extracted when available.
-                Scanned pages are processed with OCR and the detected
-                text is placed into editable Word text boxes.
-            </div>
+<button
+    id="convert"
+    class="convert">
 
-        </div>
+Convert to editable Word
 
-        <button id="convertBtn">
-            Convert to editable Word
-        </button>
+</button>
 
-        <button
-            id="resetBtn"
-            class="secondary">
-            Choose another PDF
-        </button>
+<button
+    id="reset"
+    class="reset">
 
-    </div>
+Choose another PDF
 
-    <div id="progress" class="progress">
+</button>
 
-        <div class="progress-label">
-            <span id="progressText">Preparing...</span>
-            <span id="progressPercent">0%</span>
-        </div>
+</div>
 
-        <div class="progress-track">
-            <div
-                id="progressBar"
-                class="progress-bar">
-            </div>
-        </div>
 
-    </div>
+<div
+    id="progress"
+    class="progress">
 
-    <div id="status" class="status"></div>
+<div class="progressTop">
 
-    <div id="preview" class="preview">
+<span id="progressText">
+Preparing...
+</span>
 
-        <div class="preview-title">
-            First page preview
-        </div>
+<span id="percent">
+0%
+</span>
 
-        <img
-            id="previewImage"
-            class="page-preview"
-            alt="PDF preview">
+</div>
 
-    </div>
+<div class="track">
 
-    <div class="note">
-        Processing is performed locally in your browser.
-        The PDF is not uploaded to a server by this page.
-    </div>
+<div
+    id="bar"
+    class="bar">
+</div>
+
+</div>
+
+</div>
+
+
+<div
+    id="status"
+    class="status">
+</div>
+
+
+<div class="note">
+
+Your PDF is processed locally in the browser.
+No PDF upload to your website server is required.
+
+</div>
 
 </div>
 
 <footer>
-    My Crypto Faucet — Free Tools
+My Crypto Faucet — Free Tools
 </footer>
 
 </div>
 
 
-<!-- =========================================================
-     PDF.JS
-     ========================================================= -->
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.4.149/pdf.min.mjs"
-        type="module"></script>
-
-
-<!-- =========================================================
-     TESSERACT.JS
-     ========================================================= -->
-
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/tesseract.min.js"></script>
-
-
-<!-- =========================================================
-     JSZIP
-     Used to modify the generated DOCX XML.
-     ========================================================= -->
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
-
-<!-- =========================================================
-     DOCX
-     ========================================================= -->
-
 <script type="module">
 
-import * as pdfjsLib
-    from "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.4.149/pdf.min.mjs";
+/*
+=========================================================
+PDF → DOCX ENGINE
+=========================================================
 
-import {
-    Document,
-    Packer,
-    Paragraph,
-    ImageRun,
-    PageOrientation
-}
-from "https://cdn.jsdelivr.net/npm/docx@9.6.1/+esm";
+This uses pdf2docx-wasm rather than:
+    PDF page image + fake text overlay.
+
+The package contains:
+    pdf2docx
+    PyMuPDF
+    python-docx
+    Pyodide
+
+and is intended for client-side WASM conversion.
+=========================================================
+*/
+
+import * as PDF2DOCX
+from "https://cdn.jsdelivr.net/npm/pdf2docx-wasm@0.1.0/index.js";
 
 
-/* =========================================================
-   ELEMENTS
-   ========================================================= */
-
-const dropzone =
-    document.getElementById("dropzone");
+const drop =
+    document.getElementById("drop");
 
 const fileInput =
-    document.getElementById("fileInput");
+    document.getElementById("file");
 
-const fileInfo =
-    document.getElementById("fileInfo");
+const info =
+    document.getElementById("info");
 
-const fileName =
-    document.getElementById("fileName");
+const nameBox =
+    document.getElementById("name");
 
-const fileSize =
-    document.getElementById("fileSize");
+const sizeBox =
+    document.getElementById("size");
 
 const controls =
     document.getElementById("controls");
 
 const convertBtn =
-    document.getElementById("convertBtn");
+    document.getElementById("convert");
 
 const resetBtn =
-    document.getElementById("resetBtn");
+    document.getElementById("reset");
 
 const progress =
     document.getElementById("progress");
 
-const progressBar =
-    document.getElementById("progressBar");
-
 const progressText =
     document.getElementById("progressText");
 
-const progressPercent =
-    document.getElementById("progressPercent");
+const percent =
+    document.getElementById("percent");
 
-const statusBox =
+const bar =
+    document.getElementById("bar");
+
+const status =
     document.getElementById("status");
-
-const preview =
-    document.getElementById("preview");
-
-const previewImage =
-    document.getElementById("previewImage");
 
 
 let selectedFile = null;
 
 
-/* =========================================================
-   PDF.JS WORKER
-   ========================================================= */
+/* =====================================================
+   HELPERS
+===================================================== */
 
-pdfjsLib.GlobalWorkerOptions.workerSrc =
-    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.4.149/pdf.worker.min.mjs";
+function setStatus(
+    text,
+    type="info"
+){
 
-
-/* =========================================================
-   BASIC HELPERS
-   ========================================================= */
-
-function setStatus(message, type = "info") {
-
-    statusBox.className =
+    status.className =
         "status " + type;
 
-    statusBox.textContent =
-        message;
+    status.textContent =
+        text;
 }
 
 
-function clearStatus() {
-
-    statusBox.className =
-        "status";
-
-    statusBox.textContent =
-        "";
-}
-
-
-function setProgress(percent, text) {
+function setProgress(
+    value,
+    text
+){
 
     const p =
-        Math.max(0, Math.min(100, percent));
+        Math.max(
+            0,
+            Math.min(
+                100,
+                value
+            )
+        );
 
     progress.style.display =
         "block";
 
-    progressBar.style.width =
+    bar.style.width =
         p + "%";
 
-    progressPercent.textContent =
+    percent.textContent =
         Math.round(p) + "%";
 
     progressText.textContent =
@@ -556,55 +479,91 @@ function setProgress(percent, text) {
 }
 
 
-function formatBytes(bytes) {
+function bytes(
+    value
+){
 
-    if (!bytes)
-        return "0 Bytes";
+    if(value < 1024)
+        return value + " B";
 
-    const units =
-        ["Bytes","KB","MB","GB"];
-
-    const i =
-        Math.floor(
-            Math.log(bytes) /
-            Math.log(1024)
-        );
+    if(value < 1024*1024)
+        return (
+            value / 1024
+        ).toFixed(1) + " KB";
 
     return (
-        bytes /
-        Math.pow(1024,i)
-    ).toFixed(i ? 2 : 0)
-    + " "
-    + units[i];
+        value / 1024 / 1024
+    ).toFixed(2) + " MB";
 }
 
 
-function escapeXml(value) {
-
-    return String(value)
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&apos;");
-}
-
-
-function safeFileName(name) {
+function baseName(
+    name
+){
 
     return name
-        .replace(/\.pdf$/i,"")
-        .replace(/[<>:"/\\|?*\x00-\x1F]/g,"_")
+        .replace(
+            /\.pdf$/i,
+            ""
+        )
+        .replace(
+            /[<>:"/\\|?*]/g,
+            "_"
+        )
         .trim()
         || "converted";
 }
 
 
-/* =========================================================
-   FILE SELECTION
-   ========================================================= */
+function download(
+    data,
+    filename
+){
 
-dropzone.addEventListener(
+    const blob =
+        data instanceof Blob
+            ? data
+            : new Blob([
+                data
+            ],{
+                type:
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            });
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+    const a =
+        document.createElement(
+            "a"
+        );
+
+    a.href = url;
+    a.download = filename;
+
+    document.body.appendChild(a);
+
+    a.click();
+
+    a.remove();
+
+    setTimeout(
+        () =>
+            URL.revokeObjectURL(
+                url
+            ),
+        5000
+    );
+}
+
+
+/* =====================================================
+   FILE SELECTION
+===================================================== */
+
+drop.addEventListener(
     "click",
     () => fileInput.click()
 );
@@ -614,72 +573,78 @@ fileInput.addEventListener(
     "change",
     () => {
 
-        if (
-            fileInput.files &&
-            fileInput.files.length
-        ) {
+        const f =
+            fileInput.files?.[0];
 
-            handleFile(
-                fileInput.files[0]
-            );
-        }
+        if(f)
+            selectFile(f);
 
     }
 );
 
 
-dropzone.addEventListener(
+drop.addEventListener(
     "dragover",
-    event => {
+    e => {
 
-        event.preventDefault();
+        e.preventDefault();
 
-        dropzone.classList.add("drag");
+        drop.classList.add(
+            "drag"
+        );
 
     }
 );
 
 
-dropzone.addEventListener(
+drop.addEventListener(
     "dragleave",
     () => {
 
-        dropzone.classList.remove("drag");
+        drop.classList.remove(
+            "drag"
+        );
 
     }
 );
 
 
-dropzone.addEventListener(
+drop.addEventListener(
     "drop",
-    event => {
+    e => {
 
-        event.preventDefault();
+        e.preventDefault();
 
-        dropzone.classList.remove("drag");
+        drop.classList.remove(
+            "drag"
+        );
 
-        const file =
-            event.dataTransfer.files?.[0];
+        const f =
+            e.dataTransfer
+             ?.files?.[0];
 
-        if (file)
-            handleFile(file);
+        if(f)
+            selectFile(f);
 
     }
 );
 
 
-/* =========================================================
-   HANDLE FILE
-   ========================================================= */
+/* =====================================================
+   SELECT PDF
+===================================================== */
 
-function handleFile(file) {
+function selectFile(
+    file
+){
 
-    clearStatus();
-
-    if (
-        file.type !== "application/pdf" &&
-        !/\.pdf$/i.test(file.name)
-    ) {
+    if(
+        file.type !==
+        "application/pdf" &&
+        !/\.pdf$/i.test(
+            file.name
+        )
+    ){
 
         setStatus(
             "Please select a PDF file.",
@@ -692,41 +657,43 @@ function handleFile(file) {
     selectedFile =
         file;
 
-    fileName.textContent =
+    nameBox.textContent =
         file.name;
 
-    fileSize.textContent =
-        formatBytes(file.size);
+    sizeBox.textContent =
+        bytes(file.size);
 
-    fileInfo.style.display =
+    info.style.display =
         "block";
 
     controls.style.display =
         "block";
 
-    preview.style.display =
+    progress.style.display =
         "none";
 
     setStatus(
-        "PDF ready. Tap Convert to editable Word.",
+        "PDF ready.",
         "info"
     );
 }
 
 
-/* =========================================================
+/* =====================================================
    RESET
-   ========================================================= */
+===================================================== */
 
 resetBtn.addEventListener(
     "click",
     () => {
 
-        selectedFile = null;
+        selectedFile =
+            null;
 
-        fileInput.value = "";
+        fileInput.value =
+            "";
 
-        fileInfo.style.display =
+        info.style.display =
             "none";
 
         controls.style.display =
@@ -735,615 +702,108 @@ resetBtn.addEventListener(
         progress.style.display =
             "none";
 
-        preview.style.display =
-            "none";
+        status.className =
+            "status";
 
-        clearStatus();
+        status.textContent =
+            "";
 
     }
 );
 
 
-/* =========================================================
-   PDF PAGE → HIGH RESOLUTION CANVAS
-   ========================================================= */
-
-async function renderPdfPage(
-    page,
-    scale = 2.0
-) {
-
-    const viewport =
-        page.getViewport({
-            scale
-        });
-
-    const canvas =
-        document.createElement("canvas");
-
-    canvas.width =
-        Math.ceil(viewport.width);
-
-    canvas.height =
-        Math.ceil(viewport.height);
-
-    const context =
-        canvas.getContext("2d", {
-            alpha:false
-        });
-
-    await page.render({
-        canvasContext:context,
-        viewport
-    }).promise;
-
-    return {
-        canvas,
-        viewport
-    };
-}
-
-
-/* =========================================================
-   NATIVE PDF TEXT EXTRACTION
-   ========================================================= */
-
-async function extractNativeText(
-    page
-) {
-
-    const content =
-        await page.getTextContent({
-            normalizeWhitespace:false,
-            disableCombineTextItems:false
-        });
-
-    const viewport =
-        page.getViewport({
-            scale:1
-        });
-
-    const items = [];
-
-    for (
-        const item of content.items
-    ) {
-
-        if (
-            !item ||
-            typeof item.str !== "string" ||
-            !item.str.trim()
-        ) {
-            continue;
-        }
-
-        const transform =
-            pdfjsLib.Util.transform(
-                viewport.transform,
-                item.transform
-            );
-
-        const x =
-            transform[4];
-
-        const y =
-            transform[5];
-
-        const fontHeight =
-            Math.sqrt(
-                transform[2] *
-                transform[2] +
-                transform[3] *
-                transform[3]
-            );
-
-        const width =
-            Math.max(
-                1,
-                Math.abs(item.width)
-            );
-
-        const height =
-            Math.max(
-                1,
-                fontHeight
-            );
-
-        /*
-         * PDF.js coordinates use bottom-left.
-         * Word/VML positioning is easier from top-left.
-         */
-
-        const top =
-            viewport.height -
-            y -
-            height;
-
-        items.push({
-
-            text:item.str,
-
-            x,
-
-            y:top,
-
-            width,
-
-            height,
-
-            fontSize:height,
-
-            confidence:100,
-
-            source:"native"
-
-        });
-
-    }
-
-    return mergeNativeItems(
-        items
-    );
-}
-
-
-/* =========================================================
-   MERGE NATIVE PDF ITEMS
-   ========================================================= */
-
-function mergeNativeItems(items) {
-
-    if (!items.length)
-        return [];
-
-    const sorted =
-        [...items].sort(
-            (a,b) => {
-
-                const dy =
-                    Math.abs(
-                        a.y-b.y
-                    );
-
-                if (dy < 3)
-                    return a.x-b.x;
-
-                return a.y-b.y;
-            }
-        );
-
-    const result = [];
-
-    for (
-        const item of sorted
-    ) {
-
-        const previous =
-            result[result.length-1];
-
-        if (
-            previous &&
-            Math.abs(
-                previous.y-item.y
-            ) <=
-            Math.max(
-                3,
-                previous.height * .35
-            ) &&
-            item.x <=
-            previous.x +
-            previous.width +
-            previous.height * .8
-        ) {
-
-            const gap =
-                Math.max(
-                    0,
-                    item.x -
-                    (
-                        previous.x +
-                        previous.width
-                    )
-                );
-
-            const separator =
-                gap >
-                previous.height * .20
-                    ? " "
-                    : "";
-
-            previous.text +=
-                separator +
-                item.text;
-
-            previous.width =
-                Math.max(
-                    previous.width,
-                    (
-                        item.x +
-                        item.width
-                    ) -
-                    previous.x
-                );
-
-            previous.height =
-                Math.max(
-                    previous.height,
-                    item.height
-                );
-
-        } else {
-
-            result.push({
-                ...item
-            });
-
-        }
-    }
-
-    return result.filter(
-        item =>
-            item.text &&
-            item.text.trim()
-    );
-}
-
-
-/* =========================================================
-   OCR
-   ========================================================= */
-
-async function createOcrWorker() {
-
-    if (
-        !window.Tesseract ||
-        !window.Tesseract.createWorker
-    ) {
-
-        throw new Error(
-            "OCR engine could not be loaded."
-        );
-    }
-
-    const worker =
-        await window.Tesseract.createWorker(
-            "fra+eng"
-        );
-
-    await worker.setParameters({
-
-        tessedit_pageseg_mode:
-            "3",
-
-        preserve_interword_spaces:
-            "1"
-
-    });
-
-    return worker;
-}
-
-
-/* =========================================================
-   OCR PAGE
-   ========================================================= */
-
-async function extractOcrText(
-    canvas,
-    worker
-) {
-
-    const result =
-        await worker.recognize(
-            canvas,
-            {},
-            {
-                blocks:true,
-                text:true
-            }
-        );
-
-    const blocks =
-        result?.data?.blocks || [];
-
-    const output = [];
-
-    for (
-        const block of blocks
-    ) {
-
-        const paragraphs =
-            block.paragraphs || [];
-
-        for (
-            const paragraph of paragraphs
-        ) {
-
-            const lines =
-                paragraph.lines || [];
-
-            for (
-                const line of lines
-            ) {
-
-                const words =
-                    line.words || [];
-
-                for (
-                    const word of words
-                ) {
-
-                    if (
-                        !word ||
-                        !word.text ||
-                        !word.text.trim()
-                    ) {
-                        continue;
-                    }
-
-                    const bbox =
-                        word.bbox;
-
-                    if (!bbox)
-                        continue;
-
-                    output.push({
-
-                        text:word.text,
-
-                        x:bbox.x0,
-
-                        y:bbox.y0,
-
-                        width:
-                            Math.max(
-                                1,
-                                bbox.x1 -
-                                bbox.x0
-                            ),
-
-                        height:
-                            Math.max(
-                                1,
-                                bbox.y1 -
-                                bbox.y0
-                            ),
-
-                        fontSize:
-                            Math.max(
-                                6,
-                                bbox.y1 -
-                                bbox.y0
-                            ),
-
-                        confidence:
-                            Number(
-                                word.confidence ||
-                                0
-                            ),
-
-                        source:"ocr"
-
-                    });
-
-                }
-
-            }
-
-        }
-
-    }
-
-    return mergeOcrWords(
-        output
-    );
-}
-
-
-/* =========================================================
-   MERGE OCR WORDS INTO LINES
-   ========================================================= */
-
-function mergeOcrWords(words) {
-
-    if (!words.length)
-        return [];
-
-    const sorted =
-        [...words].sort(
-            (a,b) => {
-
-                const tolerance =
-                    Math.max(
-                        3,
-                        Math.min(
-                            a.height,
-                            b.height
-                        ) * .45
-                    );
-
-                if (
-                    Math.abs(
-                        a.y-b.y
-                    ) <= tolerance
-                ) {
-                    return a.x-b.x;
-                }
-
-                return a.y-b.y;
-            }
-        );
-
-    const lines = [];
-
-    for (
-        const word of sorted
-    ) {
-
-        let line = null;
-
-        for (
-            const candidate of lines
-        ) {
-
-            const tolerance =
-                Math.max(
-                    3,
-                    Math.min(
-                        candidate.height,
-                        word.height
-                    ) * .45
-                );
-
-            if (
-                Math.abs(
-                    candidate.y-word.y
-                ) <= tolerance
-            ) {
-
-                line =
-                    candidate;
-
-                break;
-            }
-        }
-
-        if (!line) {
-
-            lines.push({
-
-                text:word.text,
-
-                x:word.x,
-
-                y:word.y,
-
-                width:word.width,
-
-                height:word.height,
-
-                fontSize:word.fontSize,
-
-                confidence:
-                    word.confidence,
-
-                source:"ocr"
-
-            });
-
-        } else {
-
-            const gap =
-                word.x -
-                (
-                    line.x +
-                    line.width
-                );
-
-            const separator =
-                gap >
-                line.height * .12
-                    ? " "
-                    : "";
-
-            line.text +=
-                separator +
-                word.text;
-
-            line.width =
-                Math.max(
-                    line.width,
-                    (
-                        word.x +
-                        word.width
-                    ) -
-                    line.x
-                );
-
-            line.height =
-                Math.max(
-                    line.height,
-                    word.height
-                );
-
-            line.fontSize =
-                Math.max(
-                    line.fontSize,
-                    word.fontSize
-                );
-
-        }
-
-    }
-
-    return lines
-        .filter(
-            item =>
-                item.text &&
-                item.text.trim()
-        )
-        .sort(
-            (a,b) =>
-                a.y-b.y ||
-                a.x-b.x
-        );
-}
-
-
-/* =========================================================
-   DETERMINE WHETHER NATIVE TEXT IS GOOD ENOUGH
-   ========================================================= */
-
-function nativeTextLooksUsable(
-    items,
-    pageArea
-) {
-
-    if (!items.length)
-        return false;
-
-    const textLength =
-        items.reduce(
-            (sum,item) =>
-                sum +
-                item.text.length,
-            0
-        );
-
-    if (textLength < 3)
-        return false;
+/* =====================================================
+   FIND CONVERTER
+===================================================== */
+
+function findConverter(
+    module
+){
 
     /*
-     * If the PDF contains only a tiny amount
-     * of extractable text while the page itself
-     * is large, treat it as a scanned/image PDF.
+     * Different WASM package builds can expose
+     * their public function differently.
+
+     * Check the known exported names rather than
+     * silently pretending conversion succeeded.
      */
 
-    if (
-        pageArea > 100000 &&
-        textLength < 12
-    ) {
-        return false;
+    const candidates = [
+
+        "convert",
+
+        "convertPDFToDOCX",
+
+        "convertPdfToDocx",
+
+        "pdfToDocx",
+
+        "PDFToDOCX",
+
+        "PDF2DOCX",
+
+        "Pdf2Docx"
+
+    ];
+
+
+    for(
+        const key of candidates
+    ){
+
+        if(
+            typeof module[key] ===
+            "function"
+        ){
+
+            return module[key];
+
+        }
+
     }
 
-    return true;
+
+    if(
+        module.default &&
+        typeof module.default ===
+        "function"
+    ){
+
+        return module.default;
+
+    }
+
+
+    if(
+        module.default &&
+        typeof module.default.convert ===
+        "function"
+    ){
+
+        return module.default.convert;
+
+    }
+
+
+    return null;
 }
 
 
-/* =========================================================
-   PDF → DOCX
-   ========================================================= */
+/* =====================================================
+   CONVERSION
+===================================================== */
 
 convertBtn.addEventListener(
     "click",
-    convertPdfToWord
+    convert
 );
 
 
-async function convertPdfToWord() {
+async function convert(){
 
-    if (!selectedFile)
+    if(!selectedFile)
         return;
+
 
     convertBtn.disabled =
         true;
@@ -1351,1161 +811,259 @@ async function convertPdfToWord() {
     resetBtn.disabled =
         true;
 
-    clearStatus();
 
-    try {
+    try{
 
         setProgress(
-            1,
-            "Opening PDF..."
+            5,
+            "Loading PDF → Word engine..."
         );
 
-        const buffer =
-            await selectedFile.arrayBuffer();
 
-        const pdf =
-            await pdfjsLib.getDocument({
-                data:buffer
-            }).promise;
+        /*
+         * The WASM package itself contains
+         * PyMuPDF/pdf2docx/python-docx.
+         */
 
-        const totalPages =
-            pdf.numPages;
+        const converter =
+            findConverter(
+                PDF2DOCX
+            );
 
-        if (!totalPages) {
+
+        if(!converter){
+
+            /*
+             * Do NOT generate a fake DOCX.
+             * If the package export differs,
+             * stop with a real error.
+             */
 
             throw new Error(
-                "The PDF contains no pages."
+                "The PDF → Word WASM engine could not be initialized."
             );
         }
 
-        /*
-         * Keep the generated document simple:
-         * one section with the same page size
-         * as the first PDF page.
-         */
 
-        const firstPage =
-            await pdf.getPage(1);
+        setProgress(
+            20,
+            "Reading PDF..."
+        );
 
-        const firstViewport =
-            firstPage.getViewport({
-                scale:1
-            });
 
-        const firstWidthPt =
-            firstViewport.width;
-
-        const firstHeightPt =
-            firstViewport.height;
-
-        /*
-         * DOCX page dimensions are twips.
-         */
-
-        const pageWidthTwips =
-            Math.round(
-                firstWidthPt * 20
-            );
-
-        const pageHeightTwips =
-            Math.round(
-                firstHeightPt * 20
+        const input =
+            new Uint8Array(
+                await selectedFile.arrayBuffer()
             );
 
 
-        const children = [];
-
-        const pageData = [];
+        setProgress(
+            35,
+            "Converting PDF layout..."
+        );
 
 
         /*
-         * OCR worker is created lazily.
+         * Try the common binary API first.
          */
 
-        let ocrWorker = null;
-
-        let usedOcr = false;
+        let result;
 
 
-        for (
-            let pageNumber = 1;
-            pageNumber <= totalPages;
-            pageNumber++
-        ) {
+        try{
 
-            const percent =
-                5 +
-                (
-                    (pageNumber-1) /
-                    totalPages
-                ) * 75;
+            result =
+                await converter(
+                    input
+                );
 
-            setProgress(
-                percent,
-                `Processing page ${pageNumber} of ${totalPages}...`
-            );
-
-
-            const page =
-                pageNumber === 1
-                    ? firstPage
-                    : await pdf.getPage(
-                        pageNumber
-                    );
-
-
-            const viewport =
-                page.getViewport({
-                    scale:1
-                });
-
+        }catch(firstError){
 
             /*
-             * Render at 2x for better visual quality.
+             * Some builds expose an object-style API.
              */
 
-            const rendered =
-                await renderPdfPage(
-                    page,
-                    2
+            try{
+
+                result =
+                    await converter({
+                        input,
+                        output:"docx",
+                        format:"docx"
+                    });
+
+            }catch(secondError){
+
+                console.error(
+                    firstError
                 );
 
-
-            const canvas =
-                rendered.canvas;
-
-
-            const pngBlob =
-                await new Promise(
-                    resolve =>
-                        canvas.toBlob(
-                            resolve,
-                            "image/png"
-                        )
+                console.error(
+                    secondError
                 );
 
-
-            if (!pngBlob)
                 throw new Error(
-                    "Could not render PDF page."
-                );
-
-
-            const pngBuffer =
-                await pngBlob.arrayBuffer();
-
-
-            /*
-             * Preview first page.
-             */
-
-            if (pageNumber === 1) {
-
-                previewImage.src =
-                    URL.createObjectURL(
-                        pngBlob
-                    );
-
-                preview.style.display =
-                    "block";
-            }
-
-
-            /*
-             * First try native PDF text.
-             */
-
-            let textItems =
-                await extractNativeText(
-                    page
-                );
-
-
-            const pageArea =
-                viewport.width *
-                viewport.height;
-
-
-            /*
-             * Scanned/image PDF:
-             * use OCR with bounding boxes.
-             */
-
-            if (
-                !nativeTextLooksUsable(
-                    textItems,
-                    pageArea
-                )
-            ) {
-
-                if (!ocrWorker) {
-
-                    setProgress(
-                        percent,
-                        "Starting French/English OCR..."
-                    );
-
-                    ocrWorker =
-                        await createOcrWorker();
-
-                    usedOcr = true;
-                }
-
-
-                setProgress(
-                    percent,
-                    `OCR page ${pageNumber} of ${totalPages}...`
-                );
-
-
-                textItems =
-                    await extractOcrText(
-                        canvas,
-                        ocrWorker
-                    );
-
-
-                /*
-                 * OCR coordinates are based on
-                 * the 2x rendered canvas.
-                 * Convert them back to PDF points.
-                 */
-
-                const scaleX =
-                    viewport.width /
-                    canvas.width;
-
-                const scaleY =
-                    viewport.height /
-                    canvas.height;
-
-
-                textItems =
-                    textItems.map(
-                        item => ({
-
-                            ...item,
-
-                            x:
-                                item.x *
-                                scaleX,
-
-                            y:
-                                item.y *
-                                scaleY,
-
-                            width:
-                                item.width *
-                                scaleX,
-
-                            height:
-                                item.height *
-                                scaleY,
-
-                            fontSize:
-                                item.fontSize *
-                                Math.min(
-                                    scaleX,
-                                    scaleY
-                                )
-
-                        })
-                    );
-
-            }
-
-
-            pageData.push({
-
-                pageNumber,
-
-                width:
-                    viewport.width,
-
-                height:
-                    viewport.height,
-
-                image:
-                    pngBuffer,
-
-                textItems
-
-            });
-
-
-            /*
-             * Add page image to DOCX.
-             *
-             * It becomes the visual base layer.
-             * Editable text boxes will be injected
-             * into document.xml afterwards.
-             */
-
-            children.push(
-
-                new Paragraph({
-
-                    spacing:{
-                        before:0,
-                        after:0,
-                        line:0
-                    },
-
-                    children:[
-
-                        new ImageRun({
-
-                            data:pngBuffer,
-
-                            transformation:{
-
-                                width:
-                                    viewport.width,
-
-                                height:
-                                    viewport.height
-
-                            },
-
-                            type:"png"
-
-                        })
-
-                    ]
-
-                })
-
-            );
-
-
-            /*
-             * Explicit page break between pages.
-             */
-
-            if (
-                pageNumber <
-                totalPages
-            ) {
-
-                children.push(
-                    new Paragraph({
-                        pageBreakBefore:true
-                    })
+                    "PDF → Word conversion engine rejected this PDF."
                 );
             }
 
         }
 
 
-        if (ocrWorker) {
+        setProgress(
+            75,
+            "Creating editable DOCX..."
+        );
 
-            await ocrWorker.terminate();
 
-            ocrWorker =
-                null;
+        /*
+         * Accept common binary return types.
+         */
+
+        let output;
+
+
+        if(
+            result instanceof Blob
+        ){
+
+            output =
+                result;
+
+        }
+        else if(
+            result instanceof Uint8Array
+        ){
+
+            output =
+                new Blob(
+                    [result],
+                    {
+                        type:
+                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    }
+                );
+
+        }
+        else if(
+            result instanceof ArrayBuffer
+        ){
+
+            output =
+                new Blob(
+                    [result],
+                    {
+                        type:
+                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    }
+                );
+
+        }
+        else if(
+            result?.data
+        ){
+
+            const data =
+                result.data;
+
+            output =
+                new Blob(
+                    [data],
+                    {
+                        type:
+                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    }
+                );
+
+        }
+        else if(
+            result?.docx
+        ){
+
+            output =
+                new Blob(
+                    [result.docx],
+                    {
+                        type:
+                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    }
+                );
+
+        }
+        else{
+
+            console.error(
+                "Unexpected converter result:",
+                result
+            );
+
+            throw new Error(
+                "The converter returned an unsupported DOCX result."
+            );
         }
 
 
         setProgress(
-            82,
-            "Building editable Word document..."
+            95,
+            "Preparing Word download..."
         );
 
 
-        /*
-         * Build DOCX.
-         */
-
-        const doc =
-            new Document({
-
-                sections:[{
-
-                    properties:{
-
-                        page:{
-
-                            width:
-                                pageWidthTwips,
-
-                            height:
-                                pageHeightTwips,
-
-                            margin:{
-
-                                top:0,
-
-                                right:0,
-
-                                bottom:0,
-
-                                left:0,
-
-                                header:0,
-
-                                footer:0,
-
-                                gutter:0
-
-                            }
-
-                        }
-
-                    },
-
-                    children
-
-                }]
-
-            });
-
-
-        let docxBlob =
-            await Packer.toBlob(
-                doc
-            );
-
-
-        /*
-         * Inject positioned editable text boxes
-         * into WordprocessingML.
-         */
-
-        setProgress(
-            88,
-            "Placing editable text..."
-        );
-
-
-        docxBlob =
-            await injectEditableTextBoxes(
-                docxBlob,
-                pageData,
-                pageWidthTwips,
-                pageHeightTwips
-            );
-
-
-        setProgress(
-            96,
-            "Preparing download..."
-        );
-
-
-        const outputName =
-            safeFileName(
+        download(
+            output,
+            baseName(
                 selectedFile.name
-            )
-            + "-editable.docx";
-
-
-        const downloadUrl =
-            URL.createObjectURL(
-                docxBlob
-            );
-
-
-        const link =
-            document.createElement("a");
-
-        link.href =
-            downloadUrl;
-
-        link.download =
-            outputName;
-
-        document.body.appendChild(link);
-
-        link.click();
-
-        link.remove();
-
-
-        setTimeout(
-            () =>
-                URL.revokeObjectURL(
-                    downloadUrl
-                ),
-            10000
+            ) +
+            "-editable.docx"
         );
 
 
         setProgress(
             100,
-            "Conversion complete."
+            "Completed."
         );
 
 
         setStatus(
-            usedOcr
-                ? "Word file created. Scanned pages were processed with OCR and editable text boxes were positioned over the preserved page."
-                : "Word file created with editable positioned text.",
+            "PDF → Word conversion completed.",
             "success"
         );
 
 
-    } catch(error) {
+    }catch(error){
 
-        console.error(error);
-
-        setStatus(
-            error?.message ||
-            "PDF conversion failed.",
-            "error"
+        console.error(
+            "PDF → Word error:",
+            error
         );
+
 
         setProgress(
             0,
             "Conversion failed."
         );
 
-    } finally {
+
+        setStatus(
+            error?.message ||
+            "PDF → Word conversion failed.",
+            "error"
+        );
+
+
+    }finally{
 
         convertBtn.disabled =
             false;
 
         resetBtn.disabled =
             false;
+
     }
+
 }
-
-
-/* =========================================================
-   INJECT EDITABLE TEXT BOXES
-   ========================================================= */
-
-async function injectEditableTextBoxes(
-    blob,
-    pages,
-    pageWidthTwips,
-    pageHeightTwips
-) {
-
-    const zip =
-        await JSZip.loadAsync(
-            blob
-        );
-
-
-    const documentFile =
-        zip.file(
-            "word/document.xml"
-        );
-
-
-    if (!documentFile) {
-
-        throw new Error(
-            "DOCX document.xml was not found."
-        );
-    }
-
-
-    let xml =
-        await documentFile.async(
-            "string"
-        );
-
-
-    /*
-     * Ensure VML / Office namespaces exist.
-     */
-
-    xml =
-        ensureNamespace(
-            xml,
-            "xmlns:v",
-            "urn:schemas-microsoft-com:vml"
-        );
-
-    xml =
-        ensureNamespace(
-            xml,
-            "xmlns:o",
-            "urn:schemas-microsoft-com:office:office"
-        );
-
-    xml =
-        ensureNamespace(
-            xml,
-            "xmlns:w10",
-            "urn:schemas-microsoft-com:office:word"
-        );
-
-
-    /*
-     * Locate body.
-     */
-
-    const bodyStart =
-        xml.indexOf(
-            "<w:body"
-        );
-
-    const bodyOpenEnd =
-        xml.indexOf(
-            ">",
-            bodyStart
-        );
-
-    const bodyEnd =
-        xml.lastIndexOf(
-            "</w:body>"
-        );
-
-
-    if (
-        bodyStart < 0 ||
-        bodyOpenEnd < 0 ||
-        bodyEnd < 0
-    ) {
-
-        throw new Error(
-            "Invalid Word document structure."
-        );
-    }
-
-
-    /*
-     * Existing body content is produced by docx.
-     * We insert text boxes immediately before
-     * the section properties.
-     *
-     * Each text box is absolutely positioned
-     * relative to the page.
-     */
-
-    const sectPrIndex =
-        xml.lastIndexOf(
-            "<w:sectPr"
-        );
-
-
-    if (
-        sectPrIndex < 0 ||
-        sectPrIndex > bodyEnd
-    ) {
-
-        throw new Error(
-            "Word section properties not found."
-        );
-    }
-
-
-    const allTextBoxes = [];
-
-
-    for (
-        let pageIndex = 0;
-        pageIndex < pages.length;
-        pageIndex++
-    ) {
-
-        const page =
-            pages[pageIndex];
-
-
-        /*
-         * Do not add text boxes outside
-         * the real page area.
-         */
-
-        const items =
-            page.textItems
-                .filter(
-                    item =>
-                        item.text &&
-                        item.text.trim() &&
-                        item.width > 0 &&
-                        item.height > 0 &&
-                        item.x >= -2 &&
-                        item.y >= -2 &&
-                        item.x <
-                            page.width + 2 &&
-                        item.y <
-                            page.height + 2
-                );
-
-
-        for (
-            let itemIndex = 0;
-            itemIndex < items.length;
-            itemIndex++
-        ) {
-
-            const item =
-                items[itemIndex];
-
-
-            /*
-             * Convert PDF points → Word points.
-             *
-             * PDF page coordinates are points.
-             * VML uses pt values.
-             */
-
-            const left =
-                Math.max(
-                    0,
-                    item.x
-                );
-
-            const top =
-                Math.max(
-                    0,
-                    item.y
-                );
-
-
-            const width =
-                Math.max(
-                    2,
-                    Math.min(
-                        item.width + 1.5,
-                        page.width -
-                        left
-                    )
-                );
-
-
-            const height =
-                Math.max(
-                    5,
-                    Math.min(
-                        Math.max(
-                            item.height * 1.20,
-                            item.fontSize * 1.35,
-                            7
-                        ),
-                        page.height -
-                        top
-                    )
-                );
-
-
-            /*
-             * PDF font size normally maps closely
-             * to Word pt.
-             */
-
-            const fontSize =
-                Math.max(
-                    5,
-                    Math.min(
-                        72,
-                        item.fontSize *
-                        0.98
-                    )
-                );
-
-
-            /*
-             * Text box ID.
-             */
-
-            const shapeId =
-                `_x0000_s${10000 +
-                pageIndex * 1000 +
-                itemIndex}`;
-
-
-            /*
-             * z-index:
-             * Background page image is below.
-             * Editable text is above it.
-             */
-
-            const zIndex =
-                100000 +
-                pageIndex * 1000 +
-                itemIndex;
-
-
-            allTextBoxes.push(
-
-                createVmlTextBox({
-
-                    id:shapeId,
-
-                    left,
-
-                    top,
-
-                    width,
-
-                    height,
-
-                    fontSize,
-
-                    text:item.text,
-
-                    zIndex
-
-                })
-
-            );
-
-        }
-
-    }
-
-
-    /*
-     * Insert all text boxes before sectPr.
-     *
-     * Word accepts absolutely positioned VML
-     * objects inside a body paragraph.
-     */
-
-    const injection =
-        createTextboxParagraph(
-            allTextBoxes
-        );
-
-
-    xml =
-        xml.slice(
-            0,
-            sectPrIndex
-        )
-        +
-        injection
-        +
-        xml.slice(
-            sectPrIndex
-        );
-
-
-    zip.file(
-        "word/document.xml",
-        xml
-    );
-
-
-    return await zip.generateAsync({
-        type:"blob",
-        mimeType:
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        compression:"DEFLATE"
-    });
-}
-
-
-/* =========================================================
-   ENSURE XML NAMESPACE
-   ========================================================= */
-
-function ensureNamespace(
-    xml,
-    attribute,
-    value
-) {
-
-    if (
-        xml.includes(
-            attribute + "="
-        )
-    ) {
-        return xml;
-    }
-
-    const documentTagEnd =
-        xml.indexOf(">");
-
-    if (
-        documentTagEnd < 0
-    ) {
-        return xml;
-    }
-
-    return (
-        xml.slice(
-            0,
-            documentTagEnd
-        )
-        +
-        ` ${attribute}="${value}"`
-        +
-        xml.slice(
-            documentTagEnd
-        )
-    );
-}
-
-
-/* =========================================================
-   CREATE PARAGRAPH CONTAINING ALL VML BOXES
-   ========================================================= */
-
-function createTextboxParagraph(
-    textboxes
-) {
-
-    if (!textboxes.length)
-        return "";
-
-    return (
-        `<w:p>` +
-            `<w:pPr>` +
-                `<w:spacing w:before="0" w:after="0"/>` +
-            `</w:pPr>` +
-            textboxes.join("") +
-        `</w:p>`
-    );
-}
-
-
-/* =========================================================
-   CREATE VML TEXT BOX
-   ========================================================= */
-
-function createVmlTextBox({
-    id,
-    left,
-    top,
-    width,
-    height,
-    fontSize,
-    text,
-    zIndex
-}) {
-
-    /*
-     * Word VML text boxes are used because they support
-     * absolute positioning and editable Word text.
-     *
-     * Reference structure:
-     *
-     * w:r
-     *   w:pict
-     *     v:shape
-     *       v:textbox
-     *         w:txbxContent
-     *           w:p
-     *             w:r
-     *               w:t
-     */
-
-    const escapedText =
-        escapeXml(
-            text
-        );
-
-
-    /*
-     * Prevent transparent text boxes from
-     * covering nearby content.
-     *
-     * The box itself has no fill and no border.
-     */
-
-    const style =
-        [
-            "position:absolute",
-
-            `margin-left:${round(left)}pt`,
-
-            `margin-top:${round(top)}pt`,
-
-            `width:${round(width)}pt`,
-
-            `height:${round(height)}pt`,
-
-            `z-index:${zIndex}`,
-
-            "visibility:visible",
-
-            "mso-wrap-style:none",
-
-            "mso-width-percent:0",
-
-            "mso-height-percent:0",
-
-            "mso-position-horizontal:absolute",
-
-            "mso-position-horizontal-relative:page",
-
-            "mso-position-vertical:absolute",
-
-            "mso-position-vertical-relative:page",
-
-            "mso-width-relative:page",
-
-            "mso-height-relative:page",
-
-            "v-text-anchor:top"
-        ].join(";");
-
-
-    const paragraphSpacing =
-        `<w:pPr>` +
-            `<w:spacing ` +
-                `w:before="0" ` +
-                `w:after="0" ` +
-                `w:line="240" ` +
-                `w:lineRule="auto"` +
-            `/>` +
-        `</w:pPr>`;
-
-
-    const runProperties =
-        `<w:rPr>` +
-            `<w:sz w:val="${Math.max(
-                10,
-                Math.round(fontSize * 2)
-            )}"/>` +
-            `<w:szCs w:val="${Math.max(
-                10,
-                Math.round(fontSize * 2)
-            )}"/>` +
-            `<w:noProof/>` +
-        `</w:rPr>`;
-
-
-    return (
-        `<w:r>` +
-
-            `<w:pict>` +
-
-                `<v:shape ` +
-
-                    `id="${id}" ` +
-
-                    `type="#_x0000_t202" ` +
-
-                    `style="${style}" ` +
-
-                    `filled="f" ` +
-
-                    `stroked="f" ` +
-
-                    `o:allowincell="f" ` +
-
-                    `o:allowoverlap="t"` +
-
-                `>` +
-
-                    `<v:textbox ` +
-                        `style="mso-fit-shape-to-text:f" ` +
-                        `inset="0,0,0,0"` +
-                    `>` +
-
-                        `<w:txbxContent>` +
-
-                            `<w:p>` +
-
-                                paragraphSpacing +
-
-                                `<w:r>` +
-
-                                    runProperties +
-
-                                    `<w:t xml:space="preserve">` +
-
-                                        escapedText +
-
-                                    `</w:t>` +
-
-                                `</w:r>` +
-
-                            `</w:p>` +
-
-                        `</w:txbxContent>` +
-
-                    `</v:textbox>` +
-
-                    `<w10:wrap ` +
-                        `type="none" ` +
-                        `anchorx="page" ` +
-                        `anchory="page"` +
-                    `/>` +
-
-                `</v:shape>` +
-
-            `</w:pict>` +
-
-        `</w:r>`
-    );
-}
-
-
-/* =========================================================
-   ROUND NUMBER
-   ========================================================= */
-
-function round(
-    value
-) {
-
-    return (
-        Math.round(
-            Number(value) * 100
-        ) / 100
-    ).toString();
-}
-
-
-/* =========================================================
-   OPTIONAL SAFETY:
-   REMOVE DUPLICATE OCR BOXES
-   ========================================================= */
-
-function removeDuplicateTextBoxes(
-    items
-) {
-
-    const result = [];
-
-    for (
-        const item of items
-    ) {
-
-        const duplicate =
-            result.some(
-                existing =>
-
-                    Math.abs(
-                        existing.x -
-                        item.x
-                    ) < 1 &&
-
-                    Math.abs(
-                        existing.y -
-                        item.y
-                    ) < 1 &&
-
-                    existing.text.trim() ===
-                    item.text.trim()
-            );
-
-        if (!duplicate) {
-
-            result.push(item);
-
-        }
-    }
-
-    return result;
-}
-
-
-/* =========================================================
-   ERROR PROTECTION
-   ========================================================= */
-
-window.addEventListener(
-    "unhandledrejection",
-    event => {
-
-        console.error(
-            "Unhandled promise:",
-            event.reason
-        );
-
-    }
-);
 
 </script>
 
 </body>
-            </html>
+</html>
