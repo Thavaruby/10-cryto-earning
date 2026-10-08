@@ -399,7 +399,7 @@ fileInput.addEventListener("change", () => {
 
     originalPreview.src = originalUrl;
 });
-
+    
 async function loadModel() {
     if (segmenter) return segmenter;
     if (loadingPromise) return loadingPromise;
@@ -412,16 +412,18 @@ async function loadModel() {
         );
 
         /*
-         * Use ONLY files hosted on our own Cloudflare Pages site.
-         * No Hugging Face model download.
+         * LOCAL MODEL
          */
         transformers.env.allowLocalModels = true;
         transformers.env.allowRemoteModels = false;
+        transformers.env.localModelPath =
+            "https://myfaucetcrypto.com/models/";
 
-        transformers.env.localModelPath = "/models/";
-
+        /*
+         * LOCAL ONNX WASM FILES
+         */
         transformers.env.backends.onnx.wasm.wasmPaths =
-    "https://myfaucetcrypto.com/wasm/";
+            "https://myfaucetcrypto.com/wasm/";
 
         const model = await transformers.pipeline(
             "background-removal",
