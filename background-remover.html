@@ -9,24 +9,28 @@
 <title>Free Background Remover — My Crypto Faucet</title>
 
 <meta
-  name="description"
-  content="Remove image backgrounds online for free. Create transparent PNG images directly in your browser with no upload or server processing."
+    name="description"
+    content="Remove image backgrounds online for free and create transparent PNG images directly in your browser."
 >
 
 <link
-  rel="canonical"
-  href="https://myfaucetcrypto.com/background-remover"
+    rel="canonical"
+    href="https://myfaucetcrypto.com/background-remover"
 >
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="Free Background Remover — My Crypto Faucet">
 <meta
-  property="og:description"
-  content="Remove image backgrounds online for free and download transparent PNG images."
+    property="og:title"
+    content="Free Background Remover — My Crypto Faucet"
 >
+
 <meta
-  property="og:url"
-  content="https://myfaucetcrypto.com/background-remover"
+    property="og:description"
+    content="Remove image backgrounds online for free and create transparent PNG images directly in your browser."
+>
+
+<meta
+    property="og:url"
+    content="https://myfaucetcrypto.com/background-remover"
 >
 
 <style>
@@ -43,13 +47,13 @@ body {
 
 .container {
     width: min(100% - 30px, 950px);
-    margin: 0 auto;
+    margin: auto;
     padding: 35px 0 60px;
 }
 
 .header {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 28px;
 }
 
 .header h1 {
@@ -60,30 +64,24 @@ body {
 
 .header p {
     margin: 0;
-    color: #d7def0;
-    font-size: 15px;
+    color: #c9d4e8;
     line-height: 1.6;
 }
 
 .tool-card {
     background: #0d2144;
-    border: 1px solid #28456f;
+    border: 1px solid #29486f;
     border-radius: 18px;
     padding: 25px;
-    box-shadow: 0 12px 35px rgba(0,0,0,.25);
 }
 
 .upload-area {
+    display: block;
     border: 2px dashed #f5c542;
     border-radius: 14px;
     padding: 35px 20px;
     text-align: center;
     cursor: pointer;
-    transition: .2s;
-}
-
-.upload-area:hover {
-    background: rgba(245,197,66,.06);
 }
 
 .upload-area strong {
@@ -128,21 +126,21 @@ button {
     cursor: not-allowed;
 }
 
+#downloadBtn {
+    display: none;
+    background: #35c77a;
+    color: #07152f;
+}
+
 #resetBtn {
     background: #273c61;
     color: #ffffff;
 }
 
-#downloadBtn {
-    background: #35c77a;
-    color: #07152f;
-    display: none;
-}
-
 .status {
-    text-align: center;
-    margin: 20px 0 0;
     min-height: 24px;
+    margin-top: 20px;
+    text-align: center;
     color: #d7def0;
     font-size: 14px;
 }
@@ -155,13 +153,13 @@ button {
 .progress-bar {
     width: 100%;
     height: 8px;
+    overflow: hidden;
     border-radius: 20px;
     background: #172e54;
-    overflow: hidden;
 }
 
 .progress-fill {
-    width: 0%;
+    width: 0;
     height: 100%;
     background: #f5c542;
     transition: width .2s;
@@ -169,23 +167,23 @@ button {
 
 .preview-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
     margin-top: 30px;
 }
 
 .preview-box {
     background: #081936;
-    border: 1px solid #28456f;
+    border: 1px solid #29486f;
     border-radius: 14px;
     padding: 15px;
 }
 
 .preview-box h2 {
-    font-size: 16px;
     margin: 0 0 12px;
     color: #f5c542;
     text-align: center;
+    font-size: 16px;
 }
 
 .preview {
@@ -199,20 +197,24 @@ button {
 }
 
 .preview img {
+    display: block;
     max-width: 100%;
     max-height: 500px;
-    display: block;
 }
 
 .transparent-preview {
+    background-color: #ffffff;
     background-image:
         linear-gradient(45deg, #d8d8d8 25%, transparent 25%),
         linear-gradient(-45deg, #d8d8d8 25%, transparent 25%),
         linear-gradient(45deg, transparent 75%, #d8d8d8 75%),
         linear-gradient(-45deg, transparent 75%, #d8d8d8 75%);
     background-size: 20px 20px;
-    background-position: 0 0, 0 10px, 10px -10px, -10px 0;
-    background-color: #ffffff;
+    background-position:
+        0 0,
+        0 10px,
+        10px -10px,
+        -10px 0;
 }
 
 .info {
@@ -228,13 +230,14 @@ button {
 }
 
 .footer {
-    text-align: center;
     margin-top: 35px;
+    text-align: center;
     color: #8fa2c3;
     font-size: 13px;
 }
 
 @media (max-width: 700px) {
+
     .header h1 {
         font-size: 27px;
     }
@@ -255,25 +258,37 @@ button {
 <div class="container">
 
     <header class="header">
+
         <h1>✂️ Free Background Remover</h1>
+
         <p>
-            Remove image backgrounds and create transparent PNG images.
-            Processing happens directly in your browser.
+            Remove image backgrounds and create transparent PNG images
+            directly in your browser.
         </p>
+
     </header>
+
 
     <main class="tool-card">
 
-        <label class="upload-area" for="fileInput">
+        <label
+            class="upload-area"
+            for="fileInput"
+        >
             <strong>📷 Upload an Image</strong>
-            <span>JPG, JPEG, PNG or WebP</span>
+
+            <span>
+                JPG, JPEG, PNG or WebP
+            </span>
         </label>
 
+
         <input
-            type="file"
             id="fileInput"
+            type="file"
             accept="image/jpeg,image/png,image/webp"
         >
+
 
         <div class="actions">
 
@@ -301,23 +316,30 @@ button {
 
         </div>
 
+
         <div
             id="status"
             class="status"
             aria-live="polite"
         ></div>
 
+
         <div
             id="progressWrap"
             class="progress-wrap"
         >
+
             <div class="progress-bar">
+
                 <div
                     id="progressFill"
                     class="progress-fill"
                 ></div>
+
             </div>
+
         </div>
+
 
         <div class="preview-grid">
 
@@ -326,18 +348,21 @@ button {
                 <h2>Original Image</h2>
 
                 <div class="preview">
+
                     <img
                         id="originalPreview"
                         alt="Original uploaded image"
-                        style="display:none;"
+                        style="display:none"
                     >
 
                     <span id="originalPlaceholder">
                         Upload an image
                     </span>
+
                 </div>
 
             </section>
+
 
             <section class="preview-box">
 
@@ -347,8 +372,8 @@ button {
 
                     <img
                         id="resultPreview"
-                        alt="Image with background removed"
-                        style="display:none;"
+                        alt="Background removed image"
+                        style="display:none"
                     >
 
                     <span id="resultPlaceholder">
@@ -363,22 +388,28 @@ button {
 
     </main>
 
+
     <section class="info">
 
         <h2>Free Online Background Remover</h2>
 
         <p>
-            Remove the background from an image and create a transparent PNG
-            directly in your browser. Your selected image is processed locally
-            by the browser rather than being uploaded to your website server.
+            Remove the background from an image and create a transparent
+            PNG directly in your browser.
         </p>
 
         <p>
-            The first use may take longer because the AI model needs to be
-            downloaded and cached by your browser. Later uses can be faster.
+            Your image is processed locally in your browser.
+            It does not need to be uploaded to your website server.
+        </p>
+
+        <p>
+            The first use may take longer because the AI model needs
+            to download. Your browser can cache the model for later use.
         </p>
 
     </section>
+
 
     <footer class="footer">
         © 2026 My Crypto Faucet
@@ -386,10 +417,13 @@ button {
 
 </div>
 
+
 <script type="module">
 
-import { pipeline } from
-    "https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.1";
+import {
+    pipeline
+} from "https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.1";
+
 
 const fileInput =
     document.getElementById("fileInput");
@@ -397,11 +431,11 @@ const fileInput =
 const removeBtn =
     document.getElementById("removeBtn");
 
-const resetBtn =
-    document.getElementById("resetBtn");
-
 const downloadBtn =
     document.getElementById("downloadBtn");
+
+const resetBtn =
+    document.getElementById("resetBtn");
 
 const originalPreview =
     document.getElementById("originalPreview");
@@ -424,11 +458,17 @@ const progressWrap =
 const progressFill =
     document.getElementById("progressFill");
 
+
 let selectedFile = null;
+
 let originalUrl = null;
+
 let resultUrl = null;
+
 let resultBlob = null;
+
 let segmenter = null;
+
 let loadingPromise = null;
 
 
@@ -437,15 +477,16 @@ let loadingPromise = null;
 ===================================================== */
 
 function setStatus(message) {
+
     status.textContent = message;
 }
 
 
 /* =====================================================
-   LOAD AI MODEL
+   LOAD MODEL
 ===================================================== */
 
-async function loadModel() {
+async function getSegmenter() {
 
     if (segmenter) {
         return segmenter;
@@ -456,49 +497,37 @@ async function loadModel() {
     }
 
     progressWrap.style.display = "block";
+
     progressFill.style.width = "0%";
 
     setStatus(
-        "Loading background removal AI model. First use may take some time..."
+        "Loading AI background remover. First use may take some time..."
     );
+
 
     loadingPromise = pipeline(
         "background-removal",
-        "onnx-community/ormbg-ONNX",
+        "Xenova/modnet",
         {
-            progress_callback: (progress) => {
-
-                if (
-                    progress &&
-                    typeof progress.progress === "number"
-                ) {
-
-                    const value = Math.max(
-                        0,
-                        Math.min(
-                            100,
-                            progress.progress
-                        )
-                    );
-
-                    progressFill.style.width =
-                        value + "%";
-                }
-            }
+            dtype: "q8"
         }
     );
 
+
     try {
 
-        segmenter = await loadingPromise;
+        segmenter =
+            await loadingPromise;
 
-        progressFill.style.width = "100%";
+        progressFill.style.width =
+            "100%";
 
         return segmenter;
 
     } catch (error) {
 
         loadingPromise = null;
+
         segmenter = null;
 
         throw error;
@@ -510,148 +539,184 @@ async function loadModel() {
    FILE SELECT
 ===================================================== */
 
-fileInput.addEventListener("change", () => {
+fileInput.addEventListener(
+    "change",
+    () => {
 
-    const file = fileInput.files?.[0];
+        const file =
+            fileInput.files?.[0];
 
-    if (!file) {
-        return;
-    }
+        if (!file) {
+            return;
+        }
 
-    if (!file.type.startsWith("image/")) {
+
+        if (!file.type.startsWith("image/")) {
+
+            setStatus(
+                "Please select a valid image."
+            );
+
+            return;
+        }
+
+
+        selectedFile = file;
+
+
+        if (originalUrl) {
+
+            URL.revokeObjectURL(
+                originalUrl
+            );
+        }
+
+
+        originalUrl =
+            URL.createObjectURL(file);
+
+
+        originalPreview.src =
+            originalUrl;
+
+        originalPreview.style.display =
+            "block";
+
+        originalPlaceholder.style.display =
+            "none";
+
+
+        resultPreview.style.display =
+            "none";
+
+        resultPlaceholder.style.display =
+            "block";
+
+
+        downloadBtn.style.display =
+            "none";
+
+
+        resultBlob = null;
+
+
+        if (resultUrl) {
+
+            URL.revokeObjectURL(
+                resultUrl
+            );
+
+            resultUrl = null;
+        }
+
+
+        removeBtn.disabled =
+            false;
+
+
+        progressWrap.style.display =
+            "none";
+
+        progressFill.style.width =
+            "0%";
+
 
         setStatus(
-            "Please select a valid image file."
+            "Image ready. Click Remove Background."
         );
-
-        return;
     }
-
-    selectedFile = file;
-
-    if (originalUrl) {
-        URL.revokeObjectURL(originalUrl);
-    }
-
-    originalUrl =
-        URL.createObjectURL(file);
-
-    originalPreview.src =
-        originalUrl;
-
-    originalPreview.style.display =
-        "block";
-
-    originalPlaceholder.style.display =
-        "none";
-
-    resultPreview.style.display =
-        "none";
-
-    resultPlaceholder.style.display =
-        "block";
-
-    downloadBtn.style.display =
-        "none";
-
-    resultBlob = null;
-
-    if (resultUrl) {
-
-        URL.revokeObjectURL(resultUrl);
-
-        resultUrl = null;
-    }
-
-    removeBtn.disabled = false;
-
-    progressWrap.style.display =
-        "none";
-
-    progressFill.style.width =
-        "0%";
-
-    setStatus(
-        "Image ready. Click Remove Background."
-    );
-});
+);
 
 
 /* =====================================================
    REMOVE BACKGROUND
 ===================================================== */
 
-removeBtn.addEventListener("click", async () => {
+removeBtn.addEventListener(
+    "click",
+    async () => {
 
-    if (!selectedFile) {
-        return;
-    }
+        if (!selectedFile) {
+            return;
+        }
 
-    removeBtn.disabled = true;
-    downloadBtn.style.display = "none";
 
-    try {
+        removeBtn.disabled =
+            true;
 
-        const model =
-            await loadModel();
+        downloadBtn.style.display =
+            "none";
 
-        setStatus(
-            "Removing background..."
-        );
-
-        progressWrap.style.display =
-            "block";
-
-        progressFill.style.width =
-            "100%";
-
-        /*
-         * Use a temporary object URL.
-         * This is supported as an image input by
-         * Transformers.js.
-         */
-
-        const inputUrl =
-            URL.createObjectURL(selectedFile);
 
         try {
 
+            const segmenter =
+                await getSegmenter();
+
+
+            setStatus(
+                "Removing background..."
+            );
+
+
+            /*
+             * Pass the File directly to
+             * Transformers.js.
+             */
+
             const output =
-                await model(inputUrl);
+                await segmenter(
+                    selectedFile
+                );
+
 
             if (
                 !output ||
                 !output[0]
             ) {
+
                 throw new Error(
-                    "No image was returned by the model."
+                    "No output returned."
                 );
             }
 
+
             /*
-             * Transformers.js BackgroundRemovalPipeline
-             * returns a RawImage.
-             *
-             * Convert it directly to PNG Blob.
+             * BackgroundRemovalPipeline returns
+             * a RawImage with an alpha channel.
              */
 
             const blob =
-                await output[0].toBlob();
+                await output[0].toBlob(
+                    "image/png"
+                );
+
 
             if (!blob) {
+
                 throw new Error(
-                    "Unable to create PNG output."
+                    "PNG creation failed."
                 );
             }
 
-            resultBlob = blob;
+
+            resultBlob =
+                blob;
+
 
             if (resultUrl) {
-                URL.revokeObjectURL(resultUrl);
+
+                URL.revokeObjectURL(
+                    resultUrl
+                );
             }
 
+
             resultUrl =
-                URL.createObjectURL(resultBlob);
+                URL.createObjectURL(
+                    resultBlob
+                );
+
 
             resultPreview.src =
                 resultUrl;
@@ -662,30 +727,134 @@ removeBtn.addEventListener("click", async () => {
             resultPlaceholder.style.display =
                 "none";
 
+
             downloadBtn.style.display =
                 "inline-block";
+
 
             setStatus(
                 "Background removed successfully."
             );
 
+
+        } catch (error) {
+
+            console.error(
+                "Background remover error:",
+                error
+            );
+
+
+            resultBlob = null;
+
+
+            resultPreview.style.display =
+                "none";
+
+            resultPlaceholder.style.display =
+                "block";
+
+
+            setStatus(
+                "Background removal failed. Please try another image or browser."
+            );
+
+
         } finally {
 
-            URL.revokeObjectURL(inputUrl);
+            removeBtn.disabled =
+                !selectedFile;
+        }
+    }
+);
+
+
+/* =====================================================
+   DOWNLOAD
+===================================================== */
+
+downloadBtn.addEventListener(
+    "click",
+    () => {
+
+        if (!resultBlob || !resultUrl) {
+            return;
         }
 
-    } catch (error) {
 
-        console.error(
-            "Background removal error:",
-            error
-        );
+        const link =
+            document.createElement("a");
 
-        setStatus(
-            "Sorry, background removal failed. Please try another image or browser."
-        );
+
+        link.href =
+            resultUrl;
+
+
+        link.download =
+            "background-removed.png";
+
+
+        document.body.appendChild(link);
+
+        link.click();
+
+        link.remove();
+    }
+);
+
+
+/* =====================================================
+   RESET
+===================================================== */
+
+resetBtn.addEventListener(
+    "click",
+    () => {
+
+        fileInput.value = "";
+
+        selectedFile = null;
 
         resultBlob = null;
+
+
+        removeBtn.disabled =
+            true;
+
+        downloadBtn.style.display =
+            "none";
+
+
+        if (originalUrl) {
+
+            URL.revokeObjectURL(
+                originalUrl
+            );
+
+            originalUrl = null;
+        }
+
+
+        if (resultUrl) {
+
+            URL.revokeObjectURL(
+                resultUrl
+            );
+
+            resultUrl = null;
+        }
+
+
+        originalPreview.src = "";
+
+        originalPreview.style.display =
+            "none";
+
+        originalPlaceholder.style.display =
+            "block";
+
+
+        resultPreview.src = "";
 
         resultPreview.style.display =
             "none";
@@ -693,96 +862,17 @@ removeBtn.addEventListener("click", async () => {
         resultPlaceholder.style.display =
             "block";
 
-    } finally {
 
-        removeBtn.disabled =
-            !selectedFile;
+        progressWrap.style.display =
+            "none";
+
+        progressFill.style.width =
+            "0%";
+
+
+        setStatus("");
     }
-});
-
-
-/* =====================================================
-   DOWNLOAD
-===================================================== */
-
-downloadBtn.addEventListener("click", () => {
-
-    if (!resultBlob) {
-        return;
-    }
-
-    const link =
-        document.createElement("a");
-
-    link.href =
-        resultUrl;
-
-    link.download =
-        "background-removed.png";
-
-    document.body.appendChild(link);
-
-    link.click();
-
-    link.remove();
-});
-
-
-/* =====================================================
-   RESET
-===================================================== */
-
-resetBtn.addEventListener("click", () => {
-
-    fileInput.value = "";
-
-    selectedFile = null;
-
-    removeBtn.disabled = true;
-
-    downloadBtn.style.display =
-        "none";
-
-    resultBlob = null;
-
-    if (originalUrl) {
-
-        URL.revokeObjectURL(originalUrl);
-
-        originalUrl = null;
-    }
-
-    if (resultUrl) {
-
-        URL.revokeObjectURL(resultUrl);
-
-        resultUrl = null;
-    }
-
-    originalPreview.src = "";
-
-    originalPreview.style.display =
-        "none";
-
-    originalPlaceholder.style.display =
-        "block";
-
-    resultPreview.src = "";
-
-    resultPreview.style.display =
-        "none";
-
-    resultPlaceholder.style.display =
-        "block";
-
-    progressWrap.style.display =
-        "none";
-
-    progressFill.style.width =
-        "0%";
-
-    setStatus("");
-});
+);
 
 </script>
 
