@@ -399,6 +399,15 @@ fileInput.addEventListener("change", () => {
 
     originalPreview.src = originalUrl;
 });
+
+fetch("/models/Xenova/modnet/onnx/model_quantized.onnx")
+    .then(response => {
+        console.log("MODEL STATUS:", response.status);
+        console.log("MODEL OK:", response.ok);
+    })
+    .catch(error => {
+        console.error("MODEL FETCH ERROR:", error);
+    });
     
 async function loadModel() {
     if (segmenter) return segmenter;
