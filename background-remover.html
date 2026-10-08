@@ -9,28 +9,24 @@
 <title>Free Background Remover — My Crypto Faucet</title>
 
 <meta
-    name="description"
-    content="Remove image backgrounds online for free and create transparent PNG images directly in your browser."
+  name="description"
+  content="Remove image backgrounds online for free and create transparent PNG images directly in your browser."
 >
 
 <link
-    rel="canonical"
-    href="https://myfaucetcrypto.com/background-remover"
+  rel="canonical"
+  href="https://myfaucetcrypto.com/background-remover"
 >
 
+<meta property="og:type" content="website">
+<meta property="og:title" content="Free Background Remover — My Crypto Faucet">
 <meta
-    property="og:title"
-    content="Free Background Remover — My Crypto Faucet"
+  property="og:description"
+  content="Remove image backgrounds online for free and create transparent PNG images directly in your browser."
 >
-
 <meta
-    property="og:description"
-    content="Remove image backgrounds online for free and create transparent PNG images directly in your browser."
->
-
-<meta
-    property="og:url"
-    content="https://myfaucetcrypto.com/background-remover"
+  property="og:url"
+  content="https://myfaucetcrypto.com/background-remover"
 >
 
 <style>
@@ -42,7 +38,7 @@ body {
     margin: 0;
     font-family: Arial, sans-serif;
     background: #07152f;
-    color: #ffffff;
+    color: #fff;
 }
 
 .container {
@@ -64,7 +60,7 @@ body {
 
 .header p {
     margin: 0;
-    color: #c9d4e8;
+    color: #cbd5e8;
     line-height: 1.6;
 }
 
@@ -86,8 +82,8 @@ body {
 
 .upload-area strong {
     display: block;
-    font-size: 18px;
     margin-bottom: 8px;
+    font-size: 18px;
 }
 
 .upload-area span {
@@ -134,7 +130,7 @@ button {
 
 #resetBtn {
     background: #273c61;
-    color: #ffffff;
+    color: #fff;
 }
 
 .status {
@@ -143,26 +139,6 @@ button {
     text-align: center;
     color: #d7def0;
     font-size: 14px;
-}
-
-.progress-wrap {
-    display: none;
-    margin-top: 15px;
-}
-
-.progress-bar {
-    width: 100%;
-    height: 8px;
-    overflow: hidden;
-    border-radius: 20px;
-    background: #172e54;
-}
-
-.progress-fill {
-    width: 0;
-    height: 100%;
-    background: #f5c542;
-    transition: width .2s;
 }
 
 .preview-grid {
@@ -203,7 +179,7 @@ button {
 }
 
 .transparent-preview {
-    background-color: #ffffff;
+    background-color: #fff;
     background-image:
         linear-gradient(45deg, #d8d8d8 25%, transparent 25%),
         linear-gradient(-45deg, #d8d8d8 25%, transparent 25%),
@@ -237,7 +213,6 @@ button {
 }
 
 @media (max-width: 700px) {
-
     .header h1 {
         font-size: 27px;
     }
@@ -257,163 +232,136 @@ button {
 
 <div class="container">
 
-    <header class="header">
-
-        <h1>✂️ Free Background Remover</h1>
-
-        <p>
-            Remove image backgrounds and create transparent PNG images
-            directly in your browser.
-        </p>
-
-    </header>
+<header class="header">
+    <h1>✂️ Free Background Remover</h1>
+    <p>
+        Remove image backgrounds and create transparent PNG images
+        directly in your browser.
+    </p>
+</header>
 
 
-    <main class="tool-card">
+<main class="tool-card">
 
-        <label
-            class="upload-area"
-            for="fileInput"
+<label class="upload-area" for="fileInput">
+    <strong>📷 Upload an Image</strong>
+    <span>JPG, JPEG, PNG or WebP</span>
+</label>
+
+<input
+    id="fileInput"
+    type="file"
+    accept="image/jpeg,image/png,image/webp"
+>
+
+
+<div class="actions">
+
+    <button
+        id="removeBtn"
+        type="button"
+        disabled
+    >
+        ✂️ Remove Background
+    </button>
+
+    <button
+        id="downloadBtn"
+        type="button"
+    >
+        ⬇️ Download PNG
+    </button>
+
+    <button
+        id="resetBtn"
+        type="button"
+    >
+        Reset
+    </button>
+
+</div>
+
+
+<div
+    id="status"
+    class="status"
+    aria-live="polite"
+></div>
+
+
+<div class="preview-grid">
+
+<section class="preview-box">
+
+    <h2>Original Image</h2>
+
+    <div class="preview">
+
+        <img
+            id="originalPreview"
+            alt="Original uploaded image"
+            style="display:none"
         >
-            <strong>📷 Upload an Image</strong>
 
-            <span>
-                JPG, JPEG, PNG or WebP
-            </span>
-        </label>
+        <span id="originalPlaceholder">
+            Upload an image
+        </span>
+
+    </div>
+
+</section>
 
 
-        <input
-            id="fileInput"
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
+<section class="preview-box">
+
+    <h2>Transparent Background</h2>
+
+    <div class="preview transparent-preview">
+
+        <img
+            id="resultPreview"
+            alt="Background removed image"
+            style="display:none"
         >
 
+        <span id="resultPlaceholder">
+            Result will appear here
+        </span>
 
-        <div class="actions">
+    </div>
 
-            <button
-                id="removeBtn"
-                type="button"
-                disabled
-            >
-                ✂️ Remove Background
-            </button>
+</section>
 
-            <button
-                id="downloadBtn"
-                type="button"
-            >
-                ⬇️ Download PNG
-            </button>
+</div>
 
-            <button
-                id="resetBtn"
-                type="button"
-            >
-                Reset
-            </button>
-
-        </div>
+</main>
 
 
-        <div
-            id="status"
-            class="status"
-            aria-live="polite"
-        ></div>
+<section class="info">
+
+<h2>Free Online Background Remover</h2>
+
+<p>
+    Remove the background from an image and create a transparent
+    PNG directly in your browser.
+</p>
+
+<p>
+    Your image is processed locally in your browser and does not
+    need to be uploaded to your website server.
+</p>
+
+<p>
+    The first use may take longer because the AI model needs to
+    download and initialize.
+</p>
+
+</section>
 
 
-        <div
-            id="progressWrap"
-            class="progress-wrap"
-        >
-
-            <div class="progress-bar">
-
-                <div
-                    id="progressFill"
-                    class="progress-fill"
-                ></div>
-
-            </div>
-
-        </div>
-
-
-        <div class="preview-grid">
-
-            <section class="preview-box">
-
-                <h2>Original Image</h2>
-
-                <div class="preview">
-
-                    <img
-                        id="originalPreview"
-                        alt="Original uploaded image"
-                        style="display:none"
-                    >
-
-                    <span id="originalPlaceholder">
-                        Upload an image
-                    </span>
-
-                </div>
-
-            </section>
-
-
-            <section class="preview-box">
-
-                <h2>Transparent Background</h2>
-
-                <div class="preview transparent-preview">
-
-                    <img
-                        id="resultPreview"
-                        alt="Background removed image"
-                        style="display:none"
-                    >
-
-                    <span id="resultPlaceholder">
-                        Result will appear here
-                    </span>
-
-                </div>
-
-            </section>
-
-        </div>
-
-    </main>
-
-
-    <section class="info">
-
-        <h2>Free Online Background Remover</h2>
-
-        <p>
-            Remove the background from an image and create a transparent
-            PNG directly in your browser.
-        </p>
-
-        <p>
-            Your image is processed locally in your browser.
-            It does not need to be uploaded to your website server.
-        </p>
-
-        <p>
-            The first use may take longer because the AI model needs
-            to download. Your browser can cache the model for later use.
-        </p>
-
-    </section>
-
-
-    <footer class="footer">
-        © 2026 My Crypto Faucet
-    </footer>
+<footer class="footer">
+    © 2026 My Crypto Faucet
+</footer>
 
 </div>
 
@@ -452,24 +400,12 @@ const resultPlaceholder =
 const status =
     document.getElementById("status");
 
-const progressWrap =
-    document.getElementById("progressWrap");
-
-const progressFill =
-    document.getElementById("progressFill");
-
 
 let selectedFile = null;
-
 let originalUrl = null;
-
 let resultUrl = null;
-
 let resultBlob = null;
-
 let segmenter = null;
-
-let loadingPromise = null;
 
 
 /* =====================================================
@@ -477,7 +413,6 @@ let loadingPromise = null;
 ===================================================== */
 
 function setStatus(message) {
-
     status.textContent = message;
 }
 
@@ -486,57 +421,34 @@ function setStatus(message) {
    LOAD MODEL
 ===================================================== */
 
-async function getSegmenter() {
+async function loadModel() {
 
     if (segmenter) {
         return segmenter;
     }
 
-    if (loadingPromise) {
-        return loadingPromise;
-    }
-
-    progressWrap.style.display = "block";
-
-    progressFill.style.width = "0%";
-
     setStatus(
-        "Loading AI background remover. First use may take some time..."
+        "Loading AI model. First use may take some time..."
     );
 
-
-    loadingPromise = pipeline(
+    /*
+     * This matches the current official
+     * Xenova/modnet example.
+     */
+    segmenter = await pipeline(
         "background-removal",
         "Xenova/modnet",
         {
-            dtype: "q8"
+            dtype: "fp32"
         }
     );
 
-
-    try {
-
-        segmenter =
-            await loadingPromise;
-
-        progressFill.style.width =
-            "100%";
-
-        return segmenter;
-
-    } catch (error) {
-
-        loadingPromise = null;
-
-        segmenter = null;
-
-        throw error;
-    }
+    return segmenter;
 }
 
 
 /* =====================================================
-   FILE SELECT
+   SELECT IMAGE
 ===================================================== */
 
 fileInput.addEventListener(
@@ -550,7 +462,6 @@ fileInput.addEventListener(
             return;
         }
 
-
         if (!file.type.startsWith("image/")) {
 
             setStatus(
@@ -560,17 +471,12 @@ fileInput.addEventListener(
             return;
         }
 
-
         selectedFile = file;
 
 
         if (originalUrl) {
-
-            URL.revokeObjectURL(
-                originalUrl
-            );
+            URL.revokeObjectURL(originalUrl);
         }
-
 
         originalUrl =
             URL.createObjectURL(file);
@@ -596,30 +502,18 @@ fileInput.addEventListener(
         downloadBtn.style.display =
             "none";
 
-
         resultBlob = null;
 
 
         if (resultUrl) {
 
-            URL.revokeObjectURL(
-                resultUrl
-            );
+            URL.revokeObjectURL(resultUrl);
 
             resultUrl = null;
         }
 
 
-        removeBtn.disabled =
-            false;
-
-
-        progressWrap.style.display =
-            "none";
-
-        progressFill.style.width =
-            "0%";
-
+        removeBtn.disabled = false;
 
         setStatus(
             "Image ready. Click Remove Background."
@@ -641,8 +535,7 @@ removeBtn.addEventListener(
         }
 
 
-        removeBtn.disabled =
-            true;
+        removeBtn.disabled = true;
 
         downloadBtn.style.display =
             "none";
@@ -650,8 +543,8 @@ removeBtn.addEventListener(
 
         try {
 
-            const segmenter =
-                await getSegmenter();
+            const model =
+                await loadModel();
 
 
             setStatus(
@@ -660,87 +553,103 @@ removeBtn.addEventListener(
 
 
             /*
-             * Pass the File directly to
-             * Transformers.js.
+             * Convert the local File into a Blob URL.
+             * The official pipeline accepts image inputs
+             * such as URLs.
              */
 
-            const output =
-                await segmenter(
+            const imageUrl =
+                URL.createObjectURL(
                     selectedFile
                 );
 
 
-            if (
-                !output ||
-                !output[0]
-            ) {
+            try {
 
-                throw new Error(
-                    "No output returned."
+                const output =
+                    await model(
+                        imageUrl
+                    );
+
+
+                if (
+                    !output ||
+                    !output[0]
+                ) {
+
+                    throw new Error(
+                        "The model returned no image."
+                    );
+                }
+
+
+                /*
+                 * Official model output is a RawImage.
+                 * Convert it to PNG.
+                 */
+
+                const blob =
+                    await output[0].toBlob(
+                        "image/png"
+                    );
+
+
+                if (!blob) {
+
+                    throw new Error(
+                        "Could not create PNG."
+                    );
+                }
+
+
+                resultBlob = blob;
+
+
+                if (resultUrl) {
+
+                    URL.revokeObjectURL(
+                        resultUrl
+                    );
+                }
+
+
+                resultUrl =
+                    URL.createObjectURL(
+                        resultBlob
+                    );
+
+
+                resultPreview.src =
+                    resultUrl;
+
+                resultPreview.style.display =
+                    "block";
+
+                resultPlaceholder.style.display =
+                    "none";
+
+
+                downloadBtn.style.display =
+                    "inline-block";
+
+
+                setStatus(
+                    "Background removed successfully."
                 );
-            }
 
 
-            /*
-             * BackgroundRemovalPipeline returns
-             * a RawImage with an alpha channel.
-             */
-
-            const blob =
-                await output[0].toBlob(
-                    "image/png"
-                );
-
-
-            if (!blob) {
-
-                throw new Error(
-                    "PNG creation failed."
-                );
-            }
-
-
-            resultBlob =
-                blob;
-
-
-            if (resultUrl) {
+            } finally {
 
                 URL.revokeObjectURL(
-                    resultUrl
+                    imageUrl
                 );
             }
-
-
-            resultUrl =
-                URL.createObjectURL(
-                    resultBlob
-                );
-
-
-            resultPreview.src =
-                resultUrl;
-
-            resultPreview.style.display =
-                "block";
-
-            resultPlaceholder.style.display =
-                "none";
-
-
-            downloadBtn.style.display =
-                "inline-block";
-
-
-            setStatus(
-                "Background removed successfully."
-            );
 
 
         } catch (error) {
 
             console.error(
-                "Background remover error:",
+                "Background removal error:",
                 error
             );
 
@@ -759,7 +668,6 @@ removeBtn.addEventListener(
                 "Background removal failed. Please try another image or browser."
             );
 
-
         } finally {
 
             removeBtn.disabled =
@@ -777,7 +685,7 @@ downloadBtn.addEventListener(
     "click",
     () => {
 
-        if (!resultBlob || !resultUrl) {
+        if (!resultUrl) {
             return;
         }
 
@@ -785,10 +693,8 @@ downloadBtn.addEventListener(
         const link =
             document.createElement("a");
 
-
         link.href =
             resultUrl;
-
 
         link.download =
             "background-removed.png";
@@ -861,13 +767,6 @@ resetBtn.addEventListener(
 
         resultPlaceholder.style.display =
             "block";
-
-
-        progressWrap.style.display =
-            "none";
-
-        progressFill.style.width =
-            "0%";
 
 
         setStatus("");
