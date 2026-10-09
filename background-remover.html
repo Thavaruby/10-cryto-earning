@@ -540,7 +540,7 @@ async function loadModel() {
             transformers.env.allowRemoteModels = false;
             transformers.env.localModelPath = "/models/";
 
-            transformers.env.backends.onnx.wasm.wasmPaths = {
+          /*  transformers.env.backends.onnx.wasm.wasmPaths = {
                 mjs: new URL(
                     "/wasm/ort-wasm-simd-threaded.jsep.mjs",
                     window.location.origin
@@ -549,7 +549,9 @@ async function loadModel() {
                     "/wasm/ort-wasm-simd-threaded.jsep.wasm",
                     window.location.origin
                 ).href
-            };
+            };*/
+
+            transformers.env.backends.onnx.wasm.wasmPaths = "/wasm/";
 
     transformers.env.backends.onnx.wasm.numThreads = 1;
 
