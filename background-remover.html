@@ -700,7 +700,25 @@ removeButton.addEventListener("click", async () => {
 
         try {
             currentStage = "Running background-removal model";
-            const output = await model(imageURL);
+            let output;
+
+try {
+    output = await model(imageURL);
+} catch (error) {
+    console.error("MODEL INFERENCE FAILED");
+    console.error("Error name:", error?.name);
+    console.error("Error message:", error?.message);
+    console.error("Error stack:", error?.stack);
+    console.error("Full error object:", error);
+
+    setStatus(
+        "Inference failed: " +
+        (error?.message || String(error)) +
+        ". Check Console for details."
+    );
+
+    throw error;
+}
 
             if (!output || !output[0]) {
                 throw new Error("The AI model returned no output.");
