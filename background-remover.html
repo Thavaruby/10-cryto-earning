@@ -559,39 +559,50 @@ async function loadModel() {
             setProgress(15);
             setStatus("Checking required model configuration files...");
 
-            const testFiles = [
-                "/models/Xenova/modnet/config.json",
-                "/models/Xenova/modnet/preprocessor_config.json",
-                "/models/Xenova/modnet/quantize_config.json",
-                "/wasm/ort-wasm-simd-threaded.jsep.mjs"
-            ];
+            
+const testFiles = [
+    "/models/Xenova/modnet/config.json",
+    "/models/Xenova/modnet/preprocessor_config.json",
+    "/models/Xenova/modnet/quantize_config.json",
+    "/models/Xenova/modnet/onnx/model_quantized.onnx",
+    "/wasm/ort-wasm-simd-threaded.jsep.mjs",
+    "/wasm/ort-wasm-simd-threaded.jsep.wasm"
+];
 
-            for (const file of testFiles) {
-                currentStage = "Checking file: " + file;
+for (const file of testFiles) {
+    currentStage = "Checking resource: " + file;
 
-                let response;
-                try {
-                    response = await fetch(file, {
-                        cache: "no-store",
-                        credentials: "same-origin"
-                    });
-                } catch (error) {
-                    throw new Error(
-                        "Fetch failed for " + file +
-                        ". Original error: " +
-                        (error?.message || String(error))
-                    );
-                }
+    try {
+        const response = await fetch(file, {
+            method: "HEAD",
+            cache: "no-store",
+            credentials: "same-origin"
+        });
 
-                console.log("File check:", file, response.status);
+        console.log(
+            "RESOURCE CHECK:",
+            file,
+            "HTTP:",
+            response.status,
+            "OK:",
+            response.ok
+        );
 
-                if (!response.ok) {
-                    throw new Error(
-                        "HTTP " + response.status +
-                        " while fetching " + file
-                    );
-                }
-            }
+        if (!response.ok) {
+            throw new Error(
+                "HTTP " + response.status + " for " + file
+            );
+        }
+    } catch (error) {
+        console.error("RESOURCE CHECK FAILED:", file, error);
+
+        throw new Error(
+            "Resource check failed: " + file +
+            " — " + (error?.message || String(error))
+        );
+    }
+}
+
 
             currentStage = "Loading MODNet AI model";
             setStatus(
