@@ -458,639 +458,334 @@ footer {
 </footer>
 
 
-<script type="module">
 
+<script type="module">
 let segmenter = null;
 let loadingPromise = null;
-
 let originalFile = null;
 let resultBlob = null;
+let originalURL = null;
+let resultURL = null;
+let currentStage = "Initializing";
 
-
-const imageInput =
-    document.getElementById("imageInput");
-
-const removeButton =
-    document.getElementById("removeButton");
-
-const downloadButton =
-    document.getElementById("downloadButton");
-
-const resetButton =
-    document.getElementById("resetButton");
-
-const status =
-    document.getElementById("status");
-
-const originalPreview =
-    document.getElementById("originalPreview");
-
-const resultPreview =
-    document.getElementById("resultPreview");
-
-const previewSection =
-    document.getElementById("previewSection");
-
-const progressWrap =
-    document.getElementById("progressWrap");
-
-const progressBar =
-    document.getElementById("progressBar");
-
+const imageInput = document.getElementById("imageInput");
+const removeButton = document.getElementById("removeButton");
+const downloadButton = document.getElementById("downloadButton");
+const resetButton = document.getElementById("resetButton");
+const status = document.getElementById("status");
+const originalPreview = document.getElementById("originalPreview");
+const resultPreview = document.getElementById("resultPreview");
+const previewSection = document.getElementById("previewSection");
+const progressWrap = document.getElementById("progressWrap");
+const progressBar = document.getElementById("progressBar");
 
 function setStatus(message) {
-
     status.textContent = message;
-
 }
-
 
 function setProgress(value) {
-
     progressWrap.style.display = "block";
-
     progressBar.style.width =
         Math.max(0, Math.min(100, value)) + "%";
-
 }
-
 
 function hideProgress() {
-
     progressWrap.style.display = "none";
-
     progressBar.style.width = "0%";
-
 }
 
+function showError(error, stage) {
+    const details = [
+        "BACKGROUND REMOVER ERROR",
+        "",
+        "Stage: " + (stage || currentStage),
+        "Error name: " + (error?.name || "Unknown"),
+        "Message: " + (error?.message || String(error)),
+        "Browser online: " + navigator.onLine,
+        "Page: " + window.location.href,
+        "",
+        "More details may be available in the browser console."
+    ].join("\n");
+
+    console.error("BACKGROUND REMOVER DIAGNOSTIC", {
+        stage: stage || currentStage,
+        name: error?.name,
+        message: error?.message || String(error),
+        stack: error?.stack,
+        online: navigator.onLine,
+        url: window.location.href,
+        error
+    });
+
+    setStatus(details);
+}
 
 async function loadModel() {
-
-    if (segmenter) {
-        return segmenter;
-    }
-
-    if (loadingPromise) {
-        return loadingPromise;
-    }
-
+    if (segmenter) return segmenter;
+    if (loadingPromise) return loadingPromise;
 
     loadingPromise = (async () => {
+        try {
+            currentStage = "Loading Transformers.js library";
+            setStatus("Loading AI library...");
+            setProgress(5);
 
-        setStatus(
-            "Loading AI model. Please wait..."
-        );
-
-        setProgress(5);
-
-
-        const transformers =
-            await import(
+            const transformers = await import(
                 "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1"
             );
 
+            currentStage = "Configuring local model paths";
 
-        /*
-         * Use models hosted on our own website.
-         */
-        transformers.env.allowLocalModels = true;
+            transformers.env.allowLocalModels = true;
+            transformers.env.allowRemoteModels = false;
+            transformers.env.localModelPath = "/models/";
 
-        transformers.env.allowRemoteModels = false;
-
-        transformers.env.localModelPath =
-            "/models/";
-
-
-        /*
-         * IMPORTANT
-         *
-         * Explicitly point ONNX Runtime to the
-         * WASM files hosted on our own website.
-         */
-        transformers.env.backends.onnx.wasm.wasmPaths = {
-
-            mjs:
-                new URL(
+            transformers.env.backends.onnx.wasm.wasmPaths = {
+                mjs: new URL(
                     "/wasm/ort-wasm-simd-threaded.jsep.mjs",
                     window.location.origin
                 ).href,
-
-            wasm:
-                new URL(
+                wasm: new URL(
                     "/wasm/ort-wasm-simd-threaded.jsep.wasm",
                     window.location.origin
                 ).href
+            };
 
-        };
+            console.log("WASM paths:",
+                transformers.env.backends.onnx.wasm.wasmPaths);
 
+            setProgress(15);
+            setStatus("Checking required model configuration files...");
 
-        console.log(
-            "WASM PATH:",
-            transformers.env.backends.onnx.wasm.wasmPaths
-        );
+            const testFiles = [
+                "/models/Xenova/modnet/config.json",
+                "/models/Xenova/modnet/preprocessor_config.json",
+                "/models/Xenova/modnet/quantize_config.json",
+                "/wasm/ort-wasm-simd-threaded.jsep.mjs"
+            ];
 
+            for (const file of testFiles) {
+                currentStage = "Checking file: " + file;
 
-        setProgress(15);
+                let response;
+                try {
+                    response = await fetch(file, {
+                        cache: "no-store",
+                        credentials: "same-origin"
+                    });
+                } catch (error) {
+                    throw new Error(
+                        "Fetch failed for " + file +
+                        ". Original error: " +
+                        (error?.message || String(error))
+                    );
+                }
 
-        setStatus(
-            "Preparing background-removal AI..."
-        );
+                console.log("File check:", file, response.status);
 
-const testFiles = [
-    "/models/Xenova/modnet/config.json",
-    "/models/Xenova/modnet/preprocessor_config.json",
-    "/models/Xenova/modnet/quantize_config.json",
-    "/wasm/ort-wasm-simd-threaded.jsep.mjs"
-];
+                if (!response.ok) {
+                    throw new Error(
+                        "HTTP " + response.status +
+                        " while fetching " + file
+                    );
+                }
+            }
 
-for (const file of testFiles) {
-    let response;
+            currentStage = "Loading MODNet AI model";
+            setStatus(
+                "Loading AI model. This may take a while on the first visit..."
+            );
+            setProgress(20);
 
-    try {
-        response = await fetch(file, {
-            cache: "no-store",
-            credentials: "same-origin"
-        });
-    } catch (error) {
-        console.error("LOCAL FILE FETCH ERROR:", file, error);
-
-        throw new Error(
-            "Could not fetch required file: " + file
-        );
-    }
-
-    console.log(
-        "LOCAL FILE:",
-        file,
-        "STATUS:",
-        response.status,
-        "OK:",
-        response.ok
-    );
-
-    if (!response.ok) {
-        throw new Error(
-            "Required file returned HTTP " +
-            response.status + ": " + file
-        );
-    }
-}
-        
-        const model =
-            await transformers.pipeline(
+            const model = await transformers.pipeline(
                 "background-removal",
                 "Xenova/modnet",
                 {
                     dtype: "q8",
                     device: "wasm",
-
                     progress_callback: (progress) => {
-
-                        if (
-                            progress &&
-                            typeof progress.progress === "number"
-                        ) {
-
-                            const value =
-                                15 +
-                                (
-                                    progress.progress * 0.65
-                                );
-
-                            setProgress(value);
-
+                        if (progress &&
+                            typeof progress.progress === "number") {
+                            setProgress(
+                                20 + progress.progress * 0.65
+                            );
                         }
-
                     }
-
                 }
             );
 
-
-        setProgress(100);
-
-        setStatus(
-            "AI model ready."
-        );
-
-
-        setTimeout(
-            hideProgress,
-            500
-        );
-
-
-        return model;
-
-    })();
-
-
-    try {
-
-        segmenter =
-            await loadingPromise;
-
-        return segmenter;
-
-    
-} catch (error) {
-
-    loadingPromise = null;
-    segmenter = null;
-    hideProgress();
-
-    const details = [
-        "Background Remover Diagnostic",
-        "",
-        "Error: " + (error?.name || "Unknown"),
-        "Message: " + (error?.message || String(error)),
-        "Page: " + window.location.href,
-        "Online: " + navigator.onLine,
-        "",
-        "Check Console for the full error."
-    ].join("\n");
-
-    console.error(
-        "Background remover model error:",
-        error
-    );
-
-    console.error("Diagnostic details:", details);
-
-    setStatus(details);
-
-    throw error;
-}
-}
-
-imageInput.addEventListener(
-    "change",
-    () => {
-
-        const file =
-            imageInput.files &&
-            imageInput.files[0];
-
-
-        if (!file) {
-            return;
-        }
-
-
-        if (
-            !file.type.startsWith("image/")
-        ) {
-
-            setStatus(
-                "Please choose an image file."
-            );
-
-            return;
-
-        }
-
-
-        originalFile = file;
-
-        resultBlob = null;
-
-
-        downloadButton.style.display =
-            "none";
-
-
-        const url =
-            URL.createObjectURL(file);
-
-
-        originalPreview.src = url;
-
-        resultPreview.removeAttribute(
-            "src"
-        );
-
-
-        previewSection.style.display =
-            "block";
-
-
-        removeButton.disabled =
-            false;
-
-
-        setStatus(
-            "Image selected. Click Remove Background."
-        );
-
-    }
-);
-
-
-removeButton.addEventListener(
-    "click",
-    async () => {
-
-        if (!originalFile) {
-
-            setStatus(
-                "Please choose an image first."
-            );
-
-            return;
-
-        }
-
-
-        removeButton.disabled =
-            true;
-
-        downloadButton.style.display =
-            "none";
-
-
-        try {
-
-            setStatus(
-                "Loading AI model..."
-            );
-
-
-            const model =
-                await loadModel();
-
-
-            setStatus(
-                "Removing background..."
-            );
-
-            setProgress(80);
-
-
-            /*
-             * Create a local object URL.
-             *
-             * The image remains on the user's device.
-             */
-            const imageURL =
-                URL.createObjectURL(
-                    originalFile
-                );
-
-
-            try {
-
-                const output =
-                    await model(
-                        imageURL
-                    );
-
-
-                if (
-                    !output ||
-                    !output[0]
-                ) {
-
-                    throw new Error(
-                        "The AI model returned no output."
-                    );
-
-                }
-
-
-                /*
-                 * Transformers.js Image object.
-                 */
-                const image =
-                    output[0];
-
-
-                let blob = null;
-
-
-                /*
-                 * Preferred method.
-                 */
-                if (
-                    typeof image.toBlob ===
-                    "function"
-                ) {
-
-                    blob =
-                        await image.toBlob();
-
-                }
-
-
-                /*
-                 * Fallback through canvas.
-                 */
-                if (!blob) {
-
-                    if (
-                        typeof image.toCanvas !==
-                        "function"
-                    ) {
-
-                        throw new Error(
-                            "Unable to create output image."
-                        );
-
-                    }
-
-
-                    const canvas =
-                        image.toCanvas();
-
-
-                    blob =
-                        await new Promise(
-                            (resolve, reject) => {
-
-                                canvas.toBlob(
-                                    (result) => {
-
-                                        if (result) {
-                                            resolve(result);
-                                        } else {
-                                            reject(
-                                                new Error(
-                                                    "PNG conversion failed."
-                                                )
-                                            );
-                                        }
-
-                                    },
-                                    "image/png"
-                                );
-
-                            }
-                        );
-
-                }
-
-
-                if (!blob) {
-
-                    throw new Error(
-                        "Background removal produced no PNG."
-                    );
-
-                }
-
-
-                resultBlob =
-                    blob;
-
-
-                const resultURL =
-                    URL.createObjectURL(
-                        resultBlob
-                    );
-
-
-                resultPreview.src =
-                    resultURL;
-
-
-                previewSection.style.display =
-                    "block";
-
-
-                downloadButton.style.display =
-                    "inline-block";
-
-
-                setProgress(100);
-
-
-                setStatus(
-                    "Background removed successfully."
-                );
-
-
-                setTimeout(
-                    hideProgress,
-                    500
-                );
-
-
-            } finally {
-
-                URL.revokeObjectURL(
-                    imageURL
-                );
-
-            }
-
+            segmenter = model;
+            setProgress(100);
+            setStatus("AI model ready.");
+
+            setTimeout(hideProgress, 500);
+            return model;
 
         } catch (error) {
+            segmenter = null;
+            throw error;
+        }
+    })();
 
-    console.error(
-        "BACKGROUND REMOVAL ERROR:",
-        error
-    );
+    try {
+        return await loadingPromise;
+    } catch (error) {
+        loadingPromise = null;
+        hideProgress();
+        showError(error, currentStage);
+        throw error;
+    }
+}
+
+imageInput.addEventListener("change", () => {
+    const file = imageInput.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+        setStatus("Please choose a valid image file.");
+        imageInput.value = "";
+        return;
+    }
+
+    if (originalURL) URL.revokeObjectURL(originalURL);
+    if (resultURL) URL.revokeObjectURL(resultURL);
+
+    originalFile = file;
+    resultBlob = null;
+    resultURL = null;
+
+    originalURL = URL.createObjectURL(file);
+    originalPreview.src = originalURL;
+    resultPreview.removeAttribute("src");
+
+    previewSection.style.display = "block";
+    downloadButton.style.display = "none";
+    removeButton.disabled = false;
+
+    setStatus("Image selected. Click Remove Background.");
+    hideProgress();
+});
+
+removeButton.addEventListener("click", async () => {
+    if (!originalFile) {
+        setStatus("Please choose an image first.");
+        return;
+    }
+
+    removeButton.disabled = true;
+    downloadButton.style.display = "none";
+
+    try {
+        currentStage = "Loading AI model";
+        const model = await loadModel();
+
+        currentStage = "Preparing image for AI";
+        setStatus("Removing background...");
+        setProgress(80);
+
+        const imageURL = URL.createObjectURL(originalFile);
+
+        try {
+            currentStage = "Running background-removal model";
+            const output = await model(imageURL);
+
+            if (!output || !output[0]) {
+                throw new Error("The AI model returned no output.");
+            }
+
+            const image = output[0];
+            let blob = null;
+
+            currentStage = "Converting AI result to PNG";
+
+            if (typeof image.toBlob === "function") {
+                blob = await image.toBlob();
+            }
+
+            if (!blob && typeof image.toCanvas === "function") {
+                const canvas = image.toCanvas();
+
+                blob = await new Promise((resolve, reject) => {
+                    canvas.toBlob((result) => {
+                        if (result) {
+                            resolve(result);
+                        } else {
+                            reject(new Error("PNG conversion failed."));
+                        }
+                    }, "image/png");
+                });
+            }
+
+            if (!blob) {
+                throw new Error(
+                    "Could not convert the AI result into an image."
+                );
+            }
+
+            resultBlob = blob;
+
+            if (resultURL) URL.revokeObjectURL(resultURL);
+            resultURL = URL.createObjectURL(resultBlob);
+            resultPreview.src = resultURL;
+
+            previewSection.style.display = "block";
+            downloadButton.style.display = "inline-block";
+
+            setProgress(100);
+            setStatus("Background removed successfully.");
+            setTimeout(hideProgress, 500);
+
+        } finally {
+            URL.revokeObjectURL(imageURL);
+        }
+
+    } catch (error) {
+        hideProgress();
+        showError(error, currentStage);
+    } finally {
+        removeButton.disabled = !originalFile;
+    }
+});
+
+downloadButton.addEventListener("click", () => {
+    if (!resultBlob) return;
+
+    const url = URL.createObjectURL(resultBlob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "background-removed.png";
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+});
+
+resetButton.addEventListener("click", () => {
+    imageInput.value = "";
+    originalFile = null;
+    resultBlob = null;
+
+    if (originalURL) URL.revokeObjectURL(originalURL);
+    if (resultURL) URL.revokeObjectURL(resultURL);
+
+    originalURL = null;
+    resultURL = null;
+
+    originalPreview.removeAttribute("src");
+    resultPreview.removeAttribute("src");
+
+    previewSection.style.display = "none";
+    removeButton.disabled = true;
+    downloadButton.style.display = "none";
 
     hideProgress();
-
-    setStatus(
-        "ERROR: " +
-        (error?.message || String(error))
-    );
-} finally {
-
-            removeButton.disabled =
-                false;
-
-        }
-
-    }
-);
-
-
-downloadButton.addEventListener(
-    "click",
-    () => {
-
-        if (!resultBlob) {
-            return;
-        }
-
-
-        const url =
-            URL.createObjectURL(
-                resultBlob
-            );
-
-
-        const link =
-            document.createElement("a");
-
-
-        link.href = url;
-
-        link.download =
-            "background-removed.png";
-
-
-        document.body.appendChild(link);
-
-        link.click();
-
-        link.remove();
-
-
-        setTimeout(
-            () => URL.revokeObjectURL(url),
-            1000
-        );
-
-    }
-);
-
-
-resetButton.addEventListener(
-    "click",
-    () => {
-
-        imageInput.value = "";
-
-        originalFile = null;
-
-        resultBlob = null;
-
-
-        originalPreview.removeAttribute(
-            "src"
-        );
-
-        resultPreview.removeAttribute(
-            "src"
-        );
-
-
-        previewSection.style.display =
-            "none";
-
-
-        removeButton.disabled =
-            true;
-
-
-        downloadButton.style.display =
-            "none";
-
-
-        hideProgress();
-
-
-        setStatus(
-            "Choose an image to start."
-        );
-
-    }
-);
-
+    setStatus("Choose an image to start.");
+});
 </script>
+
 
 </body>
 </html>
