@@ -692,25 +692,36 @@ for (const file of testFiles) {
 
         return segmenter;
 
-    } catch (error) {
+    
+} catch (error) {
 
-        loadingPromise = null;
+    loadingPromise = null;
+    segmenter = null;
+    hideProgress();
 
-        segmenter = null;
+    const details = [
+        "Background Remover Diagnostic",
+        "",
+        "Error: " + (error?.name || "Unknown"),
+        "Message: " + (error?.message || String(error)),
+        "Page: " + window.location.href,
+        "Online: " + navigator.onLine,
+        "",
+        "Check Console for the full error."
+    ].join("\n");
 
-        hideProgress();
+    console.error(
+        "Background remover model error:",
+        error
+    );
 
-        console.error(
-            "Background remover model error:",
-            error
-        );
+    console.error("Diagnostic details:", details);
 
-        throw error;
+    setStatus(details);
 
-    }
-
+    throw error;
 }
-
+}
 
 imageInput.addEventListener(
     "change",
