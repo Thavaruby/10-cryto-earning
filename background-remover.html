@@ -551,7 +551,8 @@ async function loadModel() {
                 ).href
             };*/
 
-            transformers.env.backends.onnx.wasm.wasmPaths = "/wasm/";
+            transformers.env.backends.onnx.wasm.wasmPaths =
+  new URL("/wasm/", window.location.origin).href;
 
     transformers.env.backends.onnx.wasm.numThreads = 1;
 
