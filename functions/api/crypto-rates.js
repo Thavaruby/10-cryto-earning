@@ -5,11 +5,7 @@ const ASSETS = [
   "ADA", "AVAX", "DOT", "LINK", "POL"
 ];
 
-const BASE_URL = "https://data-api.binance.vision/api/v3/ticker/price";
-
-export async function onRequest(context) {
-  const { request } = context;
-
+export async function onRequest({ request }) {
   if (request.method !== "GET") {
     return Response.json(
       { error: "Method not allowed" },
@@ -17,21 +13,18 @@ export async function onRequest(context) {
     );
   }
 
-  const symbols = ASSETS.map(asset => `${asset}USDT`);
-
   try {
-    const url = new URL(BASE_URL);
-    url.searchParams.set("symbols", JSON.stringify(symbols));
-
-    const response = await fetch(url.toString(), {
-      headers: { Accept: "application/json" },
-      signal: AbortSignal.timeout(8000),
-      cf: { cacheTtl: 30, cacheEverything: true }
-    });
+    const response = await fetch(
+      "https://data-api.binance.vision/api/v3/ticker/price",
+      {
+        headers: { Accept: "application/json" },
+        signal: AbortSignal.timeout(10000)
+      }
+    );
 
     if (!response.ok) {
       return Response.json(
-        { error: "Crypto rate provider unavailable" },
+        { error: "Crypto provider unavailable", upstreamStatus: response.status },
         { status: 502 }
       );
     }
@@ -40,15 +33,17 @@ export async function onRequest(context) {
 
     if (!Array.isArray(data)) {
       return Response.json(
-        { error: "Invalid crypto rate response" },
+        { error: "Invalid provider response" },
         { status: 502 }
       );
     }
 
-    const rates = {};
+    const available = new Map();
 
     for (const item of data) {
-      const asset = item.symbol.replace(/USDT$/, "");
+      if (!item.symbol?.endsWith("USDT")) continue;
+
+      const asset = item.symbol.slice(0, -4);
       const price = Number(item.price);
 
       if (
@@ -56,13 +51,18 @@ export async function onRequest(context) {
         Number.isFinite(price) &&
         price > 0
       ) {
-        rates[asset] = price;
+        available.set(asset, price);
       }
     }
 
-    if (!rates.BTC || !rates.ETH) {
+    const rates = Object.fromEntries(
+      ASSETS.filter(asset => available.has(asset))
+        .map(asset => [asset, available.get(asset)])
+    );
+
+    if (Object.keys(rates).length === 0) {
       return Response.json(
-        { error: "Required crypto rates unavailable" },
+        { error: "No supported crypto pairs available" },
         { status: 502 }
       );
     }
@@ -70,7 +70,6 @@ export async function onRequest(context) {
     return Response.json(
       {
         base: "USDT",
-        quote: "USDT",
         rates,
         source: "Binance public market data",
         fetchedAt: new Date().toISOString()
@@ -84,7 +83,7 @@ export async function onRequest(context) {
     );
   } catch {
     return Response.json(
-      { error: "Could not retrieve crypto rates. Please retry." },
+      { error: "Could not connect to crypto provider" },
       { status: 502 }
     );
   }
