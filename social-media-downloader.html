@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#07152f">
+  <title>Social Media Downloader — My Crypto Faucet</title>
+  <meta name="description" content="Prepare public media links for video, audio and image downloads. Download processing requires a compatible backend.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://myfaucetcrypto.com/social-media-downloader">
+  <style>
+    :root{color-scheme:dark;--bg:#07152f;--panel:#0d2042;--gold:#f5c542;--text:#f5f7ff;--muted:#b8c4dc;--line:rgba(255,255,255,.13)}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(ellipse at top,#122d59 0%,var(--bg) 58%);color:var(--text);line-height:1.55}a{color:var(--gold)}.wrap{width:min(900px,calc(100% - 32px));margin:auto}header{padding:22px 0;border-bottom:1px solid var(--line)}.brand{font-weight:800;color:var(--text);text-decoration:none}.brand span{color:var(--gold)}main{padding:42px 0 56px}.eyebrow{color:var(--gold);font-size:.82rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}h1{font-size:clamp(2rem,6vw,3.4rem);line-height:1.1;margin:12px 0}.intro{max-width:680px;color:var(--muted);margin:0 0 28px}.card{padding:clamp(20px,4vw,32px);background:linear-gradient(160deg,#10284f,#091a36);border:1px solid var(--line);border-radius:20px;box-shadow:0 18px 50px #0003}h2{font-size:1.3rem;margin:0 0 16px}label{display:block;font-weight:700;margin:0 0 8px}input,select{width:100%;min-width:0;min-height:50px;border:1px solid #ffffff33;border-radius:11px;background:#06142c;color:var(--text);padding:12px 14px;font:inherit}input::placeholder{color:#91a2c2}.url-row{display:flex;gap:10px}.paste-btn{min-height:50px;padding:12px 18px;border-radius:11px;border:1px solid var(--line);background:#10284f;color:var(--text);font:inherit;font-weight:700;white-space:nowrap;cursor:pointer}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}.primary-btn{width:100%;min-height:50px;margin-top:22px;padding:12px;border:0;border-radius:11px;background:#565d69;color:#e1e5ed;font:inherit;font-weight:800;cursor:not-allowed}.hint{color:var(--muted);font-size:.9rem;margin:9px 0 0}.status{margin-top:18px;padding:14px 16px;border:1px solid #f5c54255;border-radius:12px;background:#f5c54212;color:#f8e7ae;font-size:.94rem}.status strong{color:var(--gold)}.features{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}.feature{padding:16px;border:1px solid var(--line);border-radius:14px;background:#07152f73}.feature b{display:block;margin-bottom:5px}.feature p,.section p,.section li{color:var(--muted);font-size:.93rem}.feature p{margin:0}.section{margin-top:34px}.legal{border-top:1px solid var(--line);padding-top:18px;margin-top:28px}footer{border-top:1px solid var(--line);color:var(--muted);padding:20px 0 30px;font-size:.88rem}input:focus,select:focus,button:focus-visible{outline:3px solid #f5c542a6;outline-offset:2px}@media(max-width:640px){main{padding-top:30px}.url-row{flex-direction:column}.paste-btn{width:100%}.grid,.features{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header><div class="wrap"><a class="brand" href="/">My Crypto <span>Faucet</span></a></div></header>
+  <main class="wrap">
+    <div class="eyebrow">🛠️ Free Tools</div>
+    <h1>Social Media Downloader</h1>
+    <p class="intro">Prepare a public media link for video, audio or image downloads. Actual platform support depends on the downloader backend connected to this page.</p>
+    <section class="card" aria-labelledby="download-title">
+      <h2 id="download-title">Paste a media link</h2>
+      <form id="linkForm">
+        <label for="mediaUrl">Video or post URL</label>
+        <div class="url-row"><input id="mediaUrl" name="mediaUrl" type="url" inputmode="url" placeholder="https://…" autocomplete="url" required aria-describedby="urlHint platformStatus"><button class="paste-btn" id="pasteButton" type="button">Paste link</button></div>
+        <p class="hint" id="urlHint">Use a link you are allowed to access and download.</p>
+        <div class="grid">
+          <div><label for="platform">Detected platform</label><select id="platform" name="platform"><option value="unknown">Auto-detect from link</option><option value="youtube">YouTube</option><option value="instagram">Instagram</option><option value="tiktok">TikTok</option><option value="facebook">Facebook</option><option value="x">X (Twitter)</option><option value="other">Other / direct media link</option></select></div>
+          <div><label for="mediaType">Media type</label><select id="mediaType" name="mediaType"><option value="video">Video</option><option value="audio">Audio</option><option value="image">Image</option></select></div>
+        </div>
+        <p class="hint" id="platformStatus" aria-live="polite">Paste a URL to identify the platform.</p>
+        <button class="primary-btn" type="button" disabled aria-disabled="true">Downloader backend not connected</button>
+      </form>
+      <div class="status" role="status"><strong>Setup stage:</strong> This is the first HTML interface only. Download processing is not connected yet, so this page will not pretend to download media.</div>
+    </section>
+    <div class="features" aria-label="Service information">
+      <div class="feature"><b>🔗 Link-based</b><p>Paste a media URL instead of uploading a file.</p></div>
+      <div class="feature"><b>🎞️ Multiple media types</b><p>Video, audio and image choices are shown; availability depends on backend support.</p></div>
+      <div class="feature"><b>🔒 Privacy-minded</b><p>This page does not send the pasted URL to a server.</p></div>
+    </div>
+    <section class="section"><h2>How to use this tool</h2><ol><li>Copy a public media link.</li><li>Paste it above and choose the media type.</li><li>When a compatible backend is integrated, available download options can be shown here.</li></ol></section>
+    <section class="section legal"><h2>Responsible use</h2><p>Only download content you own or have permission to save. Respect copyright, privacy, platform terms and access restrictions. This tool does not bypass private-account restrictions, sign-in requirements or DRM.</p></section>
+  </main>
+  <footer><div class="wrap">© <span id="year"></span> My Crypto Faucet · Free Tools</div></footer>
+  <script>
+    (()=>{
+      const urlInput=document.getElementById('mediaUrl');
+      const platformSelect=document.getElementById('platform');
+      const status=document.getElementById('platformStatus');
+      const detect=hostname=>{
+        const host=hostname.toLowerCase().replace(/^www\./,'');
+        if(host==='youtube.com'||host==='youtu.be'||host.endsWith('.youtube.com'))return'youtube';
+        if(host==='instagram.com'||host.endsWith('.instagram.com'))return'instagram';
+        if(host==='tiktok.com'||host.endsWith('.tiktok.com'))return'tiktok';
+        if(host==='facebook.com'||host==='fb.watch'||host.endsWith('.facebook.com'))return'facebook';
+        if(host==='x.com'||host==='twitter.com'||host.endsWith('.x.com')||host.endsWith('.twitter.com'))return'x';
+        return'other';
+      };
+      const labels={youtube:'YouTube',instagram:'Instagram',tiktok:'TikTok',facebook:'Facebook',x:'X (Twitter)',other:'Other / direct media link'};
+      urlInput.addEventListener('input',()=>{
+        const value=urlInput.value.trim();
+        if(!value){platformSelect.value='unknown';status.textContent='Paste a URL to identify the platform.';return;}
+        try{const parsed=new URL(value);if(!['http:','https:'].includes(parsed.protocol))throw new Error();const platform=detect(parsed.hostname);platformSelect.value=platform;status.textContent='Detected: '+labels[platform]+'. This does not mean downloading is supported yet.';}
+        catch{platformSelect.value='unknown';status.textContent='Enter a complete URL beginning with https:// or http://.';}
+      });
+      document.getElementById('pasteButton').addEventListener('click',async()=>{
+        if(!navigator.clipboard?.readText){status.textContent='Clipboard access is unavailable. Press and hold the URL field, then choose Paste.';return;}
+        try{const pasted=(await navigator.clipboard.readText()).trim();if(!pasted){status.textContent='Your clipboard is empty.';return;}urlInput.value=pasted;urlInput.dispatchEvent(new Event('input'));}
+        catch{status.textContent='Clipboard permission was denied. Press and hold the URL field, then choose Paste.';}
+      });
+      document.getElementById('linkForm').addEventListener('submit',event=>event.preventDefault());
+      document.getElementById('year').textContent=new Date().getFullYear();
+    })();
+  </script>
+</body>
+</html>
