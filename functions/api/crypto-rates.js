@@ -15,7 +15,7 @@ export async function onRequest({ request }) {
 
   try {
     const response = await fetch(
-      "https://data-api.binance.vision/api/v3/ticker/price",
+      "https://api-gcp.binance.com/api/v3/ticker/price",
       {
         headers: { Accept: "application/json" },
         signal: AbortSignal.timeout(10000)
