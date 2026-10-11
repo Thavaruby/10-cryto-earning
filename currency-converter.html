@@ -1,539 +1,1197 @@
+<!DOCTYPE html>  <html lang="en">  
+<head>  
+<meta charset="UTF-8">  
+<meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>Free Crypto & Currency Converter | My Crypto Faucet</title>  
+<meta name="description" content="Convert cryptocurrencies to crypto, crypto to fiat, and fiat currencies to fiat currencies. Search currencies by symbol or name.">  
+<link rel="canonical" href="https://myfaucetcrypto.com/currency-converter.html">  
+<link rel="icon" type="image/png" href="assets/favico.png">  
+<meta name="robots" content="index, follow">  
+<meta name="theme-color" content="#07152f">  <style>  
+:root {  
+  --bg: #07152f;  
+  --panel: #0d2042;  
+  --panel2: #10274d;  
+  --gold: #f5c542;  
+  --text: #f5f7ff;  
+  --muted: #aab8d3;  
+  --border: #263d62;  
+  --green: #68e6ae;  
+  --red: #ff8585;  
+}  
+* { box-sizing: border-box; }  
+  
+body {  
+  margin: 0;  
+  background: var(--bg);  
+  color: var(--text);  
+  font-family: Arial, Helvetica, sans-serif;  
+  line-height: 1.6;  
+}  
+a { color: var(--gold); }  
+  
+header {  
+  padding: 18px 16px;  
+  border-bottom: 1px solid var(--border);  
+  background: #091a37;  
+}  
+.header-inner, main, footer {  
+  width: min(100% - 28px, 900px);  
+  margin: auto;  
+}  
+.brand {  
+  color: var(--gold);  
+  font-weight: 800;  
+  font-size: 20px;  
+  text-decoration: none;  
+}  
+.brand small {  
+  display: block;  
+  color: var(--muted);  
+  font-weight: 400;  
+  font-size: 12px;  
+}  
+main { padding: 30px 0 50px; }  
+  
+.hero {  
+  text-align: center;  
+  margin-bottom: 25px;  
+}  
+.hero h1 {  
+  margin: 0 0 8px;  
+  font-size: clamp(27px, 5vw, 38px);  
+  line-height: 1.2;  
+}  
+.hero h1 span { color: var(--gold); }  
+.hero p {  
+  color: var(--muted);  
+  margin: 12px auto;  
+  max-width: 650px;  
+}  
+  
+.converter {  
+  background: var(--panel);  
+  border: 1px solid var(--border);  
+  border-radius: 18px;  
+  padding: 22px;  
+  box-shadow: 0 12px 35px #0002;  
+}  
+  
+.tabs {  
+  display: grid;  
+  grid-template-columns: repeat(3, 1fr);  
+  gap: 8px;  
+  margin-bottom: 26px;  
+}  
+.tab {  
+  border: 1px solid var(--border);  
+  background: #091a37;  
+  color: var(--muted);  
+  padding: 12px 7px;  
+  border-radius: 10px;  
+  font-weight: 700;  
+  cursor: pointer;  
+  font-size: 13px;  
+}  
+.tab.active {  
+  background: var(--gold);  
+  color: #17213a;  
+  border-color: var(--gold);  
+}  
+  
+.field { min-width: 0; }  
+label {  
+  display: block;  
+  font-size: 14px;  
+  color: var(--muted);  
+  margin-bottom: 8px;  
+}  
+.amount-input,  
+.search-input {  
+  width: 100%;  
+  min-width: 0;  
+  border: 1px solid var(--border);  
+  border-radius: 10px;  
+  background: #081832;  
+  color: var(--text);  
+  padding: 13px 12px;  
+  font-size: 16px;  
+  outline: none;  
+}  
+.amount-input:focus,  
+.search-input:focus {  
+  border-color: var(--gold);  
+}  
+  
+.amount-row {  
+  display: grid;  
+  grid-template-columns: minmax(0, 1fr) minmax(110px, 0.55fr);  
+  gap: 14px;  
+  margin-bottom: 23px;  
+  align-items: end;  
+}  
+  
+.currency-row {  
+  display: grid;  
+  grid-template-columns: minmax(0, 1fr) 44px minmax(0, 1fr);  
+  align-items: end;  
+  gap: 10px;  
+}  
+.swap {  
+  width: 44px;  
+  height: 46px;  
+  margin-bottom: 0;  
+  border: 1px solid var(--border);  
+  border-radius: 10px;  
+  color: var(--gold);  
+  background: var(--panel2);  
+  font-size: 23px;  
+  cursor: pointer;  
+}  
+.swap:hover { border-color: var(--gold); }  
+  
+.picker {  
+  position: relative;  
+  min-width: 0;  
+}  
+.picker-trigger {  
+  width: 100%;  
+  min-height: 64px;  
+  display: flex;  
+  align-items: center;  
+  gap: 10px;  
+  text-align: left;  
+  padding: 10px;  
+  border: 1px solid var(--border);  
+  border-radius: 11px;  
+  color: var(--text);  
+  background: #081832;  
+  cursor: pointer;  
+}  
+.picker-trigger:hover,  
+.picker.open .picker-trigger {  
+  border-color: var(--gold);  
+}  
+.currency-icon {  
+  flex: 0 0 36px;  
+  width: 36px;  
+  height: 36px;  
+  border-radius: 50%;  
+  display: inline-flex;  
+  align-items: center;  
+  justify-content: center;  
+  overflow: hidden;  
+  background: #172d50;  
+  font-size: 23px;  
+}  
+.currency-icon img {  
+  width: 100%;  
+  height: 100%;  
+  object-fit: contain;  
+}  
+.currency-info {  
+  min-width: 0;  
+  flex: 1;  
+}  
+.currency-symbol {  
+  display: block;  
+  font-size: 15px;  
+  font-weight: 700;  
+  overflow-wrap: anywhere;  
+}  
+.currency-name {  
+  display: block;  
+  color: var(--muted);  
+  font-size: 11px;  
+  line-height: 1.35;  
+  overflow-wrap: anywhere;  
+}  
+.picker-arrow {  
+  color: var(--muted);  
+  font-size: 13px;  
+  flex-shrink: 0;  
+}  
+  
+.picker-menu {  
+  display: none;  
+  position: absolute;  
+  z-index: 50;  
+  top: calc(100% + 7px);  
+  left: 0;  
+  width: max(100%, 250px);  
+  max-width: min(340px, 85vw);  
+  padding: 9px;  
+  border: 1px solid var(--border);  
+  border-radius: 12px;  
+  background: #0a1933;  
+  box-shadow: 0 15px 35px #0008;  
+}  
+.picker.open .picker-menu { display: block; }  
+.picker-search-wrap {  
+  position: relative;  
+  margin-bottom: 8px;  
+}  
+.picker-search {  
+  width: 100%;  
+  padding: 12px 35px 12px 12px;  
+  border: 1px solid var(--border);  
+  border-radius: 9px;  
+  background: #07152f;  
+  color: var(--text);  
+  font-size: 14px;  
+  outline: none;  
+}  
+.picker-search:focus { border-color: var(--gold); }  
+.search-symbol {  
+  position: absolute;  
+  right: 12px;  
+  top: 50%;  
+  transform: translateY(-50%);  
+  color: var(--muted);  
+  pointer-events: none;  
+}  
+.picker-list {  
+  max-height: 255px;  
+  overflow-y: auto;  
+  overscroll-behavior: contain;  
+}  
+.picker-option {  
+  width: 100%;  
+  display: flex;  
+  align-items: center;  
+  gap: 10px;  
+  padding: 9px;  
+  border: 0;  
+  border-radius: 8px;  
+  background: transparent;  
+  color: var(--text);  
+  text-align: left;  
+  cursor: pointer;  
+}  
+.picker-option:hover,  
+.picker-option:focus-visible {  
+  background: #18345d;  
+  outline: none;  
+}  
+.picker-option.selected {  
+  background: #172d50;  
+}  
+.no-results {  
+  color: var(--muted);  
+  padding: 14px 8px;  
+  text-align: center;  
+  font-size: 13px;  
+}  
+.picker-hint {  
+  margin-top: 6px;  
+  color: var(--muted);  
+  font-size: 11px;  
+}  
+  
+.result {  
+  margin-top: 25px;  
+  padding: 20px;  
+  border-radius: 13px;  
+  border: 1px solid #695b25;  
+  background: #151f35;  
+}  
+.result-top {  
+  display: flex;  
+  justify-content: space-between;  
+  align-items: center;  
+  gap: 10px;  
+}  
+.result-label {  
+  color: var(--muted);  
+  font-size: 14px;  
+}  
+.answer-icon {  
+  color: var(--gold);  
+  font-size: 22px;  
+}  
+.result-value {  
+  color: var(--gold);  
+  font-size: clamp(25px, 5vw, 35px);  
+  font-weight: 800;  
+  overflow-wrap: anywhere;  
+  line-height: 1.35;  
+  margin: 10px 0;  
+}  
+.result-detail {  
+  color: var(--muted);  
+  font-size: 13px;  
+  overflow-wrap: anywhere;  
+}  
+.status {  
+  font-size: 13px;  
+  margin-top: 15px;  
+  color: var(--muted);  
+  overflow-wrap: anywhere;  
+}  
+.status.error { color: var(--red); }  
+.status.ok { color: var(--green); }  
+  
+.note {  
+  color: var(--muted);  
+  font-size: 13px;  
+  margin-top: 18px;  
+}  
+section.info {  
+  margin-top: 28px;  
+  padding: 22px;  
+  border: 1px solid var(--border);  
+  border-radius: 14px;  
+  background: var(--panel);  
+}  
+.info h2 { font-size: 21px; margin-top: 0; }  
+.info p, .info li { color: var(--muted); }  
+  
+footer {  
+  padding: 22px 0 35px;  
+  border-top: 1px solid var(--border);  
+  color: var(--muted);  
+  font-size: 13px;  
+  text-align: center;  
+}  
+  
+@media (max-width: 540px) {  
+  .converter { padding: 14px; }  
+  .tabs { gap: 5px; }  
+  .tab {  
+    font-size: 11px;  
+    padding: 11px 3px;  
+  }  
+  .amount-row {  
+    grid-template-columns: minmax(0, 1fr) minmax(85px, 0.55fr);  
+    gap: 9px;  
+  }  
+  .currency-row {  
+    grid-template-columns: minmax(0, 1fr) 34px minmax(0, 1fr);  
+    gap: 6px;  
+  }  
+  .swap { width: 34px; font-size: 19px; }  
+  .picker-trigger {  
+    min-height: 60px;  
+    padding: 7px;  
+    gap: 6px;  
+  }  
+  .currency-icon {  
+    flex-basis: 29px;  
+    width: 29px;  
+    height: 29px;  
+    font-size: 19px;  
+  }  
+  .currency-symbol { font-size: 13px; }  
+  .currency-name { font-size: 10px; }  
+  .picker-arrow { font-size: 11px; }  
+  .amount-input { padding: 12px 8px; font-size: 15px; }  
+  .result { padding: 16px; }  
+}  
+</style>  </head>  <body>  
+<header>  
+  <div class="header-inner">  
+    <a class="brand" href="/">My Crypto Faucet  
+      <small>Crypto & Currency Tools</small>  
+    </a>  
+  </div>  
+</header>  <main>  
+  <div class="hero">  
+    <h1>Currency <span>Converter</span></h1>  
+    <p>Search by currency symbol or name and convert crypto and fiat currencies easily.</p>  
+  </div>    <div class="converter">  
+    <div class="tabs" role="tablist" aria-label="Conversion type">  
+      <button class="tab active" data-mode="crypto" role="tab" aria-selected="true">Crypto → Crypto</button>  
+      <button class="tab" data-mode="cryptoFiat" role="tab" aria-selected="false">Crypto → Fiat</button>  
+      <button class="tab" data-mode="fiat" role="tab" aria-selected="false">Fiat → Fiat</button>  
+    </div>  <div class="amount-row">  
+  <div class="field">  
+    <label>Select from</label>  
+    <div id="fromPicker" class="picker">  
+      <button class="picker-trigger" type="button" aria-expanded="false" aria-label="Select source currency">  
+        <span class="currency-icon">🌐</span>  
+        <span class="currency-info">  
+          <span class="currency-symbol">Loading…</span>  
+          <span class="currency-name">Currency</span>  
+        </span>  
+        <span class="picker-arrow">▼</span>  
+      </button>  
+      <div class="picker-menu">  
+        <div class="picker-search-wrap">  
+          <input class="picker-search" type="search" placeholder="Search symbol or name…" autocomplete="off" aria-label="Search source currencies">  
+          <span class="search-symbol">⌕</span>  
+        </div>  
+        <div class="picker-list"></div>  
+        <div class="picker-hint">Type a symbol or any part of a name.</div>  
+      </div>  
+    </div>  
+  </div>  
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Free Crypto & Currency Converter | My Crypto Faucet</title>
-<meta name="description" content="Convert cryptocurrencies to crypto, crypto to fiat, and fiat currencies to fiat currencies. Search currencies by symbol or name.">
-<link rel="canonical" href="https://myfaucetcrypto.com/currency-converter.html">
-<link rel="icon" type="image/png" href="assets/favico.png">
-<meta name="robots" content="index, follow">
-<meta name="theme-color" content="#07152f">
+  <div class="field">  
+    <label for="amount">Amount</label>  
+    <input id="amount" class="amount-input" type="number" min="0" step="any" value="1" inputmode="decimal" placeholder="Amount">  
+  </div>  
+</div>  
 
-<style>
-:root {
-  --bg:#07152f;--panel:#0d2042;--panel2:#10274d;
-  --gold:#f5c542;--text:#f5f7ff;--muted:#aab8d3;
-  --border:#263d62;--green:#68e6ae;--red:#ff8585;
-}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif;line-height:1.6}
-a{color:var(--gold)}
-header{padding:18px 16px;border-bottom:1px solid var(--border);background:#091a37}
-.header-inner,main,footer{width:min(100% - 28px,900px);margin:auto}
-.brand{color:var(--gold);font-weight:800;font-size:20px;text-decoration:none}
-.brand small{display:block;color:var(--muted);font-size:12px;font-weight:400}
-main{padding:30px 0 50px}
-.hero{text-align:center;margin-bottom:25px}
-.hero h1{margin:0 0 8px;font-size:clamp(27px,5vw,38px);line-height:1.2}
-.hero h1 span{color:var(--gold)}
-.hero p{color:var(--muted);margin:12px auto;max-width:650px}
-.converter{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:22px;box-shadow:0 12px 35px #0002}
-.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:26px}
-.tab{border:1px solid var(--border);background:#091a37;color:var(--muted);padding:12px 7px;border-radius:10px;font-weight:700;cursor:pointer;font-size:13px}
-.tab.active{background:var(--gold);color:#17213a;border-color:var(--gold)}
-.field{min-width:0}
-label{display:block;font-size:14px;color:var(--muted);margin-bottom:8px}
-.amount-input,.search-input{width:100%;min-width:0;border:1px solid var(--border);border-radius:10px;background:#081832;color:var(--text);padding:13px 12px;font-size:16px;outline:none}
-.amount-input:focus,.search-input:focus{border-color:var(--gold)}
-.amount-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(110px,.55fr);gap:14px;margin-bottom:23px;align-items:end}
-.currency-row{display:grid;grid-template-columns:minmax(0,1fr) 44px minmax(0,1fr);align-items:end;gap:10px}
-.swap{width:44px;height:46px;border:1px solid var(--border);border-radius:10px;color:var(--gold);background:var(--panel2);font-size:23px;cursor:pointer}
-.picker{position:relative;min-width:0}
-.picker-trigger{width:100%;min-height:64px;display:flex;align-items:center;gap:10px;text-align:left;padding:10px;border:1px solid var(--border);border-radius:11px;color:var(--text);background:#081832;cursor:pointer}
-.picker-trigger:hover,.picker.open .picker-trigger{border-color:var(--gold)}
-.currency-icon{flex:0 0 36px;width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;overflow:hidden;background:#172d50;font-size:23px}
-.currency-icon img{width:100%;height:100%;object-fit:contain}
-.currency-info{min-width:0;flex:1}
-.currency-symbol{display:block;font-size:15px;font-weight:700;overflow-wrap:anywhere}
-.currency-name{display:block;color:var(--muted);font-size:11px;line-height:1.35;overflow-wrap:anywhere}
-.picker-arrow{color:var(--muted);font-size:13px;flex-shrink:0}
-.picker-menu{display:none;position:absolute;z-index:50;top:calc(100% + 7px);left:0;width:max(100%,250px);max-width:min(340px,85vw);padding:9px;border:1px solid var(--border);border-radius:12px;background:#0a1933;box-shadow:0 15px 35px #0008}
-.picker.open .picker-menu{display:block}
-.picker-search-wrap{position:relative;margin-bottom:8px}
-.picker-search{width:100%;padding:12px 35px 12px 12px;border:1px solid var(--border);border-radius:9px;background:#07152f;color:var(--text);font-size:14px;outline:none}
-.picker-search:focus{border-color:var(--gold)}
-.search-symbol{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
-.picker-list{max-height:255px;overflow-y:auto;overscroll-behavior:contain}
-.picker-option{width:100%;display:flex;align-items:center;gap:10px;padding:9px;border:0;border-radius:8px;background:transparent;color:var(--text);text-align:left;cursor:pointer}
-.picker-option:hover,.picker-option:focus-visible,.picker-option.selected{background:#18345d;outline:none}
-.no-results{color:var(--muted);padding:14px 8px;text-align:center;font-size:13px}
-.picker-hint{margin-top:6px;color:var(--muted);font-size:11px}
+<div class="currency-row">  
+  <div class="field">  
+    <label>Convert to</label>  
+    <div id="toPicker" class="picker">  
+      <button class="picker-trigger" type="button" aria-expanded="false" aria-label="Select target currency">  
+        <span class="currency-icon">🌐</span>  
+        <span class="currency-info">  
+          <span class="currency-symbol">Loading…</span>  
+          <span class="currency-name">Currency</span>  
+        </span>  
+        <span class="picker-arrow">▼</span>  
+      </button>  
+      <div class="picker-menu">  
+        <div class="picker-search-wrap">  
+          <input class="picker-search" type="search" placeholder="Search symbol or name…" autocomplete="off" aria-label="Search target currencies">  
+          <span class="search-symbol">⌕</span>  
+        </div>  
+        <div class="picker-list"></div>  
+        <div class="picker-hint">Type a symbol or any part of a name.</div>  
+      </div>  
+    </div>  
+  </div>  
 
-/* Answer box */
-.result{margin-top:25px;padding:20px;border-radius:13px;border:1px solid #695b25;background:#151f35}
-.result-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.result-label{color:var(--muted);font-size:14px}
-.answer-icons{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;flex-shrink:0;margin-left:8px}
-.answer-currency-icon{width:38px;height:32px;display:flex;align-items:center;justify-content:center;font-size:27px;line-height:1}
-.answer-currency-icon img{width:30px;height:30px;object-fit:contain}
-.answer-currency-line{width:2px;height:13px;background:var(--gold);border-radius:2px}
-.result-value{color:var(--gold);font-size:clamp(25px,5vw,35px);font-weight:800;overflow-wrap:anywhere;line-height:1.35;margin:10px 0}
-.result-detail{color:var(--muted);font-size:13px;overflow-wrap:anywhere}
-.status{font-size:13px;margin-top:15px;color:var(--muted);overflow-wrap:anywhere}
-.status.error{color:var(--red)}.status.ok{color:var(--green)}
-.note{color:var(--muted);font-size:13px;margin-top:18px}
-section.info{margin-top:28px;padding:22px;border:1px solid var(--border);border-radius:14px;background:var(--panel)}
-.info h2{font-size:21px;margin-top:0}
-.info p,.info li{color:var(--muted)}
-footer{padding:22px 0 35px;border-top:1px solid var(--border);color:var(--muted);font-size:13px;text-align:center}
-@media(max-width:540px){
- .converter{padding:14px}.tabs{gap:5px}
- .tab{font-size:11px;padding:11px 3px}
- .amount-row{grid-template-columns:minmax(0,1fr) minmax(85px,.55fr);gap:9px}
- .currency-row{grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr);gap:6px}
- .swap{width:34px;font-size:19px}
- .picker-trigger{min-height:60px;padding:7px;gap:6px}
- .currency-icon{flex-basis:29px;width:29px;height:29px;font-size:19px}
- .currency-symbol{font-size:13px}.currency-name{font-size:10px}
- .picker-arrow{font-size:11px}
- .amount-input{padding:12px 8px;font-size:15px}
- .result{padding:16px}
-}
-</style>
-</head>
+  <button id="swap" class="swap" type="button" aria-label="Swap currencies" title="Swap currencies">⇄</button>  
 
-<body>
-<header>
- <div class="header-inner">
-  <a class="brand" href="/">My Crypto Faucet<small>Crypto & Currency Tools</small></a>
- </div>
-</header>
+  <div class="field">  
+    <label>Quick search</label>  
+    <input id="quickSearch" class="search-input" type="search" placeholder="e.g. USD, Bitcoin" autocomplete="off" aria-label="Search available currencies">  
+  </div>  
+</div>  
 
-<main>
- <div class="hero">
-  <h1>Currency <span>Converter</span></h1>
-  <p>Search by currency symbol or name and convert crypto and fiat currencies easily.</p>
- </div>
+<div class="result" aria-live="polite">  
+  <div class="result-top">  
+    <div class="result-label">Answer</div>  
+    <div id="answerIcon" class="answer-icon">✦</div>  
+  </div>  
+  <div id="result" class="result-value">Loading rates…</div>  
+  <div id="detail" class="result-detail"></div>  
+</div>  
 
- <div class="converter">
-  <div class="tabs" role="tablist" aria-label="Conversion type">
-   <button class="tab active" data-mode="crypto" role="tab" aria-selected="true">Crypto → Crypto</button>
-   <button class="tab" data-mode="cryptoFiat" role="tab" aria-selected="false">Crypto → Fiat</button>
-   <button class="tab" data-mode="fiat" role="tab" aria-selected="false">Fiat → Fiat</button>
-  </div>
+<div id="status" class="status" role="status">Loading market data…</div>  
 
-  <div class="amount-row">
-   <div class="field">
-    <label>Select from</label>
-    <div id="fromPicker" class="picker">
-     <button class="picker-trigger" type="button" aria-expanded="false" aria-label="Select source currency">
-      <span class="currency-icon">🌐</span>
-      <span class="currency-info"><span class="currency-symbol">Loading…</span><span class="currency-name">Currency</span></span>
-      <span class="picker-arrow">▼</span>
-     </button>
-     <div class="picker-menu">
-      <div class="picker-search-wrap"><input class="picker-search" type="search" placeholder="Search symbol or name…" autocomplete="off" aria-label="Search source currencies"><span class="search-symbol">⌕</span></div>
-      <div class="picker-list"></div><div class="picker-hint">Type a symbol or any part of a name.</div>
-     </div>
-    </div>
-   </div>
-   <div class="field">
-    <label for="amount">Amount</label>
-    <input id="amount" class="amount-input" type="number" min="0" step="any" value="1" inputmode="decimal" placeholder="Amount">
-   </div>
-  </div>
+<p class="note">  
+  Crypto prices use Binance Spot market data and may be approximate.  
+  Fiat rates are reference rates and may differ from rates offered by banks or exchanges.  
+</p>
 
-  <div class="currency-row">
-   <div class="field">
-    <label>Convert to</label>
-    <div id="toPicker" class="picker">
-     <button class="picker-trigger" type="button" aria-expanded="false" aria-label="Select target currency">
-      <span class="currency-icon">🌐</span>
-      <span class="currency-info"><span class="currency-symbol">Loading…</span><span class="currency-name">Currency</span></span>
-      <span class="picker-arrow">▼</span>
-     </button>
-     <div class="picker-menu">
-      <div class="picker-search-wrap"><input class="picker-search" type="search" placeholder="Search symbol or name…" autocomplete="off" aria-label="Search target currencies"><span class="search-symbol">⌕</span></div>
-      <div class="picker-list"></div><div class="picker-hint">Type a symbol or any part of a name.</div>
-     </div>
-    </div>
-   </div>
-   <button id="swap" class="swap" type="button" aria-label="Swap currencies" title="Swap currencies">⇄</button>
-   <div class="field">
-    <label>Quick search</label>
-    <input id="quickSearch" class="search-input" type="search" placeholder="e.g. USD, Bitcoin" autocomplete="off" aria-label="Search available currencies">
-   </div>
-  </div>
-
-  <div class="result" aria-live="polite">
-   <div class="result-top">
-    <div class="result-label">Answer</div>
-    <div class="answer-icons" aria-label="Source and target currencies">
-     <div id="answerFromIcon" class="answer-currency-icon">🌐</div>
-     <div class="answer-currency-line"></div>
-     <div id="answerToIcon" class="answer-currency-icon">🌐</div>
-    </div>
-   </div>
-   <div id="result" class="result-value">Loading rates…</div>
-   <div id="detail" class="result-detail"></div>
-  </div>
-
-  <div id="status" class="status" role="status">Loading market data…</div>
-  <p class="note">Crypto prices use Binance Spot market data and may be approximate. Fiat rates are reference rates and may differ from rates offered by banks or exchanges.</p>
- </div>
-
- <section class="info">
-  <h2>How to use the converter</h2>
-  <ul>
-   <li><strong>Crypto → Crypto:</strong> estimate one cryptocurrency's value in another.</li>
-   <li><strong>Crypto → Fiat:</strong> estimate a cryptocurrency's value in EUR, USD, GBP and other supported currencies.</li>
-   <li><strong>Fiat → Fiat:</strong> convert between supported national currencies.</li>
-  </ul>
-  <p>Crypto prices can change continuously. Fiat reference rates are updated periodically on working days and may be delayed on weekends or holidays.</p>
- </section>
-</main>
-
-<footer>
- <p>© <span id="year"></span> My Crypto Faucet. For information only; not financial advice.</p>
- <p><a href="/">Home</a></p>
-</footer>
-
-<script>
-(() => {
-"use strict";
-
-const CRYPTO_API="/api/converter/crypto-rates";
-const FIAT_API="https://api.frankfurter.dev/v2";
-const amountEl=document.getElementById("amount");
-const resultEl=document.getElementById("result");
-const detailEl=document.getElementById("detail");
-const statusEl=document.getElementById("status");
-const quickSearchEl=document.getElementById("quickSearch");
-const answerFromIconEl=document.getElementById("answerFromIcon");
-const answerToIconEl=document.getElementById("answerToIcon");
-const tabs=[...document.querySelectorAll(".tab")];
-
-let mode="crypto",cryptoRates={},fiatRates={},fiatNames={},fiatDate="",cryptoDate="",loading=false;
-let cryptoItems=[],fiatItems=[],fromItems=[],toItems=[];
-let fromCode="BTC",toCode="ETH";
-
-const cryptoNames={
- BTC:"Bitcoin",ETH:"Ethereum",BNB:"BNB",SOL:"Solana",XRP:"XRP",
- DOGE:"Dogecoin",ADA:"Cardano",TRX:"TRON",TON:"Toncoin",LTC:"Litecoin",
- BCH:"Bitcoin Cash",POL:"POL",USDT:"Tether",USDC:"USD Coin",SUI:"Sui",
- AVAX:"Avalanche",DOT:"Polkadot",LINK:"Chainlink",SHIB:"Shiba Inu",
- XLM:"Stellar",ETC:"Ethereum Classic",UNI:"Uniswap",NEAR:"NEAR Protocol",
- APT:"Aptos",FIL:"Filecoin",ATOM:"Cosmos",ICP:"Internet Computer",
- ARB:"Arbitrum",OP:"Optimism",AAVE:"Aave",PEPE:"Pepe",
- WBTC:"Wrapped Bitcoin",WETH:"Wrapped Ether"
-};
-
-const fiatFallback={
- EUR:"Euro",USD:"United States Dollar",GBP:"British Pound",JPY:"Japanese Yen",
- CHF:"Swiss Franc",CAD:"Canadian Dollar",AUD:"Australian Dollar",INR:"Indian Rupee",
- LKR:"Sri Lankan Rupee",CNY:"Chinese Yuan",SGD:"Singapore Dollar",AED:"UAE Dirham",
- NZD:"New Zealand Dollar",BRL:"Brazilian Real",ZAR:"South African Rand",
- SEK:"Swedish Krona",NOK:"Norwegian Krone",DKK:"Danish Krone",PLN:"Polish Zloty",
- CZK:"Czech Koruna",HUF:"Hungarian Forint",TRY:"Turkish Lira",THB:"Thai Baht",
- PHP:"Philippine Peso",IDR:"Indonesian Rupiah",MYR:"Malaysian Ringgit",
- KRW:"South Korean Won",MXN:"Mexican Peso",SAR:"Saudi Riyal",QAR:"Qatari Riyal",
- KWD:"Kuwaiti Dinar",BDT:"Bangladeshi Taka",NPR:"Nepalese Rupee",
- PKR:"Pakistani Rupee",NGN:"Nigerian Naira",EGP:"Egyptian Pound",
- MAD:"Moroccan Dirham",ILS:"Israeli New Shekel",RON:"Romanian Leu",
- BGN:"Bulgarian Lev",UAH:"Ukrainian Hryvnia",VND:"Vietnamese Dong",
- CLP:"Chilean Peso",COP:"Colombian Peso",ARS:"Argentine Peso",
- PEN:"Peruvian Sol",ISK:"Icelandic Krona",HKD:"Hong Kong Dollar"
-};
-
-const flags={
- EUR:"🇪🇺",USD:"🇺🇸",GBP:"🇬🇧",JPY:"🇯🇵",CHF:"🇨🇭",CAD:"🇨🇦",
- AUD:"🇦🇺",INR:"🇮🇳",LKR:"🇱🇰",CNY:"🇨🇳",SGD:"🇸🇬",AED:"🇦🇪",
- NZD:"🇳🇿",BRL:"🇧🇷",ZAR:"🇿🇦",SEK:"🇸🇪",NOK:"🇳🇴",DKK:"🇩🇰",
- PLN:"🇵🇱",CZK:"🇨🇿",HUF:"🇭🇺",TRY:"🇹🇷",THB:"🇹🇭",PHP:"🇵🇭",
- IDR:"🇮🇩",MYR:"🇲🇾",KRW:"🇰🇷",MXN:"🇲🇽",SAR:"🇸🇦",QAR:"🇶🇦",
- KWD:"🇰🇼",BDT:"🇧🇩",NPR:"🇳🇵",PKR:"🇵🇰",NGN:"🇳🇬",EGP:"🇪🇬",
- MAD:"🇲🇦",ILS:"🇮🇱",RON:"🇷🇴",BGN:"🇧🇬",UAH:"🇺🇦",VND:"🇻🇳",
- CLP:"🇨🇱",COP:"🇨🇴",ARS:"🇦🇷",PEN:"🇵🇪",ISK:"🇮🇸",HKD:"🇭🇰"
-};
-
-function setStatus(message,type=""){
- statusEl.textContent=message;
- statusEl.className="status"+(type?" "+type:"");
-}
-function formatNumber(value,max=8){
- if(!Number.isFinite(value))return "—";
- return new Intl.NumberFormat("en-US",{maximumFractionDigits:max,minimumFractionDigits:0}).format(value);
-}
-/* Fiat outputs: exactly 2 decimal places. Crypto-to-crypto is unchanged. */
-function formatCurrency(value,currency){
- try{
-  return new Intl.NumberFormat("en-US",{
-   style:"currency",currency,minimumFractionDigits:2,maximumFractionDigits:2
-  }).format(value);
- }catch{
-  return formatNumber(value,2)+" "+currency;
- }
-}
-function iconFor(item){
- if(!item)return {emoji:"🌐",image:""};
- if(item.type==="fiat")return {emoji:flags[item.code]||"💱",image:""};
- return {
-  emoji:"🪙",
-  image:"https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@master/32/color/"+
-   encodeURIComponent(item.code.toLowerCase())+".png"
- };
-}
-function renderIcon(element,item){
- if(!item){element.textContent="🌐";return;}
- const visual=iconFor(item);
- element.replaceChildren();
- if(visual.image){
-  const img=document.createElement("img");
-  img.alt=item.code;
-  img.loading="lazy";
-  img.src=visual.image;
-  img.onerror=()=>{element.textContent=visual.emoji;};
-  element.appendChild(img);
- }else{
-  element.textContent=visual.emoji;
- }
-}
-function updateAnswerIcons(){
- const from=[...fromItems,...toItems].find(item=>item.code===fromPicker.getValue());
- const to=[...fromItems,...toItems].find(item=>item.code===toPicker.getValue());
- renderIcon(answerFromIconEl,from);
- renderIcon(answerToIconEl,to);
-}
-
-const fromPicker=createPicker("fromPicker");
-const toPicker=createPicker("toPicker");
-
-function createPicker(id){
- const root=document.getElementById(id);
- const trigger=root.querySelector(".picker-trigger");
- const search=root.querySelector(".picker-search");
- const list=root.querySelector(".picker-list");
- const icon=trigger.querySelector(".currency-icon");
- const symbol=trigger.querySelector(".currency-symbol");
- const name=trigger.querySelector(".currency-name");
-
- const picker={
-  root,trigger,search,list,icon,symbol,name,selected:"",items:[],
-  setItems(items,preferred){
-   this.items=items;
-   if(!items.some(item=>item.code===this.selected)){
-    this.selected=items.some(item=>item.code===preferred)?preferred:(items[0]?.code||"");
-   }
-   this.renderSelected();this.renderList();
-  },
-  setValue(code){
-   if(this.items.some(item=>item.code===code)){
-    this.selected=code;this.renderSelected();this.renderList();
-   }
-  },
-  getValue(){return this.selected;},
-  renderSelected(){
-   const item=this.items.find(x=>x.code===this.selected);
-   if(!item){
-    icon.textContent="🌐";symbol.textContent="Select currency";name.textContent="Search symbol or name";return;
-   }
-   symbol.textContent=item.code;name.textContent=item.name;
-   renderIcon(icon,item);
-  },
-  renderList(){
-   const query=this.search.value.trim().toLowerCase();
-   const matches=this.items.filter(item=>item.code.toLowerCase().includes(query)||item.name.toLowerCase().includes(query));
-   this.list.replaceChildren();
-   if(!matches.length){
-    const empty=document.createElement("div");
-    empty.className="no-results";empty.textContent="No matching currencies found";
-    this.list.appendChild(empty);return;
-   }
-   const fragment=document.createDocumentFragment();
-   for(const item of matches){
-    const button=document.createElement("button");
-    button.type="button";
-    button.className="picker-option"+(item.code===this.selected?" selected":"");
-    const iconWrap=document.createElement("span");iconWrap.className="currency-icon";
-    renderIcon(iconWrap,item);
-    const info=document.createElement("span");info.className="currency-info";
-    const codeLabel=document.createElement("span");codeLabel.className="currency-symbol";codeLabel.textContent=item.code;
-    const nameLabel=document.createElement("span");nameLabel.className="currency-name";nameLabel.textContent=item.name;
-    info.append(codeLabel,nameLabel);button.append(iconWrap,info);
-    button.addEventListener("click",()=>{
-     this.selected=item.code;this.renderSelected();this.close();
-     this.search.value="";this.renderList();
-     if(this===fromPicker)fromCode=item.code;
-     if(this===toPicker)toCode=item.code;
-     convert();
-    });
-    fragment.appendChild(button);
-   }
-   this.list.appendChild(fragment);
-  },
-  open(){
-   closeAllPickers(this);this.root.classList.add("open");
-   this.trigger.setAttribute("aria-expanded","true");
-   this.search.value="";this.renderList();this.search.focus();
-  },
-  close(){
-   this.root.classList.remove("open");this.trigger.setAttribute("aria-expanded","false");
-  }
- };
- trigger.addEventListener("click",()=>root.classList.contains("open")?picker.close():picker.open());
- search.addEventListener("input",()=>picker.renderList());
- search.addEventListener("keydown",event=>{
-  if(event.key==="Escape"){picker.close();trigger.focus();}
-  if(event.key==="Enter"){const first=list.querySelector(".picker-option");if(first)first.click();}
- });
- return picker;
-}
-function closeAllPickers(except){
- [fromPicker,toPicker].forEach(p=>{if(p&&p!==except)p.close();});
-}
-document.addEventListener("click",event=>{
- [fromPicker,toPicker].forEach(p=>{if(p&&!p.root.contains(event.target))p.close();});
-});
-
-function getCryptoItems(){
- return Object.keys(cryptoRates)
-  .filter(code=>Number.isFinite(Number(cryptoRates[code]))&&Number(cryptoRates[code])>0)
-  .sort((a,b)=>a.localeCompare(b))
-  .map(code=>({code,name:cryptoNames[code]||code,type:"crypto"}));
-}
-function getFiatItems(){
- return Object.keys(fiatRates)
-  .filter(code=>Number.isFinite(Number(fiatRates[code]))&&Number(fiatRates[code])>0)
-  .sort((a,b)=>a.localeCompare(b))
-  .map(code=>({code,name:fiatNames[code]||fiatFallback[code]||code,type:"fiat"}));
-}
-function rebuildPickers(previousFrom,previousTo){
- cryptoItems=getCryptoItems();fiatItems=getFiatItems();
- if(mode==="crypto"){fromItems=cryptoItems;toItems=cryptoItems;}
- else if(mode==="cryptoFiat"){fromItems=cryptoItems;toItems=fiatItems;}
- else{fromItems=fiatItems;toItems=fiatItems;}
- fromPicker.setItems(fromItems,previousFrom);
- toPicker.setItems(toItems,previousTo);
- fromCode=fromPicker.getValue();toCode=toPicker.getValue();
- if(fromCode&&fromCode===toCode&&toItems.length>1){
-  const alternative=toItems.find(item=>item.code!==fromCode);
-  if(alternative){toPicker.setValue(alternative.code);toCode=alternative.code;}
- }
- updateAnswerIcons();
-}
-
-async function loadCryptoRates(){
- const response=await fetch(CRYPTO_API,{headers:{Accept:"application/json"},cache:"no-store"});
- if(!response.ok)throw new Error("Crypto rate API returned HTTP "+response.status);
- const data=await response.json();
- if(!data||!data.rates||typeof data.rates!=="object")throw new Error("Crypto API returned invalid rate data");
- const clean={};
- for(const [code,value] of Object.entries(data.rates)){
-  const rate=Number(value);
-  if(/^[A-Z0-9]{2,20}$/.test(code)&&Number.isFinite(rate)&&rate>0)clean[code]=rate;
- }
- if(!clean.USDT)clean.USDT=1;
- cryptoRates=clean;cryptoDate=data.fetchedAt||"";
-}
-async function loadFiatRates(){
- const response=await fetch(FIAT_API+"/rates?base=EUR",{headers:{Accept:"application/json"},cache:"no-store"});
- if(!response.ok)throw new Error("Fiat rate API returned HTTP "+response.status);
- const data=await response.json();
- if(!Array.isArray(data))throw new Error("Fiat API returned invalid rate data");
- const rates={EUR:1};const names={...fiatFallback};let latestDate="";
- for(const row of data){
-  if(!row||!row.base||!row.quote)continue;
-  const rate=Number(row.rate);
-  if(!Number.isFinite(rate)||rate<=0)continue;
-  rates[String(row.quote).toUpperCase()]=rate;
-  if(row.date&&(!latestDate||row.date>latestDate))latestDate=row.date;
- }
- fiatRates=rates;fiatNames=names;fiatDate=latestDate;
-}
-
-function convert(){
- const amount=Number(amountEl.value);
- const from=fromPicker.getValue(),to=toPicker.getValue();
- updateAnswerIcons();
-
- if(loading){resultEl.textContent="Loading rates…";detailEl.textContent="";return;}
- if(amountEl.value.trim()===""||!Number.isFinite(amount)||amount<0){
-  resultEl.textContent="Enter a valid amount";detailEl.textContent="";return;
- }
- if(!from||!to){resultEl.textContent="Select currencies";detailEl.textContent="";return;}
-
- let converted,explanation;
- if(mode==="crypto"){
-  const fromPrice=Number(cryptoRates[from]),toPrice=Number(cryptoRates[to]);
-  if(!(fromPrice>0)||!(toPrice>0)){resultEl.textContent="Rate unavailable";detailEl.textContent="";return;}
-  converted=amount*fromPrice/toPrice;
-  explanation="Approximate crypto prices in USDT. 1 "+from+" ≈ "+formatNumber(fromPrice,8)+" USDT.";
- }else if(mode==="cryptoFiat"){
-  const cryptoPrice=Number(cryptoRates[from]),targetRate=Number(fiatRates[to]),usdRate=Number(fiatRates.USD);
-  if(!(cryptoPrice>0)||!(targetRate>0)||!(usdRate>0)){resultEl.textContent="Rate unavailable";detailEl.textContent="";return;}
-  converted=amount*cryptoPrice*targetRate/usdRate;
-  explanation="Crypto prices are quoted in USDT and treated as approximately USD. Fiat rate date: "+(fiatDate||"not supplied")+".";
- }else{
-  const fromRate=Number(fiatRates[from]),toRate=Number(fiatRates[to]);
-  if(!(fromRate>0)||!(toRate>0)){resultEl.textContent="Rate unavailable";detailEl.textContent="";return;}
-  converted=amount*toRate/fromRate;
-  explanation="Reference exchange rate dated "+(fiatDate||"not supplied")+".";
- }
- if(!Number.isFinite(converted)){resultEl.textContent="Unable to calculate";detailEl.textContent="";return;}
-
- if(mode==="crypto")resultEl.textContent=formatNumber(converted,10)+" "+to;
- else resultEl.textContent=formatCurrency(converted,to);
-
- detailEl.textContent=formatNumber(amount,10)+" "+from+" ≈ "+resultEl.textContent;
- setStatus(explanation,"ok");
-}
-
-async function refreshRates(){
- loading=true;setStatus("Fetching current rates…");resultEl.textContent="Loading rates…";
- const previousFrom=fromPicker.getValue()||fromCode;
- const previousTo=toPicker.getValue()||toCode;
- const outcomes=await Promise.allSettled([loadCryptoRates(),loadFiatRates()]);
- const cryptoOK=outcomes[0].status==="fulfilled",fiatOK=outcomes[1].status==="fulfilled";
- rebuildPickers(previousFrom,previousTo);loading=false;convert();
- if(!cryptoOK&&!fiatOK)setStatus("Could not load crypto or fiat rates. Please try again later.","error");
- else if(!cryptoOK)setStatus("Crypto rates unavailable. Fiat conversions may still work.","error");
- else if(!fiatOK)setStatus("Fiat rates unavailable. Crypto → Crypto can still work.","error");
- else{
-  setStatus("Rates loaded. Crypto data: "+(cryptoDate?new Date(cryptoDate).toLocaleString():"timestamp unavailable")+". Fiat rate date: "+(fiatDate||"not supplied")+".","ok");
-  convert();
- }
-}
-function changeMode(nextMode){
- const previousFrom=fromPicker.getValue(),previousTo=toPicker.getValue();
- mode=nextMode;
- tabs.forEach(tab=>{
-  const active=tab.dataset.mode===mode;
-  tab.classList.toggle("active",active);tab.setAttribute("aria-selected",String(active));
- });
- quickSearchEl.value="";
- rebuildPickers(previousFrom,previousTo);convert();
-}
-tabs.forEach(tab=>tab.addEventListener("click",()=>changeMode(tab.dataset.mode)));
-amountEl.addEventListener("input",convert);
-
-quickSearchEl.addEventListener("input",()=>{
- const query=quickSearchEl.value.trim().toLowerCase();
- if(!query)return;
- const candidates=[...fromItems,...toItems];
- const match=candidates.find(item=>item.code.toLowerCase()===query||item.name.toLowerCase()===query)
-  ||candidates.find(item=>item.code.toLowerCase().includes(query)||item.name.toLowerCase().includes(query));
- if(!match)return;
- if(fromItems.some(item=>item.code===match.code)){fromPicker.setValue(match.code);fromCode=match.code;}
- else if(toItems.some(item=>item.code===match.code)){toPicker.setValue(match.code);toCode=match.code;}
- convert();
-});
-
-document.getElementById("swap").addEventListener("click",()=>{
- if(mode==="cryptoFiat"){
-  setStatus("Crypto → Fiat converts crypto into fiat. Select another tab for a different conversion type.");
-  return;
- }
- const oldFrom=fromPicker.getValue(),oldTo=toPicker.getValue();
- fromPicker.setValue(oldTo);toPicker.setValue(oldFrom);
- fromCode=fromPicker.getValue();toCode=toPicker.getValue();convert();
-});
-
-document.getElementById("year").textContent=new Date().getFullYear();
-refreshRates();
-window.setInterval(refreshRates,5*60*1000);
-})();
-</script>
-</body>
-</html>
+  </div>    <section class="info">  
+    <h2>How to use the converter</h2>  
+    <ul>  
+      <li><strong>Crypto → Crypto:</strong> estimate one cryptocurrency's value in another.</li>  
+      <li><strong>Crypto → Fiat:</strong> estimate a cryptocurrency's value in EUR, USD, GBP and other supported currencies.</li>  
+      <li><strong>Fiat → Fiat:</strong> convert between supported national currencies.</li>  
+    </ul>  
+    <p>Crypto prices can change continuously. Fiat reference rates are updated periodically on working days and may be delayed on weekends or holidays.</p>  
+  </section>  
+</main>  <footer>  
+  <p>© <span id="year"></span> My Crypto Faucet. For information only; not financial advice.</p>  
+  <p><a href="/">Home</a></p>  
+</footer>  <script>  
+(() => {  
+  "use strict";  
+  
+  const CRYPTO_API = "/api/converter/crypto-rates";  
+  const FIAT_API = "https://api.frankfurter.dev/v2";  
+  
+  const amountEl = document.getElementById("amount");  
+  const resultEl = document.getElementById("result");  
+  const detailEl = document.getElementById("detail");  
+  const statusEl = document.getElementById("status");  
+  const quickSearchEl = document.getElementById("quickSearch");  
+  const answerIconEl = document.getElementById("answerIcon");  
+  const tabs = [...document.querySelectorAll(".tab")];  
+  
+  const fromPicker = createPicker("fromPicker");  
+  const toPicker = createPicker("toPicker");  
+  
+  let mode = "crypto";  
+  let cryptoRates = {};  
+  let fiatRates = {};  
+  let fiatNames = {};  
+  let fiatDate = "";  
+  let cryptoDate = "";  
+  let loading = false;  
+  
+  let cryptoItems = [];  
+  let fiatItems = [];  
+  let fromItems = [];  
+  let toItems = [];  
+  
+  let fromCode = "BTC";  
+  let toCode = "ETH";  
+  
+  const cryptoNames = {  
+    BTC: "Bitcoin",  
+    ETH: "Ethereum",  
+    BNB: "BNB",  
+    SOL: "Solana",  
+    XRP: "XRP",  
+    DOGE: "Dogecoin",  
+    ADA: "Cardano",  
+    TRX: "TRON",  
+    TON: "Toncoin",  
+    LTC: "Litecoin",  
+    BCH: "Bitcoin Cash",  
+    POL: "POL",  
+    USDT: "Tether",  
+    USDC: "USD Coin",  
+    SUI: "Sui",  
+    AVAX: "Avalanche",  
+    DOT: "Polkadot",  
+    LINK: "Chainlink",  
+    SHIB: "Shiba Inu",  
+    XLM: "Stellar",  
+    ETC: "Ethereum Classic",  
+    UNI: "Uniswap",  
+    NEAR: "NEAR Protocol",  
+    APT: "Aptos",  
+    FIL: "Filecoin",  
+    ATOM: "Cosmos",  
+    ICP: "Internet Computer",  
+    ARB: "Arbitrum",  
+    OP: "Optimism",  
+    AAVE: "Aave",  
+    PEPE: "Pepe",  
+    WBTC: "Wrapped Bitcoin",  
+    WETH: "Wrapped Ether"  
+  };  
+  
+  const fiatFallback = {  
+    EUR: "Euro",  
+    USD: "United States Dollar",  
+    GBP: "British Pound",  
+    JPY: "Japanese Yen",  
+    CHF: "Swiss Franc",  
+    CAD: "Canadian Dollar",  
+    AUD: "Australian Dollar",  
+    INR: "Indian Rupee",  
+    LKR: "Sri Lankan Rupee",  
+    CNY: "Chinese Yuan",  
+    SGD: "Singapore Dollar",  
+    AED: "UAE Dirham",  
+    NZD: "New Zealand Dollar",  
+    BRL: "Brazilian Real",  
+    ZAR: "South African Rand",  
+    SEK: "Swedish Krona",  
+    NOK: "Norwegian Krone",  
+    DKK: "Danish Krone",  
+    PLN: "Polish Zloty",  
+    CZK: "Czech Koruna",  
+    HUF: "Hungarian Forint",  
+    TRY: "Turkish Lira",  
+    THB: "Thai Baht",  
+    PHP: "Philippine Peso",  
+    IDR: "Indonesian Rupiah",  
+    MYR: "Malaysian Ringgit",  
+    KRW: "South Korean Won",  
+    MXN: "Mexican Peso",  
+    SAR: "Saudi Riyal",  
+    QAR: "Qatari Riyal",  
+    KWD: "Kuwaiti Dinar",  
+    BDT: "Bangladeshi Taka",  
+    NPR: "Nepalese Rupee",  
+    PKR: "Pakistani Rupee",  
+    NGN: "Nigerian Naira",  
+    EGP: "Egyptian Pound",  
+    MAD: "Moroccan Dirham",  
+    ILS: "Israeli New Shekel",  
+    RON: "Romanian Leu",  
+    BGN: "Bulgarian Lev",  
+    UAH: "Ukrainian Hryvnia",  
+    VND: "Vietnamese Dong",  
+    CLP: "Chilean Peso",  
+    COP: "Colombian Peso",  
+    ARS: "Argentine Peso",  
+    PEN: "Peruvian Sol",  
+    ISK: "Icelandic Krona",  
+    HKD: "Hong Kong Dollar"  
+  };  
+  
+  const flags = {  
+    EUR: "🇪🇺", USD: "🇺🇸", GBP: "🇬🇧", JPY: "🇯🇵",  
+    CHF: "🇨🇭", CAD: "🇨🇦", AUD: "🇦🇺", INR: "🇮🇳",  
+    LKR: "🇱🇰", CNY: "🇨🇳", SGD: "🇸🇬", AED: "🇦🇪",  
+    NZD: "🇳🇿", BRL: "🇧🇷", ZAR: "🇿🇦", SEK: "🇸🇪",  
+    NOK: "🇳🇴", DKK: "🇩🇰", PLN: "🇵🇱", CZK: "🇨🇿",  
+    HUF: "🇭🇺", TRY: "🇹🇷", THB: "🇹🇭", PHP: "🇵🇭",  
+    IDR: "🇮🇩", MYR: "🇲🇾", KRW: "🇰🇷", MXN: "🇲🇽",  
+    SAR: "🇸🇦", QAR: "🇶🇦", KWD: "🇰🇼", BDT: "🇧🇩",  
+    NPR: "🇳🇵", PKR: "🇵🇰", NGN: "🇳🇬", EGP: "🇪🇬",  
+    MAD: "🇲🇦", ILS: "🇮🇱", RON: "🇷🇴", BGN: "🇧🇬",  
+    UAH: "🇺🇦", VND: "🇻🇳", CLP: "🇨🇱", COP: "🇨🇴",  
+    ARS: "🇦🇷", PEN: "🇵🇪", ISK: "🇮🇸", HKD: "🇭🇰"  
+  };  
+  
+  function setStatus(message, type = "") {  
+    statusEl.textContent = message;  
+    statusEl.className = "status" + (type ? " " + type : "");  
+  }  
+  
+  function formatNumber(value, maximumFractionDigits = 8) {  
+    if (!Number.isFinite(value)) return "—";  
+    return new Intl.NumberFormat("en-US", {  
+      maximumFractionDigits,  
+      minimumFractionDigits: 0  
+    }).format(value);  
+  }  
+  
+    
+function formatCurrency(value, currency) {  
+  try {  
+    return new Intl.NumberFormat("en-US", {  
+      style: "currency",  
+      currency,  
+      minimumFractionDigits: 2,  
+      maximumFractionDigits: 2  
+    }).format(value);  
+  } catch {  
+    return formatNumber(value, 2) + " " + currency;  
+  }  
+}  
+  
+  
+  function iconFor(item) {  
+    if (!item) return { emoji: "🌐", image: "" };  
+  
+    if (item.type === "fiat") {  
+      return { emoji: flags[item.code] || "💱", image: "" };  
+    }  
+  
+    return {  
+      emoji: "🪙",  
+      image: "https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@master/32/color/" +  
+        encodeURIComponent(item.code.toLowerCase()) + ".png"  
+    };  
+  }  
+  
+  function createPicker(id) {  
+    const root = document.getElementById(id);  
+    const trigger = root.querySelector(".picker-trigger");  
+    const menu = root.querySelector(".picker-menu");  
+    const search = root.querySelector(".picker-search");  
+    const list = root.querySelector(".picker-list");  
+    const icon = trigger.querySelector(".currency-icon");  
+    const symbol = trigger.querySelector(".currency-symbol");  
+    const name = trigger.querySelector(".currency-name");  
+  
+    const picker = {  
+      root, trigger, menu, search, list, icon, symbol, name,  
+      selected: "",  
+      items: [],  
+  
+      setItems(items, preferredCode) {  
+        this.items = items;  
+  
+        if (!items.some(item => item.code === this.selected)) {  
+          this.selected = items.some(item => item.code === preferredCode)  
+            ? preferredCode  
+            : (items[0]?.code || "");  
+        }  
+  
+        this.renderSelected();  
+        this.renderList();  
+      },  
+  
+      setValue(code) {  
+        if (this.items.some(item => item.code === code)) {  
+          this.selected = code;  
+          this.renderSelected();  
+          this.renderList();  
+        }  
+      },  
+  
+      getValue() {  
+        return this.selected;  
+      },  
+  
+      renderSelected() {  
+        const item = this.items.find(x => x.code === this.selected);  
+  
+        if (!item) {  
+          this.icon.textContent = "🌐";  
+          this.icon.replaceChildren(document.createTextNode("🌐"));  
+          this.symbol.textContent = "Select currency";  
+          this.name.textContent = "Search symbol or name";  
+          return;  
+        }  
+  
+        this.symbol.textContent = item.code;  
+        this.name.textContent = item.name;  
+  
+        const visual = iconFor(item);  
+        this.icon.replaceChildren();  
+  
+        if (visual.image) {  
+          const img = document.createElement("img");  
+          img.alt = "";  
+          img.loading = "lazy";  
+          img.src = visual.image;  
+          img.onerror = () => {  
+            this.icon.replaceChildren(document.createTextNode(visual.emoji));  
+          };  
+          this.icon.appendChild(img);  
+        } else {  
+          this.icon.textContent = visual.emoji;  
+        }  
+      },  
+  
+      renderList() {  
+        const query = this.search.value.trim().toLowerCase();  
+  
+        const matches = this.items.filter(item =>  
+          item.code.toLowerCase().includes(query) ||  
+          item.name.toLowerCase().includes(query)  
+        );  
+  
+        this.list.replaceChildren();  
+  
+        if (!matches.length) {  
+          const empty = document.createElement("div");  
+          empty.className = "no-results";  
+          empty.textContent = "No matching currencies found";  
+          this.list.appendChild(empty);  
+          return;  
+        }  
+  
+        const fragment = document.createDocumentFragment();  
+  
+        for (const item of matches) {  
+          const button = document.createElement("button");  
+          button.type = "button";  
+          button.className = "picker-option" +  
+            (item.code === this.selected ? " selected" : "");  
+  
+          const iconWrap = document.createElement("span");  
+          iconWrap.className = "currency-icon";  
+  
+          const visual = iconFor(item);  
+  
+          if (visual.image) {  
+            const img = document.createElement("img");  
+            img.alt = "";  
+            img.loading = "lazy";  
+            img.src = visual.image;  
+            img.onerror = () => {  
+              iconWrap.replaceChildren(document.createTextNode(visual.emoji));  
+            };  
+            iconWrap.appendChild(img);  
+          } else {  
+            iconWrap.textContent = visual.emoji;  
+          }  
+  
+          const info = document.createElement("span");  
+          info.className = "currency-info";  
+  
+          const codeLabel = document.createElement("span");  
+          codeLabel.className = "currency-symbol";  
+          codeLabel.textContent = item.code;  
+  
+          const nameLabel = document.createElement("span");  
+          nameLabel.className = "currency-name";  
+          nameLabel.textContent = item.name;  
+  
+          info.append(codeLabel, nameLabel);  
+          button.append(iconWrap, info);  
+  
+          button.addEventListener("click", () => {  
+            this.selected = item.code;  
+            this.renderSelected();  
+            this.close();  
+            this.search.value = "";  
+            this.renderList();  
+  
+            if (this === fromPicker) fromCode = item.code;  
+            if (this === toPicker) toCode = item.code;  
+  
+            convert();  
+          });  
+  
+          fragment.appendChild(button);  
+        }  
+  
+        this.list.appendChild(fragment);  
+      },  
+  
+      open() {  
+        closeAllPickers(this);  
+        this.root.classList.add("open");  
+        this.trigger.setAttribute("aria-expanded", "true");  
+        this.search.value = "";  
+        this.renderList();  
+        this.search.focus();  
+      },  
+  
+      close() {  
+        this.root.classList.remove("open");  
+        this.trigger.setAttribute("aria-expanded", "false");  
+      }  
+    };  
+  
+    trigger.addEventListener("click", () => {  
+      if (root.classList.contains("open")) picker.close();  
+      else picker.open();  
+    });  
+  
+    search.addEventListener("input", () => picker.renderList());  
+  
+    search.addEventListener("keydown", event => {  
+      if (event.key === "Escape") {  
+        picker.close();  
+        trigger.focus();  
+      }  
+  
+      if (event.key === "Enter") {  
+        const first = list.querySelector(".picker-option");  
+        if (first) first.click();  
+      }  
+    });  
+  
+    return picker;  
+  }  
+  
+  function closeAllPickers(except) {  
+    [fromPicker, toPicker].forEach(picker => {  
+      if (picker && picker !== except) picker.close();  
+    });  
+  }  
+  
+  document.addEventListener("click", event => {  
+    [fromPicker, toPicker].forEach(picker => {  
+      if (picker && !picker.root.contains(event.target)) picker.close();  
+    });  
+  });  
+  
+  function getCryptoItems() {  
+    return Object.keys(cryptoRates)  
+      .filter(code => Number.isFinite(Number(cryptoRates[code])) &&  
+                      Number(cryptoRates[code]) > 0)  
+      .sort((a, b) => a.localeCompare(b))  
+      .map(code => ({  
+        code,  
+        name: cryptoNames[code] || code,  
+        type: "crypto"  
+      }));  
+  }  
+  
+  function getFiatItems() {  
+    return Object.keys(fiatRates)  
+      .filter(code => Number.isFinite(Number(fiatRates[code])) &&  
+                      Number(fiatRates[code]) > 0)  
+      .sort((a, b) => a.localeCompare(b))  
+      .map(code => ({  
+        code,  
+        name: fiatNames[code] || fiatFallback[code] || code,  
+        type: "fiat"  
+      }));  
+  }  
+  
+  function rebuildPickers(previousFrom, previousTo) {  
+    cryptoItems = getCryptoItems();  
+    fiatItems = getFiatItems();  
+  
+    if (mode === "crypto") {  
+      fromItems = cryptoItems;  
+      toItems = cryptoItems;  
+    } else if (mode === "cryptoFiat") {  
+      fromItems = cryptoItems;  
+      toItems = fiatItems;  
+    } else {  
+      fromItems = fiatItems;  
+      toItems = fiatItems;  
+    }  
+  
+    fromPicker.setItems(fromItems, previousFrom);  
+    toPicker.setItems(toItems, previousTo);  
+  
+    fromCode = fromPicker.getValue();  
+    toCode = toPicker.getValue();  
+  
+    if (fromCode && fromCode === toCode && toItems.length > 1) {  
+      const alternative = toItems.find(item => item.code !== fromCode);  
+      if (alternative) {  
+        toPicker.setValue(alternative.code);  
+        toCode = alternative.code;  
+      }  
+    }  
+  }  
+  
+  async function loadCryptoRates() {  
+    const response = await fetch(CRYPTO_API, {  
+      headers: { Accept: "application/json" },  
+      cache: "no-store"  
+    });  
+  
+    if (!response.ok) {  
+      throw new Error("Crypto rate API returned HTTP " + response.status);  
+    }  
+  
+    const data = await response.json();  
+  
+    if (!data || !data.rates || typeof data.rates !== "object") {  
+      throw new Error("Crypto API returned invalid rate data");  
+    }  
+  
+    const clean = {};  
+  
+    for (const [code, value] of Object.entries(data.rates)) {  
+      const rate = Number(value);  
+  
+      if (/^[A-Z0-9]{2,20}$/.test(code) &&  
+          Number.isFinite(rate) && rate > 0) {  
+        clean[code] = rate;  
+      }  
+    }  
+  
+    if (!clean.USDT) clean.USDT = 1;  
+  
+    cryptoRates = clean;  
+    cryptoDate = data.fetchedAt || "";  
+  }  
+  
+  async function loadFiatRates() {  
+    const response = await fetch(FIAT_API + "/rates?base=EUR", {  
+      headers: { Accept: "application/json" },  
+      cache: "no-store"  
+    });  
+  
+    if (!response.ok) {  
+      throw new Error("Fiat rate API returned HTTP " + response.status);  
+    }  
+  
+    const data = await response.json();  
+  
+    if (!Array.isArray(data)) {  
+      throw new Error("Fiat API returned invalid rate data");  
+    }  
+  
+    const rates = { EUR: 1 };  
+    const names = { ...fiatFallback };  
+    let latestDate = "";  
+  
+    for (const row of data) {  
+      if (!row || !row.base || !row.quote) continue;  
+  
+      const rate = Number(row.rate);  
+      if (!Number.isFinite(rate) || rate <= 0) continue;  
+  
+      rates[String(row.quote).toUpperCase()] = rate;  
+  
+      if (row.date && (!latestDate || row.date > latestDate)) {  
+        latestDate = row.date;  
+      }  
+    }  
+  
+    fiatRates = rates;  
+    fiatNames = names;  
+    fiatDate = latestDate;  
+  }  
+  
+  function convert() {  
+    const amount = Number(amountEl.value);  
+    const from = fromPicker.getValue();  
+    const to = toPicker.getValue();  
+  
+    if (loading) {  
+      resultEl.textContent = "Loading rates…";  
+      detailEl.textContent = "";  
+      return;  
+    }  
+  
+    if (amountEl.value.trim() === "" ||  
+        !Number.isFinite(amount) || amount < 0) {  
+      resultEl.textContent = "Enter a valid amount";  
+      detailEl.textContent = "";  
+      return;  
+    }  
+  
+    if (!from || !to) {  
+      resultEl.textContent = "Select currencies";  
+      detailEl.textContent = "";  
+      return;  
+    }  
+  
+    let converted;  
+    let explanation;  
+  
+    if (mode === "crypto") {  
+      const fromPrice = Number(cryptoRates[from]);  
+      const toPrice = Number(cryptoRates[to]);  
+  
+      if (!(fromPrice > 0) || !(toPrice > 0)) {  
+        resultEl.textContent = "Rate unavailable";  
+        detailEl.textContent = "";  
+        return;  
+      }  
+  
+      converted = amount * fromPrice / toPrice;  
+      explanation = "Approximate crypto prices in USDT. 1 " + from +  
+        " ≈ " + formatNumber(fromPrice, 8) + " USDT.";  
+      answerIconEl.textContent = "🪙";  
+    } else if (mode === "cryptoFiat") {  
+      const cryptoPrice = Number(cryptoRates[from]);  
+      const targetRate = Number(fiatRates[to]);  
+      const usdRate = Number(fiatRates.USD);  
+  
+      if (!(cryptoPrice > 0) ||  
+          !(targetRate > 0) ||  
+          !(usdRate > 0)) {  
+        resultEl.textContent = "Rate unavailable";  
+        detailEl.textContent = "";  
+        return;  
+      }  
+  
+      // USDT is treated as approximately equal to USD.  
+      converted = amount * cryptoPrice * targetRate / usdRate;  
+      explanation = "Crypto prices are quoted in USDT and treated as approximately USD. Fiat rate date: " +  
+        (fiatDate || "not supplied") + ".";  
+      answerIconEl.textContent = flags[to] || "💱";  
+    } else {  
+      const fromRate = Number(fiatRates[from]);  
+      const toRate = Number(fiatRates[to]);  
+  
+      if (!(fromRate > 0) || !(toRate > 0)) {  
+        resultEl.textContent = "Rate unavailable";  
+        detailEl.textContent = "";  
+        return;  
+      }  
+  
+      converted = amount * toRate / fromRate;  
+      explanation = "Reference exchange rate dated " +  
+        (fiatDate || "not supplied") + ".";  
+      answerIconEl.textContent = flags[to] || "💱";  
+    }  
+  
+    if (!Number.isFinite(converted)) {  
+      resultEl.textContent = "Unable to calculate";  
+      detailEl.textContent = "";  
+      return;  
+    }  
+  
+    if (mode === "crypto") {  
+      resultEl.textContent = formatNumber(converted, 10) + " " + to;  
+    } else {  
+      resultEl.textContent = formatCurrency(converted, to);  
+    }  
+  
+    detailEl.textContent = formatNumber(amount, 10) + " " + from +  
+      " ≈ " + resultEl.textContent;  
+  
+    setStatus(explanation, "ok");  
+  }  
+  
+  async function refreshRates() {  
+    loading = true;  
+    setStatus("Fetching current rates…");  
+    resultEl.textContent = "Loading rates…";  
+  
+    const previousFrom = fromPicker.getValue() || fromCode;  
+    const previousTo = toPicker.getValue() || toCode;  
+  
+    const outcomes = await Promise.allSettled([  
+      loadCryptoRates(),  
+      loadFiatRates()  
+    ]);  
+  
+    const cryptoOK = outcomes[0].status === "fulfilled";  
+    const fiatOK = outcomes[1].status === "fulfilled";  
+  
+    rebuildPickers(previousFrom, previousTo);  
+    loading = false;  
+    convert();  
+  
+    if (!cryptoOK && !fiatOK) {  
+      setStatus("Could not load crypto or fiat rates. Please try again later.", "error");  
+    } else if (!cryptoOK) {  
+      setStatus("Crypto rates unavailable. Fiat conversions may still work.", "error");  
+    } else if (!fiatOK) {  
+      setStatus("Fiat rates unavailable. Crypto → Crypto can still work.", "error");  
+    } else {  
+      setStatus(  
+        "Rates loaded. Crypto data: " +  
+        (cryptoDate ? new Date(cryptoDate).toLocaleString() : "timestamp unavailable") +  
+        ". Fiat rate date: " + (fiatDate || "not supplied") + ".",  
+        "ok"  
+      );  
+      convert();  
+    }  
+  }  
+  
+  function changeMode(nextMode) {  
+    const previousFrom = fromPicker.getValue();  
+    const previousTo = toPicker.getValue();  
+  
+    mode = nextMode;  
+  
+    tabs.forEach(tab => {  
+      const active = tab.dataset.mode === mode;  
+      tab.classList.toggle("active", active);  
+      tab.setAttribute("aria-selected", String(active));  
+    });  
+  
+    quickSearchEl.value = "";  
+    rebuildPickers(previousFrom, previousTo);  
+    convert();  
+  }  
+  
+  tabs.forEach(tab => {  
+    tab.addEventListener("click", () => changeMode(tab.dataset.mode));  
+  });  
+  
+  amountEl.addEventListener("input", convert);  
+  
+  quickSearchEl.addEventListener("input", () => {  
+    const query = quickSearchEl.value.trim().toLowerCase();  
+    if (!query) return;  
+  
+    const candidates = [...fromItems, ...toItems];  
+    const match = candidates.find(item =>  
+      item.code.toLowerCase() === query ||  
+      item.name.toLowerCase() === query  
+    ) || candidates.find(item =>  
+      item.code.toLowerCase().includes(query) ||  
+      item.name.toLowerCase().includes(query)  
+    );  
+  
+    if (!match) return;  
+  
+    // Select a matching currency in the compatible side.  
+    if (fromItems.some(item => item.code === match.code)) {  
+      fromPicker.setValue(match.code);  
+      fromCode = match.code;  
+    } else if (toItems.some(item => item.code === match.code)) {  
+      toPicker.setValue(match.code);  
+      toCode = match.code;  
+    }  
+  
+    convert();  
+  });  
+  
+  document.getElementById("swap").addEventListener("click", () => {  
+    if (mode === "cryptoFiat") {  
+      setStatus("Crypto → Fiat converts crypto into fiat. Select another tab for a different conversion type.");  
+      return;  
+    }  
+  
+    const oldFrom = fromPicker.getValue();  
+    const oldTo = toPicker.getValue();  
+  
+    fromPicker.setValue(oldTo);  
+    toPicker.setValue(oldFrom);  
+  
+    fromCode = fromPicker.getValue();  
+    toCode = toPicker.getValue();  
+    convert();  
+  });  
+  
+  document.getElementById("year").textContent = new Date().getFullYear();  
+  
+  refreshRates();  
+  
+  window.setInterval(refreshRates, 5 * 60 * 1000);  
+})();  
+</script>  </body>  
+</html>  
