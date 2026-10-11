@@ -659,17 +659,20 @@ footer {
     }).format(value);
   }
 
-  function formatCurrency(value, currency) {
-    try {
-      return new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency,
-        maximumFractionDigits: 6
-      }).format(value);
-    } catch {
-      return formatNumber(value, 6) + " " + currency;
-    }
+  
+function formatCurrency(value, currency) {
+  try {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(value);
+  } catch {
+    return formatNumber(value, 2) + " " + currency;
   }
+}
+
 
   function iconFor(item) {
     if (!item) return { emoji: "🌐", image: "" };
