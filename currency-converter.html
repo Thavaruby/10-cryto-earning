@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -368,13 +367,14 @@ label {
   word-break: break-word;
 }
 
-/* Exchange-rate detail: centered below the output */
+/* Conversion detail centered across the full converter width */
 .result-detail {
+  width: 100%;
   color: var(--muted);
   font-size: 12px;
   overflow-wrap: anywhere;
   text-align: center;
-  margin-top: 12px;
+  margin: 12px auto 0;
 }
 
 .status {
@@ -577,9 +577,10 @@ footer {
       <div class="field">
         <label>Amount</label>
         <div id="result" class="result-value">Loading rates…</div>
-        <div id="detail" class="result-detail"></div>
       </div>
     </div>
+
+    <div id="detail" class="result-detail"></div>
 
     <div id="status" class="status" role="status">Loading market data…</div>
 
@@ -1201,12 +1202,10 @@ footer {
       return;
     }
 
-    // Crypto output: maximum 8 decimal places.
-    if (mode === "crypto") {
-      resultEl.textContent = formatNumber(converted, 8) + " " + to;
-    } else {
-      resultEl.textContent = formatCurrency(converted, to);
-    }
+    // Display only the numeric result, without currency symbols or codes.
+    resultEl.textContent = mode === "crypto"
+      ? formatNumber(converted, 8)
+      : formatNumber(converted, 2);
 
     detailEl.textContent = formatNumber(amount, 8) + " " + from +
       " ≈ " + resultEl.textContent;
@@ -1299,4 +1298,4 @@ footer {
 })();
 </script>
 </body>
-</html>
+              </html>
