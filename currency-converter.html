@@ -538,14 +538,17 @@ footer {
         </div>
       </div>
 
-      <div class="converted-amount" aria-live="polite">
-  <div class="converted-heading">
-    <label>Amount</label>
-  </div>
-  <div id="result" class="result-value">Loading rates…</div>
-  <div id="detail" class="result-detail"></div>
-</div>
+      <div class="currency-row">
+  <div class="currency-picker" id="toPicker"></div>
+
+  <div class="amount-input-wrap">
+    <label for="result">Amount</label>
+    <div id="result" class="result-value" aria-live="polite">
+      Loading rates…
     </div>
+    <div id="detail" class="result-detail"></div>
+  </div>
+</div>
 
     <div id="status" class="status" role="status">Loading market data…</div>
 
