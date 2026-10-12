@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Free Crypto & Currency Converter | My Crypto Faucet</title>
+<title>Free Crypto &amp; Currency Converter | My Crypto Faucet</title>
 <meta name="description" content="Convert cryptocurrencies to crypto, crypto to fiat, and fiat currencies to fiat currencies. Search currencies by symbol or name.">
 <link rel="canonical" href="https://myfaucetcrypto.com/currency-converter.html">
 <link rel="icon" type="image/png" href="assets/favico.png">
@@ -25,7 +25,9 @@
   --red: #ff8585;
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
@@ -35,7 +37,9 @@ body {
   line-height: 1.6;
 }
 
-a { color: var(--gold); }
+a {
+  color: var(--gold);
+}
 
 header {
   padding: 18px 16px;
@@ -43,7 +47,9 @@ header {
   background: #091a37;
 }
 
-.header-inner, main, footer {
+.header-inner,
+main,
+footer {
   width: min(100% - 28px, 900px);
   margin: auto;
 }
@@ -62,7 +68,9 @@ header {
   font-size: 12px;
 }
 
-main { padding: 30px 0 50px; }
+main {
+  padding: 30px 0 50px;
+}
 
 .hero {
   text-align: center;
@@ -75,7 +83,9 @@ main { padding: 30px 0 50px; }
   line-height: 1.2;
 }
 
-.hero h1 span { color: var(--gold); }
+.hero h1 span {
+  color: var(--gold);
+}
 
 .hero p {
   color: var(--muted);
@@ -115,7 +125,9 @@ main { padding: 30px 0 50px; }
   border-color: var(--gold);
 }
 
-.field { min-width: 0; }
+.field {
+  min-width: 0;
+}
 
 label {
   display: block;
@@ -140,7 +152,7 @@ label {
   border-color: var(--gold);
 }
 
-/* Currency left, amount right */
+/* Same two-column layout for both currency rows */
 .amount-row,
 .currency-row {
   display: grid;
@@ -149,9 +161,13 @@ label {
   gap: 14px;
 }
 
-.amount-row { margin-bottom: 0; }
+.amount-row {
+  margin-bottom: 0;
+}
 
-.currency-row { margin-top: 0; }
+.currency-row {
+  margin-top: 0;
+}
 
 .swap-row {
   display: flex;
@@ -174,7 +190,9 @@ label {
   align-items: center;
 }
 
-.swap:hover { border-color: var(--gold); }
+.swap:hover {
+  border-color: var(--gold);
+}
 
 .picker {
   position: relative;
@@ -261,7 +279,9 @@ label {
   box-shadow: 0 15px 35px #0008;
 }
 
-.picker.open .picker-menu { display: block; }
+.picker.open .picker-menu {
+  display: block;
+}
 
 .picker-search-wrap {
   position: relative;
@@ -279,7 +299,9 @@ label {
   outline: none;
 }
 
-.picker-search:focus { border-color: var(--gold); }
+.picker-search:focus {
+  border-color: var(--gold);
+}
 
 .search-symbol {
   position: absolute;
@@ -316,7 +338,9 @@ label {
   outline: none;
 }
 
-.picker-option.selected { background: #172d50; }
+.picker-option.selected {
+  background: #172d50;
+}
 
 .no-results {
   color: var(--muted);
@@ -331,35 +355,28 @@ label {
   font-size: 11px;
 }
 
-/* Converted amount on the right */
+/* Converted amount: same right column as the source amount */
 .converted-amount {
   min-width: 0;
-  text-align: right;
-}
-
-.converted-heading {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 6px;
-}
-
-.converted-heading label { margin-bottom: 8px; }
-
-.answer-icon {
-  color: var(--gold);
-  font-size: 16px;
-  margin-bottom: 8px;
+  width: 100%;
+  text-align: left;
 }
 
 .result-value {
+  width: 100%;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #081832;
   color: var(--gold);
-  font-size: clamp(20px, 3.5vw, 29px);
-  font-weight: 800;
+  padding: 13px 12px;
+  font-size: 16px;
+  font-weight: 700;
   overflow-wrap: anywhere;
   word-break: break-word;
-  line-height: 1.35;
-  margin: 0;
+  line-height: 1.5;
 }
 
 .result-detail {
@@ -376,8 +393,13 @@ label {
   overflow-wrap: anywhere;
 }
 
-.status.error { color: var(--red); }
-.status.ok { color: var(--green); }
+.status.error {
+  color: var(--red);
+}
+
+.status.ok {
+  color: var(--green);
+}
 
 .note {
   color: var(--muted);
@@ -393,8 +415,15 @@ section.info {
   background: var(--panel);
 }
 
-.info h2 { font-size: 21px; margin-top: 0; }
-.info p, .info li { color: var(--muted); }
+.info h2 {
+  font-size: 21px;
+  margin-top: 0;
+}
+
+.info p,
+.info li {
+  color: var(--muted);
+}
 
 footer {
   padding: 22px 0 35px;
@@ -405,9 +434,13 @@ footer {
 }
 
 @media (max-width: 540px) {
-  .converter { padding: 14px; }
+  .converter {
+    padding: 14px;
+  }
 
-  .tabs { gap: 5px; }
+  .tabs {
+    gap: 5px;
+  }
 
   .tab {
     font-size: 11px;
@@ -433,9 +466,17 @@ footer {
     font-size: 19px;
   }
 
-  .currency-symbol { font-size: 13px; }
-  .currency-name { font-size: 10px; }
-  .picker-arrow { font-size: 11px; }
+  .currency-symbol {
+    font-size: 13px;
+  }
+
+  .currency-name {
+    font-size: 10px;
+  }
+
+  .picker-arrow {
+    font-size: 11px;
+  }
 
   .amount-input {
     padding: 12px 8px;
@@ -448,8 +489,15 @@ footer {
     font-size: 21px;
   }
 
-  .result-value { font-size: 20px; }
-  .result-detail { font-size: 11px; }
+  .result-value {
+    min-height: 47px;
+    padding: 12px 8px;
+    font-size: 15px;
+  }
+
+  .result-detail {
+    font-size: 11px;
+  }
 }
 </style>
 </head>
@@ -459,7 +507,7 @@ footer {
   <div class="header-inner">
     <a class="brand" href="/">
       My Crypto Faucet
-      <small>Crypto & Currency Tools</small>
+      <small>Crypto &amp; Currency Tools</small>
     </a>
   </div>
 </header>
@@ -481,6 +529,7 @@ footer {
     <div class="amount-row">
       <div class="field">
         <label>Select from</label>
+
         <div id="fromPicker" class="picker">
           <button class="picker-trigger" type="button" aria-expanded="false" aria-label="Select source currency">
             <span class="currency-icon">🌐</span>
@@ -508,7 +557,7 @@ footer {
       </div>
     </div>
 
-    <!-- Exchange button between the two currency rows -->
+    <!-- Swap button between the two rows -->
     <div class="swap-row">
       <button id="swap" class="swap" type="button" aria-label="Swap currencies" title="Swap currencies">⇅</button>
     </div>
@@ -517,6 +566,7 @@ footer {
     <div class="currency-row">
       <div class="field">
         <label>Convert to</label>
+
         <div id="toPicker" class="picker">
           <button class="picker-trigger" type="button" aria-expanded="false" aria-label="Select target currency">
             <span class="currency-icon">🌐</span>
@@ -538,17 +588,12 @@ footer {
         </div>
       </div>
 
-      <div class="currency-row">
-  <div class="currency-picker" id="toPicker"></div>
-
-  <div class="amount-input-wrap">
-    <label for="result">Amount</label>
-    <div id="result" class="result-value" aria-live="polite">
-      Loading rates…
+      <div class="field converted-amount" aria-live="polite">
+        <label>Amount</label>
+        <div id="result" class="result-value">Loading rates…</div>
+        <div id="detail" class="result-detail"></div>
+      </div>
     </div>
-    <div id="detail" class="result-detail"></div>
-  </div>
-</div>
 
     <div id="status" class="status" role="status">Loading market data…</div>
 
@@ -585,7 +630,6 @@ footer {
   const resultEl = document.getElementById("result");
   const detailEl = document.getElementById("detail");
   const statusEl = document.getElementById("status");
-  const answerIconEl = document.getElementById("answerIcon");
   const tabs = [...document.querySelectorAll(".tab")];
 
   const fromPicker = createPicker("fromPicker");
@@ -753,7 +797,6 @@ footer {
   function createPicker(id) {
     const root = document.getElementById(id);
     const trigger = root.querySelector(".picker-trigger");
-    const menu = root.querySelector(".picker-menu");
     const search = root.querySelector(".picker-search");
     const list = root.querySelector(".picker-list");
     const icon = trigger.querySelector(".currency-icon");
@@ -761,7 +804,13 @@ footer {
     const name = trigger.querySelector(".currency-name");
 
     const picker = {
-      root, trigger, menu, search, list, icon, symbol, name,
+      root,
+      trigger,
+      search,
+      list,
+      icon,
+      symbol,
+      name,
       selected: "",
       items: [],
 
@@ -917,8 +966,11 @@ footer {
     };
 
     trigger.addEventListener("click", () => {
-      if (root.classList.contains("open")) picker.close();
-      else picker.open();
+      if (root.classList.contains("open")) {
+        picker.close();
+      } else {
+        picker.open();
+      }
     });
 
     search.addEventListener("input", () => picker.renderList());
@@ -1118,9 +1170,10 @@ footer {
       }
 
       converted = amount * fromPrice / toPrice;
+
       explanation = "Approximate crypto prices in USDT. 1 " + from +
         " ≈ " + formatNumber(fromPrice, 8) + " USDT.";
-      answerIconEl.textContent = "🪙";
+
     } else if (mode === "cryptoFiat") {
       const cryptoPrice = Number(cryptoRates[from]);
       const targetRate = Number(fiatRates[to]);
@@ -1136,9 +1189,10 @@ footer {
 
       // USDT is treated as approximately equal to USD.
       converted = amount * cryptoPrice * targetRate / usdRate;
+
       explanation = "Crypto prices are quoted in USDT and treated as approximately USD. Fiat rate date: " +
         (fiatDate || "not supplied") + ".";
-      answerIconEl.textContent = flags[to] || "💱";
+
     } else {
       const fromRate = Number(fiatRates[from]);
       const toRate = Number(fiatRates[to]);
@@ -1150,9 +1204,9 @@ footer {
       }
 
       converted = amount * toRate / fromRate;
+
       explanation = "Reference exchange rate dated " +
         (fiatDate || "not supplied") + ".";
-      answerIconEl.textContent = flags[to] || "💱";
     }
 
     if (!Number.isFinite(converted)) {
@@ -1246,6 +1300,7 @@ footer {
 
     fromCode = fromPicker.getValue();
     toCode = toPicker.getValue();
+
     convert();
   });
 
