@@ -136,7 +136,7 @@ label {
   margin-bottom: 8px;
 }
 
-/* Same appearance for editable and converted amount boxes */
+/* Same appearance for input and output values */
 .amount-input,
 .result-value {
   width: 100%;
@@ -149,6 +149,7 @@ label {
   font-size: 16px;
   line-height: 1.6;
   outline: none;
+  font-weight: 400;
 }
 
 .amount-input:focus {
@@ -162,10 +163,6 @@ label {
   grid-template-columns: minmax(0, 1fr) minmax(110px, 0.65fr);
   align-items: start;
   gap: 14px;
-}
-
-.amount-row,
-.currency-row {
   margin: 0;
 }
 
@@ -355,27 +352,29 @@ label {
   font-size: 11px;
 }
 
-/* Result box matches the Amount input */
 .converted-amount {
   min-width: 0;
   width: 100%;
 }
 
+/* Output value: normal text colour, matching the input */
 .result-value {
   min-height: 54px;
   display: flex;
   align-items: center;
-  color: var(--gold);
-  font-weight: 700;
+  color: var(--text);
+  font-weight: 400;
   overflow-wrap: anywhere;
   word-break: break-word;
 }
 
+/* Exchange-rate detail: centered below the output */
 .result-detail {
   color: var(--muted);
   font-size: 12px;
   overflow-wrap: anywhere;
-  margin-top: 7px;
+  text-align: center;
+  margin-top: 12px;
 }
 
 .status {
@@ -488,6 +487,7 @@ footer {
 
   .result-detail {
     font-size: 11px;
+    margin-top: 12px;
   }
 }
 </style>
@@ -516,7 +516,6 @@ footer {
       <button class="tab" data-mode="fiat" role="tab" aria-selected="false">Fiat → Fiat</button>
     </div>
 
-    <!-- Source currency and amount -->
     <div class="amount-row">
       <div class="field">
         <label>Select from</label>
@@ -551,7 +550,6 @@ footer {
       <button id="swap" class="swap" type="button" aria-label="Swap currencies" title="Swap currencies">⇅</button>
     </div>
 
-    <!-- Target currency and converted amount -->
     <div class="currency-row">
       <div class="field">
         <label>Convert to</label>
@@ -1176,7 +1174,6 @@ footer {
         return;
       }
 
-      // USDT is treated as approximately equal to USD.
       converted = amount * cryptoPrice * targetRate / usdRate;
 
       explanation = "Crypto prices are quoted in USDT and treated as approximately USD. Fiat rate date: " +
