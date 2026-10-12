@@ -713,6 +713,7 @@ function loadFile(file) {
     return;
   }
 
+  clearDownload();
   if (!supportedInputTypes.includes(file.type)) {
 
     setStatus(
