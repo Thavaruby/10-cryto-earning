@@ -136,7 +136,9 @@ label {
   margin-bottom: 8px;
 }
 
-.amount-input {
+/* Same appearance for editable and converted amount boxes */
+.amount-input,
+.result-value {
   width: 100%;
   min-width: 0;
   border: 1px solid var(--border);
@@ -145,6 +147,7 @@ label {
   color: var(--text);
   padding: 13px 12px;
   font-size: 16px;
+  line-height: 1.6;
   outline: none;
 }
 
@@ -152,21 +155,18 @@ label {
   border-color: var(--gold);
 }
 
-/* Same two-column layout for both currency rows */
+/* Matching two-column layout for both currency rows */
 .amount-row,
 .currency-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(110px, 0.65fr);
-  align-items: center;
+  align-items: start;
   gap: 14px;
 }
 
-.amount-row {
-  margin-bottom: 0;
-}
-
+.amount-row,
 .currency-row {
-  margin-top: 0;
+  margin: 0;
 }
 
 .swap-row {
@@ -355,28 +355,20 @@ label {
   font-size: 11px;
 }
 
-/* Converted amount: same right column as the source amount */
+/* Result box matches the Amount input */
 .converted-amount {
   min-width: 0;
   width: 100%;
-  text-align: left;
 }
 
 .result-value {
-  width: 100%;
-  min-height: 50px;
+  min-height: 54px;
   display: flex;
   align-items: center;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: #081832;
   color: var(--gold);
-  padding: 13px 12px;
-  font-size: 16px;
   font-weight: 700;
   overflow-wrap: anywhere;
   word-break: break-word;
-  line-height: 1.5;
 }
 
 .result-detail {
@@ -478,21 +470,20 @@ footer {
     font-size: 11px;
   }
 
-  .amount-input {
+  .amount-input,
+  .result-value {
     padding: 12px 8px;
     font-size: 15px;
+  }
+
+  .result-value {
+    min-height: 50px;
   }
 
   .swap {
     width: 40px;
     height: 38px;
     font-size: 21px;
-  }
-
-  .result-value {
-    min-height: 47px;
-    padding: 12px 8px;
-    font-size: 15px;
   }
 
   .result-detail {
@@ -525,11 +516,10 @@ footer {
       <button class="tab" data-mode="fiat" role="tab" aria-selected="false">Fiat → Fiat</button>
     </div>
 
-    <!-- First row: source currency on left, amount on right -->
+    <!-- Source currency and amount -->
     <div class="amount-row">
       <div class="field">
         <label>Select from</label>
-
         <div id="fromPicker" class="picker">
           <button class="picker-trigger" type="button" aria-expanded="false" aria-label="Select source currency">
             <span class="currency-icon">🌐</span>
@@ -557,16 +547,14 @@ footer {
       </div>
     </div>
 
-    <!-- Swap button between the two rows -->
     <div class="swap-row">
       <button id="swap" class="swap" type="button" aria-label="Swap currencies" title="Swap currencies">⇅</button>
     </div>
 
-    <!-- Second row: target currency on left, converted amount on right -->
+    <!-- Target currency and converted amount -->
     <div class="currency-row">
       <div class="field">
         <label>Convert to</label>
-
         <div id="toPicker" class="picker">
           <button class="picker-trigger" type="button" aria-expanded="false" aria-label="Select target currency">
             <span class="currency-icon">🌐</span>
@@ -758,6 +746,7 @@ footer {
     statusEl.className = "status" + (type ? " " + type : "");
   }
 
+  // Display no more than 8 decimal places.
   function formatNumber(value, maximumFractionDigits = 8) {
     if (!Number.isFinite(value)) return "—";
 
@@ -1215,13 +1204,14 @@ footer {
       return;
     }
 
+    // Crypto output: maximum 8 decimal places.
     if (mode === "crypto") {
-      resultEl.textContent = formatNumber(converted, 10) + " " + to;
+      resultEl.textContent = formatNumber(converted, 8) + " " + to;
     } else {
       resultEl.textContent = formatCurrency(converted, to);
     }
 
-    detailEl.textContent = formatNumber(amount, 10) + " " + from +
+    detailEl.textContent = formatNumber(amount, 8) + " " + from +
       " ≈ " + resultEl.textContent;
 
     setStatus(explanation, "ok");
