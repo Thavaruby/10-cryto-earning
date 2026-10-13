@@ -685,6 +685,7 @@ footer span { color: var(--gold); }
   © <span>My Crypto Faucet</span> · Free Online Tools
 </footer>
 
+
 <script>
 const $ = id => document.getElementById(id);
 
@@ -698,11 +699,21 @@ const fileInfo = $("fileInfo");
 const transcribeBtn = $("transcribeBtn");
 const transcript = $("transcript");
 const editorStatus = $("editorStatus");
+const micBtn = $("micBtn");
+const micStatus = $("micStatus");
+const languageSelect = $("language");
 
 let selectedFile = null;
+let recognition = null;
+let isListening = false;
+let transcriber = null;
+let modelPromise = null;
+let stopRequested = false;
 
 function setTab(mode) {
   const upload = mode === "upload";
+
+  if (!upload && isListening) stopListening();
 
   uploadTab.classList.toggle("active", upload);
   liveTab.classList.toggle("active", !upload);
@@ -721,23 +732,28 @@ $("browseBtn").addEventListener("click", () => audioFile.click());
 
 function formatSize(bytes) {
   if (bytes < 1024) return bytes + " B";
-  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+  if (bytes < 1024 * 1024)
+    return (bytes / 1024).toFixed(1) + " KB";
   return (bytes / (1024 * 1024)).toFixed(2) + " MB";
 }
 
 function selectFile(file) {
   if (!file) return;
 
-  if (!file.type.startsWith("audio/")) {
+  if (
+    !file.type.startsWith("audio/") &&
+    !/\.(mp3|wav|m4a|ogg|flac|aac|webm|mp4)$/i.test(file.name)
+  ) {
     alert("Please select a supported audio file.");
     return;
   }
 
   selectedFile = file;
+
   $("fileName").textContent = file.name;
   $("fileSize").textContent = formatSize(file.size);
-  fileInfo.classList.add("visible");
 
+  fileInfo.classList.add("visible");
   transcribeBtn.disabled = false;
   editorStatus.textContent = "Audio selected";
 }
@@ -754,36 +770,39 @@ $("removeFile").addEventListener("click", () => {
   editorStatus.textContent = "Ready for text";
 });
 
-["dragenter", "dragover"].forEach(eventName => {
-  dropZone.addEventListener(eventName, event => {
+["dragenter", "dragover"].forEach(name => {
+  dropZone.addEventListener(name, event => {
     event.preventDefault();
     dropZone.style.borderColor = "var(--gold)";
   });
 });
 
-["dragleave", "drop"].forEach(eventName => {
-  dropZone.addEventListener(eventName, event => {
+["dragleave", "drop"].forEach(name => {
+  dropZone.addEventListener(name, event => {
     event.preventDefault();
     dropZone.style.borderColor = "";
   });
 });
 
 dropZone.addEventListener("drop", event => {
-  const file = event.dataTransfer.files[0];
-  if (file) selectFile(file);
+  selectFile(event.dataTransfer.files[0]);
 });
 
 function updateCount() {
-  const text = transcript.value.trim();
-  const words = text ? text.split(/\s+/).length : 0;
+  const value = transcript.value.trim();
+  const words = value ? value.split(/\s+/).length : 0;
+
   $("wordCount").textContent =
     words + " words · " + transcript.value.length + " characters";
 
-  const hasText = transcript.value.length > 0;
-  editorStatus.textContent = hasText ? "Text available" : "Ready for text";
+  $("copyBtn").disabled = !value;
+  $("downloadBtn").disabled = !value;
 
-  $("copyBtn").disabled = !hasText;
-  $("downloadBtn").disabled = !hasText;
+  if (!isListening) {
+    editorStatus.textContent = value
+      ? "Text available"
+      : "Ready for text";
+  }
 }
 
 transcript.addEventListener("input", updateCount);
@@ -799,45 +818,303 @@ $("copyBtn").addEventListener("click", async () => {
     editorStatus.textContent = "Copied to clipboard";
   } catch {
     transcript.select();
-    const copied = document.execCommand("copy");
-    editorStatus.textContent = copied
+    const ok = document.execCommand("copy");
+
+    editorStatus.textContent = ok
       ? "Copied to clipboard"
-      : "Select and copy the text manually";
+      : "Please copy the selected text manually.";
   }
 });
 
 $("downloadBtn").addEventListener("click", () => {
-  const blob = new Blob([transcript.value], {
-    type: "text/plain;charset=utf-8"
-  });
+  const blob = new Blob(
+    ["\uFEFF", transcript.value],
+    { type: "text/plain;charset=utf-8" }
+  );
 
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "transcript.txt";
-  a.click();
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = "transcript.txt";
+  link.click();
 
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 });
 
-$("micBtn").addEventListener("click", () => {
-  $("micStatus").textContent =
-    "Live speech recognition is not connected in this UI-only version.";
+/* LIVE SPEECH RECOGNITION */
+
+const SpeechRecognition =
+  window.SpeechRecognition ||
+  window.webkitSpeechRecognition;
+
+function startListening() {
+  if (!SpeechRecognition) {
+    micStatus.textContent =
+      "Live speech is not supported in this browser. Try Chrome.";
+    return;
+  }
+
+  recognition = new SpeechRecognition();
+  recognition.lang =
+    languageSelect.value === "auto"
+      ? "en-US"
+      : languageSelect.value;
+
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
+
+  let finalText = transcript.value.trim();
+  if (finalText) finalText += "\n";
+
+  recognition.onstart = () => {
+    isListening = true;
+    stopRequested = false;
+    micBtn.textContent = "Stop recording";
+    micStatus.textContent = "Listening… speak now";
+    editorStatus.textContent = "Listening";
+  };
+
+  recognition.onresult = event => {
+    let interim = "";
+
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      const text = event.results[i][0].transcript;
+
+      if (event.results[i].isFinal) {
+        finalText += text + " ";
+      } else {
+        interim += text;
+      }
+    }
+
+    transcript.value = finalText + interim;
+
+    const value = transcript.value.trim();
+    $("wordCount").textContent =
+      (value ? value.split(/\s+/).length : 0) +
+      " words · " + transcript.value.length + " characters";
+
+    $("copyBtn").disabled = !value;
+    $("downloadBtn").disabled = !value;
+  };
+
+  recognition.onerror = event => {
+    micStatus.textContent =
+      event.error === "not-allowed"
+        ? "Microphone permission denied. Allow microphone access."
+        : "Recognition error: " + event.error;
+  };
+
+  recognition.onend = () => {
+    isListening = false;
+    micBtn.textContent = "Start recording";
+    micStatus.textContent = stopRequested
+      ? "Recording stopped."
+      : "Microphone not recording";
+
+    updateCount();
+  };
+
+  try {
+    recognition.start();
+  } catch (error) {
+    micStatus.textContent =
+      "Could not start microphone: " + error.message;
+  }
+}
+
+function stopListening() {
+  stopRequested = true;
+
+  if (recognition && isListening) {
+    recognition.stop();
+  }
+}
+
+micBtn.addEventListener("click", () => {
+  if (isListening) stopListening();
+  else startListening();
 });
 
-transcribeBtn.addEventListener("click", () => {
+/* FREE LOCAL WHISPER TRANSCRIPTION */
+
+async function getTranscriber() {
+  if (transcriber) return transcriber;
+  if (modelPromise) return modelPromise;
+
+  modelPromise = (async () => {
+    editorStatus.textContent = "Loading Whisper AI model…";
+
+    const { pipeline, env } = await import(
+      "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.7.2"
+    );
+
+    env.allowLocalModels = false;
+    env.useBrowserCache = true;
+
+    transcriber = await pipeline(
+      "automatic-speech-recognition",
+      "onnx-community/whisper-tiny",
+      {
+        dtype: "q8",
+        progress_callback: info => {
+          if (
+            info &&
+            info.status === "progress" &&
+            Number.isFinite(info.progress)
+          ) {
+            editorStatus.textContent =
+              "Downloading model: " +
+              Math.round(info.progress) + "%";
+          }
+        }
+      }
+    );
+
+    return transcriber;
+  })().catch(error => {
+    modelPromise = null;
+    transcriber = null;
+    throw error;
+  });
+
+  return modelPromise;
+}
+
+async function decodeAudio(file) {
+  const AudioContextClass =
+    window.AudioContext || window.webkitAudioContext;
+
+  if (!AudioContextClass || !window.OfflineAudioContext) {
+    throw new Error(
+      "Audio processing is unsupported in this browser. Try Chrome."
+    );
+  }
+
+  const context = new AudioContextClass();
+
+  try {
+    const buffer = await context.decodeAudioData(
+      await file.arrayBuffer()
+    );
+
+    const sampleRate = 16000;
+    const frames = Math.ceil(buffer.duration * sampleRate);
+
+    if (!frames || frames > sampleRate * 3600) {
+      throw new Error(
+        "Audio is empty or longer than the one-hour safety limit."
+      );
+    }
+
+    const offline = new OfflineAudioContext(
+      1,
+      frames,
+      sampleRate
+    );
+
+    const source = offline.createBufferSource();
+    source.buffer = buffer;
+    source.connect(offline.destination);
+    source.start(0);
+
+    const rendered = await offline.startRendering();
+
+    return rendered.getChannelData(0);
+  } finally {
+    await context.close().catch(() => {});
+  }
+}
+
+const languageNames = {
+  "en-US": "english",
+  "en-GB": "english",
+  "fr-FR": "french",
+  "ta-IN": "tamil",
+  "si-LK": "sinhala",
+  "hi-IN": "hindi",
+  "es-ES": "spanish",
+  "de-DE": "german",
+  "it-IT": "italian",
+  "pt-PT": "portuguese",
+  "ar-SA": "arabic",
+  "zh-CN": "chinese",
+  "ja-JP": "japanese",
+  "ko-KR": "korean",
+  "nl-NL": "dutch",
+  "ru-RU": "russian"
+};
+
+transcribeBtn.addEventListener("click", async () => {
   if (!selectedFile) return;
 
-  editorStatus.textContent =
-    "Transcription engine not connected yet.";
+  const originalLabel = transcribeBtn.textContent;
+  transcribeBtn.disabled = true;
+  transcribeBtn.textContent = "Processing…";
 
-  alert(
-    "This is the UI-only version. Audio transcription will work after a free browser-based transcription engine is integrated."
-  );
+  try {
+    if (selectedFile.size > 100 * 1024 * 1024) {
+      throw new Error(
+        "Please choose an audio file smaller than 100 MB."
+      );
+    }
+
+    editorStatus.textContent = "Reading audio locally…";
+
+    const audio = await decodeAudio(selectedFile);
+    const recognizer = await getTranscriber();
+
+    editorStatus.textContent = "Transcribing audio…";
+
+    const options = {
+      chunk_length_s: 30,
+      stride_length_s: 5,
+      task: "transcribe"
+    };
+
+    const selectedLanguage = languageSelect.value;
+
+    if (
+      selectedLanguage !== "auto" &&
+      languageNames[selectedLanguage]
+    ) {
+      options.language = languageNames[selectedLanguage];
+    }
+
+    const result = await recognizer(audio, options);
+    const text = (result?.text || "").trim();
+
+    if (!text) {
+      throw new Error(
+        "No speech detected. Try a clearer audio file."
+      );
+    }
+
+    transcript.value = transcript.value.trim()
+      ? transcript.value.trimEnd() + "\n\n" + text
+      : text;
+
+    updateCount();
+    editorStatus.textContent = "Transcription complete";
+  } catch (error) {
+    console.error("Transcription error:", error);
+
+    editorStatus.textContent = "Transcription failed";
+
+    alert(
+      "Could not transcribe audio: " +
+      (error.message || "Please try another file or browser.")
+    );
+  } finally {
+    transcribeBtn.disabled = !selectedFile;
+    transcribeBtn.textContent = originalLabel;
+  }
 });
 
 updateCount();
 </script>
-
+  
 </body>
 </html>
