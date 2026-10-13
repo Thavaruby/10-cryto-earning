@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Free File Converter | My Crypto Faucet</title>
+<meta name="description" content="Convert images and text files to PDF or extract PDF text into an editable Word document for free. Files are processed in your browser.">
+<link rel="canonical" href="https://myfaucetcrypto.com/file-converter.html">
+<meta name="robots" content="index,follow">
+
+<style>
+:root {
+  --bg:#07152f;
+  --panel:#0d2042;
+  --gold:#f5c542;
+  --text:#f4f7ff;
+  --muted:#b7c5df;
+  --line:#28436b;
+  --green:#63dfac;
+  --red:#ff8e8e;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:linear-gradient(160deg,#061128,#0a1d3c 55%,#07152f);
+  color:var(--text);
+  font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif
+}
+a{color:var(--gold)}
+.wrap{max-width:980px;margin:auto;padding:24px 16px 60px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:28px}
+.brand{font-weight:800;color:var(--gold)}
+.back{border:1px solid var(--line);border-radius:10px;padding:8px 12px;text-decoration:none;color:var(--text)}
+h1{font-size:clamp(28px,5vw,42px);line-height:1.15;margin:8px 0 12px}
+h1 span{color:var(--gold)}
+.lead{color:var(--muted);max-width:760px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:25px 0 18px}
+.tab{background:var(--panel);color:var(--text);border:1px solid var(--line);padding:15px;border-radius:14px;text-align:left;font-weight:750;cursor:pointer}
+.tab small{display:block;color:var(--muted);font-weight:400;margin-top:4px}
+.tab.active{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
+.card{background:rgba(13,32,66,.94);border:1px solid var(--line);border-radius:18px;padding:22px;margin:14px 0}
+.drop{display:block;border:2px dashed #47658e;background:#091a36;border-radius:15px;padding:28px 16px;text-align:center;cursor:pointer}
+.drop strong{display:block;font-size:18px}
+.drop p{margin:7px 0;color:var(--muted)}
+input[type=file]{display:none}
+.btn{background:var(--gold);border:0;border-radius:11px;padding:12px 17px;font-weight:800;color:#17213a;cursor:pointer}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.secondary{background:#19365f;color:var(--text);border:1px solid #35547f}
+.row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:16px}
+.note{font-size:14px;color:var(--muted)}
+.status{margin-top:14px;padding:12px;border-radius:10px;background:#081831;color:var(--muted);white-space:pre-wrap;overflow-wrap:anywhere}
+.status.good{color:var(--green)}
+.status.bad{color:var(--red)}
+.fileline{color:var(--muted);margin-top:10px;overflow-wrap:anywhere}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.mini{background:#091a36;border:1px solid var(--line);padding:14px;border-radius:12px}
+.mini b{color:var(--gold)}
+.hidden{display:none!important}
+footer{color:var(--muted);font-size:13px;margin-top:30px;border-top:1px solid var(--line);padding-top:18px}
+@media(max-width:600px){
+ .tabs,.grid{grid-template-columns:1fr}
+ .card{padding:16px}
+ .wrap{padding:18px 12px 40px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="brand">MY CRYPTO FAUCET · FREE TOOLS</div>
+  <a class="back" href="/#free-tools">← Free Tools</a>
+</header>
+
+<main>
+<h1>Free <span>File Converter</span></h1>
+<p class="lead">
+Convert supported files to PDF or extract selectable PDF text into
+an editable Word document. Files are processed locally in your browser.
+</p>
+
+<div class="tabs" role="tablist" aria-label="Conversion type">
+  <button class="tab active" id="tabToPdf" role="tab" aria-selected="true">
+    File → PDF
+    <small>Images, TXT and CSV</small>
+  </button>
+  <button class="tab" id="tabFromPdf" role="tab" aria-selected="false">
+    PDF → Editable Word
+    <small>Editable text and page previews</small>
+  </button>
+</div>
+
+<section class="card" id="toPdfPanel">
+<h2>Convert a file to PDF</h2>
+<p class="note">
+Supported: JPG, JPEG, PNG, WEBP, TXT and CSV.
+Word, Excel and PowerPoint conversion is not included in this browser-only version.
+</p>
+
+<label class="drop" for="inputToPdf">
+<strong>Choose a file</strong>
+<p>Tap here to browse your device</p>
+<span class="note">Images / TXT / CSV · Maximum 25 MB</span>
+</label>
+<input id="inputToPdf" type="file" accept=".jpg,.jpeg,.png,.webp,.txt,.csv,image/jpeg,image/png,image/webp,text/plain,text/csv">
+<div class="fileline" id="fileToPdfName">No file selected</div>
+
+<div class="row">
+<button class="btn" id="convertToPdf" disabled>Convert to PDF</button>
+<button class="btn secondary" id="clearToPdf" type="button">Clear</button>
+</div>
+<div class="status" id="statusToPdf" role="status" aria-live="polite">Choose a supported file to begin.</div>
+</section>
+
+<section class="card hidden" id="fromPdfPanel">
+<h2>Convert PDF to editable Word</h2>
+<p class="note">
+The DOCX contains extracted editable text and a page image for each original PDF page.
+Page images preserve the visual appearance, including pictures, barcodes and signatures,
+but those images are not individually editable. Scanned PDFs may not contain selectable text.
+</p>
+
+<label class="drop" for="inputFromPdf">
+<strong>Choose a PDF file</strong>
+<p>Tap here to browse your device</p>
+<span class="note">PDF · Maximum 25 MB</span>
+</label>
+<input id="inputFromPdf" type="file" accept="application/pdf,.pdf">
+<div class="fileline" id="fileFromPdfName">No file selected</div>
+
+<div class="row">
+<button class="btn" id="convertFromPdf" disabled>Convert to Word (.docx)</button>
+<button class="btn secondary" id="clearFromPdf" type="button">Clear</button>
+</div>
+<div class="status" id="statusFromPdf" role="status" aria-live="polite">Choose a PDF file to begin.</div>
+</section>
+
+<div class="grid">
+<div class="mini">
+<b>Privacy first</b>
+<p class="note">Your selected file stays in this browser tab and is not uploaded to our server.</p>
+</div>
+<div class="mini">
+<b>Honest conversion</b>
+<p class="note">Text is editable; page previews preserve visual content. Perfect original Word layout is not guaranteed.</p>
+</div>
+</div>
+</main>
+
+<footer>
+Free File Converter · My Crypto Faucet. Keep your original file.
+Check conversion results before using official forms or important documents.
+</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.umd.js"></script>
+
+<script>
+(() => {
+'use strict';
+
+const $ = id => document.getElementById(id);
+const MAX_BYTES = 25 * 1024 * 1024;
+let toPdfFile = null;
+let fromPdfFile = null;
+let busyToPdf = false;
+let busyFromPdf = false;
+
+function setStatus(id, message, kind = '') {
+  const el = $(id);
+  el.textContent = message;
+  el.className = 'status' + (kind ? ' ' + kind : '');
+}
+
+function selectMode(mode) {
+  const isToPdf = mode === 'toPdf';
+  $('toPdfPanel').classList.toggle('hidden', !isToPdf);
+  $('fromPdfPanel').classList.toggle('hidden', isToPdf);
+  $('tabToPdf').classList.toggle('active', isToPdf);
+  $('tabFromPdf').classList.toggle('active', !isToPdf);
+  $('tabToPdf').setAttribute('aria-selected', String(isToPdf));
+  $('tabFromPdf').setAttribute('aria-selected', String(!isToPdf));
+}
+
+$('tabToPdf').addEventListener('click', () => selectMode('toPdf'));
+$('tabFromPdf').addEventListener('click', () => selectMode('fromPdf'));
+
+function checkFile(file, accepted) {
+  if (!file) return 'Choose a file first.';
+  if (file.size === 0) return 'The selected file is empty.';
+  if (file.size > MAX_BYTES) return 'File is larger than 25 MB. Choose a smaller file.';
+  const ext = file.name.split('.').pop().toLowerCase();
+  if (!accepted.includes(ext)) return 'This file format is not supported.';
+  return '';
+}
+
+function updateFileInfo(file, nameId, buttonId, statusId, readyMessage) {
+  $(nameId).textContent = file
+    ? `${file.name} · ${(file.size / 1024).toFixed(1)} KB`
+    : 'No file selected';
+  $(buttonId).disabled = !file;
+  setStatus(statusId, file ? readyMessage : 'Choose a file to begin.');
+}
+
+$('inputToPdf').addEventListener('change', event => {
+  toPdfFile = event.target.files[0] || null;
+  const error = toPdfFile
+    ? checkFile(toPdfFile, ['jpg','jpeg','png','webp','txt','csv'])
+    : '';
+  updateFileInfo(toPdfFile, 'fileToPdfName', 'convertToPdf', 'statusToPdf',
+    'Ready to convert.');
+  if (error) {
+    $('convertToPdf').disabled = true;
+    setStatus('statusToPdf', error, 'bad');
+  }
+});
+
+$('inputFromPdf').addEventListener('change', event => {
+  fromPdfFile = event.target.files[0] || null;
+  const error = fromPdfFile ? checkFile(fromPdfFile, ['pdf']) : '';
+  updateFileInfo(fromPdfFile, 'fileFromPdfName', 'convertFromPdf', 'statusFromPdf',
+    'Ready to extract text and page images.');
+  if (error) {
+    $('convertFromPdf').disabled = true;
+    setStatus('statusFromPdf', error, 'bad');
+  }
+});
+
+function safeName(name) {
+  return name.replace(/\.[^.]+$/, '')
+    .replace(/[\\/:*?"<>|]+/g, '_')
+    .slice(0, 100) || 'converted-file';
+}
+
+function downloadBlob(blob, name) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+}
+
+function loadImage(dataUrl) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error('The image could not be decoded.'));
+    img.src = dataUrl;
+  });
+}
+
+function readDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error('Could not read the selected file.'));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function imageToPdf(file) {
+  const data = await readDataURL(file);
+  const img = await loadImage(data);
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({
+    orientation: img.width > img.height ? 'landscape' : 'portrait',
+    unit: 'pt',
+    format: 'a4',
+    compress: true
+  });
+
+  const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
+  const margin = 24;
+  const scale = Math.min(
+    (pageW - margin * 2) / img.width,
+    (pageH - margin * 2) / img.height
+  );
+
+  const w = img.width * scale;
+  const h = img.height * scale;
+  let format = 'JPEG';
+  let imageData = data;
+
+  if (file.type === 'image/png') {
+    format = 'PNG';
+  } else if (file.type === 'image/webp') {
+    const canvas = document.createElement('canvas');
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    canvas.getContext('2d').drawImage(img, 0, 0);
+    imageData = canvas.toDataURL('image/jpeg', 0.94);
+    format = 'JPEG';
+  }
+
+  doc.addImage(imageData, format, (pageW - w) / 2, (pageH - h) / 2, w, h);
+  return doc.output('blob');
+}
+
+async function textToPdf(file) {
+  const text = await file.text();
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'pt', format: 'a4', compress: true });
+  const margin = 42;
+  const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
+  const maxW = pageW - margin * 2;
+  const lineH = 14;
+  let y = margin;
+
+  for (const rawLine of text.replace(/\r\n?/g, '\n').split('\n')) {
+    const wrapped = doc.splitTextToSize(rawLine || ' ', maxW);
+    for (const line of wrapped) {
+      if (y > pageH - margin) {
+        doc.addPage();
+        y = margin;
+      }
+      doc.text(line, margin, y, { maxWidth: maxW });
+      y += lineH;
+    }
+  }
+  return doc.output('blob');
+}
+
+$('convertToPdf').addEventListener('click', async () => {
+  if (busyToPdf) return;
+  const error = checkFile(toPdfFile, ['jpg','jpeg','png','webp','txt','csv']);
+  if (error) {
+    setStatus('statusToPdf', error, 'bad');
+    return;
+  }
+  if (!window.jspdf?.jsPDF) {
+    setStatus('statusToPdf', 'The PDF library failed to load. Check your internet connection and retry.', 'bad');
+    return;
+  }
+
+  busyToPdf = true;
+  const button = $('convertToPdf');
+  button.disabled = true;
+  button.textContent = 'Converting…';
+
+  try {
+    const ext = toPdfFile.name.split('.').pop().toLowerCase();
+    const blob = ['txt','csv'].includes(ext)
+      ? await textToPdf(toPdfFile)
+      : await imageToPdf(toPdfFile);
+
+    downloadBlob(blob, safeName(toPdfFile.name) + '.pdf');
+    setStatus('statusToPdf', 'PDF created. Open the downloaded file to check the result.', 'good');
+  } catch (err) {
+    setStatus('statusToPdf', 'Conversion failed: ' + (err.message || 'Unknown error'), 'bad');
+  } finally {
+    busyToPdf = false;
+    button.textContent = 'Convert to PDF';
+    button.disabled = !toPdfFile || !!checkFile(toPdfFile, ['jpg','jpeg','png','webp','txt','csv']);
+  }
+});
+
+$('clearToPdf').addEventListener('click', () => {
+  if (busyToPdf) return;
+  toPdfFile = null;
+  $('inputToPdf').value = '';
+  updateFileInfo(null, 'fileToPdfName', 'convertToPdf', 'statusToPdf', '');
+});
+
+function canvasToJpeg(canvas, maxWidth = 1200) {
+  const scale = Math.min(1, maxWidth / canvas.width);
+  const output = document.createElement('canvas');
+  output.width = Math.max(1, Math.round(canvas.width * scale));
+  output.height = Math.max(1, Math.round(canvas.height * scale));
+  const ctx = output.getContext('2d', { alpha: false });
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, output.width, output.height);
+  ctx.drawImage(canvas, 0, 0, output.width, output.height);
+  return output.toDataURL('image/jpeg', 0.82);
+}
+
+$('convertFromPdf').addEventListener('click', async () => {
+  if (busyFromPdf) return;
+  const error = checkFile(fromPdfFile, ['pdf']);
+  if (error) {
+    setStatus('statusFromPdf', error, 'bad');
+    return;
+  }
+  if (!window.pdfjsLib || !window.docx?.Document || !window.docx?.Packer) {
+    setStatus('statusFromPdf', 'A conversion library failed to load. Check your internet connection and retry.', 'bad');
+    return;
+  }
+
+  busyFromPdf = true;
+  const button = $('convertFromPdf');
+  button.disabled = true;
+  button.textContent = 'Converting…';
+
+  try {
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    const buffer = await fromPdfFile.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(buffer) }).promise;
+    const { Document, Packer, Paragraph, TextRun, ImageRun, HeadingLevel } = docx;
+    const children = [];
+    let totalChars = 0;
+    let totalImages = 0;
+
+    for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+      setStatus('statusFromPdf', `Processing PDF page ${pageNumber} of ${pdf.numPages}…`);
+
+      const page = await pdf.getPage(pageNumber);
+      const content = await page.getTextContent();
+      const viewport = page.getViewport({ scale: 1.35 });
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.ceil(viewport.width);
+      canvas.height = Math.ceil(viewport.height);
+
+      const ctx = canvas.getContext('2d', { alpha: false });
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      await page.render({ canvasContext: ctx, viewport }).promise;
+
+      const imageData = canvasToJpeg(canvas);
+      const base64 = imageData.split(',')[1];
+      const binary = atob(base64);
+      const imageBytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) imageBytes[i] = binary.charCodeAt(i);
+
+      if (pageNumber > 1) {
+        children.push(new Paragraph({ pageBreakBefore: true, text: `Page ${pageNumber}`, heading: HeadingLevel.HEADING_1 }));
+      } else {
+        children.push(new Paragraph({ text: 'PDF page preview', heading: HeadingLevel.HEADING_1 }));
+      }
+
+      children.push(new Paragraph({
+        children: [new ImageRun({
+          data: imageBytes,
+          transformation: { width: 520, height: Math.min(740, 520 * canvas.height / canvas.width) }
+        })],
+        spacing: { after: 200 }
+      }));
+      totalImages++;
+
+      const items = content.items.filter(item => typeof item.str === 'string');
+      const lines = [];
+      let current = '';
+      let lastY = null;
+
+      for (const item of items) {
+        const y = Math.round(item.transform?.[5] || 0);
+        if (lastY !== null && Math.abs(y - lastY) > 3) {
+          if (current.trim()) lines.push(current.trim());
+          current = '';
+        }
+        current += item.str;
+        if (item.hasEOL) {
+          if (current.trim()) lines.push(current.trim());
+          current = '';
+        }
+        lastY = y;
+      }
+      if (current.trim()) lines.push(current.trim());
+
+      const pageText = lines.join('\n').trim();
+      totalChars += pageText.length;
+
+      children.push(new Paragraph({
+        text: `Editable text extracted from page ${pageNumber}`,
+        heading: HeadingLevel.HEADING_2
+      }));
+
+      if (pageText) {
+        for (const line of lines) {
+          children.push(new Paragraph({
+            children: [new TextRun({ text: line })],
+            spacing: { after: 80 }
+          }));
+        }
+      } else {
+        children.push(new Paragraph({
+          children: [new TextRun({
+            text: '[No selectable text detected. This page may need OCR.',
+            italics: true
+          })]
+        }));
+      }
+
+      canvas.width = 1;
+      canvas.height = 1;
+    }
+
+    if (!totalChars) {
+      setStatus('statusFromPdf',
+        'No selectable text was found. The page previews can preserve appearance, but this file needs OCR to create editable text.',
+        'bad');
+    }
+
+    const wordDoc = new Document({
+      sections: [{
+        properties: {},
+        children
+      }]
+    });
+
+    const blob = await Packer.toBlob(wordDoc);
+    downloadBlob(blob, safeName(fromPdfFile.name) + '.docx');
+
+    setStatus('statusFromPdf',
+      `Word file created: ${pdf.numPages} page(s), ${totalChars} extracted text characters, ${totalImages} page preview image(s). Text is editable; page previews are images. Check layout and page breaks in Word.`,
+      'good');
+  } catch (err) {
+    setStatus('statusFromPdf', 'Conversion failed: ' + (err.message || 'Unknown error'), 'bad');
+  } finally {
+    busyFromPdf = false;
+    button.textContent = 'Convert to Word (.docx)';
+    button.disabled = !fromPdfFile || !!checkFile(fromPdfFile, ['pdf']);
+  }
+});
+
+$('clearFromPdf').addEventListener('click', () => {
+  if (busyFromPdf) return;
+  fromPdfFile = null;
+  $('inputFromPdf').value = '';
+  updateFileInfo(null, 'fileFromPdfName', 'convertFromPdf', 'statusFromPdf', '');
+});
+
+})();
+</script>
+</body>
+</html>
