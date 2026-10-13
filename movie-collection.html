@@ -4,461 +4,524 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Free Movie Collection & Trailers | My Crypto Faucet</title>
-<meta name="description" content="Explore movie collections, discover classic films, browse trailers and find official free online movie viewing options.">
+<title>Movie Collection — Multilingual Movies & Trailers | My Crypto Faucet</title>
+<meta name="description" content="Discover movies, trailers and multilingual cinema. Search by language, genre and release year in the My Crypto Faucet Movie Collection.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://myfaucetcrypto.com/movie-collection.html">
 <meta name="theme-color" content="#07111f">
-
-<meta property="og:type" content="website">
-<meta property="og:title" content="Free Movie Collection | My Crypto Faucet">
-<meta property="og:description" content="Discover films, trailers and legal free movie viewing resources.">
-<meta property="og:url" content="https://myfaucetcrypto.com/movie-collection.html">
-
 <link rel="icon" type="image/png" href="/assets/favico.png">
 
 <style>
 :root {
-  --bg: #07111f;
-  --panel: #101f38;
-  --panel2: #152945;
-  --gold: #f5c542;
-  --text: #f8fafc;
-  --muted: #b7c4d8;
-  --border: rgba(255,255,255,.10);
+  --bg:#07111f;
+  --panel:#10213a;
+  --gold:#f5c542;
+  --text:#f8fafc;
+  --muted:#b7c4d8;
+  --border:rgba(255,255,255,.12);
 }
-
-* { box-sizing: border-box; }
-
+* { box-sizing:border-box; }
 body {
-  margin: 0;
-  min-height: 100vh;
-  font-family: Arial, Helvetica, sans-serif;
-  color: var(--text);
-  background:
-    radial-gradient(circle at 10% 0%, #183461 0, transparent 35%),
-    linear-gradient(145deg, #07111f, #0d1b2f 55%, #111827);
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:linear-gradient(145deg,#07111f,#0d1b2f 60%,#111827);
+  color:var(--text);
 }
-
-a { color: inherit; }
-
+a { color:inherit; }
 header {
-  padding: 28px 16px 24px;
-  text-align: center;
-  border-bottom: 1px solid var(--border);
+  padding:20px 5%;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
 }
-
-.brand {
-  color: var(--gold);
-  font-weight: 900;
-  font-size: 13px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
+.brand { color:var(--gold); font-weight:900; }
+.home {
+  text-decoration:none;
+  padding:10px 14px;
+  border:1px solid var(--border);
+  border-radius:9px;
 }
-
-h1 {
-  margin: 12px 0;
-  font-size: clamp(30px, 5vw, 46px);
-}
-
-header p {
-  max-width: 650px;
-  margin: auto;
-  line-height: 1.7;
-  color: var(--muted);
-}
-
-main {
-  width: min(1120px, 94%);
-  margin: 26px auto 48px;
-}
-
-.notice {
-  background: rgba(245,197,66,.07);
-  border: 1px solid rgba(245,197,66,.3);
-  border-radius: 12px;
-  padding: 16px;
-  line-height: 1.65;
-  color: var(--muted);
-}
-
-.notice strong { color: var(--gold); }
-
-.toolbar {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 14px;
-  margin: 24px 0 16px;
-}
-
-#search {
-  width: 100%;
-  min-height: 48px;
-  padding: 13px 15px;
-  border: 1px solid #334967;
-  border-radius: 10px;
-  outline: none;
-  background: #0b192d;
-  color: white;
-  font-size: 16px;
-}
-
-#search:focus {
-  border-color: var(--gold);
-}
-
-.filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 9px;
-}
-
-.filters button {
-  padding: 10px 15px;
-  border: 1px solid #3a506e;
-  border-radius: 30px;
-  background: #10213a;
-  color: #dbe5f3;
-  cursor: pointer;
-  font-weight: 700;
-}
-
-.filters button:hover,
-.filters button.active {
-  background: var(--gold);
-  border-color: var(--gold);
-  color: #111827;
-}
-
-.results {
-  margin: 18px 0;
-  color: var(--muted);
-  font-size: 14px;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 18px;
-}
-
-.card {
-  min-width: 0;
-  overflow: hidden;
-  background: linear-gradient(150deg, var(--panel2), var(--panel));
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  transition: transform .2s, border-color .2s;
-}
-
-.card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(245,197,66,.5);
-}
-
-.poster {
-  min-height: 150px;
-  display: grid;
-  place-items: center;
+main { width:min(1150px,94%); margin:25px auto 50px; }
+.hero {
+  position:relative;
+  min-height:270px;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  padding:35px;
+  border:1px solid var(--border);
+  border-radius:20px;
   background:
-    radial-gradient(circle at 50% 20%, #314a70, transparent 65%),
-    #0b172a;
-  font-size: 54px;
+    radial-gradient(circle at 80% 30%,rgba(245,197,66,.2),transparent 35%),
+    linear-gradient(120deg,#142b4b,#081426);
 }
-
-.card-body { padding: 17px; }
-
-.category {
-  color: var(--gold);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  text-transform: uppercase;
+.hero-content { max-width:650px; position:relative; z-index:1; }
+.eyebrow { color:var(--gold); font-weight:bold; letter-spacing:2px; }
+h1 { font-size:clamp(30px,5vw,48px); margin:12px 0; }
+.hero p,.muted { color:var(--muted); line-height:1.7; }
+.hero button,.play,.filter-button {
+  border:0;
+  border-radius:9px;
+  padding:12px 16px;
+  font-weight:bold;
+  cursor:pointer;
 }
-
-.card h2 {
-  margin: 10px 0;
-  font-size: 20px;
-  overflow-wrap: anywhere;
+.hero button,.play {
+  background:var(--gold);
+  color:#111827;
 }
-
-.card p {
-  color: var(--muted);
-  font-size: 14px;
-  line-height: 1.65;
+.hero button { margin-top:10px; }
+h2.section-title { margin:32px 0 16px; }
+.controls {
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr 1fr;
+  gap:12px;
+  margin:20px 0;
 }
-
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 9px;
-  margin-top: 16px;
+input,select {
+  width:100%;
+  min-width:0;
+  padding:13px;
+  border:1px solid #344966;
+  border-radius:9px;
+  background:#0b192d;
+  color:white;
+  font-size:15px;
 }
-
-.action {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 40px;
-  padding: 10px 13px;
-  border-radius: 8px;
-  background: var(--gold);
-  color: #111827;
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 800;
+input:focus,select:focus { outline:2px solid var(--gold); }
+.status { color:var(--muted); font-size:14px; margin:15px 0; }
+.grid {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:17px;
 }
-
-.action.secondary {
-  border: 1px solid #526783;
-  background: transparent;
-  color: white;
+.card {
+  overflow:hidden;
+  border:1px solid var(--border);
+  border-radius:14px;
+  background:linear-gradient(145deg,#142945,#0c192d);
 }
-
-.action:hover { opacity: .86; }
-
-.empty {
-  display: none;
-  padding: 35px 10px;
-  text-align: center;
-  color: var(--muted);
+.poster {
+  min-height:155px;
+  display:grid;
+  place-items:center;
+  background:radial-gradient(circle,#29466b,#0a1628);
+  font-size:55px;
 }
-
-.section-title {
-  margin: 34px 0 14px;
-  font-size: 23px;
+.card-body { padding:16px; }
+.tag { color:var(--gold); font-size:12px; font-weight:bold; }
+.card h3 { margin:10px 0; font-size:19px; }
+.card p { color:var(--muted); font-size:14px; line-height:1.6; }
+.play { width:100%; margin-top:10px; }
+.play:disabled { opacity:.5; cursor:not-allowed; }
+.empty { display:none; padding:30px 5px; text-align:center; color:var(--muted); }
+.notice {
+  margin-top:25px;
+  padding:16px;
+  border:1px solid rgba(245,197,66,.25);
+  border-radius:12px;
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.7;
 }
-
+.notice strong { color:var(--gold); }
+.modal {
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  background:rgba(0,0,0,.88);
+}
+.modal.open { display:flex; }
+.modal-box {
+  width:min(900px,100%);
+  background:#0b192d;
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:15px;
+}
+.modal-top {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:12px;
+}
+.close {
+  background:transparent;
+  color:white;
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:9px 13px;
+  cursor:pointer;
+}
+.player {
+  width:100%;
+  aspect-ratio:16/9;
+  border:0;
+  background:#000;
+}
 footer {
-  border-top: 1px solid var(--border);
-  padding: 24px 16px;
-  text-align: center;
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.8;
+  border-top:1px solid var(--border);
+  padding:25px 15px;
+  text-align:center;
+  color:var(--muted);
+  font-size:13px;
 }
-
-footer a { color: var(--gold); }
-
-@media (max-width: 480px) {
-  .grid { grid-template-columns: 1fr; }
-  .filters button { flex-grow: 1; }
+@media(max-width:760px) {
+  .controls { grid-template-columns:1fr 1fr; }
+  .grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .hero { padding:25px; }
+}
+@media(max-width:480px) {
+  .grid,.controls { grid-template-columns:1fr; }
+  header { padding:16px 4%; }
 }
 </style>
 </head>
 
 <body>
 <header>
-  <div class="brand">My Crypto Faucet</div>
-  <h1>🎬 Movie Collection</h1>
-  <p>
-    Discover films, explore trailers and find official free movie
-    viewing options. Availability depends on the provider and your region.
-  </p>
+  <a class="brand" href="/" style="text-decoration:none">
+    MY CRYPTO FAUCET
+  </a>
+  <a class="home" href="/">← Home</a>
 </header>
 
 <main>
-  <div class="notice">
-    <strong>Watch responsibly.</strong>
-    Explore the resources below to find films available to watch legally.
-    This page does not host movies or provide unauthorized copies.
-  </div>
-
-  <div class="toolbar">
-    <input
-      id="search"
-      type="search"
-      placeholder="Search movies, genres or collections..."
-      aria-label="Search movie collection"
-    >
-
-    <div class="filters" aria-label="Filter collection">
-      <button class="active" type="button" data-filter="all"
-        aria-pressed="true">All</button>
-      <button type="button" data-filter="action"
-        aria-pressed="false">Action</button>
-      <button type="button" data-filter="comedy"
-        aria-pressed="false">Comedy</button>
-      <button type="button" data-filter="drama"
-        aria-pressed="false">Drama</button>
-      <button type="button" data-filter="animation"
-        aria-pressed="false">Animation</button>
-      <button type="button" data-filter="free"
-        aria-pressed="false">Free Resources</button>
+  <section class="hero" aria-labelledby="pageTitle">
+    <div class="hero-content">
+      <div class="eyebrow" id="bannerLabel">MOVIE COLLECTION</div>
+      <h1 id="pageTitle">Cinema Without Borders</h1>
+      <p id="bannerText">
+        Explore cinema from different languages and discover
+        officially available trailers and films.
+      </p>
+      <button type="button" id="exploreButton">Explore Collection ↓</button>
     </div>
+  </section>
+
+  <h2 class="section-title">Find your next movie</h2>
+
+  <div class="controls">
+    <input id="search" type="search"
+      placeholder="Search movie title..."
+      aria-label="Search movie title">
+
+    <select id="language" aria-label="Choose language">
+      <option value="">All languages</option>
+      <option>Tamil</option>
+      <option>English</option>
+      <option>French</option>
+      <option>Hindi</option>
+      <option>Sinhala</option>
+      <option>Telugu</option>
+      <option>Malayalam</option>
+      <option>Kannada</option>
+      <option>Korean</option>
+      <option>Japanese</option>
+      <option>Spanish</option>
+      <option>Chinese</option>
+      <option>Other</option>
+    </select>
+
+    <select id="genre" aria-label="Choose genre">
+      <option value="">All types</option>
+      <option>Action</option>
+      <option>Comedy</option>
+      <option>Drama</option>
+      <option>Thriller</option>
+      <option>Romance</option>
+      <option>Animation</option>
+      <option>Documentary</option>
+      <option>Classic</option>
+    </select>
+
+    <select id="year" aria-label="Choose release year">
+      <option value="">All years</option>
+      <option>2026</option>
+      <option>2025</option>
+      <option>2024</option>
+      <option>2023</option>
+      <option>2022</option>
+      <option>2021</option>
+      <option>2020</option>
+    </select>
   </div>
 
-  <div class="results" id="results" aria-live="polite"></div>
+  <div class="status" id="results" aria-live="polite">
+    Browse the collection below.
+  </div>
 
-  <section class="grid" id="movieGrid" aria-label="Movie resources">
+  <section class="grid" id="movieGrid" aria-label="Movies">
+
+    <!--
+      Add real movie records here only when the title,
+      metadata and video embed are authorized for use.
+      Never add an unauthorized full-movie stream.
+    -->
 
     <article class="card"
-      data-category="free"
-      data-search="classic movies archive public domain old films">
-      <div class="poster" aria-hidden="true">🎞️</div>
+      data-title="Movie coming soon"
+      data-language="Tamil"
+      data-genre="Drama"
+      data-year="2026"
+      data-available="false"
+      data-embed="">
+      <div class="poster" aria-hidden="true">🎬</div>
       <div class="card-body">
-        <span class="category">Classic collection</span>
-        <h2>Classic Films</h2>
+        <span class="tag">TAMIL · FEATURED</span>
+        <h3>Movie Collection Coming Soon</h3>
         <p>
-          Explore historical film collections. Check the copyright
-          status and viewing rights of each individual film.
+          Tamil cinema collection. Movie details and an authorized
+          video player will appear when a verified source is added.
         </p>
-        <div class="actions">
-          <a class="action"
-            href="https://archive.org/details/movies"
-            target="_blank" rel="noopener noreferrer">
-            Explore films ↗
-          </a>
-        </div>
+        <button class="play" type="button" disabled>
+          Not available yet
+        </button>
       </div>
     </article>
 
     <article class="card"
-      data-category="free"
-      data-search="free online streaming movies plex">
-      <div class="poster" aria-hidden="true">📺</div>
-      <div class="card-body">
-        <span class="category">Streaming resources</span>
-        <h2>Free Movies Online</h2>
-        <p>
-          Explore a streaming service's free catalogue. Titles,
-          advertisements and regional availability may vary.
-        </p>
-        <div class="actions">
-          <a class="action"
-            href="https://www.plex.tv/watch-free/"
-            target="_blank" rel="noopener noreferrer">
-            View options ↗
-          </a>
-        </div>
-      </div>
-    </article>
-
-    <article class="card"
-      data-category="free"
-      data-search="movie trailers previews official videos">
-      <div class="poster" aria-hidden="true">▶️</div>
-      <div class="card-body">
-        <span class="category">Official previews</span>
-        <h2>Movie Trailers</h2>
-        <p>
-          Discover trailers and previews. A trailer does not mean
-          that the complete movie is available for free.
-        </p>
-        <div class="actions">
-          <a class="action"
-            href="https://www.youtube.com/movies"
-            target="_blank" rel="noopener noreferrer">
-            Explore movies ↗
-          </a>
-        </div>
-      </div>
-    </article>
-
-    <article class="card"
-      data-category="free"
-      data-search="public domain free legal film collection">
+      data-title="Movie coming soon"
+      data-language="English"
+      data-genre="Action"
+      data-year="2026"
+      data-available="false"
+      data-embed="">
       <div class="poster" aria-hidden="true">🍿</div>
       <div class="card-body">
-        <span class="category">Free viewing guide</span>
-        <h2>Find Legal Free Films</h2>
+        <span class="tag">ENGLISH · FEATURED</span>
+        <h3>English Movie Collection</h3>
         <p>
-          Look for films made available by their rights holders,
-          public institutions or verified free streaming services.
+          Discover English-language films when authorized
+          viewing sources are available.
         </p>
-        <div class="actions">
-          <a class="action secondary"
-            href="https://www.youtube.com/"
-            target="_blank" rel="noopener noreferrer">
-            Search YouTube ↗
-          </a>
-        </div>
+        <button class="play" type="button" disabled>
+          Not available yet
+        </button>
+      </div>
+    </article>
+
+    <article class="card"
+      data-title="Movie coming soon"
+      data-language="French"
+      data-genre="Comedy"
+      data-year="2025"
+      data-available="false"
+      data-embed="">
+      <div class="poster" aria-hidden="true">🎥</div>
+      <div class="card-body">
+        <span class="tag">FRENCH · FEATURED</span>
+        <h3>French Movie Collection</h3>
+        <p>
+          Explore French cinema and authorized trailers or
+          full movies as they become available.
+        </p>
+        <button class="play" type="button" disabled>
+          Not available yet
+        </button>
       </div>
     </article>
 
   </section>
 
   <div class="empty" id="empty">
-    No matching results. Try another search or category.
+    No matching movies found. Try another language or type.
   </div>
 
-  <h2 class="section-title">About this collection</h2>
   <div class="notice">
-    My Crypto Faucet provides links to external websites. External
-    services control their own content, availability and terms.
-    Always verify that a film is authorized for free viewing in your
-    country. No downloads or full-film hosting are provided here.
+    <strong>Viewing policy</strong><br>
+    This collection does not host unauthorized movies and does not
+    offer downloads. Full-film playback requires permission from
+    the rights holder or a legally available public-domain source.
+    Availability and release dates must be verified.
   </div>
 </main>
 
+<div class="modal" id="videoModal"
+  role="dialog" aria-modal="true" aria-label="Movie player">
+  <div class="modal-box">
+    <div class="modal-top">
+      <strong id="playerTitle">Movie player</strong>
+      <button class="close" id="closePlayer" type="button">
+        Close ✕
+      </button>
+    </div>
+    <iframe class="player" id="videoPlayer"
+      title="Authorized movie video"
+      src="about:blank"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      referrerpolicy="strict-origin-when-cross-origin"
+      allowfullscreen></iframe>
+    <p class="muted">
+      Use this player only for videos authorized for embedding.
+      Download controls are not provided by this page.
+    </p>
+  </div>
+</div>
+
 <footer>
-  © <span id="year"></span> My Crypto Faucet · Movie Collection
-  <br>
-  External links open third-party websites.
+  © <span id="currentYear"></span> My Crypto Faucet · Movie Collection
 </footer>
 
 <script>
 (() => {
-  const search = document.getElementById("search");
-  const cards = Array.from(document.querySelectorAll(".card"));
-  const buttons = Array.from(
-    document.querySelectorAll("[data-filter]")
-  );
-  const empty = document.getElementById("empty");
-  const results = document.getElementById("results");
+  "use strict";
 
-  let activeFilter = "all";
+  const $ = id => document.getElementById(id);
 
-  function updateMovies() {
-    const query = search.value.trim().toLowerCase();
-    let visibleCount = 0;
+  const cards = [...document.querySelectorAll(".card")];
+  const search = $("search");
+  const language = $("language");
+  const genre = $("genre");
+  const year = $("year");
+  const results = $("results");
+  const empty = $("empty");
+  const modal = $("videoModal");
+  const player = $("videoPlayer");
 
-    cards.forEach(card => {
-      const category = card.dataset.category || "";
-      const searchable =
-        (card.dataset.search || "") + " " + card.textContent;
+  // This banner rotates locally; it is not a live release feed.
+  const banners = [
+    {
+      label: "MOVIE COLLECTION",
+      title: "Cinema Without Borders",
+      text: "Explore cinema from different languages and discover officially available trailers and films."
+    },
+    {
+      label: "TRAILER SPOTLIGHT",
+      title: "Discover Your Next Film",
+      text: "Browse film categories and languages in one simple collection."
+    },
+    {
+      label: "WORLD CINEMA",
+      title: "Stories in Every Language",
+      text: "Explore international cinema as verified, authorized viewing sources become available."
+    }
+  ];
 
-      const matchesSearch =
-        searchable.toLowerCase().includes(query);
+  let bannerIndex = 0;
 
-      const matchesCategory =
-        activeFilter === "all" ||
-        category.split(/\s+/).includes(activeFilter);
-
-      const visible = matchesSearch && matchesCategory;
-
-      card.hidden = !visible;
-
-      if (visible) visibleCount++;
-    });
-
-    empty.style.display = visibleCount ? "none" : "block";
-
-    results.textContent =
-      visibleCount + (visibleCount === 1
-        ? " resource found"
-        : " resources found");
+  function rotateBanner() {
+    bannerIndex = (bannerIndex + 1) % banners.length;
+    $("bannerLabel").textContent = banners[bannerIndex].label;
+    $("pageTitle").textContent = banners[bannerIndex].title;
+    $("bannerText").textContent = banners[bannerIndex].text;
   }
 
-  buttons.forEach(button => {
-    button.addEventListener("click", () => {
-      activeFilter = button.dataset.filter;
+  // Movie titles and years must come from verified records.
+  function filterMovies() {
+    const q = search.value.trim().toLowerCase();
+    const lang = language.value.toLowerCase();
+    const type = genre.value.toLowerCase();
+    const selectedYear = year.value;
+    let count = 0;
 
-      buttons.forEach(item => {
-        const active = item === button;
-        item.classList.toggle("active", active);
-        item.setAttribute("aria-pressed", String(active));
-      });
+    cards.forEach(card => {
+      const title = (card.dataset.title || "").toLowerCase();
+      const cardLang = (card.dataset.language || "").toLowerCase();
+      const cardGenre = (card.dataset.genre || "").toLowerCase();
+      const cardYear = card.dataset.year || "";
 
-      updateMovies();
+      const matches =
+        (!q || title.includes(q)) &&
+        (!lang || cardLang === lang) &&
+        (!type || cardGenre === type) &&
+        (!selectedYear || cardYear === selectedYear);
+
+      card.hidden = !matches;
+      if (matches) count++;
     });
+
+    results.textContent = count + (count === 1
+      ? " movie listing"
+      : " movie listings");
+
+    empty.style.display = count ? "none" : "block";
+  }
+
+  // Allow only known video embed hosts; reject arbitrary URLs.
+  function getSafeEmbed(rawUrl) {
+    try {
+      const url = new URL(rawUrl);
+      const host = url.hostname.toLowerCase();
+
+      if (host === "www.youtube-nocookie.com" ||
+          host === "youtube-nocookie.com") {
+        return url.pathname.startsWith("/embed/") ? url.href : null;
+      }
+
+      if (host === "www.youtube.com" || host === "youtube.com") {
+        return url.pathname.startsWith("/embed/") ? url.href : null;
+      }
+
+      if (host === "archive.org") {
+        return url.pathname.startsWith("/embed/") ? url.href : null;
+      }
+
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  function openPlayer(card) {
+    const safeUrl = getSafeEmbed(card.dataset.embed || "");
+
+    if (!safeUrl || card.dataset.available !== "true") {
+      alert("This movie is not available yet. An authorized video source must be added first.");
+      return;
+    }
+
+    $("playerTitle").textContent =
+      card.dataset.title || "Movie player";
+
+    player.src = safeUrl;
+    modal.classList.add("open");
+    $("closePlayer").focus();
+  }
+
+  function closePlayer() {
+    modal.classList.remove("open");
+    player.src = "about:blank";
+  }
+
+  cards.forEach(card => {
+    const button = card.querySelector(".play");
+    if (button) button.addEventListener("click", () => openPlayer(card));
   });
 
-  search.addEventListener("input", updateMovies);
-  document.getElementById("year").textContent =
-    new Date().getFullYear();
+  [search, language, genre, year].forEach(control => {
+    control.addEventListener("input", filterMovies);
+    control.addEventListener("change", filterMovies);
+  });
 
-  updateMovies();
+  $("exploreButton").addEventListener("click", () => {
+    $("search").focus();
+    $("movieGrid").scrollIntoView({ behavior:"smooth" });
+  });
+
+  $("closePlayer").addEventListener("click", closePlayer);
+
+  modal.addEventListener("click", event => {
+    if (event.target === modal) closePlayer();
+  });
+
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") closePlayer();
+  });
+
+  $("currentYear").textContent = new Date().getFullYear();
+
+  // Rotate a local banner every 6 seconds.
+  window.setInterval(rotateBanner, 6000);
+
+  filterMovies();
 })();
 </script>
 </body>
