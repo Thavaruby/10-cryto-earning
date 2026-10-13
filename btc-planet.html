@@ -3,264 +3,305 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#060914">
-<title>BTC Planet — Grow Your Universe</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#070b15">
+<title>BTC Planet | Build Your World</title>
+<meta name="description" content="Explore your planet, discover eco missions, track progress and explore the BTC Planet rewards experience.">
 
 <style>
 :root {
-  --bg:#060914;
-  --panel:#0d1426;
-  --panel2:#101b30;
-  --gold:#ffc857;
-  --cyan:#55e6ff;
-  --green:#71f6b1;
-  --text:#f3f6ff;
-  --muted:#8997b4;
-  --line:rgba(155,184,255,.13);
+  color-scheme: dark;
+  --bg:#070b15;
+  --panel:#101828;
+  --panel2:#141f32;
+  --line:#243148;
+  --text:#f4f7ff;
+  --muted:#94a3bc;
+  --gold:#ffca68;
+  --cyan:#65e6f6;
+  --green:#8be7ad;
+  --radius:18px;
 }
 *{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:90px}
 body{
-  margin:0;
-  color:var(--text);
-  background:
-    radial-gradient(ellipse at 70% 15%,#11294a 0%,transparent 35%),
-    radial-gradient(ellipse at 5% 40%,#101a39 0%,transparent 38%),
-    var(--bg);
-  font-family:Inter,system-ui,-apple-system,sans-serif;
-  min-height:100vh;
+  margin:0;background:
+    radial-gradient(ellipse at 50% -25%,#183e55 0,transparent 47%),
+    var(--bg);color:var(--text);
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:14px;line-height:1.5
 }
-button{font:inherit;cursor:pointer}
-button:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
-.app{max-width:1500px;margin:auto;padding:22px 34px 50px}
-.nav{
+button,a{font:inherit}
+button{cursor:pointer}
+button:focus-visible,a:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+a{color:inherit;text-decoration:none}
+button:disabled{opacity:.55;cursor:not-allowed}
+.wrap{width:min(1240px,100% - 36px);margin:auto}
+.topbar{
+  position:sticky;top:0;z-index:20;
+  background:#080d19ed;backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--line)
+}
+.topinner{
   display:flex;align-items:center;justify-content:space-between;
-  gap:20px;padding:10px 0 24px;border-bottom:1px solid var(--line)
+  min-height:72px;gap:18px
 }
-.brand{display:flex;align-items:center;gap:12px;font-weight:850;letter-spacing:1.8px}
-.brand-icon{
-  width:43px;height:43px;display:grid;place-items:center;border-radius:15px;
-  background:linear-gradient(145deg,#ffe49b,#e9a52a);
-  color:#171321;font-size:24px;box-shadow:0 0 28px #ffc85735
+.brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.logo{
+  width:42px;height:42px;display:grid;place-items:center;border-radius:14px;
+  background:linear-gradient(145deg,#ffe9a7,#f0a92e);
+  color:#182032;font-size:23px;font-weight:900;
+  box-shadow:0 0 24px #ffc85725
 }
-.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:2px;margin-top:3px}
-.navlinks{display:flex;gap:25px;align-items:center}
-.navlinks button{
-  border:0;background:none;color:var(--muted);font-size:13px;
-  padding:10px 0;transition:.2s
+.brand-name{font-size:15px;font-weight:900;letter-spacing:1.1px}
+.brand-sub{font-size:9px;color:var(--muted);letter-spacing:1.4px}
+.nav{display:flex;align-items:center;gap:5px}
+.nav a{
+  padding:10px 12px;color:var(--muted);font-size:12px;
+  border-radius:9px;white-space:nowrap
 }
-.navlinks button:hover,.navlinks button.active{color:white}
-.wallet{
-  border:1px solid #ffc85770;background:#ffc85712;color:var(--gold);
-  border-radius:12px;padding:12px 16px;font-weight:750;font-size:12px
-}
-.wallet:hover{background:#ffc85725}
-.hero{
-  display:grid;grid-template-columns:1fr 1.05fr;gap:20px;
-  align-items:center;min-height:445px;padding:22px 0 8px
-}
-.eyebrow{
-  display:inline-flex;align-items:center;gap:9px;border:1px solid #55e6ff30;
-  background:#55e6ff0c;padding:9px 12px;border-radius:100px;
-  color:var(--cyan);font-size:10px;letter-spacing:1.7px;font-weight:800
-}
-.pulse{width:7px;height:7px;background:var(--green);border-radius:50%;
-  box-shadow:0 0 12px var(--green)}
-h1{font-size:clamp(42px,5.1vw,76px);line-height:1.04;letter-spacing:-3.5px;margin:24px 0 18px}
-.gradient{
-  background:linear-gradient(95deg,#fff1bd 0%,#ffc857 36%,#57e7ff 100%);
-  -webkit-background-clip:text;background-clip:text;color:transparent
-}
-.hero p{color:#a4b2cb;line-height:1.8;font-size:14px;max-width:475px}
-.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.nav a:hover,.nav a.active{background:#ffffff09;color:white}
+.top-actions{display:flex;gap:8px;align-items:center}
 .btn{
-  border-radius:12px;padding:14px 18px;font-size:12px;font-weight:800;
-  transition:transform .2s,filter .2s
+  border:1px solid var(--line);background:#ffffff06;color:var(--text);
+  border-radius:12px;padding:11px 15px;font-weight:750;font-size:12px;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  transition:transform .18s,border-color .18s,background .18s
 }
-.btn:hover{transform:translateY(-2px);filter:brightness(1.12)}
-.primary{background:linear-gradient(110deg,#ffdf8a,#ffb833);color:#171522;border:0;
-  box-shadow:0 8px 30px #ffb83325}
-.secondary{background:#ffffff06;border:1px solid var(--line);color:white}
-.hero-note{font-size:10px;color:#7888a5;margin-top:19px}
+.btn:hover{transform:translateY(-1px);border-color:#5c7c9f}
+.btn-gold{
+  background:linear-gradient(110deg,#ffe09a,#ffbc4b);
+  color:#20180b;border-color:transparent
+}
+.btn-gold:hover{background:#ffda87}
+.btn-cyan{background:#65e6f610;border-color:#65e6f640;color:var(--cyan)}
+.icon-btn{width:42px;height:42px;padding:0;font-size:18px}
+.menu-btn{display:none}
+main{padding-bottom:38px}
+.hero{
+  display:grid;grid-template-columns:1fr 1fr;align-items:center;
+  gap:30px;padding:40px 0 24px
+}
+.kicker{
+  display:inline-flex;align-items:center;gap:8px;
+  color:var(--cyan);font-size:10px;font-weight:850;
+  letter-spacing:1.4px;border:1px solid #65e6f62c;
+  background:#65e6f60a;border-radius:100px;padding:8px 11px
+}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 12px #8be7ad}
+h1{font-size:clamp(39px,5.4vw,69px);letter-spacing:-3px;line-height:1.04;margin:21px 0}
+.shine{
+  color:var(--gold);
+  background:linear-gradient(90deg,#fff0bf,#ffca68 60%,#6be5f4);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent
+}
+.hero-copy{color:#a5b2c9;max-width:500px;line-height:1.9;font-size:14px}
+.hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:23px}
+.note{font-size:10px;color:var(--muted);margin-top:15px}
 .planet-stage{
-  position:relative;min-height:390px;display:grid;place-items:center;
-  overflow:hidden;isolation:isolate
+  min-height:370px;position:relative;display:grid;place-items:center;
+  isolation:isolate;overflow:hidden;border-radius:25px;
+  background:radial-gradient(ellipse at center,#15395a40,transparent 65%)
 }
-.planet-stage:before{
-  content:"";position:absolute;inset:0;
-  background:radial-gradient(ellipse,#193d673d 0%,transparent 65%);
-  z-index:-2
+.starfield{
+  position:absolute;inset:0;z-index:-1;
+  background-image:radial-gradient(2px 2px at 20% 20%,#fff 80%,transparent),
+  radial-gradient(1px 1px at 70% 17%,#76e9ff 80%,transparent),
+  radial-gradient(2px 2px at 85% 73%,#fff 80%,transparent),
+  radial-gradient(1px 1px at 16% 77%,#ffdf91 80%,transparent),
+  radial-gradient(1px 1px at 51% 9%,#fff 80%,transparent);
+  background-size:180px 160px,220px 190px,190px 210px,240px 170px,160px 180px
 }
-.stars{
-  position:absolute;inset:0;z-index:-1;pointer-events:none;
-  background-image:
-   radial-gradient(2px 2px at 15% 25%,#fff 70%,transparent),
-   radial-gradient(1px 1px at 74% 18%,#83e8ff 70%,transparent),
-   radial-gradient(2px 2px at 82% 72%,#fff 70%,transparent),
-   radial-gradient(1px 1px at 28% 79%,#fff 70%,transparent),
-   radial-gradient(1px 1px at 90% 43%,#ffc857 70%,transparent),
-   radial-gradient(2px 2px at 19% 55%,#83e8ff 70%,transparent),
-   radial-gradient(1px 1px at 57% 9%,#fff 70%,transparent);
-  background-size:190px 160px,220px 180px,200px 210px,240px 190px,180px 170px,230px 220px,170px 180px;
-  animation:starsMove 35s linear infinite
-}
-@keyframes starsMove{to{transform:translateY(-35px)}}
-.orbit{
-  position:absolute;width:min(96%,450px);aspect-ratio:1;border-radius:50%;
-  border:1px solid #6adfff35;transform:rotateX(66deg) rotate(-20deg);
-  box-shadow:0 0 25px #53dfff09;animation:orbit 16s linear infinite
-}
-.orbit:after{
-  content:"";position:absolute;width:8px;height:8px;border-radius:50%;
-  background:var(--gold);top:13%;left:17%;box-shadow:0 0 15px var(--gold)
-}
-.orbit.two{width:min(78%,365px);transform:rotateX(68deg) rotate(58deg);
-  border-color:#ffc85730;animation-duration:22s;animation-direction:reverse}
-.orbit.two:after{background:var(--cyan);box-shadow:0 0 15px var(--cyan);top:30%;left:88%}
-@keyframes orbit{to{rotate:0 0 1 360deg}}
 .planet{
-  position:relative;width:min(57vw,275px);min-width:200px;aspect-ratio:1;
-  border-radius:50%;overflow:hidden;
+  width:min(61%,280px);aspect-ratio:1;border-radius:50%;position:relative;
   background:
-    radial-gradient(ellipse at 28% 24%,#9af7ff 0%,transparent 7%),
-    radial-gradient(ellipse at 25% 32%,#8bd9bd 0%,transparent 20%),
-    radial-gradient(ellipse at 60% 26%,#3dba91 0%,transparent 25%),
-    radial-gradient(ellipse at 37% 64%,#69d59a 0%,transparent 20%),
-    radial-gradient(ellipse at 75% 60%,#2b9779 0%,transparent 21%),
-    radial-gradient(circle at 34% 26%,#2989a7 0%,#125274 36%,#09233e 69%,#030c1b 100%);
-  box-shadow:inset -36px -18px 60px #020817,
-    inset 10px 7px 27px #9cf8ff45,
-    0 0 35px #32caff48,0 0 100px #3bcaff20;
+    radial-gradient(ellipse at 26% 30%,#b1f5c5 0 5%,transparent 6%),
+    radial-gradient(ellipse at 33% 43%,#3ba878 0 14%,transparent 15%),
+    radial-gradient(ellipse at 68% 28%,#80d99a 0 8%,transparent 9%),
+    radial-gradient(ellipse at 67% 64%,#258c6b 0 15%,transparent 16%),
+    radial-gradient(ellipse at 37% 71%,#59bc86 0 9%,transparent 10%),
+    radial-gradient(circle at 32% 27%,#3cabc3,#17658c 42%,#0c3151 72%,#071426);
+  box-shadow:inset -38px -17px 48px #020914,inset 9px 5px 23px #c4fff255,
+    0 0 35px #53d6f74a,0 0 90px #248ad626;
   animation:float 6s ease-in-out infinite
 }
 .planet:before{
-  content:"";position:absolute;inset:-20%;border-radius:50%;
-  background:repeating-linear-gradient(167deg,transparent 0 18px,#83ecff12 20px 22px,transparent 24px 38px);
-  transform:rotate(-20deg);mix-blend-mode:screen
+  content:"";position:absolute;inset:0;border-radius:50%;
+  background:linear-gradient(110deg,transparent 30%,#c2fbff20 48%,transparent 65%),
+    linear-gradient(90deg,transparent 50%,#020817c9);
 }
 .planet:after{
-  content:"";position:absolute;inset:0;border-radius:50%;
-  background:linear-gradient(115deg,transparent 20%,#c2fbff25 43%,transparent 60%),
-    linear-gradient(90deg,transparent 53%,#020717ad 100%)
+  content:"";position:absolute;inset:13%;border-radius:50%;
+  background:repeating-linear-gradient(160deg,transparent 0 23px,#a4f4d510 25px 27px,transparent 29px 44px)
 }
-@keyframes float{0%,100%{translate:0 0}50%{translate:0 -10px}}
-.planet-ring{
-  position:absolute;width:125%;height:31%;left:-12.5%;top:37%;
-  border:2px solid #8feaff9c;border-radius:50%;transform:rotate(-24deg);
-  box-shadow:0 0 14px #4bdcff35,inset 0 0 10px #4bdcff25;z-index:2
+.ring{
+  position:absolute;width:140%;height:32%;left:-20%;top:36%;
+  border:2px solid #85e7ff9c;border-radius:50%;transform:rotate(-25deg);
+  box-shadow:0 0 13px #65e6f630;z-index:2
 }
-.planet-ring.back{border-color:#7adfff40;transform:rotate(-24deg) translateY(-13px);z-index:-1}
-.float-card{
-  position:absolute;background:#0b1528d9;backdrop-filter:blur(15px);
-  border:1px solid #ffffff19;border-radius:14px;padding:12px 15px;
-  box-shadow:0 15px 45px #0005;z-index:4
+.ring-back{border-color:#65e6f63c;transform:rotate(-25deg) translateY(-14px);z-index:-1}
+.orbit{
+  position:absolute;width:92%;aspect-ratio:1;border:1px solid #65e6f62c;
+  border-radius:50%;transform:rotateX(66deg) rotate(-24deg);
+  animation:spin 22s linear infinite
 }
-.float-card small{display:block;color:var(--muted);font-size:10px;margin-bottom:6px}
-.float-card strong{font-size:14px}
-.float-card .tiny{font-size:10px;color:var(--green);margin-top:4px}
-.fc1{top:12%;left:0}
-.fc2{bottom:12%;right:0}
-.fc3{top:17%;right:0;padding:10px 12px}
-.fc3 strong{color:var(--gold)}
-.section-head{display:flex;justify-content:space-between;align-items:end;gap:15px;margin:30px 0 17px}
-.section-head h2{font-size:19px;margin:0;letter-spacing:-.5px}
-.section-head p{font-size:11px;color:var(--muted);margin:7px 0 0}
-.link{border:0;background:none;color:var(--cyan);font-size:11px;font-weight:750}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.orbit:after{
+  content:"₿";position:absolute;top:10%;left:15%;width:29px;height:29px;
+  display:grid;place-items:center;border-radius:50%;background:var(--gold);
+  color:#1a1c24;font-size:15px;font-weight:900;box-shadow:0 0 18px #ffc85780
+}
+.orbit2{
+  width:77%;transform:rotateX(66deg) rotate(36deg);animation-duration:30s;
+  animation-direction:reverse;border-color:#ffca6827
+}
+.orbit2:after{content:"✦";background:#65e6f6;color:#071525;left:80%;top:16%}
+@keyframes spin{to{transform:rotateX(66deg) rotate(336deg)}}
+@keyframes float{0%,100%{translate:0 0}50%{translate:0 -9px}}
+.planet-tag{
+  position:absolute;z-index:4;padding:11px 13px;border-radius:13px;
+  background:#0c1729ed;border:1px solid #ffffff1c;backdrop-filter:blur(12px);
+  box-shadow:0 12px 30px #0004;max-width:180px
+}
+.planet-tag small{display:block;font-size:10px;color:var(--muted);margin-bottom:3px}
+.planet-tag strong{font-size:12px}
+.tag-one{left:2%;top:13%}.tag-two{right:2%;bottom:13%}
+.tag-three{right:1%;top:12%;color:var(--gold)}
+.section{margin-top:27px;scroll-margin-top:90px}
+.section-heading{
+  display:flex;align-items:end;justify-content:space-between;
+  gap:15px;margin-bottom:15px
+}
+.section-heading h2{font-size:20px;letter-spacing:-.5px;margin:0}
+.section-heading p{font-size:11px;color:var(--muted);margin:5px 0 0}
+.pill{
+  font-size:10px;border:1px solid var(--line);border-radius:100px;
+  padding:6px 9px;color:var(--muted);white-space:nowrap
+}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
 .card{
-  background:linear-gradient(145deg,#111c30c9,#0b1222e8);
-  border:1px solid var(--line);border-radius:17px;padding:19px;
-  min-width:0;transition:border-color .2s,transform .2s
+  background:linear-gradient(145deg,#121d30ed,#0d1525f2);
+  border:1px solid var(--line);border-radius:var(--radius);
+  padding:18px;min-width:0
 }
-.card:hover{border-color:#64dfff50;transform:translateY(-2px)}
 .stat-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.stat-label{color:#98a8c3;font-size:11px}
-.stat-icon{width:36px;height:36px;display:grid;place-items:center;border-radius:11px;
-  background:#55e6ff10;font-size:17px}
-.stat-number{font-size:clamp(19px,2vw,27px);font-weight:800;letter-spacing:-1px;margin:18px 0 8px;overflow-wrap:anywhere}
-.stat-foot{font-size:10px;color:var(--muted)}
+.stat-label{font-size:11px;color:#a6b4cb}
+.stat-icon{
+  width:35px;height:35px;border-radius:11px;display:grid;place-items:center;
+  font-size:17px;background:#65e6f610
+}
+.stat-value{font-size:clamp(21px,2.5vw,29px);font-weight:850;letter-spacing:-1px;margin:15px 0 5px;overflow-wrap:anywhere}
+.stat-caption{font-size:10px;color:var(--muted)}
 .gold{color:var(--gold)}.cyan{color:var(--cyan)}.green{color:var(--green)}
-.lower{display:grid;grid-template-columns:1.45fr 1fr;gap:15px;margin-top:16px}
-.missions{display:grid;gap:11px;margin-top:18px}
+.content-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}
+.mission-list{display:grid;gap:10px;margin-top:18px}
 .mission{
-  display:flex;align-items:center;gap:13px;border:1px solid var(--line);
-  background:#ffffff03;border-radius:13px;padding:13px
+  display:flex;align-items:center;gap:12px;padding:13px;
+  border:1px solid var(--line);border-radius:14px;background:#ffffff03
 }
-.mission-icon{width:43px;height:43px;flex-shrink:0;display:grid;place-items:center;
-  background:#55e6ff0d;border-radius:12px;font-size:20px}
-.mission-content{flex:1;min-width:0}
-.mission-content strong{font-size:12px;display:block}
-.mission-content small{font-size:10px;color:var(--muted);display:block;margin-top:5px;line-height:1.5}
-.reward{font-size:10px;color:var(--gold);font-weight:800;white-space:nowrap}
-.progress-row{display:flex;justify-content:space-between;gap:10px;font-size:11px;margin:22px 0 10px}
-.track{height:7px;background:#ffffff0c;border-radius:20px;overflow:hidden}
-.fill{height:100%;border-radius:20px;background:linear-gradient(90deg,#44cfff,#70f6b1);transition:width .5s}
-.impact-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
-.impact-item{padding:14px;background:#ffffff04;border:1px solid var(--line);border-radius:12px}
-.impact-item strong{font-size:21px;display:block;margin-bottom:6px}
-.impact-item small{font-size:10px;color:var(--muted)}
-.planet-level{
-  margin-top:17px;padding:15px;border-radius:13px;
-  background:linear-gradient(100deg,#ffc85710,#55e6ff08);
-  border:1px solid #ffc85720
+.mission-icon{
+  width:43px;height:43px;border-radius:12px;flex-shrink:0;
+  display:grid;place-items:center;background:#65e6f60d;font-size:20px
 }
-.level-row{display:flex;justify-content:space-between;gap:10px;align-items:center}
-.level-row strong{font-size:12px}
-.level-row span{font-size:10px;color:var(--gold)}
-footer{border-top:1px solid var(--line);margin-top:32px;padding-top:20px;
-  display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;color:#7585a2;font-size:10px}
+.mission-main{flex:1;min-width:0}
+.mission-main strong{display:block;font-size:12px}
+.mission-main small{display:block;color:var(--muted);font-size:10px;margin-top:4px;line-height:1.6}
+.reward{color:var(--gold);font-size:10px;font-weight:800;white-space:nowrap}
+.mission-footer{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:14px}
+.muted{color:var(--muted)}
+.mini-track{height:6px;background:#ffffff0e;border-radius:100px;overflow:hidden;margin-top:12px}
+.mini-fill{height:100%;width:0;background:linear-gradient(90deg,#65e6f6,#8be7ad);border-radius:100px}
+.level-box{
+  padding:15px;border:1px solid #ffca6826;border-radius:14px;
+  background:linear-gradient(110deg,#ffca680b,#65e6f608);margin-top:17px
+}
+.level-head{display:flex;justify-content:space-between;gap:10px}
+.level-head strong{font-size:12px}.level-head span{font-size:10px;color:var(--gold)}
+.level-desc{font-size:11px;color:var(--muted);margin:9px 0 0;line-height:1.8}
+.impact-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.impact-cell{padding:13px;border:1px solid var(--line);border-radius:13px;background:#ffffff03}
+.impact-cell strong{display:block;font-size:20px;margin-bottom:4px}
+.impact-cell small{font-size:10px;color:var(--muted)}
+.reward-banner{
+  margin-top:15px;padding:17px;border:1px solid #ffca6830;
+  border-radius:15px;background:radial-gradient(ellipse at 90% 0%,#ffc85712,transparent 60%),#ffffff03
+}
+.reward-banner h3{font-size:14px;margin:0 0 7px}
+.reward-banner p{font-size:11px;color:var(--muted);line-height:1.8;margin:0 0 13px}
+.reward-notice{
+  font-size:10px;line-height:1.8;color:#c5cde0;padding:12px 14px;
+  border-radius:12px;background:#ffffff05;border:1px solid var(--line);margin-top:12px
+}
+.achievements{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:17px}
+.badge-card{
+  text-align:center;padding:16px 8px;border:1px solid var(--line);
+  border-radius:14px;background:#ffffff03
+}
+.badge-icon{font-size:24px;filter:grayscale(1);opacity:.65}
+.badge-card strong{display:block;font-size:10px;margin-top:9px}
+.badge-card small{font-size:9px;color:var(--muted)}
+footer{
+  display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  padding:23px 0 0;margin-top:31px;border-top:1px solid var(--line);
+  color:#8593ac;font-size:10px
+}
 .toast{
-  position:fixed;bottom:20px;left:50%;transform:translate(-50%,20px);
-  background:#14233a;border:1px solid #55e6ff50;border-radius:12px;
-  padding:14px 18px;font-size:12px;z-index:20;opacity:0;pointer-events:none;
-  transition:.25s;box-shadow:0 10px 40px #0008;text-align:center;max-width:90%
+  position:fixed;z-index:50;left:50%;bottom:22px;transform:translate(-50%,15px);
+  opacity:0;pointer-events:none;transition:.2s;
+  padding:13px 17px;background:#14243a;border:1px solid #65e6f660;
+  border-radius:13px;box-shadow:0 10px 35px #0008;
+  max-width:calc(100% - 28px);font-size:12px;text-align:center
 }
 .toast.show{opacity:1;transform:translate(-50%,0)}
-.mobile-menu{display:none}
-@media(min-width:1200px){.hero{min-height:465px}}
 @media(max-width:900px){
-  .app{padding:18px 20px 35px}
-  .navlinks{gap:13px}
-  .hero{grid-template-columns:1fr 1fr;min-height:380px}
-  h1{font-size:clamp(40px,6vw,60px)}
-  .planet-stage{min-height:350px}
-  .fc1{left:0}.fc2{right:0}
-  .stats{grid-template-columns:repeat(2,1fr)}
+  .wrap{width:calc(100% - 28px)}
+  .nav{gap:0}.nav a{padding:9px 8px;font-size:11px}
+  .topinner{gap:10px}.hero{gap:10px}
+  .planet-stage{min-height:330px}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .content-grid{grid-template-columns:1fr 1fr}
 }
-@media(max-width:600px){
-  .app{padding:13px 14px 30px}
-  .nav{padding-bottom:15px;gap:8px}
-  .brand{gap:8px;font-size:12px;letter-spacing:1px}
-  .brand-icon{width:37px;height:37px;font-size:21px}
-  .brand small{font-size:8px}
-  .wallet{padding:10px;font-size:10px}
-  .navlinks{
-    display:none;position:absolute;z-index:10;left:14px;right:14px;top:70px;
-    padding:12px;background:#0c1528;border:1px solid var(--line);
-    border-radius:14px;flex-wrap:wrap;justify-content:center
+@media(max-width:650px){
+  .wrap{width:calc(100% - 26px)}
+  .topinner{min-height:65px}
+  .brand-name{font-size:13px}.brand-sub{font-size:8px}
+  .logo{width:38px;height:38px}
+  .menu-btn{display:inline-flex}
+  .nav{
+    display:none;position:absolute;left:13px;right:13px;top:69px;
+    background:#0c1425;border:1px solid var(--line);border-radius:15px;
+    padding:10px;flex-wrap:wrap;box-shadow:0 15px 35px #0008
   }
-  .navlinks.open{display:flex}
-  .mobile-menu{display:block;background:#ffffff08;color:white;
-    border:1px solid var(--line);border-radius:10px;padding:9px}
-  .hero{grid-template-columns:1fr;gap:0;padding-top:29px}
-  h1{font-size:49px;letter-spacing:-2.7px;margin:20px 0 14px}
-  .hero p{font-size:13px}
-  .hero-note{margin-top:14px}
-  .planet-stage{min-height:345px;margin-top:3px}
-  .planet{width:230px;min-width:0}
-  .orbit{width:340px}.orbit.two{width:285px}
-  .fc1{top:6%;left:0}.fc2{bottom:6%;right:0}.fc3{top:8%;right:0}
-  .float-card{padding:10px 11px}
-  .float-card strong{font-size:12px}
-  .section-head{margin-top:24px}
+  .nav.open{display:flex}
+  .nav a{width:calc(50% - 3px);padding:12px}
+  .top-actions{gap:6px}
+  .top-actions .btn{padding:10px 11px;font-size:10px}
+  .top-actions .icon-btn{width:38px;padding:0;font-size:17px}
+  .hero{grid-template-columns:1fr;padding-top:28px;gap:0}
+  h1{font-size:clamp(43px,12vw,62px);letter-spacing:-2.8px;margin:19px 0 14px}
+  .hero-copy{font-size:13px}
+  .planet-stage{min-height:335px;margin-top:5px}
+  .planet{width:56%;min-width:190px}
+  .orbit{width:88%}.orbit2{width:74%}
+  .tag-one{top:9%;left:0}.tag-three{top:8%;right:0}.tag-two{right:0;bottom:7%}
+  .planet-tag{padding:9px 10px;max-width:145px}
+  .planet-tag strong{font-size:11px}
+  .section{margin-top:24px}
+  .section-heading h2{font-size:18px}
   .stats{gap:9px}
-  .card{padding:14px;border-radius:14px}
-  .stat-number{font-size:22px;margin:15px 0 7px}
-  .stat-icon{width:30px;height:30px;font-size:15px}
-  .lower{grid-template-columns:1fr;gap:12px}
+  .card{padding:14px;border-radius:15px}
+  .stat-value{font-size:24px}
+  .stat-label{font-size:10px}
+  .stat-icon{width:31px;height:31px}
+  .content-grid{grid-template-columns:1fr;gap:12px}
   .mission{padding:11px;gap:10px}
-  .mission-icon{width:38px;height:38px}
-  footer{line-height:1.7}
+  .mission-icon{width:39px;height:39px}
+  .mission-main strong{font-size:11px}
+  .mission-main small{font-size:10px}
+  .reward{font-size:9px}
+  .achievements{gap:7px}
+  .badge-card{padding:13px 5px}
+  .badge-card strong{font-size:9px}
+  footer{line-height:1.8}
 }
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
@@ -269,254 +310,287 @@ footer{border-top:1px solid var(--line);margin-top:32px;padding-top:20px;
 </head>
 
 <body>
-<div class="app">
+<header class="topbar">
+  <div class="wrap topinner">
+    <a class="brand" href="#home" aria-label="BTC Planet home">
+      <span class="logo">₿</span>
+      <span>
+        <span class="brand-name">BTC PLANET</span>
+        <span class="brand-sub" style="display:block">BUILD YOUR WORLD</span>
+      </span>
+    </a>
 
-  <header class="nav">
-    <div class="brand">
-      <div class="brand-icon">₿</div>
-      <div>BTC PLANET<small>YOUR UNIVERSE. YOUR IMPACT.</small></div>
-    </div>
-
-    <nav class="navlinks" id="navlinks" aria-label="Main navigation">
-      <button class="active" data-target="overview">Overview</button>
-      <button data-target="myplanet">My Planet</button>
-      <button data-target="missions">Missions</button>
-      <button data-target="rewards">Rewards</button>
-      <button data-target="impact">Impact</button>
+    <nav class="nav" id="nav" aria-label="Main navigation">
+      <a class="active" href="#home">Overview</a>
+      <a href="#planet">My Planet</a>
+      <a href="#missions">Eco Missions</a>
+      <a href="#rewards">BTC Rewards</a>
+      <a href="#achievements">Achievements</a>
     </nav>
 
-    <div style="display:flex;gap:8px;align-items:center">
-      <button class="wallet" id="walletBtn">₿ Connect Wallet</button>
-      <button class="mobile-menu" id="menuBtn" aria-label="Toggle navigation">☰</button>
+    <div class="top-actions">
+      <button class="btn btn-gold" id="connectBtn">₿ Connect</button>
+      <button class="btn icon-btn menu-btn" id="menuBtn" aria-label="Open navigation" aria-expanded="false">☰</button>
     </div>
-  </header>
+  </div>
+</header>
 
-  <main id="overview">
-    <section class="hero">
+<main class="wrap" id="home">
+  <section class="hero">
+    <div>
+      <span class="kicker"><span class="dot"></span> YOUR PLANET. YOUR JOURNEY.</span>
+      <h1>A better world<br>starts <span class="shine">with you.</span></h1>
+      <p class="hero-copy">
+        Build your virtual planet, discover eco missions and unlock achievements.
+        Every step of your journey brings a new opportunity to explore.
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-gold" href="#missions">🚀 Start Your Journey</a>
+        <a class="btn" href="#planet">Explore My Planet ↗</a>
+      </div>
+      <div class="note">✦ Free-to-explore concept · BTC rewards require eligibility and funding</div>
+    </div>
+
+    <div class="planet-stage" aria-label="Illustration of a glowing virtual Earth">
+      <div class="starfield"></div>
+      <div class="orbit"></div>
+      <div class="orbit orbit2"></div>
+      <div class="planet">
+        <div class="ring ring-back"></div>
+        <div class="ring"></div>
+      </div>
+      <div class="planet-tag tag-one">
+        <small>YOUR WORLD</small><strong class="green">✦ Ready to grow</strong>
+      </div>
+      <div class="planet-tag tag-three">
+        <small>BTC WALLET</small><strong>Not connected</strong>
+      </div>
+      <div class="planet-tag tag-two">
+        <small>YOUR LEVEL</small><strong>🌱 Explorer · 01</strong>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="planet">
+    <div class="section-heading">
       <div>
-        <div class="eyebrow"><span class="pulse"></span> THE NEXT GENERATION OF ECO GAMING</div>
-        <h1>Grow your<br><span class="gradient">planet.</span><br>Earn your future.</h1>
-        <p>
-          Every meaningful action can shape a greener world.
-          Explore your planet, complete eco missions and follow
-          your journey toward a better future.
-        </p>
-
-        <div class="actions">
-          <button class="btn primary" data-target="myplanet">✦ Explore My Planet ↗</button>
-          <button class="btn secondary" data-target="missions">Explore Missions</button>
-        </div>
-        <div class="hero-note">✧ A virtual planet concept · Rewards subject to verification and funding</div>
+        <h2>Your Planet Dashboard</h2>
+        <p>Everything about your journey, in one place.</p>
       </div>
-
-      <div class="planet-stage" aria-label="Animated virtual planet illustration">
-        <div class="stars"></div>
-        <div class="orbit"></div>
-        <div class="orbit two"></div>
-        <div class="planet">
-          <div class="planet-ring back"></div>
-          <div class="planet-ring"></div>
-        </div>
-
-        <div class="float-card fc1">
-          <small>PLANET STATUS</small>
-          <strong class="green">✦ Thriving</strong>
-          <div class="tiny">Your world awaits</div>
-        </div>
-
-        <div class="float-card fc2">
-          <small>PLANET LEVEL</small>
-          <strong>✧ Level 01</strong>
-          <div class="tiny">Your journey starts here</div>
-        </div>
-
-        <div class="float-card fc3">
-          <small>BTC REWARDS</small>
-          <strong>₿ Locked</strong>
-        </div>
-      </div>
-    </section>
-
-    <section id="myplanet">
-      <div class="section-head">
-        <div>
-          <h2>Your Universe</h2>
-          <p>Your personal planet dashboard at a glance.</p>
-        </div>
-        <button class="link" data-target="impact">Explore impact ↗</button>
-      </div>
-
-      <div class="stats">
-        <article class="card">
-          <div class="stat-top">
-            <span class="stat-label">Planet Level</span>
-            <span class="stat-icon">🌎</span>
-          </div>
-          <div class="stat-number">01 <span class="gold">/ 100</span></div>
-          <div class="stat-foot">Your first cosmic chapter</div>
-        </article>
-
-        <article class="card">
-          <div class="stat-top">
-            <span class="stat-label">Virtual Trees</span>
-            <span class="stat-icon">🌱</span>
-          </div>
-          <div class="stat-number cyan">00</div>
-          <div class="stat-foot">No trees verified yet</div>
-        </article>
-
-        <article class="card">
-          <div class="stat-top">
-            <span class="stat-label">Eco Points</span>
-            <span class="stat-icon">✧</span>
-          </div>
-          <div class="stat-number">00</div>
-          <div class="stat-foot">Earn through verified missions</div>
-        </article>
-
-        <article class="card" id="rewards">
-          <div class="stat-top">
-            <span class="stat-label">BTC Rewards</span>
-            <span class="stat-icon">₿</span>
-          </div>
-          <div class="stat-number gold">— BTC</div>
-          <div class="stat-foot">Not connected · No payout available</div>
-        </article>
-      </div>
-    </section>
-
-    <div class="lower">
-      <section class="card" id="missions">
-        <div class="section-head" style="margin:0">
-          <div>
-            <h2>Today's Missions <span class="cyan">✦</span></h2>
-            <p>Small actions. A brighter planet.</p>
-          </div>
-          <span class="eyebrow" style="font-size:9px;padding:7px 9px">PREVIEW</span>
-        </div>
-
-        <div class="missions">
-          <div class="mission">
-            <div class="mission-icon">👟</div>
-            <div class="mission-content">
-              <strong>Movement Mission</strong>
-              <small>Explore a step-goal mission. Step tracking is not connected yet.</small>
-            </div>
-            <span class="reward">+ XP</span>
-          </div>
-
-          <div class="mission">
-            <div class="mission-icon">🌳</div>
-            <div class="mission-content">
-              <strong>Green Action</strong>
-              <small>Discover an eco-friendly action and learn how to verify it.</small>
-            </div>
-            <span class="reward">+ XP</span>
-          </div>
-
-          <div class="mission">
-            <div class="mission-icon">🌍</div>
-            <div class="mission-content">
-              <strong>Planet Knowledge</strong>
-              <small>Learn something new about protecting our environment.</small>
-            </div>
-            <span class="reward">+ XP</span>
-          </div>
-        </div>
-
-        <button class="btn secondary" id="missionBtn" style="width:100%;margin-top:16px">
-          Discover Missions →
-        </button>
-      </section>
-
-      <section class="card" id="impact">
-        <div class="section-head" style="margin:0">
-          <div>
-            <h2>Planet Vitality</h2>
-            <p>A preview of your growth journey.</p>
-          </div>
-          <span style="font-size:22px">🪐</span>
-        </div>
-
-        <div class="planet-level">
-          <div class="level-row">
-            <strong>✧ Your First Orbit</strong>
-            <span>LEVEL 01</span>
-          </div>
-          <p style="color:var(--muted);font-size:11px;line-height:1.7;margin-bottom:0">
-            Complete verified missions to unlock future planet features.
-          </p>
-        </div>
-
-        <div class="progress-row">
-          <span style="color:var(--muted)">Journey progress</span>
-          <strong class="cyan">0%</strong>
-        </div>
-        <div class="track"><div class="fill" style="width:0%"></div></div>
-
-        <div class="impact-grid">
-          <div class="impact-item">
-            <strong class="green">—</strong>
-            <small>Real trees verified</small>
-          </div>
-          <div class="impact-item">
-            <strong class="gold">—</strong>
-            <small>Verified global impact</small>
-          </div>
-        </div>
-
-        <p style="color:var(--muted);font-size:10px;line-height:1.7;margin:17px 0 0">
-          Real-world impact metrics will appear only when supported by verified data.
-        </p>
-      </section>
+      <span class="pill">DEMO PROFILE</span>
     </div>
-  </main>
+
+    <div class="stats">
+      <article class="card">
+        <div class="stat-top"><span class="stat-label">Planet Level</span><span class="stat-icon">🌎</span></div>
+        <div class="stat-value">01 <span class="gold">/ 100</span></div>
+        <div class="stat-caption">Your journey begins here</div>
+      </article>
+      <article class="card">
+        <div class="stat-top"><span class="stat-label">Virtual Trees</span><span class="stat-icon">🌱</span></div>
+        <div class="stat-value cyan">00</div>
+        <div class="stat-caption">No trees unlocked yet</div>
+      </article>
+      <article class="card">
+        <div class="stat-top"><span class="stat-label">Eco XP</span><span class="stat-icon">✨</span></div>
+        <div class="stat-value">00</div>
+        <div class="stat-caption">Earn through eligible activities</div>
+      </article>
+      <article class="card">
+        <div class="stat-top"><span class="stat-label">BTC Rewards</span><span class="stat-icon">₿</span></div>
+        <div class="stat-value gold">— BTC</div>
+        <div class="stat-caption">Not connected · No balance loaded</div>
+      </article>
+    </div>
+  </section>
+
+  <div class="content-grid">
+    <section class="section card" id="missions">
+      <div class="section-heading">
+        <div>
+          <h2>Eco Missions 🌿</h2>
+          <p>Choose your next activity.</p>
+        </div>
+        <span class="pill">PREVIEW</span>
+      </div>
+
+      <div class="mission-list">
+        <article class="mission">
+          <div class="mission-icon">👟</div>
+          <div class="mission-main">
+            <strong>Movement Challenge</strong>
+            <small>Explore a daily movement goal. Step tracking is not connected.</small>
+          </div>
+          <span class="reward">XP</span>
+        </article>
+
+        <article class="mission">
+          <div class="mission-icon">🌳</div>
+          <div class="mission-main">
+            <strong>Green Action</strong>
+            <small>Discover a practical eco-friendly activity and its verification rules.</small>
+          </div>
+          <span class="reward">XP</span>
+        </article>
+
+        <article class="mission">
+          <div class="mission-icon">📚</div>
+          <div class="mission-main">
+            <strong>Planet Knowledge</strong>
+            <small>Learn a new fact about nature and sustainable living.</small>
+          </div>
+          <span class="reward">XP</span>
+        </article>
+      </div>
+
+      <div class="mission-footer">
+        <span class="muted" style="font-size:10px">Mission completion is not enabled yet.</span>
+        <button class="btn btn-cyan" id="missionBtn">Explore ↗</button>
+      </div>
+    </section>
+
+    <section class="section card" id="rewards">
+      <div class="section-heading">
+        <div>
+          <h2>BTC Rewards ₿</h2>
+          <p>Understand the reward journey.</p>
+        </div>
+      </div>
+
+      <div class="level-box">
+        <div class="level-head">
+          <strong>Reward eligibility</strong>
+          <span>NOT CONNECTED</span>
+        </div>
+        <p class="level-desc">
+          Real BTC rewards require a verified account, valid activity,
+          anti-fraud checks and an adequately funded reward pool.
+        </p>
+      </div>
+
+      <div class="reward-banner">
+        <h3>Start with the basics</h3>
+        <p>Explore missions first. Reward amounts and payout conditions will be shown only when officially configured.</p>
+        <button class="btn btn-gold" id="rewardBtn">How rewards work</button>
+      </div>
+
+      <div class="reward-notice">
+        <strong>Transparency first</strong><br>
+        This prototype does not connect a wallet, calculate earnings, promise BTC or send transactions.
+      </div>
+    </section>
+  </div>
+
+  <section class="section card">
+    <div class="section-heading">
+      <div>
+        <h2>Your Growth Journey</h2>
+        <p>See how your planet could evolve as you progress.</p>
+      </div>
+      <span class="pill">LEVEL 01</span>
+    </div>
+
+    <div class="level-box">
+      <div class="level-head">
+        <strong>🌱 Explorer</strong>
+        <span>0 / 100 XP</span>
+      </div>
+      <div class="mini-track"><div class="mini-fill"></div></div>
+      <p class="level-desc">Your progress will update when real mission and account systems are connected.</p>
+    </div>
+
+    <div class="impact-grid">
+      <div class="impact-cell">
+        <strong class="green">—</strong>
+        <small>Verified eco actions</small>
+      </div>
+      <div class="impact-cell">
+        <strong class="cyan">—</strong>
+        <small>Real-world trees verified</small>
+      </div>
+    </div>
+  </section>
+
+  <section class="section card" id="achievements">
+    <div class="section-heading">
+      <div>
+        <h2>Achievements 🏆</h2>
+        <p>Milestones to discover along the way.</p>
+      </div>
+      <span class="pill">NOT YET EARNED</span>
+    </div>
+
+    <div class="achievements">
+      <div class="badge-card">
+        <div class="badge-icon">🌱</div>
+        <strong>First Sprout</strong>
+        <small>Unlock your first tree</small>
+      </div>
+      <div class="badge-card">
+        <div class="badge-icon">🌍</div>
+        <strong>Earth Ally</strong>
+        <small>Verify an eco action</small>
+      </div>
+      <div class="badge-card">
+        <div class="badge-icon">₿</div>
+        <strong>BTC Explorer</strong>
+        <small>Meet reward eligibility</small>
+      </div>
+    </div>
+  </section>
 
   <footer>
-    <div>₿ BTC PLANET · A new world starts with you.</div>
-    <div>UI PREVIEW · No wallet connection, tracking, or payouts implemented.</div>
+    <span>₿ BTC PLANET · Build your world, one step at a time.</span>
+    <span>Independent UI prototype · No live account or reward data</span>
   </footer>
-</div>
+</main>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
-const toast = document.getElementById("toast");
-let toastTimer;
+(() => {
+  const nav = document.getElementById("nav");
+  const menuBtn = document.getElementById("menuBtn");
+  const toast = document.getElementById("toast");
+  let toastTimer;
 
-function notify(message) {
-  toast.textContent = message;
-  toast.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
-}
-
-function goToSection(id) {
-  const section = document.getElementById(id);
-  if (section) {
-    section.scrollIntoView({ behavior: "smooth", block: "start" });
-    document.getElementById("navlinks").classList.remove("open");
-    document.querySelectorAll(".navlinks button").forEach(btn => {
-      btn.classList.toggle("active", btn.dataset.target === id);
-    });
+  function notify(message) {
+    toast.textContent = message;
+    toast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove("show"), 3000);
   }
-}
 
-document.querySelectorAll("[data-target]").forEach(button => {
-  button.addEventListener("click", () => goToSection(button.dataset.target));
-});
+  menuBtn.addEventListener("click", () => {
+    const opened = nav.classList.toggle("open");
+    menuBtn.setAttribute("aria-expanded", String(opened));
+    menuBtn.setAttribute("aria-label", opened ? "Close navigation" : "Open navigation");
+    menuBtn.textContent = opened ? "✕" : "☰";
+  });
 
-document.getElementById("menuBtn").addEventListener("click", () => {
-  document.getElementById("navlinks").classList.toggle("open");
-});
+  nav.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", () => {
+      nav.classList.remove("open");
+      menuBtn.setAttribute("aria-expanded", "false");
+      menuBtn.setAttribute("aria-label", "Open navigation");
+      menuBtn.textContent = "☰";
+      nav.querySelectorAll("a").forEach(item => item.classList.remove("active"));
+      link.classList.add("active");
+    });
+  });
 
-document.getElementById("walletBtn").addEventListener("click", () => {
-  notify("Wallet connection will be added after the UI is approved.");
-});
+  document.getElementById("connectBtn").addEventListener("click", () => {
+    notify("Wallet integration is not enabled in this UI prototype.");
+  });
 
-document.getElementById("missionBtn").addEventListener("click", () => {
-  notify("Mission cards are a UI preview. Mission verification is not implemented yet.");
-});
+  document.getElementById("missionBtn").addEventListener("click", () => {
+    notify("Missions are a preview. Verification and XP rewards are not enabled yet.");
+  });
+
+  document.getElementById("rewardBtn").addEventListener("click", () => {
+    notify("BTC payouts will require verified activity, security checks and a funded reward pool.");
+  });
+})();
 </script>
 </body>
 </html>
