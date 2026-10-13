@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Free Audio to Text | My Crypto Faucet</title>
+<meta name="description" content="Convert audio and speech to editable text. Free audio transcription tool supporting English, French, Tamil and more languages.">
+
+<style>
+:root {
+  --bg: #071226;
+  --panel: #0d1c34;
+  --panel2: #12243e;
+  --gold: #f5c542;
+  --text: #f4f7fc;
+  --muted: #9aabc3;
+  --border: #263956;
+  --green: #43d9a3;
+}
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.5;
+}
+
+button, select, input, textarea { font: inherit; }
+button { cursor: pointer; }
+
+.topbar {
+  min-height: 68px;
+  padding: 14px 5%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  border-bottom: 1px solid var(--border);
+  background: #09172b;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.brand-icon {
+  width: 39px;
+  height: 39px;
+  display: grid;
+  place-items: center;
+  color: var(--gold);
+  background: #172941;
+  border: 1px solid #4b432b;
+  border-radius: 11px;
+  font-size: 22px;
+}
+
+.brand span { color: var(--gold); }
+
+.back-link {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.back-link:hover { color: var(--gold); }
+
+.container {
+  width: min(1080px, 92%);
+  margin: 36px auto 55px;
+}
+
+.hero { margin-bottom: 27px; }
+
+.eyebrow {
+  color: var(--gold);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 9px 0;
+  font-size: clamp(27px, 4vw, 39px);
+  line-height: 1.2;
+  letter-spacing: -1px;
+}
+
+.hero p {
+  margin: 10px 0 0;
+  max-width: 650px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.free-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 17px;
+  padding: 6px 11px;
+  color: var(--green);
+  background: #102b2a;
+  border: 1px solid #22514a;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.card {
+  min-width: 0;
+  padding: 23px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.card-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 19px;
+}
+
+.card-heading h2 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.step {
+  display: grid;
+  place-items: center;
+  width: 29px;
+  height: 29px;
+  border-radius: 8px;
+  background: #263247;
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  padding: 5px;
+  margin-bottom: 22px;
+  border-radius: 9px;
+  background: #071226;
+}
+
+.tab {
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--muted);
+  padding: 11px 5px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.tab.active {
+  color: var(--gold);
+  background: var(--panel2);
+  border-color: #51452a;
+}
+
+.tab-panel[hidden] { display: none; }
+
+.upload-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  padding: 22px;
+  text-align: center;
+  border: 1px dashed #52617b;
+  border-radius: 11px;
+  background: #0a172a;
+  transition: border-color .2s;
+}
+
+.upload-zone:hover { border-color: var(--gold); }
+
+.upload-icon {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  margin-bottom: 14px;
+  color: var(--gold);
+  background: #1a2b40;
+  border-radius: 16px;
+  font-size: 28px;
+}
+
+.upload-zone strong { font-size: 14px; }
+
+.upload-zone p {
+  margin: 7px 0 15px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.primary, .secondary, .gold-button {
+  border-radius: 8px;
+  padding: 11px 15px;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.primary, .gold-button {
+  color: #101827;
+  background: var(--gold);
+  border: 1px solid var(--gold);
+}
+
+.primary:hover, .gold-button:hover { background: #ffda70; }
+
+.secondary {
+  color: var(--text);
+  background: #172941;
+  border: 1px solid #354965;
+}
+
+.secondary:hover { border-color: var(--gold); }
+
+.file-info {
+  display: none;
+  margin-top: 13px;
+  padding: 12px;
+  align-items: center;
+  gap: 10px;
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+
+.file-info.visible { display: flex; }
+
+.file-symbol { color: var(--gold); font-size: 21px; }
+
+.file-meta { flex: 1; min-width: 0; }
+
+.file-meta strong {
+  display: block;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.file-meta small { color: var(--muted); font-size: 11px; }
+
+.remove-file {
+  color: var(--muted);
+  border: none;
+  background: transparent;
+  font-size: 20px;
+}
+
+.field { margin-top: 22px; }
+
+.field label {
+  display: block;
+  margin-bottom: 9px;
+  color: #dce5f2;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+select, input[type="text"] {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  color: var(--text);
+  background: #09172b;
+  border: 1px solid #354965;
+  border-radius: 8px;
+  outline: none;
+}
+
+select:focus, input:focus, textarea:focus {
+  border-color: var(--gold);
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 11px;
+  margin: 8px 0 0;
+}
+
+.full { width: 100%; margin-top: 19px; }
+
+button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.mic-panel {
+  min-height: 220px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: #0a172a;
+}
+
+.mic-circle {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  margin-bottom: 16px;
+  border: 1px solid #62522c;
+  border-radius: 50%;
+  background: #25291f;
+  color: var(--gold);
+  font-size: 30px;
+}
+
+.mic-panel strong { font-size: 14px; }
+
+.mic-panel p {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 7px 0 15px;
+}
+
+.privacy-note {
+  margin-top: 16px;
+  padding: 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  border-radius: 8px;
+  background: #101f34;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.privacy-note b { color: #dfe8f5; }
+
+.output-card { margin-top: 20px; }
+
+.output-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.output-title h2 {
+  font-size: 17px;
+  margin: 0;
+}
+
+.status {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+textarea {
+  width: 100%;
+  min-height: 230px;
+  padding: 16px;
+  resize: vertical;
+  background: #09172b;
+  color: var(--text);
+  border: 1px solid #354965;
+  border-radius: 9px;
+  outline: none;
+  line-height: 1.8;
+  font-size: 14px;
+}
+
+textarea::placeholder { color: #71839c; }
+
+.output-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.word-count { color: var(--muted); font-size: 11px; }
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-top: 23px;
+}
+
+.feature {
+  padding: 17px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.feature-icon { font-size: 21px; color: var(--gold); }
+
+.feature h3 { margin: 9px 0 5px; font-size: 13px; }
+
+.feature p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+footer {
+  padding: 22px 5%;
+  text-align: center;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 11px;
+}
+
+footer span { color: var(--gold); }
+
+@media (max-width: 720px) {
+  .container { margin-top: 27px; }
+  .workspace { grid-template-columns: 1fr; }
+  .card { padding: 18px; }
+  .features { grid-template-columns: 1fr; gap: 10px; }
+  .feature { display: flex; gap: 13px; align-items: flex-start; }
+  .feature-icon { padding-top: 3px; }
+  .feature h3 { margin-top: 0; }
+  .output-footer { align-items: flex-start; flex-direction: column; }
+  .actions { width: 100%; }
+  .actions button { flex: 1; }
+  .topbar { padding: 12px 4%; }
+  .brand { font-size: 13px; }
+  .back-link { font-size: 11px; }
+}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+  <a class="brand" href="/" style="text-decoration:none;color:inherit">
+    <span class="brand-icon">♫</span>
+    <span style="color:var(--text)">MY CRYPTO <span>FAUCET</span></span>
+  </a>
+  <a class="back-link" href="/">&larr; Back to website</a>
+</header>
+
+<main class="container">
+
+  <section class="hero">
+    <div class="eyebrow">FREE ONLINE TOOL</div>
+    <h1>Audio to Text Converter</h1>
+    <p>Turn speech into editable text. Upload an audio file or use your microphone, choose your language, and prepare your transcript.</p>
+    <div class="free-tag">✦ Free tool · No account required</div>
+  </section>
+
+  <section class="workspace">
+
+    <div class="card">
+      <div class="card-heading">
+        <h2>Audio Input</h2>
+        <span class="step">01</span>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="Audio input method">
+        <button class="tab active" id="uploadTab" role="tab"
+          aria-selected="true" aria-controls="uploadPanel">
+          ♫ Upload Audio
+        </button>
+        <button class="tab" id="liveTab" role="tab"
+          aria-selected="false" aria-controls="livePanel">
+          🎙 Live Speech
+        </button>
+      </div>
+
+      <div class="tab-panel" id="uploadPanel" role="tabpanel">
+        <div class="upload-zone" id="dropZone">
+          <div class="upload-icon">♫</div>
+          <strong>Choose your audio file</strong>
+          <p>MP3, WAV, M4A, OGG, FLAC and other supported formats</p>
+          <button class="secondary" id="browseBtn" type="button">
+            Browse files
+          </button>
+          <input id="audioFile" type="file" accept="audio/*"
+            hidden aria-label="Choose audio file">
+        </div>
+
+        <div class="file-info" id="fileInfo">
+          <span class="file-symbol">♫</span>
+          <div class="file-meta">
+            <strong id="fileName"></strong>
+            <small id="fileSize"></small>
+          </div>
+          <button class="remove-file" id="removeFile"
+            type="button" aria-label="Remove selected file">&times;</button>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="livePanel" role="tabpanel" hidden>
+        <div class="mic-panel">
+          <div class="mic-circle">🎙</div>
+          <strong>Speak naturally</strong>
+          <p>Use your device microphone for live speech recognition.</p>
+          <button class="secondary" id="micBtn" type="button">
+            Start recording
+          </button>
+          <p id="micStatus" aria-live="polite">Microphone not started</p>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="language">TRANSCRIPTION LANGUAGE</label>
+        <select id="language">
+          <option value="en-US">English (United States)</option>
+          <option value="en-GB">English (United Kingdom)</option>
+          <option value="fr-FR">French (France)</option>
+          <option value="ta-IN">Tamil</option>
+          <option value="si-LK">Sinhala</option>
+          <option value="hi-IN">Hindi</option>
+          <option value="es-ES">Spanish</option>
+          <option value="de-DE">German</option>
+          <option value="it-IT">Italian</option>
+          <option value="pt-PT">Portuguese</option>
+          <option value="ar-SA">Arabic</option>
+          <option value="zh-CN">Chinese (Mandarin)</option>
+          <option value="ja-JP">Japanese</option>
+          <option value="ko-KR">Korean</option>
+          <option value="nl-NL">Dutch</option>
+          <option value="ru-RU">Russian</option>
+          <option value="auto">Auto-detect (when supported)</option>
+        </select>
+        <p class="hint">Available languages depend on the transcription engine.</p>
+      </div>
+
+      <button class="gold-button full" id="transcribeBtn" type="button" disabled>
+        Convert Audio to Text &rarr;
+      </button>
+
+      <div class="privacy-note">
+        <span>🔒</span>
+        <div><b>Privacy matters.</b> The planned upload transcription will run locally in your browser where feasible. This UI preview does not upload or process your audio.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-heading">
+        <h2>Transcription Settings</h2>
+        <span class="step">02</span>
+      </div>
+
+      <div style="padding:17px;background:#0a172a;border:1px solid var(--border);border-radius:10px">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:12px">
+          SELECTED WORKFLOW
+        </div>
+        <div style="display:flex;align-items:center;gap:11px;margin-bottom:15px">
+          <div class="step">A</div>
+          <div>
+            <strong style="font-size:13px">Audio file transcription</strong>
+            <div style="font-size:11px;color:var(--muted)">Browser-based AI planned</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:11px">
+          <div class="step">B</div>
+          <div>
+            <strong style="font-size:13px">Live speech recognition</strong>
+            <div style="font-size:11px;color:var(--muted)">Browser support required</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>SUPPORTED FILE TYPES</label>
+        <div style="display:flex;flex-wrap:wrap;gap:7px">
+          <span class="free-tag" style="margin:0">MP3</span>
+          <span class="free-tag" style="margin:0">WAV</span>
+          <span class="free-tag" style="margin:0">M4A</span>
+          <span class="free-tag" style="margin:0">OGG</span>
+          <span class="free-tag" style="margin:0">FLAC</span>
+        </div>
+        <p class="hint">Actual support depends on the browser and the selected transcription engine.</p>
+      </div>
+
+      <div class="field">
+        <label>YOUR TRANSCRIPT</label>
+        <div style="padding:16px;border:1px solid var(--border);border-radius:9px;background:#09172b">
+          <div style="display:flex;gap:10px;align-items:center">
+            <span style="color:var(--gold);font-size:20px">▤</span>
+            <div>
+              <strong style="font-size:13px">Editable text output</strong>
+              <p class="hint" style="margin-top:4px">Review and correct your transcript before exporting.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>FREE EXPORT OPTIONS</label>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <button class="secondary" type="button" disabled>Copy text</button>
+          <button class="secondary" type="button" disabled>Download TXT</button>
+        </div>
+        <p class="hint">Export options become available when transcript text is present.</p>
+      </div>
+    </div>
+
+  </section>
+
+  <section class="card output-card">
+    <div class="output-title">
+      <h2>Transcript Editor</h2>
+      <span class="status" id="editorStatus">Ready for text</span>
+    </div>
+
+    <textarea id="transcript" placeholder="Your transcribed text will appear here. You can edit the text before copying or saving it..." spellcheck="true" aria-label="Editable transcript"></textarea>
+
+    <div class="output-footer">
+      <span class="word-count" id="wordCount">0 words · 0 characters</span>
+      <div class="actions">
+        <button class="secondary" id="clearBtn" type="button">Clear</button>
+        <button class="secondary" id="copyBtn" type="button">Copy text</button>
+        <button class="gold-button" id="downloadBtn" type="button">Download TXT ↓</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="features">
+    <article class="feature">
+      <div class="feature-icon">◎</div>
+      <div>
+        <h3>Multiple Languages</h3>
+        <p>Plan for English, French, Tamil and additional supported languages.</p>
+      </div>
+    </article>
+    <article class="feature">
+      <div class="feature-icon">▤</div>
+      <div>
+        <h3>Editable Transcript</h3>
+        <p>Correct words, copy the text or save your work as a TXT file.</p>
+      </div>
+    </article>
+    <article class="feature">
+      <div class="feature-icon">♧</div>
+      <div>
+        <h3>Privacy First</h3>
+        <p>Designed to prioritise local processing and avoid mandatory paid APIs.</p>
+      </div>
+    </article>
+  </section>
+
+</main>
+
+<footer>
+  © <span>My Crypto Faucet</span> · Free Online Tools
+</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+
+const uploadTab = $("uploadTab");
+const liveTab = $("liveTab");
+const uploadPanel = $("uploadPanel");
+const livePanel = $("livePanel");
+const audioFile = $("audioFile");
+const dropZone = $("dropZone");
+const fileInfo = $("fileInfo");
+const transcribeBtn = $("transcribeBtn");
+const transcript = $("transcript");
+const editorStatus = $("editorStatus");
+
+let selectedFile = null;
+
+function setTab(mode) {
+  const upload = mode === "upload";
+
+  uploadTab.classList.toggle("active", upload);
+  liveTab.classList.toggle("active", !upload);
+
+  uploadTab.setAttribute("aria-selected", String(upload));
+  liveTab.setAttribute("aria-selected", String(!upload));
+
+  uploadPanel.hidden = !upload;
+  livePanel.hidden = upload;
+}
+
+uploadTab.addEventListener("click", () => setTab("upload"));
+liveTab.addEventListener("click", () => setTab("live"));
+
+$("browseBtn").addEventListener("click", () => audioFile.click());
+
+function formatSize(bytes) {
+  if (bytes < 1024) return bytes + " B";
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+  return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+}
+
+function selectFile(file) {
+  if (!file) return;
+
+  if (!file.type.startsWith("audio/")) {
+    alert("Please select a supported audio file.");
+    return;
+  }
+
+  selectedFile = file;
+  $("fileName").textContent = file.name;
+  $("fileSize").textContent = formatSize(file.size);
+  fileInfo.classList.add("visible");
+
+  transcribeBtn.disabled = false;
+  editorStatus.textContent = "Audio selected";
+}
+
+audioFile.addEventListener("change", () => {
+  selectFile(audioFile.files[0]);
+});
+
+$("removeFile").addEventListener("click", () => {
+  selectedFile = null;
+  audioFile.value = "";
+  fileInfo.classList.remove("visible");
+  transcribeBtn.disabled = true;
+  editorStatus.textContent = "Ready for text";
+});
+
+["dragenter", "dragover"].forEach(eventName => {
+  dropZone.addEventListener(eventName, event => {
+    event.preventDefault();
+    dropZone.style.borderColor = "var(--gold)";
+  });
+});
+
+["dragleave", "drop"].forEach(eventName => {
+  dropZone.addEventListener(eventName, event => {
+    event.preventDefault();
+    dropZone.style.borderColor = "";
+  });
+});
+
+dropZone.addEventListener("drop", event => {
+  const file = event.dataTransfer.files[0];
+  if (file) selectFile(file);
+});
+
+function updateCount() {
+  const text = transcript.value.trim();
+  const words = text ? text.split(/\s+/).length : 0;
+  $("wordCount").textContent =
+    words + " words · " + transcript.value.length + " characters";
+
+  const hasText = transcript.value.length > 0;
+  editorStatus.textContent = hasText ? "Text available" : "Ready for text";
+
+  $("copyBtn").disabled = !hasText;
+  $("downloadBtn").disabled = !hasText;
+}
+
+transcript.addEventListener("input", updateCount);
+
+$("clearBtn").addEventListener("click", () => {
+  transcript.value = "";
+  updateCount();
+});
+
+$("copyBtn").addEventListener("click", async () => {
+  try {
+    await navigator.clipboard.writeText(transcript.value);
+    editorStatus.textContent = "Copied to clipboard";
+  } catch {
+    transcript.select();
+    const copied = document.execCommand("copy");
+    editorStatus.textContent = copied
+      ? "Copied to clipboard"
+      : "Select and copy the text manually";
+  }
+});
+
+$("downloadBtn").addEventListener("click", () => {
+  const blob = new Blob([transcript.value], {
+    type: "text/plain;charset=utf-8"
+  });
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "transcript.txt";
+  a.click();
+
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+});
+
+$("micBtn").addEventListener("click", () => {
+  $("micStatus").textContent =
+    "Live speech recognition is not connected in this UI-only version.";
+});
+
+transcribeBtn.addEventListener("click", () => {
+  if (!selectedFile) return;
+
+  editorStatus.textContent =
+    "Transcription engine not connected yet.";
+
+  alert(
+    "This is the UI-only version. Audio transcription will work after a free browser-based transcription engine is integrated."
+  );
+});
+
+updateCount();
+</script>
+
+</body>
+</html>
