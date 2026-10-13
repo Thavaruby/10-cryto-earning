@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Free Movie Collection & Trailers | My Crypto Faucet</title>
+<meta name="description" content="Explore movie collections, discover classic films, browse trailers and find official free online movie viewing options.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://myfaucetcrypto.com/movie-collection.html">
+<meta name="theme-color" content="#07111f">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Free Movie Collection | My Crypto Faucet">
+<meta property="og:description" content="Discover films, trailers and legal free movie viewing resources.">
+<meta property="og:url" content="https://myfaucetcrypto.com/movie-collection.html">
+
+<link rel="icon" type="image/png" href="/assets/favico.png">
+
+<style>
+:root {
+  --bg: #07111f;
+  --panel: #101f38;
+  --panel2: #152945;
+  --gold: #f5c542;
+  --text: #f8fafc;
+  --muted: #b7c4d8;
+  --border: rgba(255,255,255,.10);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 10% 0%, #183461 0, transparent 35%),
+    linear-gradient(145deg, #07111f, #0d1b2f 55%, #111827);
+}
+
+a { color: inherit; }
+
+header {
+  padding: 28px 16px 24px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.brand {
+  color: var(--gold);
+  font-weight: 900;
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 12px 0;
+  font-size: clamp(30px, 5vw, 46px);
+}
+
+header p {
+  max-width: 650px;
+  margin: auto;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+main {
+  width: min(1120px, 94%);
+  margin: 26px auto 48px;
+}
+
+.notice {
+  background: rgba(245,197,66,.07);
+  border: 1px solid rgba(245,197,66,.3);
+  border-radius: 12px;
+  padding: 16px;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.notice strong { color: var(--gold); }
+
+.toolbar {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin: 24px 0 16px;
+}
+
+#search {
+  width: 100%;
+  min-height: 48px;
+  padding: 13px 15px;
+  border: 1px solid #334967;
+  border-radius: 10px;
+  outline: none;
+  background: #0b192d;
+  color: white;
+  font-size: 16px;
+}
+
+#search:focus {
+  border-color: var(--gold);
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.filters button {
+  padding: 10px 15px;
+  border: 1px solid #3a506e;
+  border-radius: 30px;
+  background: #10213a;
+  color: #dbe5f3;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.filters button:hover,
+.filters button.active {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #111827;
+}
+
+.results {
+  margin: 18px 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 18px;
+}
+
+.card {
+  min-width: 0;
+  overflow: hidden;
+  background: linear-gradient(150deg, var(--panel2), var(--panel));
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  transition: transform .2s, border-color .2s;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(245,197,66,.5);
+}
+
+.poster {
+  min-height: 150px;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 50% 20%, #314a70, transparent 65%),
+    #0b172a;
+  font-size: 54px;
+}
+
+.card-body { padding: 17px; }
+
+.category {
+  color: var(--gold);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.card h2 {
+  margin: 10px 0;
+  font-size: 20px;
+  overflow-wrap: anywhere;
+}
+
+.card p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 16px;
+}
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 10px 13px;
+  border-radius: 8px;
+  background: var(--gold);
+  color: #111827;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.action.secondary {
+  border: 1px solid #526783;
+  background: transparent;
+  color: white;
+}
+
+.action:hover { opacity: .86; }
+
+.empty {
+  display: none;
+  padding: 35px 10px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.section-title {
+  margin: 34px 0 14px;
+  font-size: 23px;
+}
+
+footer {
+  border-top: 1px solid var(--border);
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+footer a { color: var(--gold); }
+
+@media (max-width: 480px) {
+  .grid { grid-template-columns: 1fr; }
+  .filters button { flex-grow: 1; }
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="brand">My Crypto Faucet</div>
+  <h1>🎬 Movie Collection</h1>
+  <p>
+    Discover films, explore trailers and find official free movie
+    viewing options. Availability depends on the provider and your region.
+  </p>
+</header>
+
+<main>
+  <div class="notice">
+    <strong>Watch responsibly.</strong>
+    Explore the resources below to find films available to watch legally.
+    This page does not host movies or provide unauthorized copies.
+  </div>
+
+  <div class="toolbar">
+    <input
+      id="search"
+      type="search"
+      placeholder="Search movies, genres or collections..."
+      aria-label="Search movie collection"
+    >
+
+    <div class="filters" aria-label="Filter collection">
+      <button class="active" type="button" data-filter="all"
+        aria-pressed="true">All</button>
+      <button type="button" data-filter="action"
+        aria-pressed="false">Action</button>
+      <button type="button" data-filter="comedy"
+        aria-pressed="false">Comedy</button>
+      <button type="button" data-filter="drama"
+        aria-pressed="false">Drama</button>
+      <button type="button" data-filter="animation"
+        aria-pressed="false">Animation</button>
+      <button type="button" data-filter="free"
+        aria-pressed="false">Free Resources</button>
+    </div>
+  </div>
+
+  <div class="results" id="results" aria-live="polite"></div>
+
+  <section class="grid" id="movieGrid" aria-label="Movie resources">
+
+    <article class="card"
+      data-category="free"
+      data-search="classic movies archive public domain old films">
+      <div class="poster" aria-hidden="true">🎞️</div>
+      <div class="card-body">
+        <span class="category">Classic collection</span>
+        <h2>Classic Films</h2>
+        <p>
+          Explore historical film collections. Check the copyright
+          status and viewing rights of each individual film.
+        </p>
+        <div class="actions">
+          <a class="action"
+            href="https://archive.org/details/movies"
+            target="_blank" rel="noopener noreferrer">
+            Explore films ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <article class="card"
+      data-category="free"
+      data-search="free online streaming movies plex">
+      <div class="poster" aria-hidden="true">📺</div>
+      <div class="card-body">
+        <span class="category">Streaming resources</span>
+        <h2>Free Movies Online</h2>
+        <p>
+          Explore a streaming service's free catalogue. Titles,
+          advertisements and regional availability may vary.
+        </p>
+        <div class="actions">
+          <a class="action"
+            href="https://www.plex.tv/watch-free/"
+            target="_blank" rel="noopener noreferrer">
+            View options ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <article class="card"
+      data-category="free"
+      data-search="movie trailers previews official videos">
+      <div class="poster" aria-hidden="true">▶️</div>
+      <div class="card-body">
+        <span class="category">Official previews</span>
+        <h2>Movie Trailers</h2>
+        <p>
+          Discover trailers and previews. A trailer does not mean
+          that the complete movie is available for free.
+        </p>
+        <div class="actions">
+          <a class="action"
+            href="https://www.youtube.com/movies"
+            target="_blank" rel="noopener noreferrer">
+            Explore movies ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <article class="card"
+      data-category="free"
+      data-search="public domain free legal film collection">
+      <div class="poster" aria-hidden="true">🍿</div>
+      <div class="card-body">
+        <span class="category">Free viewing guide</span>
+        <h2>Find Legal Free Films</h2>
+        <p>
+          Look for films made available by their rights holders,
+          public institutions or verified free streaming services.
+        </p>
+        <div class="actions">
+          <a class="action secondary"
+            href="https://www.youtube.com/"
+            target="_blank" rel="noopener noreferrer">
+            Search YouTube ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+  </section>
+
+  <div class="empty" id="empty">
+    No matching results. Try another search or category.
+  </div>
+
+  <h2 class="section-title">About this collection</h2>
+  <div class="notice">
+    My Crypto Faucet provides links to external websites. External
+    services control their own content, availability and terms.
+    Always verify that a film is authorized for free viewing in your
+    country. No downloads or full-film hosting are provided here.
+  </div>
+</main>
+
+<footer>
+  © <span id="year"></span> My Crypto Faucet · Movie Collection
+  <br>
+  External links open third-party websites.
+</footer>
+
+<script>
+(() => {
+  const search = document.getElementById("search");
+  const cards = Array.from(document.querySelectorAll(".card"));
+  const buttons = Array.from(
+    document.querySelectorAll("[data-filter]")
+  );
+  const empty = document.getElementById("empty");
+  const results = document.getElementById("results");
+
+  let activeFilter = "all";
+
+  function updateMovies() {
+    const query = search.value.trim().toLowerCase();
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+      const category = card.dataset.category || "";
+      const searchable =
+        (card.dataset.search || "") + " " + card.textContent;
+
+      const matchesSearch =
+        searchable.toLowerCase().includes(query);
+
+      const matchesCategory =
+        activeFilter === "all" ||
+        category.split(/\s+/).includes(activeFilter);
+
+      const visible = matchesSearch && matchesCategory;
+
+      card.hidden = !visible;
+
+      if (visible) visibleCount++;
+    });
+
+    empty.style.display = visibleCount ? "none" : "block";
+
+    results.textContent =
+      visibleCount + (visibleCount === 1
+        ? " resource found"
+        : " resources found");
+  }
+
+  buttons.forEach(button => {
+    button.addEventListener("click", () => {
+      activeFilter = button.dataset.filter;
+
+      buttons.forEach(item => {
+        const active = item === button;
+        item.classList.toggle("active", active);
+        item.setAttribute("aria-pressed", String(active));
+      });
+
+      updateMovies();
+    });
+  });
+
+  search.addEventListener("input", updateMovies);
+  document.getElementById("year").textContent =
+    new Date().getFullYear();
+
+  updateMovies();
+})();
+</script>
+</body>
+</html>
