@@ -2,527 +2,674 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Movie Collection — Multilingual Movies & Trailers | My Crypto Faucet</title>
-<meta name="description" content="Discover movies, trailers and multilingual cinema. Search by language, genre and release year in the My Crypto Faucet Movie Collection.">
+<title>Movie Collection — Movies & Trailers | My Crypto Faucet</title>
+<meta name="description" content="Explore movies and official trailers in Tamil, English, French, Hindi and other languages. Search movies by language, genre and release year.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://myfaucetcrypto.com/movie-collection.html">
-<meta name="theme-color" content="#07111f">
-<link rel="icon" type="image/png" href="/assets/favico.png">
+<link rel="icon" type="image/png" href="assets/favico.png">
 
 <style>
 :root {
-  --bg:#07111f;
-  --panel:#10213a;
-  --gold:#f5c542;
-  --text:#f8fafc;
-  --muted:#b7c4d8;
-  --border:rgba(255,255,255,.12);
+  --bg: #07152f;
+  --panel: #102448;
+  --panel2: #0b1d3b;
+  --gold: #f5c542;
+  --text: #ffffff;
+  --muted: #b8c5dc;
+  --border: #263e63;
 }
-* { box-sizing:border-box; }
+* { box-sizing: border-box; }
 body {
-  margin:0;
-  font-family:Arial,Helvetica,sans-serif;
-  background:linear-gradient(145deg,#07111f,#0d1b2f 60%,#111827);
-  color:var(--text);
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
 }
-a { color:inherit; }
+a { color: inherit; }
 header {
-  padding:20px 5%;
-  border-bottom:1px solid var(--border);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:15px;
+  padding: 18px 5%;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  flex-wrap: wrap;
 }
-.brand { color:var(--gold); font-weight:900; }
-.home {
-  text-decoration:none;
-  padding:10px 14px;
-  border:1px solid var(--border);
-  border-radius:9px;
+.brand {
+  color: var(--gold);
+  font-size: 21px;
+  font-weight: 800;
+  text-decoration: none;
 }
-main { width:min(1150px,94%); margin:25px auto 50px; }
+.home-link {
+  text-decoration: none;
+  padding: 10px 15px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+main {
+  width: min(1180px, 92%);
+  margin: 25px auto 55px;
+}
 .hero {
-  position:relative;
-  min-height:270px;
-  overflow:hidden;
-  display:flex;
-  align-items:center;
-  padding:35px;
-  border:1px solid var(--border);
-  border-radius:20px;
+  min-height: 250px;
+  padding: 32px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
   background:
-    radial-gradient(circle at 80% 30%,rgba(245,197,66,.2),transparent 35%),
-    linear-gradient(120deg,#142b4b,#081426);
+    linear-gradient(90deg, rgba(4,14,34,.98), rgba(4,14,34,.48)),
+    linear-gradient(135deg, #173a6b, #5b326e);
+  border: 1px solid var(--border);
+  transition: background 0.4s;
 }
-.hero-content { max-width:650px; position:relative; z-index:1; }
-.eyebrow { color:var(--gold); font-weight:bold; letter-spacing:2px; }
-h1 { font-size:clamp(30px,5vw,48px); margin:12px 0; }
-.hero p,.muted { color:var(--muted); line-height:1.7; }
-.hero button,.play,.filter-button {
-  border:0;
-  border-radius:9px;
-  padding:12px 16px;
-  font-weight:bold;
-  cursor:pointer;
+.hero-content { max-width: 650px; }
+.hero-label {
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-transform: uppercase;
 }
-.hero button,.play {
-  background:var(--gold);
-  color:#111827;
+.hero h1 { font-size: clamp(28px, 5vw, 44px); margin: 12px 0; }
+.hero p { color: var(--muted); line-height: 1.6; }
+.hero button, .primary-btn {
+  border: 0;
+  background: var(--gold);
+  color: #101827;
+  font-weight: bold;
+  padding: 12px 18px;
+  border-radius: 8px;
+  cursor: pointer;
 }
-.hero button { margin-top:10px; }
-h2.section-title { margin:32px 0 16px; }
-.controls {
-  display:grid;
-  grid-template-columns:2fr 1fr 1fr 1fr;
-  gap:12px;
-  margin:20px 0;
+.section-title {
+  margin: 32px 0 16px;
+  font-size: 23px;
 }
-input,select {
-  width:100%;
-  min-width:0;
-  padding:13px;
-  border:1px solid #344966;
-  border-radius:9px;
-  background:#0b192d;
-  color:white;
-  font-size:15px;
+.filters {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 12px;
+  margin: 18px 0;
 }
-input:focus,select:focus { outline:2px solid var(--gold); }
-.status { color:var(--muted); font-size:14px; margin:15px 0; }
-.grid {
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:17px;
+.filters input, .filters select {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--panel2);
+  color: white;
+  outline: none;
 }
-.card {
-  overflow:hidden;
-  border:1px solid var(--border);
-  border-radius:14px;
-  background:linear-gradient(145deg,#142945,#0c192d);
+.filters input::placeholder { color: #a8b7ce; }
+.results {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  color: var(--muted);
+  margin: 18px 0;
+  font-size: 14px;
+}
+.movie-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+.movie-card {
+  overflow: hidden;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 13px;
 }
 .poster {
-  min-height:155px;
-  display:grid;
-  place-items:center;
-  background:radial-gradient(circle,#29466b,#0a1628);
-  font-size:55px;
+  min-height: 205px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 18px;
+  background: linear-gradient(145deg, #193c69, #452f61);
+  color: var(--gold);
+  font-size: 24px;
+  font-weight: 800;
 }
-.card-body { padding:16px; }
-.tag { color:var(--gold); font-size:12px; font-weight:bold; }
-.card h3 { margin:10px 0; font-size:19px; }
-.card p { color:var(--muted); font-size:14px; line-height:1.6; }
-.play { width:100%; margin-top:10px; }
-.play:disabled { opacity:.5; cursor:not-allowed; }
-.empty { display:none; padding:30px 5px; text-align:center; color:var(--muted); }
+.poster span {
+  display: block;
+  color: #fff;
+  font-size: 12px;
+  margin-top: 10px;
+  font-weight: normal;
+}
+.movie-info { padding: 17px; }
+.movie-info h3 { margin: 0 0 9px; font-size: 19px; }
+.movie-meta {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.8;
+}
+.movie-info p {
+  color: var(--muted);
+  line-height: 1.5;
+  font-size: 14px;
+}
+.movie-actions {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+.movie-actions button {
+  padding: 10px 12px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.watch-btn {
+  border: none;
+  background: var(--gold);
+  color: #101827;
+}
+.info-btn {
+  border: 1px solid #466086;
+  background: transparent;
+  color: white;
+}
+.empty {
+  display: none;
+  text-align: center;
+  padding: 40px 15px;
+  background: var(--panel);
+  border-radius: 12px;
+  color: var(--muted);
+}
 .notice {
-  margin-top:25px;
-  padding:16px;
-  border:1px solid rgba(245,197,66,.25);
-  border-radius:12px;
-  color:var(--muted);
-  font-size:14px;
-  line-height:1.7;
-}
-.notice strong { color:var(--gold); }
-.modal {
-  position:fixed;
-  inset:0;
-  z-index:1000;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:18px;
-  background:rgba(0,0,0,.88);
-}
-.modal.open { display:flex; }
-.modal-box {
-  width:min(900px,100%);
-  background:#0b192d;
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:15px;
-}
-.modal-top {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  margin-bottom:12px;
-}
-.close {
-  background:transparent;
-  color:white;
-  border:1px solid var(--border);
-  border-radius:8px;
-  padding:9px 13px;
-  cursor:pointer;
-}
-.player {
-  width:100%;
-  aspect-ratio:16/9;
-  border:0;
-  background:#000;
+  margin-top: 28px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
 }
 footer {
-  border-top:1px solid var(--border);
-  padding:25px 15px;
-  text-align:center;
-  color:var(--muted);
-  font-size:13px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  padding: 25px;
+  color: var(--muted);
+  font-size: 13px;
 }
-@media(max-width:760px) {
-  .controls { grid-template-columns:1fr 1fr; }
-  .grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
-  .hero { padding:25px; }
+
+/* Movie modal */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  padding: 18px;
+  overflow-y: auto;
+  background: rgba(0,0,0,.85);
+  align-items: center;
+  justify-content: center;
 }
-@media(max-width:480px) {
-  .grid,.controls { grid-template-columns:1fr; }
-  header { padding:16px 4%; }
+.modal.open { display: flex; }
+.modal-box {
+  width: min(850px, 100%);
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  overflow: hidden;
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 18px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-header h2 { margin: 0; font-size: 20px; }
+.close-modal {
+  border: 0;
+  color: white;
+  background: transparent;
+  font-size: 28px;
+  cursor: pointer;
+}
+.player-area {
+  background: #000;
+  aspect-ratio: 16 / 9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.player-area iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.player-message {
+  padding: 25px;
+  text-align: center;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.modal-description {
+  padding: 18px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+@media(max-width: 760px) {
+  .filters { grid-template-columns: 1fr 1fr; }
+  .filters input { grid-column: 1 / -1; }
+  .movie-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hero { padding: 23px; }
+}
+@media(max-width: 480px) {
+  .movie-grid { grid-template-columns: 1fr; }
+  .poster { min-height: 180px; }
 }
 </style>
 </head>
 
 <body>
 <header>
-  <a class="brand" href="/" style="text-decoration:none">
-    MY CRYPTO FAUCET
-  </a>
-  <a class="home" href="/">← Home</a>
+  <a class="brand" href="/">My Crypto Faucet</a>
+  <a class="home-link" href="/">← Home</a>
 </header>
 
 <main>
-  <section class="hero" aria-labelledby="pageTitle">
+  <section class="hero" id="hero">
     <div class="hero-content">
-      <div class="eyebrow" id="bannerLabel">MOVIE COLLECTION</div>
-      <h1 id="pageTitle">Cinema Without Borders</h1>
-      <p id="bannerText">
-        Explore cinema from different languages and discover
-        officially available trailers and films.
+      <div class="hero-label" id="heroLabel">Movie Collection</div>
+      <h1 id="heroTitle">Discover Movies & Trailers</h1>
+      <p id="heroText">
+        Explore movie listings in different languages. Search by title,
+        language, genre or release year.
       </p>
-      <button type="button" id="exploreButton">Explore Collection ↓</button>
+      <button type="button" id="exploreBtn">Explore Collection</button>
     </div>
   </section>
 
-  <h2 class="section-title">Find your next movie</h2>
+  <h2 class="section-title" id="collection">Find Your Movie</h2>
 
-  <div class="controls">
-    <input id="search" type="search"
+  <div class="filters">
+    <input id="searchInput" type="search"
       placeholder="Search movie title..."
       aria-label="Search movie title">
 
-    <select id="language" aria-label="Choose language">
+    <select id="languageFilter" aria-label="Filter by language">
       <option value="">All languages</option>
-      <option>Tamil</option>
-      <option>English</option>
-      <option>French</option>
-      <option>Hindi</option>
-      <option>Sinhala</option>
-      <option>Telugu</option>
-      <option>Malayalam</option>
-      <option>Kannada</option>
-      <option>Korean</option>
-      <option>Japanese</option>
-      <option>Spanish</option>
-      <option>Chinese</option>
-      <option>Other</option>
+      <option value="Tamil">Tamil</option>
+      <option value="English">English</option>
+      <option value="French">French</option>
+      <option value="Hindi">Hindi</option>
+      <option value="Sinhala">Sinhala</option>
+      <option value="Telugu">Telugu</option>
+      <option value="Malayalam">Malayalam</option>
+      <option value="Other">Other</option>
     </select>
 
-    <select id="genre" aria-label="Choose genre">
-      <option value="">All types</option>
-      <option>Action</option>
-      <option>Comedy</option>
-      <option>Drama</option>
-      <option>Thriller</option>
-      <option>Romance</option>
-      <option>Animation</option>
-      <option>Documentary</option>
-      <option>Classic</option>
+    <select id="genreFilter" aria-label="Filter by genre">
+      <option value="">All genres</option>
+      <option value="Action">Action</option>
+      <option value="Comedy">Comedy</option>
+      <option value="Drama">Drama</option>
+      <option value="Romance">Romance</option>
+      <option value="Animation">Animation</option>
+      <option value="Documentary">Documentary</option>
     </select>
 
-    <select id="year" aria-label="Choose release year">
+    <select id="yearFilter" aria-label="Filter by year">
       <option value="">All years</option>
-      <option>2026</option>
-      <option>2025</option>
-      <option>2024</option>
-      <option>2023</option>
-      <option>2022</option>
-      <option>2021</option>
-      <option>2020</option>
+      <option value="2026">2026</option>
+      <option value="2025">2025</option>
+      <option value="2024">2024</option>
+      <option value="2023">2023</option>
+      <option value="2022">2022</option>
+      <option value="2021">2021</option>
+      <option value="2020">2020</option>
+      <option value="Older">Before 2020</option>
     </select>
   </div>
 
-  <div class="status" id="results" aria-live="polite">
-    Browse the collection below.
+  <div class="results">
+    <span id="resultCount">3 listings</span>
+    <span>Only authorized trailers or videos can be played here.</span>
   </div>
 
-  <section class="grid" id="movieGrid" aria-label="Movies">
+  <div class="movie-grid" id="movieGrid">
 
-    <!--
-      Add real movie records here only when the title,
-      metadata and video embed are authorized for use.
-      Never add an unauthorized full-movie stream.
-    -->
-
-    <article class="card"
-      data-title="Movie coming soon"
+    <article class="movie-card"
+      data-title="Tamil movie listing"
       data-language="Tamil"
       data-genre="Drama"
       data-year="2026"
-      data-available="false"
-      data-embed="">
-      <div class="poster" aria-hidden="true">🎬</div>
-      <div class="card-body">
-        <span class="tag">TAMIL · FEATURED</span>
-        <h3>Movie Collection Coming Soon</h3>
-        <p>
-          Tamil cinema collection. Movie details and an authorized
-          video player will appear when a verified source is added.
-        </p>
-        <button class="play" type="button" disabled>
-          Not available yet
-        </button>
+      data-description="Tamil movie listing. Add verified movie details and an authorized video embed URL before publishing.">
+
+      <div class="poster">
+        TAMIL
+        <span>Movie listing</span>
+      </div>
+      <div class="movie-info">
+        <h3>Tamil Movie Listing</h3>
+        <div class="movie-meta">Tamil · Drama · 2026</div>
+        <p>Movie details and authorized video are not yet available.</p>
+        <div class="movie-actions">
+          <button class="watch-btn" type="button"
+            data-action="watch">Watch trailer</button>
+          <button class="info-btn" type="button"
+            data-action="details">Details</button>
+        </div>
       </div>
     </article>
 
-    <article class="card"
-      data-title="Movie coming soon"
+    <article class="movie-card"
+      data-title="English movie listing"
       data-language="English"
       data-genre="Action"
-      data-year="2026"
-      data-available="false"
-      data-embed="">
-      <div class="poster" aria-hidden="true">🍿</div>
-      <div class="card-body">
-        <span class="tag">ENGLISH · FEATURED</span>
-        <h3>English Movie Collection</h3>
-        <p>
-          Discover English-language films when authorized
-          viewing sources are available.
-        </p>
-        <button class="play" type="button" disabled>
-          Not available yet
-        </button>
+      data-year="2025"
+      data-description="English movie listing. Add verified movie details and an authorized video embed URL before publishing.">
+
+      <div class="poster">
+        ENGLISH
+        <span>Movie listing</span>
+      </div>
+      <div class="movie-info">
+        <h3>English Movie Listing</h3>
+        <div class="movie-meta">English · Action · 2025</div>
+        <p>Movie details and authorized video are not yet available.</p>
+        <div class="movie-actions">
+          <button class="watch-btn" type="button"
+            data-action="watch">Watch trailer</button>
+          <button class="info-btn" type="button"
+            data-action="details">Details</button>
+        </div>
       </div>
     </article>
 
-    <article class="card"
-      data-title="Movie coming soon"
+    <article class="movie-card"
+      data-title="French movie listing"
       data-language="French"
       data-genre="Comedy"
-      data-year="2025"
-      data-available="false"
-      data-embed="">
-      <div class="poster" aria-hidden="true">🎥</div>
-      <div class="card-body">
-        <span class="tag">FRENCH · FEATURED</span>
-        <h3>French Movie Collection</h3>
-        <p>
-          Explore French cinema and authorized trailers or
-          full movies as they become available.
-        </p>
-        <button class="play" type="button" disabled>
-          Not available yet
-        </button>
+      data-year="2024"
+      data-description="French movie listing. Add verified movie details and an authorized video embed URL before publishing.">
+
+      <div class="poster">
+        FRANÇAIS
+        <span>Movie listing</span>
+      </div>
+      <div class="movie-info">
+        <h3>French Movie Listing</h3>
+        <div class="movie-meta">French · Comedy · 2024</div>
+        <p>Movie details and authorized video are not yet available.</p>
+        <div class="movie-actions">
+          <button class="watch-btn" type="button"
+            data-action="watch">Watch trailer</button>
+          <button class="info-btn" type="button"
+            data-action="details">Details</button>
+        </div>
       </div>
     </article>
 
-  </section>
+  </div>
 
-  <div class="empty" id="empty">
-    No matching movies found. Try another language or type.
+  <div class="empty" id="emptyState">
+    No matching listings found. Try another search or filter.
   </div>
 
   <div class="notice">
-    <strong>Viewing policy</strong><br>
-    This collection does not host unauthorized movies and does not
-    offer downloads. Full-film playback requires permission from
-    the rights holder or a legally available public-domain source.
-    Availability and release dates must be verified.
+    <strong>About this collection</strong><br>
+    These are starter listings, not a live movie database. Movie details,
+    posters and video links must be verified before publication. This page
+    does not host or provide unauthorized copies of copyrighted films.
+    Only videos you have permission to embed should be enabled.
   </div>
 </main>
 
-<div class="modal" id="videoModal"
-  role="dialog" aria-modal="true" aria-label="Movie player">
+<footer>
+  © <span id="currentYear"></span> My Crypto Faucet
+</footer>
+
+<!-- Shared movie modal -->
+<div class="modal" id="movieModal"
+  role="dialog" aria-modal="true"
+  aria-labelledby="modalTitle">
+
   <div class="modal-box">
-    <div class="modal-top">
-      <strong id="playerTitle">Movie player</strong>
-      <button class="close" id="closePlayer" type="button">
-        Close ✕
-      </button>
+    <div class="modal-header">
+      <h2 id="modalTitle">Movie details</h2>
+      <button class="close-modal" id="closeModal"
+        type="button" aria-label="Close modal">×</button>
     </div>
-    <iframe class="player" id="videoPlayer"
-      title="Authorized movie video"
-      src="about:blank"
-      allow="autoplay; encrypted-media; picture-in-picture"
-      referrerpolicy="strict-origin-when-cross-origin"
-      allowfullscreen></iframe>
-    <p class="muted">
-      Use this player only for videos authorized for embedding.
-      Download controls are not provided by this page.
-    </p>
+
+    <div class="player-area" id="playerArea">
+      <div class="player-message" id="playerMessage">
+        Video unavailable.
+      </div>
+    </div>
+
+    <div class="modal-description" id="modalDescription"></div>
   </div>
 </div>
 
-<footer>
-  © <span id="currentYear"></span> My Crypto Faucet · Movie Collection
-</footer>
-
 <script>
-(() => {
-  "use strict";
+"use strict";
 
-  const $ = id => document.getElementById(id);
-
-  const cards = [...document.querySelectorAll(".card")];
-  const search = $("search");
-  const language = $("language");
-  const genre = $("genre");
-  const year = $("year");
-  const results = $("results");
-  const empty = $("empty");
-  const modal = $("videoModal");
-  const player = $("videoPlayer");
-
-  // This banner rotates locally; it is not a live release feed.
-  const banners = [
-    {
-      label: "MOVIE COLLECTION",
-      title: "Cinema Without Borders",
-      text: "Explore cinema from different languages and discover officially available trailers and films."
-    },
-    {
-      label: "TRAILER SPOTLIGHT",
-      title: "Discover Your Next Film",
-      text: "Browse film categories and languages in one simple collection."
-    },
-    {
-      label: "WORLD CINEMA",
-      title: "Stories in Every Language",
-      text: "Explore international cinema as verified, authorized viewing sources become available."
-    }
-  ];
-
-  let bannerIndex = 0;
-
-  function rotateBanner() {
-    bannerIndex = (bannerIndex + 1) % banners.length;
-    $("bannerLabel").textContent = banners[bannerIndex].label;
-    $("pageTitle").textContent = banners[bannerIndex].title;
-    $("bannerText").textContent = banners[bannerIndex].text;
+/*
+  IMPORTANT:
+  These banners rotate locally.
+  They are not a live movie-release feed.
+*/
+const banners = [
+  {
+    label: "Movie Collection",
+    title: "Discover Movies & Trailers",
+    text: "Explore movie listings in different languages. Search by title, language, genre or release year."
+  },
+  {
+    label: "International Cinema",
+    title: "Cinema From Around the World",
+    text: "Explore listings for Tamil, English, French, Hindi, Sinhala and more."
+  },
+  {
+    label: "Trailers & Discoveries",
+    title: "Find Your Next Movie",
+    text: "Search the collection and open a listing to view its details."
   }
+];
 
-  // Movie titles and years must come from verified records.
-  function filterMovies() {
-    const q = search.value.trim().toLowerCase();
-    const lang = language.value.toLowerCase();
-    const type = genre.value.toLowerCase();
-    const selectedYear = year.value;
-    let count = 0;
+const hero = document.getElementById("hero");
+const heroLabel = document.getElementById("heroLabel");
+const heroTitle = document.getElementById("heroTitle");
+const heroText = document.getElementById("heroText");
+const searchInput = document.getElementById("searchInput");
+const languageFilter = document.getElementById("languageFilter");
+const genreFilter = document.getElementById("genreFilter");
+const yearFilter = document.getElementById("yearFilter");
+const cards = [...document.querySelectorAll(".movie-card")];
+const resultCount = document.getElementById("resultCount");
+const emptyState = document.getElementById("emptyState");
+const modal = document.getElementById("movieModal");
+const modalTitle = document.getElementById("modalTitle");
+const modalDescription = document.getElementById("modalDescription");
+const playerArea = document.getElementById("playerArea");
+const playerMessage = document.getElementById("playerMessage");
 
-    cards.forEach(card => {
-      const title = (card.dataset.title || "").toLowerCase();
-      const cardLang = (card.dataset.language || "").toLowerCase();
-      const cardGenre = (card.dataset.genre || "").toLowerCase();
-      const cardYear = card.dataset.year || "";
+document.getElementById("currentYear").textContent =
+  new Date().getFullYear();
 
-      const matches =
-        (!q || title.includes(q)) &&
-        (!lang || cardLang === lang) &&
-        (!type || cardGenre === type) &&
-        (!selectedYear || cardYear === selectedYear);
+document.getElementById("exploreBtn").addEventListener("click", () => {
+  document.getElementById("collection").scrollIntoView({
+    behavior: "smooth"
+  });
+});
 
-      card.hidden = !matches;
-      if (matches) count++;
-    });
+let bannerIndex = 0;
 
-    results.textContent = count + (count === 1
-      ? " movie listing"
-      : " movie listings");
+function rotateBanner() {
+  bannerIndex = (bannerIndex + 1) % banners.length;
+  const item = banners[bannerIndex];
 
-    empty.style.display = count ? "none" : "block";
-  }
+  heroLabel.textContent = item.label;
+  heroTitle.textContent = item.title;
+  heroText.textContent = item.text;
+}
 
-  // Allow only known video embed hosts; reject arbitrary URLs.
-  function getSafeEmbed(rawUrl) {
-    try {
-      const url = new URL(rawUrl);
-      const host = url.hostname.toLowerCase();
+window.setInterval(rotateBanner, 6000);
 
-      if (host === "www.youtube-nocookie.com" ||
-          host === "youtube-nocookie.com") {
-        return url.pathname.startsWith("/embed/") ? url.href : null;
-      }
-
-      if (host === "www.youtube.com" || host === "youtube.com") {
-        return url.pathname.startsWith("/embed/") ? url.href : null;
-      }
-
-      if (host === "archive.org") {
-        return url.pathname.startsWith("/embed/") ? url.href : null;
-      }
-
-      return null;
-    } catch {
-      return null;
-    }
-  }
-
-  function openPlayer(card) {
-    const safeUrl = getSafeEmbed(card.dataset.embed || "");
-
-    if (!safeUrl || card.dataset.available !== "true") {
-      alert("This movie is not available yet. An authorized video source must be added first.");
-      return;
-    }
-
-    $("playerTitle").textContent =
-      card.dataset.title || "Movie player";
-
-    player.src = safeUrl;
-    modal.classList.add("open");
-    $("closePlayer").focus();
-  }
-
-  function closePlayer() {
-    modal.classList.remove("open");
-    player.src = "about:blank";
-  }
+function filterMovies() {
+  const query = searchInput.value.trim().toLowerCase();
+  const language = languageFilter.value;
+  const genre = genreFilter.value;
+  const year = yearFilter.value;
+  let visible = 0;
 
   cards.forEach(card => {
-    const button = card.querySelector(".play");
-    if (button) button.addEventListener("click", () => openPlayer(card));
+    const title = card.dataset.title.toLowerCase();
+    const cardLanguage = card.dataset.language;
+    const cardGenre = card.dataset.genre;
+    const cardYear = Number(card.dataset.year);
+
+    const matchesSearch =
+      !query || title.includes(query);
+
+    const matchesLanguage =
+      !language || cardLanguage === language;
+
+    const matchesGenre =
+      !genre || cardGenre === genre;
+
+    const matchesYear =
+      !year ||
+      (year === "Older" ? cardYear < 2020 : cardYear === Number(year));
+
+    const show =
+      matchesSearch && matchesLanguage &&
+      matchesGenre && matchesYear;
+
+    card.hidden = !show;
+    if (show) visible++;
   });
 
-  [search, language, genre, year].forEach(control => {
-    control.addEventListener("input", filterMovies);
-    control.addEventListener("change", filterMovies);
+  resultCount.textContent =
+    visible + (visible === 1 ? " listing" : " listings");
+
+  emptyState.style.display = visible ? "none" : "block";
+}
+
+searchInput.addEventListener("input", filterMovies);
+languageFilter.addEventListener("change", filterMovies);
+genreFilter.addEventListener("change", filterMovies);
+yearFilter.addEventListener("change", filterMovies);
+
+/*
+  A video can play only after you add an authorized embed URL
+  and set data-available="true" on that movie card.
+
+  Supported embed URL examples:
+  https://www.youtube-nocookie.com/embed/VIDEO_ID
+  https://www.youtube.com/embed/VIDEO_ID
+  https://archive.org/embed/ITEM_IDENTIFIER
+
+  Do not use ordinary watch-page URLs as iframe URLs.
+*/
+function isAllowedEmbedUrl(rawUrl) {
+  try {
+    const url = new URL(rawUrl);
+    if (url.protocol !== "https:") return false;
+
+    const host = url.hostname.toLowerCase();
+
+    if (
+      (host === "www.youtube-nocookie.com" ||
+       host === "www.youtube.com") &&
+      url.pathname.startsWith("/embed/") &&
+      url.pathname.length > 7
+    ) {
+      return true;
+    }
+
+    if (
+      host === "archive.org" &&
+      url.pathname.startsWith("/embed/") &&
+      url.pathname.length > 7
+    ) {
+      return true;
+    }
+
+    return false;
+  } catch {
+    return false;
+  }
+}
+
+function openMovieModal(card, showVideo) {
+  modalTitle.textContent =
+    card.querySelector("h3").textContent;
+
+  modalDescription.textContent =
+    card.dataset.description ||
+    "No additional details are available.";
+
+  playerArea.replaceChildren();
+
+  const videoUrl = card.dataset.embed || "";
+  const videoAllowed = card.dataset.available === "true";
+
+  if (showVideo && videoAllowed && isAllowedEmbedUrl(videoUrl)) {
+    const iframe = document.createElement("iframe");
+    iframe.src = videoUrl;
+    iframe.title = "Authorized movie video";
+    iframe.allow =
+      "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+    iframe.allowFullscreen = true;
+    iframe.referrerPolicy = "strict-origin-when-cross-origin";
+    playerArea.appendChild(iframe);
+  } else {
+    const message = document.createElement("div");
+    message.className = "player-message";
+    message.textContent = showVideo
+      ? "This video is not available yet. An authorized embed link must be added first."
+      : "Movie information is shown below. No video has been started.";
+    playerArea.appendChild(message);
+  }
+
+  modal.classList.add("open");
+  document.body.style.overflow = "hidden";
+  document.getElementById("closeModal").focus();
+}
+
+function closeMovieModal() {
+  modal.classList.remove("open");
+  playerArea.replaceChildren();
+  document.body.style.overflow = "";
+}
+
+cards.forEach(card => {
+  card.querySelectorAll("[data-action]").forEach(button => {
+    button.addEventListener("click", () => {
+      openMovieModal(card, button.dataset.action === "watch");
+    });
   });
+});
 
-  $("exploreButton").addEventListener("click", () => {
-    $("search").focus();
-    $("movieGrid").scrollIntoView({ behavior:"smooth" });
-  });
+document.getElementById("closeModal")
+  .addEventListener("click", closeMovieModal);
 
-  $("closePlayer").addEventListener("click", closePlayer);
+modal.addEventListener("click", event => {
+  if (event.target === modal) closeMovieModal();
+});
 
-  modal.addEventListener("click", event => {
-    if (event.target === modal) closePlayer();
-  });
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape" && modal.classList.contains("open")) {
+    closeMovieModal();
+  }
+});
 
-  document.addEventListener("keydown", event => {
-    if (event.key === "Escape") closePlayer();
-  });
-
-  $("currentYear").textContent = new Date().getFullYear();
-
-  // Rotate a local banner every 6 seconds.
-  window.setInterval(rotateBanner, 6000);
-
-  filterMovies();
-})();
+filterMovies();
 </script>
 </body>
-</html>
+        </html>
