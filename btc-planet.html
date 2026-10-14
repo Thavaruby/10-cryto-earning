@@ -2,761 +2,149 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#092b1b">
-<title>BTC Planet — Grow Your Green World</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#04152d">
+<title>BTC Planet — Grow a Greener Future</title>
 <style>
-:root{
-  --bg:#061c13;--panel:#0d3020;--panel2:#123d28;
-  --green:#64e879;--lime:#b7ff78;--gold:#ffd66b;
-  --text:#f1fff1;--muted:#a6c6ad;--border:#28553a;
-  --red:#ff8d83;
-}
-*{box-sizing:border-box}
-body{
-  margin:0;color:var(--text);
-  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  background:
-    radial-gradient(ellipse at 50% -10%,#276e3a 0%,transparent 48%),
-    linear-gradient(180deg,#071f15,#04140e 80%);
-}
-button,input{font:inherit}
-button{cursor:pointer}
-button:focus-visible{outline:2px solid var(--lime);outline-offset:3px}
-.app{max-width:1440px;margin:auto;padding:20px}
-header{
-  display:flex;align-items:center;justify-content:space-between;
-  gap:16px;flex-wrap:wrap;padding:8px 0 22px;
-}
-.brand{display:flex;align-items:center;gap:12px}
-.logo{
-  width:48px;height:48px;border-radius:16px;display:grid;place-items:center;
-  font-size:28px;background:linear-gradient(145deg,#c4ff7c,#27bd65);
-  box-shadow:0 0 32px #65f08035;
-}
-.brand h1{font-size:22px;margin:0;letter-spacing:-.6px}
-.brand p{margin:4px 0 0;color:var(--muted);font-size:12px}
-.header-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.pill{
-  border:1px solid var(--border);background:#0d3020;
-  padding:9px 13px;border-radius:999px;color:var(--muted);font-size:12px;
-}
-.pill strong{color:var(--lime)}
-.hero{
-  position:relative;overflow:hidden;border:1px solid #347348;border-radius:28px;
-  background:linear-gradient(125deg,#164d2b 0%,#0e3b25 42%,#082419 100%);
-  padding:clamp(22px,4vw,48px);display:grid;
-  grid-template-columns:1.05fr .95fr;gap:25px;align-items:center;
-  box-shadow:0 24px 80px #0003;
-}
-.hero:before,.hero:after{
-  content:"";position:absolute;border-radius:50%;pointer-events:none;
-}
-.hero:before{
-  width:360px;height:360px;right:6%;top:-230px;
-  border:1px solid #b5ff7830;box-shadow:0 0 0 35px #b5ff7808,0 0 0 70px #b5ff7806;
-}
-.hero-copy,.planet-area{position:relative;z-index:1}
-.eyebrow{
-  display:inline-flex;align-items:center;gap:8px;color:var(--lime);
-  font-size:11px;letter-spacing:1.8px;font-weight:800;text-transform:uppercase;
-}
-.eyebrow:before{content:"";width:20px;height:2px;background:var(--lime)}
-.hero h2{
-  font-size:clamp(34px,5.2vw,64px);line-height:1.03;
-  letter-spacing:-2.8px;margin:18px 0;
-}
-.hero h2 span{color:var(--lime)}
-.hero-copy>p{color:#c4e1c9;line-height:1.8;max-width:530px;font-size:14px}
-.hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:25px}
-.btn{
-  border:0;border-radius:12px;padding:12px 17px;font-weight:800;
-  transition:transform .18s,filter .18s;
-}
-.btn:hover{transform:translateY(-2px);filter:brightness(1.08)}
-.btn-primary{background:linear-gradient(135deg,#c8ff8c,#66e982);color:#082617}
-.btn-secondary{background:#ffffff0b;border:1px solid #ffffff28;color:#f3fff4}
-.planet-area{min-height:310px;display:grid;place-items:center}
-.planet{
-  position:relative;width:min(100%,340px);aspect-ratio:1;border-radius:50%;
-  background:
-    radial-gradient(ellipse at 35% 23%,#caff94 0%,transparent 12%),
-    radial-gradient(ellipse at 25% 38%,#80e45e 0%,transparent 22%),
-    radial-gradient(ellipse at 72% 28%,#b8f66e 0%,transparent 17%),
-    radial-gradient(ellipse at 66% 66%,#168a48 0%,transparent 30%),
-    radial-gradient(ellipse at 33% 72%,#49c956 0%,transparent 30%),
-    radial-gradient(circle at 36% 32%,#69df6c,#168846 52%,#07522e 76%);
-  box-shadow:inset -30px -24px 48px #001b12a8,
-    inset 12px 12px 25px #d0ff8b70,0 0 0 8px #b4ff7812,
-    0 0 65px #55e87828;
-  animation:float 6s ease-in-out infinite;
-}
-.planet:before{
-  content:"";position:absolute;inset:-13px;border-radius:50%;
-  border:2px solid #d3ff8b55;transform:rotate(-22deg) scaleY(.28);
-}
-.planet:after{
-  content:"";position:absolute;inset:-26px;border-radius:50%;
-  border:1px solid #c7ff7d36;transform:rotate(25deg) scaleY(.3);
-}
-.land{position:absolute;background:#164f31;border-radius:55% 35% 48% 37%;opacity:.8}
-.land.one{width:32%;height:25%;top:24%;left:18%;transform:rotate(-25deg)}
-.land.two{width:28%;height:36%;top:39%;right:17%;transform:rotate(24deg)}
-.land.three{width:24%;height:16%;bottom:15%;left:32%;transform:rotate(-15deg)}
-.mini-tree{position:absolute;font-size:clamp(18px,3vw,29px);filter:drop-shadow(0 3px 2px #003b20)}
-.t1{top:25%;left:32%}.t2{top:42%;left:18%}.t3{top:34%;right:22%}
-.t4{bottom:24%;right:29%}.t5{bottom:31%;left:36%}.t6{top:54%;right:39%}
-.planet-label{
-  position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);
-  white-space:nowrap;background:#082617;border:1px solid #4c9d5c;
-  padding:9px 15px;border-radius:999px;font-size:12px;font-weight:800;
-  color:var(--lime);
-}
-.stats{
-  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:13px;margin:18px 0 30px;
-}
-.stat{
-  border:1px solid var(--border);border-radius:17px;padding:18px;
-  background:linear-gradient(145deg,#103722,#0a2619);
-}
-.stat-top{display:flex;justify-content:space-between;gap:8px;align-items:center}
-.stat-label{font-size:12px;color:var(--muted)}
-.stat-icon{font-size:21px}
-.stat-value{font-size:clamp(23px,3vw,31px);font-weight:850;letter-spacing:-1px;margin:12px 0 5px}
-.stat-note{font-size:11px;color:#a7c8ad}
-.section{margin:30px 0}
-.section-heading{
-  display:flex;justify-content:space-between;align-items:end;
-  gap:15px;flex-wrap:wrap;margin-bottom:17px;
-}
-.section-heading h2{margin:0;font-size:24px;letter-spacing:-.7px}
-.section-heading p{margin:7px 0 0;color:var(--muted);font-size:13px;line-height:1.6}
-.panel{
-  background:linear-gradient(145deg,#0d3020,#092418);
-  border:1px solid var(--border);border-radius:21px;padding:20px;
-}
-.section-tag{
-  font-size:10px;letter-spacing:1.4px;text-transform:uppercase;
-  color:var(--lime);font-weight:800;
-}
-.garden-summary{
-  display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:18px;
-}
-.garden-summary .pill{padding:8px 11px}
-.garden{
-  display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:9px;
-}
-.tree-card{
-  min-width:0;position:relative;border:1px solid #2a603d;
-  border-radius:13px;background:linear-gradient(180deg,#16462c,#0b2a1a);
-  padding:10px 3px 9px;text-align:center;color:var(--text);
-  overflow:hidden;transition:transform .18s,border-color .18s,background .18s;
-}
-.tree-card:hover{transform:translateY(-3px);border-color:var(--lime)}
-.tree-card.selected{border:2px solid var(--lime);background:linear-gradient(180deg,#28633a,#10351f)}
-.tree-card.complete{background:linear-gradient(180deg,#326b35,#133c23)}
-.tree-card.paused{border-color:#dba16a}
-.tree-emoji{font-size:clamp(18px,2.6vw,31px);display:block;line-height:1.45}
-.tree-number{font-size:11px;font-weight:850;display:block;margin-top:4px}
-.tree-day{font-size:9px;color:#b9d7bc;display:block;margin-top:3px}
-.tree-progress{height:3px;background:#ffffff18;border-radius:9px;margin:8px 4px 0;overflow:hidden}
-.tree-progress span{display:block;height:100%;background:var(--lime);border-radius:9px}
-.tree-card.paused .tree-progress span{background:#e7aa69}
-.garden-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:17px;color:var(--muted);font-size:11px}
-.legend-item{display:flex;gap:6px;align-items:center}
-.legend-dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
-.legend-dot.paused{background:#e7aa69}.legend-dot.done{background:#c5ff7b}
-.tree-detail{
-  margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:18px;
-}
-.tree-detail h3{margin:8px 0;font-size:22px}
-.tree-detail p{color:var(--muted);font-size:13px;line-height:1.7}
-.detail-stage{font-size:54px;line-height:1.2}
-.progress-track{height:9px;border-radius:99px;background:#ffffff12;overflow:hidden;margin:13px 0}
-.progress-track span{display:block;height:100%;background:linear-gradient(90deg,#42c85c,#caff83);border-radius:99px;transition:width .3s}
-.progress-meta{display:flex;justify-content:space-between;color:var(--muted);font-size:11px}
-.task-list{display:grid;gap:10px;margin-top:14px}
-.task{
-  display:flex;align-items:center;gap:12px;padding:12px;
-  border:1px solid #28543a;border-radius:12px;background:#ffffff04;
-}
-.task input{width:19px;height:19px;accent-color:#6fea83;flex-shrink:0}
-.task-content{flex:1;min-width:0}
-.task-content strong{display:block;font-size:13px}
-.task-content small{display:block;color:var(--muted);font-size:11px;margin-top:4px;line-height:1.5}
-.task-icon{font-size:20px}
-.task-status{font-size:10px;color:var(--muted);white-space:nowrap}
-.task-status.done{color:var(--lime)}
-.action-row{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}
-.notice{
-  padding:12px 14px;border:1px solid #8a7139;background:#4a3b171c;
-  border-radius:12px;color:#f6df9a;font-size:12px;line-height:1.7;margin-top:15px;
-}
-.error-notice{
-  padding:12px 14px;border:1px solid #9a4d43;background:#51231e45;
-  border-radius:12px;color:#ffc4b9;font-size:12px;line-height:1.7;margin-top:15px;
-}
-.mission-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
-.mission{
-  border:1px solid var(--border);border-radius:17px;padding:18px;
-  background:linear-gradient(150deg,#123a24,#0b2719);
-}
-.mission-icon{font-size:29px}
-.mission h3{font-size:15px;margin:12px 0 7px}
-.mission p{font-size:12px;color:var(--muted);line-height:1.7;margin:0}
-.mission-bottom{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:16px}
-.mission-bottom span{font-size:11px;color:var(--lime);font-weight:800}
-.small-btn{border:1px solid #3a7447;background:#17452a;color:#dcffde;padding:8px 10px;border-radius:9px;font-size:11px;font-weight:750}
-.timeline{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
-.stage-card{border:1px solid var(--border);background:#0d2e1d;border-radius:14px;padding:13px}
-.stage-card .emoji{font-size:29px}
-.stage-card strong{display:block;font-size:12px;margin-top:7px}
-.stage-card small{color:var(--muted);font-size:10px;display:block;margin-top:5px;line-height:1.5}
-.reward-panel{
-  display:grid;grid-template-columns:1fr auto;align-items:center;gap:18px;
-  background:linear-gradient(120deg,#264b25,#143b22 55%,#102c1c);
-  border:1px solid #577b3c;border-radius:22px;padding:25px;
-}
-.reward-panel h3{font-size:23px;margin:8px 0}
-.reward-panel p{font-size:13px;color:#c6dec2;line-height:1.7;max-width:650px}
-.reward-amount{text-align:center;padding:10px 20px}
-.reward-amount strong{display:block;font-size:clamp(30px,5vw,43px);color:var(--lime)}
-.reward-amount span{font-size:11px;color:var(--muted)}
-.footer{padding:25px 0 10px;text-align:center;color:#779d80;font-size:11px;line-height:1.8}
-.toast{
-  position:fixed;bottom:20px;left:50%;transform:translate(-50%,20px);
-  opacity:0;pointer-events:none;background:#e0ffcb;color:#092817;
-  border-radius:12px;padding:12px 18px;font-size:13px;font-weight:800;
-  box-shadow:0 10px 35px #0005;transition:.25s;z-index:10;
-  width:max-content;max-width:calc(100% - 30px);
-}
-.toast.show{opacity:1;transform:translate(-50%,0)}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
-@media(max-width:850px){
- .hero{grid-template-columns:1fr}.planet-area{min-height:280px}
- .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
- .mission-grid{grid-template-columns:1fr}
- .timeline{grid-template-columns:repeat(3,minmax(0,1fr))}
- .garden{grid-template-columns:repeat(8,minmax(0,1fr))}
-}
-@media(max-width:520px){
- .app{padding:12px}.brand h1{font-size:18px}.hero{padding:23px 18px}
- .hero h2{font-size:40px;letter-spacing:-1.7px}
- .planet-area{min-height:245px}.planet{width:230px}
- .stats{gap:8px}.stat{padding:13px}.stat-value{font-size:25px}
- .garden{grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}
- .tree-card{padding:8px 2px}
- .tree-emoji{font-size:25px}.tree-day{font-size:9px}
- .tree-detail{grid-template-columns:1fr}
- .timeline{grid-template-columns:repeat(2,minmax(0,1fr))}
- .reward-panel{grid-template-columns:1fr;padding:20px}
- .reward-amount{text-align:left;padding:0}
- .panel{padding:14px}
-}
-@media(prefers-reduced-motion:reduce){
- *,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
-}
+:root{--bg:#041329;--panel:#071d3b;--panel2:#082747;--line:#155477;--green:#6be45e;--mint:#00d9a0;--gold:#ffd24b;--text:#eff8ff;--muted:#a9c4d8;--danger:#ff8c73}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 70% 0%,#0a3154 0,#041329 50%,#020b1c 100%);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}button,input{font:inherit}button{cursor:pointer}.topbar{height:76px;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 22px;border-bottom:1px solid #174563;background:#031126eF;position:sticky;top:0;z-index:5;backdrop-filter:blur(14px)}.brand{display:flex;align-items:center;gap:10px;font-size:clamp(20px,3vw,30px);font-weight:900;letter-spacing:-1px}.logo{display:grid;place-items:center;width:46px;height:46px;border-radius:50%;background:linear-gradient(145deg,#78ed61,#0a8d83 48%,#062b58);border:2px solid var(--gold);box-shadow:0 0 20px #3eea7b40;font-size:27px}.brand span{background:linear-gradient(90deg,var(--gold),#fff2a0 42%,var(--green) 75%);color:transparent;background-clip:text}.tagline{font-size:11px;color:var(--muted);font-weight:500;letter-spacing:.2px}.topright{display:flex;align-items:center;gap:10px}.pill{border:1px solid #177d69;border-radius:999px;padding:8px 13px;color:#b9ffb4;background:#063a39;font-size:12px}.layout{display:grid;grid-template-columns:195px minmax(0,1fr);min-height:calc(100vh - 76px)}aside{padding:16px 12px;border-right:1px solid #174563;background:#031329;display:flex;flex-direction:column;gap:6px}nav button{width:100%;text-align:left;color:#c5d9e8;background:transparent;border:0;border-radius:10px;padding:12px 11px;display:flex;gap:11px;align-items:center;margin-bottom:3px}nav button.active,nav button:hover{background:linear-gradient(90deg,#183e38,#152f3e);color:var(--gold)}nav .ico{width:22px;text-align:center;font-size:18px}.side-rule{height:1px;background:#1a4b68;margin:12px 4px}.side-stat{padding:8px 5px;color:var(--muted);font-size:12px}.side-stat strong{display:block;color:var(--text);font-size:16px;margin-top:3px}.side-bottom{margin-top:auto;border-radius:12px;padding:13px;background:linear-gradient(160deg,#0b2e45,#08203b);color:#b6d4e5;font-size:12px}.main{min-width:0;padding:18px;max-width:1600px;width:100%;margin:auto}.hero{position:relative;overflow:hidden;min-height:280px;border:1px solid #1b6380;border-radius:20px;background:radial-gradient(circle at 77% 52%,#1b9d8c 0,#0a624e 13%,#07375a 28%,#041b3b 56%,#03152e 100%);padding:30px;display:flex;align-items:center;isolation:isolate}.hero:before{content:"";position:absolute;width:330px;height:330px;right:8%;top:50%;transform:translateY(-50%);border-radius:50%;background:radial-gradient(circle at 32% 28%,#a8ff8e 0 4%,#28c57b 5% 12%,#126e65 13% 25%,#087e89 26% 34%,#082d64 35% 58%,#020d27 68%);box-shadow:inset -22px -15px 30px #020b28,0 0 55px #00e0ad55;border:1px solid #a2f8a55c;z-index:-1}.hero:after{content:"";position:absolute;width:390px;height:390px;right:5%;top:50%;transform:translateY(-50%);border-radius:50%;border:1px solid #7cf3d02e;box-shadow:0 0 0 24px #6ee6be08,0 0 0 48px #6ee6be06;z-index:-1}.hero-copy{max-width:520px;z-index:1}.eyebrow{color:#9fffa5;font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:11px}.hero h1{font-size:clamp(34px,5vw,60px);line-height:1.02;letter-spacing:-2px;margin:10px 0}.hero h1 span{color:var(--green)}.hero p{color:#c7e4f4;max-width:450px}.btn{border:0;border-radius:999px;padding:12px 19px;background:linear-gradient(90deg,#ffe36b,#ffc629);color:#14203a;font-weight:850;box-shadow:0 6px 22px #ffc62924}.btn:hover{filter:brightness(1.08);transform:translateY(-1px)}.btn.secondary{background:#083c3a;border:1px solid #0cae83;color:#a9ffbf;box-shadow:none}.btn.small{padding:7px 12px;font-size:12px}.hero-tags{display:flex;flex-wrap:wrap;gap:12px;margin-top:20px;color:#cde5ee;font-size:12px}.hero-tags span{white-space:nowrap}.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:24px 2px 12px}.section-head h2{font-size:19px;margin:0}.muted{color:var(--muted);font-size:12px}.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}.stat-card,.panel,.feature{border:1px solid #17617a;border-radius:16px;background:linear-gradient(135deg,#082b45,#061a34 80%);box-shadow:0 10px 24px #00000015}.stat-card{padding:16px;display:flex;align-items:center;gap:12px;min-width:0}.stat-icon{width:48px;height:48px;flex:0 0 48px;border-radius:50%;display:grid;place-items:center;font-size:24px;background:#064538;border:1px solid #2cbe85}.stat-icon.gold{background:#3d3010;border-color:#b88a20}.stat-label{font-size:12px;color:var(--muted)}.stat-value{font-size:clamp(17px,2vw,23px);font-weight:850;overflow-wrap:anywhere}.stat-note{font-size:11px;color:#a5c3d4}.work-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(290px,.9fr);gap:14px}.panel{padding:17px;min-width:0}.panel h3{margin:0;font-size:17px}.tree-panel{background:linear-gradient(150deg,#0a372f,#06213a 75%);border-color:#188c70}.tree-intro{display:flex;justify-content:space-between;gap:10px;align-items:start}.stage-pill{font-size:11px;border:1px solid #257d61;border-radius:999px;padding:5px 9px;color:#a5ffbd;white-space:nowrap}.tree-visual{margin:18px 0 12px;min-height:132px;display:flex;align-items:flex-end;justify-content:space-around;gap:6px;border-radius:12px;padding:12px 4px 8px;background:radial-gradient(ellipse at 50% 100%,#3d9d50 0,#174d3a 30%,#082b39 68%,#082039 100%);border:1px solid #276b56}.stage{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;text-align:center;font-size:10px;color:#c4e7d8}.sapling{font-size:clamp(25px,4vw,43px);filter:drop-shadow(0 4px 5px #0008);height:58px;display:flex;align-items:end}.stage:nth-child(1) .sapling{font-size:20px}.stage:nth-child(2) .sapling{font-size:28px}.stage:nth-child(3) .sapling{font-size:36px}.stage:nth-child(4) .sapling{font-size:43px}.stage:nth-child(5) .sapling{font-size:50px}.progress-row{display:flex;justify-content:space-between;gap:10px;font-size:12px;margin:12px 0 7px}.progress{height:9px;border-radius:99px;background:#0b1427;overflow:hidden;border:1px solid #1c4960}.progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,#24bd78,#b4f85b);border-radius:99px;transition:width .3s}.tree-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;flex-wrap:wrap}.reward-chip{border:1px solid #9b7a22;background:#382e11;border-radius:12px;padding:9px 12px;color:#ffdf68;font-size:12px}.mission-list{display:grid;gap:9px;margin-top:13px}.mission{display:grid;grid-template-columns:39px minmax(0,1fr) auto;align-items:center;gap:10px;padding:10px;border:1px solid #184968;background:#061b34;border-radius:12px}.mission-icon{width:37px;height:37px;border-radius:50%;display:grid;place-items:center;background:#073d43;border:1px solid #1e947e;font-size:19px}.mission h4{font-size:12px;margin:0 0 2px}.mission p{font-size:10px;color:var(--muted);margin:0}.mission .progress{height:4px;margin-top:7px}.mission .done{background:#0b3e31;color:#9effc0;border:1px solid #1a805c}.mission button{font-size:11px;padding:7px 10px}.mission-action{display:flex;flex-direction:column;align-items:end;gap:4px}.mission-action small{font-size:10px;color:#a9c4d8}.features{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:14px}.feature{overflow:hidden}.feature-art{height:94px;display:grid;place-items:center;font-size:42px;background:radial-gradient(circle at 50% 100%,#25875b,#0a3c46 55%,#08213c)}.feature:nth-child(2) .feature-art{background:linear-gradient(135deg,#163b2b,#0d4e5a)}.feature:nth-child(3) .feature-art{background:linear-gradient(135deg,#0c3d60,#146e69)}.feature:nth-child(4) .feature-art{background:linear-gradient(135deg,#48370f,#093c3a)}.feature-body{padding:12px}.feature h4{font-size:13px;margin:0 0 4px}.feature p{font-size:11px;color:var(--muted);margin:0}.feature button{margin-top:10px}.notice{margin-top:16px;border:1px solid #655522;background:#2a260f;border-radius:12px;padding:12px 14px;color:#f8e8a7;font-size:11px}.footer{padding:18px 6px;text-align:center;color:#789bb2;font-size:11px}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0b392e;border:1px solid #3dbb82;color:#d9ffe7;padding:12px 18px;border-radius:12px;box-shadow:0 12px 30px #0008;z-index:10;max-width:90vw;text-align:center}.hidden{display:none!important}.modal-backdrop{position:fixed;inset:0;background:#000a;display:grid;place-items:center;padding:18px;z-index:20}.modal{width:min(420px,100%);background:#071d36;border:1px solid #277c83;border-radius:18px;padding:22px;box-shadow:0 20px 80px #000b}.modal h3{margin-top:0}.modal p{color:var(--muted);font-size:13px}.modal label{display:block;margin:12px 0 6px;font-size:12px;color:#b8d4e5}.modal input{width:100%;border:1px solid #28617a;border-radius:10px;background:#031329;color:white;padding:11px}.modal-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}
+@media(max-width:950px){.layout{grid-template-columns:1fr}aside{position:sticky;top:76px;z-index:4;flex-direction:row;overflow-x:auto;padding:7px;border-right:0;border-bottom:1px solid #174563}nav{display:flex;gap:4px}nav button{width:auto;white-space:nowrap;padding:9px 11px;margin:0}.side-rule,.side-stat,.side-bottom{display:none}.work-grid{grid-template-columns:1fr}.hero:before{right:-5%;opacity:.7}.hero:after{right:-9%;opacity:.7}}
+@media(max-width:620px){.topbar{height:65px;padding:9px 12px}.logo{width:38px;height:38px;font-size:22px}.tagline{display:none}.topright .pill{display:none}.layout{min-height:calc(100vh - 65px)}aside{top:65px}.main{padding:11px}.hero{padding:23px 18px;min-height:310px;align-items:flex-start}.hero-copy{max-width:100%}.hero:before{width:220px;height:220px;right:-55px;top:auto;bottom:-88px;transform:none;opacity:.65}.hero:after{width:260px;height:260px;right:-75px;top:auto;bottom:-108px;transform:none}.hero h1{font-size:39px}.hero p{font-size:13px;max-width:340px}.stats{grid-template-columns:1fr}.stat-card{padding:12px}.stat-icon{width:41px;height:41px;flex-basis:41px}.work-grid{gap:11px}.panel{padding:13px}.tree-visual{min-height:115px}.stage{font-size:9px}.sapling{height:48px}.features{grid-template-columns:repeat(2,minmax(0,1fr))}.feature-art{height:85px}.mission{grid-template-columns:34px minmax(0,1fr) auto;gap:7px;padding:8px}.mission-icon{width:32px;height:32px}.mission button{padding:7px 8px}.tree-footer{align-items:flex-start}.section-head{margin-top:19px}.topright .profile{display:none}}
 </style>
 </head>
 <body>
-<div class="app">
-  <header>
-    <div class="brand">
-      <div class="logo">🌍</div>
-      <div>
-        <h1>BTC <span style="color:var(--lime)">PLANET</span></h1>
-        <p>Grow trees. Complete missions. Protect nature.</p>
-      </div>
-    </div>
-    <div class="header-right">
-      <span class="pill">🌱 <strong>100-Day Forest</strong></span>
-      <span class="pill">DEMO MODE</span>
-    </div>
-  </header>
-
-  <section class="hero">
-    <div class="hero-copy">
-      <div class="eyebrow">Your actions grow a greener planet</div>
-      <h2>Small actions.<br><span>A living forest.</span></h2>
-      <p>
-        Start a tree journey, complete daily care tasks, reach your step goal
-        and watch your tiny seed grow into a magnificent tree over 100 days.
-        Build your own virtual forest, one day at a time.
-      </p>
-      <div class="hero-actions">
-        <button class="btn btn-primary" id="startJourney">🌱 Start tree journey</button>
-        <button class="btn btn-secondary" id="viewForest">🌳 Explore all trees</button>
-      </div>
-      <p style="font-size:11px;margin-top:16px">
-        Prototype only: activities, progress and rewards are simulated.
-      </p>
-    </div>
-    <div class="planet-area" aria-label="Illustration of a green planet with trees">
-      <div class="planet">
-        <div class="land one"></div>
-        <div class="land two"></div>
-        <div class="land three"></div>
-        <span class="mini-tree t1">🌲</span>
-        <span class="mini-tree t2">🌳</span>
-        <span class="mini-tree t3">🌴</span>
-        <span class="mini-tree t4">🌳</span>
-        <span class="mini-tree t5">🌲</span>
-        <span class="mini-tree t6">🌳</span>
-        <div class="planet-label">ONE PLANET · 100 DAYS · YOUR FOREST</div>
-      </div>
-    </div>
-  </section>
-
-  <section class="stats" aria-label="Forest statistics">
-    <div class="stat">
-      <div class="stat-top"><span class="stat-label">Your trees</span><span class="stat-icon">🌳</span></div>
-      <div class="stat-value" id="treeCount">1</div>
-      <div class="stat-note">Virtual trees in your forest</div>
-    </div>
-    <div class="stat">
-      <div class="stat-top"><span class="stat-label">Current tree day</span><span class="stat-icon">📅</span></div>
-      <div class="stat-value" id="dayCount">1 / 100</div>
-      <div class="stat-note">Complete daily care tasks to advance</div>
-    </div>
-    <div class="stat">
-      <div class="stat-top"><span class="stat-label">Tasks completed today</span><span class="stat-icon">💧</span></div>
-      <div class="stat-value" id="taskCount">0 / 3</div>
-      <div class="stat-note">Water · Compost · Steps</div>
-    </div>
-    <div class="stat">
-      <div class="stat-top"><span class="stat-label">Demo reward estimate</span><span class="stat-icon">₿</span></div>
-      <div class="stat-value" id="rewardCount">0 sats</div>
-      <div class="stat-note">Illustrative only; no real payout</div>
-    </div>
-  </section>
-
-  <section class="section" id="forestSection">
-    <div class="section-heading">
-      <div>
-        <div class="section-tag">01 / Your living world</div>
-        <h2>Explore your 100-tree forest</h2>
-        <p>Select any tree to see its growth stage, daily tasks and progress.</p>
-      </div>
-      <button class="btn btn-primary" id="addTree">＋ Plant another tree</button>
-    </div>
-    <div class="panel">
-      <div class="garden-summary">
-        <span class="pill">🌱 Seedlings: <strong id="seedlingCount">1</strong></span>
-        <span class="pill">🌲 Growing: <strong id="growingCount">0</strong></span>
-        <span class="pill">🌳 Mature: <strong id="matureCount">0</strong></span>
-        <span class="pill">⏸ Paused: <strong id="pausedCount">0</strong></span>
-      </div>
-      <div class="garden" id="garden" aria-label="Selectable tree garden"></div>
-      <div class="garden-legend">
-        <span class="legend-item"><span class="legend-dot"></span> Growing</span>
-        <span class="legend-item"><span class="legend-dot paused"></span> Paused</span>
-        <span class="legend-item"><span class="legend-dot done"></span> 100-day journey complete</span>
-      </div>
-
-      <div class="tree-detail">
-        <div>
-          <div class="section-tag">Selected tree</div>
-          <div class="detail-stage" id="detailEmoji">🌱</div>
-          <h3 id="detailTitle">Tree #1 · New seedling</h3>
-          <p id="detailDescription">Your journey begins with a tiny seed. Care for it every day to help it grow.</p>
-          <div class="progress-track"><span id="detailProgress" style="width:1%"></span></div>
-          <div class="progress-meta">
-            <span id="progressDayLabel">Day 1 of 100</span>
-            <span id="progressPercent">1%</span>
-          </div>
-        </div>
-        <div>
-          <div class="section-tag">Today's care checklist</div>
-          <h3 style="font-size:18px">Help your tree thrive</h3>
-          <p>Complete all three demo tasks to unlock the next growth day.</p>
-          <div class="task-list">
-            <label class="task">
-              <input type="checkbox" id="waterTask">
-              <span class="task-icon">💧</span>
-              <span class="task-content"><strong>Water your tree</strong><small>Give your tree its daily virtual watering.</small></span>
-              <span class="task-status" id="waterStatus">Pending</span>
-            </label>
-            <label class="task">
-              <input type="checkbox" id="compostTask">
-              <span class="task-icon">🍂</span>
-              <span class="task-content"><strong>Add natural compost</strong><small>Give the soil nutrients to support healthy growth.</small></span>
-              <span class="task-status" id="compostStatus">Pending</span>
-            </label>
-            <label class="task">
-              <input type="checkbox" id="stepsTask">
-              <span class="task-icon">👣</span>
-              <span class="task-content"><strong>Reach 10,000 steps</strong><small>Simulated in this demo; no fitness data is connected.</small></span>
-              <span class="task-status" id="stepsStatus">Pending</span>
-            </label>
-          </div>
-          <div class="action-row">
-            <button class="btn btn-primary" id="completeDay">Complete day</button>
-            <button class="btn btn-secondary" id="resetTasks">Reset tasks</button>
-          </div>
-          <div class="notice" id="taskNotice">
-            Demo rule: all three tasks are required before advancing to the next day.
-          </div>
-          <div class="error-notice" id="pauseNotice" hidden>
-            This tree is paused in the demo. The real-world 5-sat continuation rule is not connected to a wallet.
-          </div>
-          <div class="action-row" id="pauseActions" hidden>
-            <button class="btn btn-primary" id="continueTree">Continue demo journey (simulated 5 sats)</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="section-heading">
-      <div>
-        <div class="section-tag">02 / Daily missions</div>
-        <h2>Three habits, one greener world</h2>
-        <p>These are the activities shown in the demo. Real step verification is not connected.</p>
-      </div>
-    </div>
-    <div class="mission-grid">
-      <article class="mission">
-        <div class="mission-icon">💧</div>
-        <h3>Water the tree</h3>
-        <p>Water your virtual tree once every journey day. Keep the daily care streak alive as the tree grows.</p>
-        <div class="mission-bottom"><span>DAILY CARE</span><button class="small-btn" data-task="water">Mark complete</button></div>
-      </article>
-      <article class="mission">
-        <div class="mission-icon">🍃</div>
-        <h3>Feed the soil</h3>
-        <p>Add virtual compost to represent caring for soil, reusing organic matter and supporting healthy plants.</p>
-        <div class="mission-bottom"><span>DAILY CARE</span><button class="small-btn" data-task="compost">Mark complete</button></div>
-      </article>
-      <article class="mission">
-        <div class="mission-icon">👣</div>
-        <h3>Move for nature</h3>
-        <p>Work toward 10,000 steps and complete a nature-friendly activity. This demo only simulates the step goal.</p>
-        <div class="mission-bottom"><span>10,000 STEPS</span><button class="small-btn" data-task="steps">Mark complete</button></div>
-      </article>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="section-heading">
-      <div>
-        <div class="section-tag">03 / The 100-day transformation</div>
-        <h2>From seed to a magnificent tree</h2>
-        <p>Growth is based on the selected tree's completed journey day.</p>
-      </div>
-    </div>
-    <div class="panel">
-      <div class="timeline">
-        <div class="stage-card"><div class="emoji">🌰</div><strong>Days 1–5 · Seed</strong><small>A new journey begins beneath the soil.</small></div>
-        <div class="stage-card"><div class="emoji">🌱</div><strong>Days 6–15 · Sprout</strong><small>The first green leaves appear.</small></div>
-        <div class="stage-card"><div class="emoji">🌿</div><strong>Days 16–30 · Seedling</strong><small>Roots establish and stems grow.</small></div>
-        <div class="stage-card"><div class="emoji">🪴</div><strong>Days 31–50 · Sapling</strong><small>The young plant becomes stronger.</small></div>
-        <div class="stage-card"><div class="emoji">🌲</div><strong>Days 51–80 · Young tree</strong><small>Branches and leafy growth expand.</small></div>
-        <div class="stage-card"><div class="emoji">🌳</div><strong>Days 81–100 · Mature</strong><small>Complete day 100 to finish the journey.</small></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="reward-panel">
-      <div>
-        <div class="section-tag">04 / Proposed completion reward</div>
-        <h3>Grow for 100 days. Reach your milestone.</h3>
-        <p>
-          Proposed concept: a tree that completes day 100 may display a
-          1,000-sat reward. Actual BTC rewards require a funded reward system,
-          server-side eligibility checks and a secure payment integration.
-          No cryptocurrency is paid by this standalone demo.
-        </p>
-      </div>
-      <div class="reward-amount">
-        <strong>1,000</strong>
-        <span>PROPOSED SATS / TREE</span>
-      </div>
-    </div>
-  </section>
-
-  <div class="footer">
-    BTC Planet prototype · Virtual forest and simulated activities only.<br>
-    No real tree planting, fitness tracking, wallet deductions or cryptocurrency payouts are performed.
-  </div>
+<header class="topbar">
+  <div class="brand"><div class="logo">🌍</div><div><span>BTC Planet</span><div class="tagline">Green Planet · More BTC · A Better Tomorrow</div></div></div>
+  <div class="topright"><div class="pill">🌱 Let's make the planet greener!</div><button class="btn secondary small profile" id="profileBtn">👤 Guest ▾</button></div>
+</header>
+<div class="layout">
+<aside>
+<nav id="nav">
+<button class="active" data-target="home"><span class="ico">⌂</span>Home</button>
+<button data-target="trees"><span class="ico">🌳</span>My Trees</button>
+<button data-target="missions"><span class="ico">🎯</span>Missions</button>
+<button data-target="rewards"><span class="ico">🎁</span>Rewards</button>
+<button data-target="how"><span class="ico">📘</span>How It Works</button>
+</nav>
+<div class="side-rule"></div>
+<div class="side-stat">₿ Demo BTC Balance<strong id="sideBtc">0 sats</strong></div>
+<div class="side-stat">🌳 Total Trees<strong id="sideTrees">0</strong></div>
+<div class="side-stat">🍃 Green Points<strong id="sidePoints">0</strong></div>
+<div class="side-bottom">🌿 <strong>Small steps grow big forests.</strong><br><br>Care for your trees every day and keep your planet thriving.</div>
+</aside>
+<main class="main" id="home">
+<section class="hero">
+<div class="hero-copy">
+<div class="eyebrow">Your eco adventure starts here</div>
+<h1><span style="color:var(--gold)">BTC</span> <span>Planet</span> 🍃</h1>
+<strong>Plant Trees · Complete Missions · Earn BTC</strong>
+<p>A nature-inspired game where your daily care helps virtual trees grow. Build your own green world, complete missions and explore reward milestones.</p>
+<button class="btn" id="startBtn">Start Your Journey&nbsp; →</button>
+<div class="hero-tags"><span>🌱 Plant Trees</span><span>💧 Water & Care</span><span>👣 10,000 Steps</span><span>₿ BTC Rewards</span></div>
 </div>
-
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
-
+</section>
+<section class="stats">
+<div class="stat-card"><div class="stat-icon">🌳</div><div><div class="stat-label">My Trees</div><div class="stat-value" id="treeCount">0</div><div class="stat-note">Start planting your first tree</div></div></div>
+<div class="stat-card"><div class="stat-icon gold">₿</div><div><div class="stat-label">Demo BTC Rewards</div><div class="stat-value" id="btcBalance">0 sats</div><div class="stat-note">Demo points only · not withdrawable</div></div></div>
+<div class="stat-card"><div class="stat-icon">🍃</div><div><div class="stat-label">Green Points</div><div class="stat-value" id="greenPoints">0</div><div class="stat-note">Earn by completing missions</div></div></div>
+</section>
+<div class="section-head" id="trees"><h2>🌳 Your 100-Day Tree</h2><span class="muted">Grow a little every day</span></div>
+<section class="work-grid">
+<div class="panel tree-panel">
+<div class="tree-intro"><div><h3 id="treeTitle">Your first tree</h3><div class="muted" id="treeSubtitle">A small seed today, a big tree tomorrow!</div></div><span class="stage-pill" id="stagePill">Day 0 / 100</span></div>
+<div class="tree-visual" aria-label="Tree growth stages">
+<div class="stage"><div class="sapling">🌰</div><strong>Day 1</strong><span>Seed</span></div><div class="stage"><div class="sapling">🌱</div><strong>Day 25</strong><span>Sprout</span></div><div class="stage"><div class="sapling">🌿</div><strong>Day 50</strong><span>Growing</span></div><div class="stage"><div class="sapling">🌳</div><strong>Day 75</strong><span>Big tree</span></div><div class="stage"><div class="sapling">🌲</div><strong>Day 100</strong><span>Mature</span></div>
+</div>
+<div class="progress-row"><span id="dayLabel">Plant your first tree to begin</span><strong id="percentLabel">0%</strong></div><div class="progress"><span id="treeProgress"></span></div>
+<div class="tree-footer"><button class="btn" id="plantBtn">🌱 Plant a Tree</button><div class="reward-chip">🎁 Day 100 milestone<br><strong>1,000 demo sats</strong></div></div>
+<div class="muted" style="margin-top:10px">Demo rule: complete daily care to advance one day. Your browser remembers this prototype on this device.</div>
+</div>
+<div class="panel" id="missions">
+<div class="tree-intro"><div><h3>🎯 Daily Missions</h3><div class="muted">Care for your tree to keep it growing</div></div><span class="stage-pill" id="missionCount">0 / 4</span></div>
+<div class="mission-list">
+<div class="mission"><div class="mission-icon">💧</div><div><h4>Water your tree</h4><p>Keep your tree healthy</p><div class="progress"><span id="waterProgress"></span></div></div><div class="mission-action"><button class="btn small" data-mission="water">Do it</button><small id="waterStatus">0 / 1</small></div></div>
+<div class="mission"><div class="mission-icon">🍂</div><div><h4>Add compost</h4><p>Nourish the soil</p><div class="progress"><span id="compostProgress"></span></div></div><div class="mission-action"><button class="btn small" data-mission="compost">Do it</button><small id="compostStatus">0 / 1</small></div></div>
+<div class="mission"><div class="mission-icon">👣</div><div><h4>Take 10,000 steps</h4><p>Stay active, save the planet</p><div class="progress"><span id="stepsProgress"></span></div></div><div class="mission-action"><button class="btn small" data-mission="steps">Add steps</button><small id="stepsStatus">0 / 10000</small></div></div>
+<div class="mission"><div class="mission-icon">🍃</div><div><h4>Natural activity</h4><p>Do an eco-friendly activity</p><div class="progress"><span id="natureProgress"></span></div></div><div class="mission-action"><button class="btn small" data-mission="nature">Do it</button><small id="natureStatus">0 / 1</small></div></div>
+</div>
+</div>
+</section>
+<div class="section-head" id="rewards"><h2>🌎 Explore Your Planet</h2><span class="muted">Every small action counts</span></div>
+<section class="features">
+<div class="feature"><div class="feature-art">🪴</div><div class="feature-body"><h4>Daily Care</h4><p>Water, compost and nurture your virtual tree.</p><button class="btn secondary small" data-jump="missions">Care for tree ↗</button></div></div>
+<div class="feature"><div class="feature-art">👟</div><div class="feature-body"><h4>10,000 Steps</h4><p>Track your movement and complete a daily goal.</p><button class="btn secondary small" data-mission="steps">Add steps ↗</button></div></div>
+<div class="feature"><div class="feature-art">🏞️</div><div class="feature-body"><h4>Explore Planet</h4><p>Grow a forest and unlock new virtual milestones.</p><button class="btn secondary small" id="moreTreesBtn">New tree ↗</button></div></div>
+<div class="feature"><div class="feature-art">🪙</div><div class="feature-body"><h4>Reward Milestones</h4><p>See demo sats for completing your 100-day journey.</p><button class="btn secondary small" data-jump="rewards">View rules ↗</button></div></div>
+</section>
+<div class="notice" id="how"><strong>Important — prototype mode:</strong> This page is a front-end demo. BTC/sats shown here are simulated and cannot be withdrawn. Daily missions, steps, rewards, accounts and anti-cheat checks are not verified by a server. Never send BTC or pay a fee to claim these demo rewards.</div>
+<div class="footer">🌍 BTC Planet · Green Planet · More BTC · A Better Tomorrow<br>Independent prototype — not connected to your My Crypto Faucet account or wallet.</div>
+</main>
+</div>
+<div class="modal-backdrop hidden" id="stepsModal"><div class="modal"><h3>👣 Add today's steps</h3><p>For this prototype, enter a step count manually. It is not verified from a fitness tracker.</p><label for="stepInput">Steps completed today</label><input id="stepInput" type="number" min="0" max="10000" step="500" value="2500"><div class="modal-actions"><button class="btn" id="saveSteps">Save steps</button><button class="btn secondary" id="cancelSteps">Cancel</button></div></div></div>
+<div class="toast hidden" id="toast" role="status"></div>
 <script>
-(() => {
-  "use strict";
-
-  const TASKS = ["water", "compost", "steps"];
-  const MAX_DAY = 100;
-  const PROPOSED_REWARD = 1000;
-
-  let nextTreeId = 2;
-  let selectedTreeId = 1;
-  let toastTimer;
-
-  function newTree(id) {
-    return {
-      id,
-      day: 1,
-      tasks: { water: false, compost: false, steps: false },
-      paused: false,
-      completed: false,
-      demoSatsSpent: 0
-    };
-  }
-
-  const trees = [newTree(1)];
-
-  const $ = id => document.getElementById(id);
-
-  function selectedTree() {
-    return trees.find(tree => tree.id === selectedTreeId) || trees[0];
-  }
-
-  function completedTasks(tree) {
-    return TASKS.filter(task => tree.tasks[task]).length;
-  }
-
-  function stageForDay(day, completed) {
-    if (completed || day >= 100) {
-      return { emoji: "🌳", title: "Mature tree", description: "Your tree has reached its 100-day milestone." };
-    }
-    if (day <= 5) return { emoji: "🌰", title: "New seed", description: "A tiny beginning. Daily care will help your seed start its journey." };
-    if (day <= 15) return { emoji: "🌱", title: "Sprout", description: "Fresh green shoots emerge as your virtual tree begins to grow." };
-    if (day <= 30) return { emoji: "🌿", title: "Seedling", description: "Your young seedling develops leaves and grows stronger." };
-    if (day <= 50) return { emoji: "🪴", title: "Young sapling", description: "Your sapling needs consistent care to continue its journey." };
-    if (day <= 80) return { emoji: "🌲", title: "Growing tree", description: "Your tree has developed more branches and a fuller canopy." };
-    return { emoji: "🌳", title: "Almost mature", description: "You are nearing the final stage of your 100-day journey." };
-  }
-
-  function emojiForTree(tree) {
-    if (tree.paused) return "🥀";
-    if (tree.completed) return "🌳";
-    if (tree.day <= 5) return "🌰";
-    if (tree.day <= 15) return "🌱";
-    if (tree.day <= 30) return "🌿";
-    if (tree.day <= 50) return "🪴";
-    if (tree.day <= 80) return "🌲";
-    return "🌳";
-  }
-
-  function showToast(message) {
-    const toast = $("toast");
-    toast.textContent = message;
-    toast.classList.add("show");
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
-  }
-
-  function updateStats() {
-    const mature = trees.filter(tree => tree.completed).length;
-    const paused = trees.filter(tree => tree.paused).length;
-    const growing = trees.filter(tree => !tree.completed && !tree.paused && tree.day > 5).length;
-    const seedlings = trees.length - mature - paused - growing;
-    const current = selectedTree();
-
-    $("treeCount").textContent = trees.length;
-    $("dayCount").textContent = current.completed ? "100 / 100" : `${current.day} / 100`;
-    $("taskCount").textContent = `${completedTasks(current)} / 3`;
-
-    const totalReward = mature * PROPOSED_REWARD;
-    $("rewardCount").textContent = `${totalReward.toLocaleString()} sats`;
-    $("seedlingCount").textContent = seedlings;
-    $("growingCount").textContent = growing;
-    $("matureCount").textContent = mature;
-    $("pausedCount").textContent = paused;
-  }
-
-  function renderGarden() {
-    const garden = $("garden");
-    garden.replaceChildren();
-
-    trees.forEach(tree => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "tree-card";
-      if (tree.id === selectedTreeId) button.classList.add("selected");
-      if (tree.paused) button.classList.add("paused");
-      if (tree.completed) button.classList.add("complete");
-      button.setAttribute("aria-label", `Select tree ${tree.id}, day ${tree.day}`);
-      button.setAttribute("aria-pressed", String(tree.id === selectedTreeId));
-
-      const emoji = document.createElement("span");
-      emoji.className = "tree-emoji";
-      emoji.textContent = emojiForTree(tree);
-
-      const number = document.createElement("span");
-      number.className = "tree-number";
-      number.textContent = `#${tree.id}`;
-
-      const day = document.createElement("span");
-      day.className = "tree-day";
-      day.textContent = tree.paused ? "Paused" : tree.completed ? "Complete" : `Day ${tree.day}`;
-
-      const progress = document.createElement("div");
-      progress.className = "tree-progress";
-      const bar = document.createElement("span");
-      bar.style.width = `${tree.completed ? 100 : tree.day}%`;
-      progress.append(bar);
-
-      button.append(emoji, number, day, progress);
-      button.addEventListener("click", () => {
-        selectedTreeId = tree.id;
-        renderAll();
-      });
-      garden.append(button);
-    });
-  }
-
-  function updateTaskCheckboxes(tree) {
-    TASKS.forEach(task => {
-      $(task + "Task").checked = tree.tasks[task];
-      $(task + "Task").disabled = tree.paused || tree.completed;
-      const status = $(task + "Status");
-      status.textContent = tree.tasks[task] ? "Complete" : "Pending";
-      status.classList.toggle("done", tree.tasks[task]);
-    });
-  }
-
-  function renderDetail() {
-    const tree = selectedTree();
-    const stage = stageForDay(tree.day, tree.completed);
-    const progress = tree.completed ? 100 : tree.day;
-
-    $("detailEmoji").textContent = tree.paused ? "🥀" : stage.emoji;
-    $("detailTitle").textContent = `Tree #${tree.id} · ${tree.paused ? "Paused journey" : stage.title}`;
-    $("detailDescription").textContent = tree.paused
-      ? "This demo tree is paused. Use the demo continuation control to resume. No actual satoshi payment occurs."
-      : tree.completed
-        ? "Congratulations! This tree completed its 100-day demo journey. The displayed reward is illustrative only."
-        : stage.description;
-
-    $("detailProgress").style.width = `${progress}%`;
-    $("progressDayLabel").textContent = `Day ${tree.completed ? 100 : tree.day} of 100`;
-    $("progressPercent").textContent = `${progress}%`;
-
-    updateTaskCheckboxes(tree);
-
-    $("completeDay").disabled = tree.paused || tree.completed;
-    $("completeDay").textContent = tree.completed ? "Journey complete ✓" : "Complete day";
-    $("resetTasks").disabled = tree.paused || tree.completed;
-
-    $("pauseNotice").hidden = !tree.paused;
-    $("pauseActions").hidden = !tree.paused;
-
-    $("taskNotice").textContent = tree.completed
-      ? "Journey complete! This prototype does not issue a real reward."
-      : tree.paused
-        ? "This journey is paused. Continue in demo mode to restore activity."
-        : completedTasks(tree) === 3
-          ? "All tasks are complete. You can advance to the next day."
-          : `Complete ${3 - completedTasks(tree)} more task${3 - completedTasks(tree) === 1 ? "" : "s"} to unlock the next day.`;
-  }
-
-  function renderAll() {
-    updateStats();
-    renderGarden();
-    renderDetail();
-  }
-
-  function toggleTask(task, checked) {
-    const tree = selectedTree();
-    if (tree.paused || tree.completed) return;
-    tree.tasks[task] = checked;
-    renderAll();
-  }
-
-  TASKS.forEach(task => {
-    $(task + "Task").addEventListener("change", event => {
-      toggleTask(task, event.target.checked);
-    });
-  });
-
-  $("completeDay").addEventListener("click", () => {
-    const tree = selectedTree();
-    if (tree.paused || tree.completed) return;
-
-    if (completedTasks(tree) !== 3) {
-      showToast("Complete watering, compost and steps first.");
-      return;
-    }
-
-    if (tree.day >= MAX_DAY) {
-      tree.completed = true;
-      showToast("Your 100-day tree journey is complete!");
-      renderAll();
-      return;
-    }
-
-    tree.day += 1;
-    tree.tasks = { water: false, compost: false, steps: false };
-
-    if (tree.day === MAX_DAY) {
-      tree.completed = true;
-      showToast("🌳 Journey complete! Demo reward only.");
-    } else {
-      showToast(`Day ${tree.day} unlocked! Your tree is growing.`);
-    }
-    renderAll();
-  });
-
-  $("resetTasks").addEventListener("click", () => {
-    const tree = selectedTree();
-    if (tree.paused || tree.completed) return;
-    tree.tasks = { water: false, compost: false, steps: false };
-    renderAll();
-    showToast("Today's demo tasks have been reset.");
-  });
-
-  $("continueTree").addEventListener("click", () => {
-    const tree = selectedTree();
-    if (!tree.paused) return;
-    tree.paused = false;
-    tree.demoSatsSpent += 5;
-    tree.tasks = { water: false, compost: false, steps: false };
-    renderAll();
-    showToast("Demo journey resumed. No real sats were spent.");
-  });
-
-  $("addTree").addEventListener("click", () => {
-    if (trees.length >= 100) {
-      showToast("This visual demo supports up to 100 trees.");
-      return;
-    }
-    const tree = newTree(nextTreeId++);
-    trees.push(tree);
-    selectedTreeId = tree.id;
-    renderAll();
-    showToast(`Tree #${tree.id} planted in demo mode!`);
-  });
-
-  $("startJourney").addEventListener("click", () => {
-    $("forestSection").scrollIntoView({ behavior: "smooth", block: "start" });
-    showToast("Select a tree and complete its daily care tasks.");
-  });
-
-  $("viewForest").addEventListener("click", () => {
-    $("forestSection").scrollIntoView({ behavior: "smooth", block: "start" });
-  });
-
-  document.querySelectorAll("[data-task]").forEach(button => {
-    button.addEventListener("click", () => {
-      const task = button.dataset.task;
-      const tree = selectedTree();
-      if (tree.paused || tree.completed) {
-        showToast("Select an active tree to manage tasks.");
-        return;
-      }
-      tree.tasks[task] = true;
-      renderAll();
-      showToast(`${task === "water" ? "Watering" : task === "compost" ? "Compost" : "Step goal"} marked complete in demo.`);
-    });
-  });
-
-  renderAll();
+(function(){
+const KEY='btcPlanetPrototypeV1';
+const blank=()=>({trees:[],active:0,points:0,demoSats:0,lastDay:new Date().toISOString().slice(0,10),missions:{water:false,compost:false,steps:0,nature:false},rewarded:[]});
+let state;
+try{state=JSON.parse(localStorage.getItem(KEY))||blank()}catch(e){state=blank()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+function today(){return new Date().toISOString().slice(0,10)}
+function freshMissions(){state.missions={water:false,compost:false,steps:0,nature:false};state.lastDay=today()}
+function activeTree(){return state.trees[state.active]||null}
+let toastTimer;
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.remove('hidden');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.add('hidden'),2800)}
+function render(){
+const t=activeTree(),day=t?t.day:0,done=Object.values(state.missions).filter(v=>v===true).length+(state.missions.steps>=10000?1:0);
+document.getElementById('treeCount').textContent=state.trees.length;
+document.getElementById('sideTrees').textContent=state.trees.length;
+document.getElementById('greenPoints').textContent=state.points;
+document.getElementById('sidePoints').textContent=state.points;
+document.getElementById('btcBalance').textContent=state.demoSats.toLocaleString()+' sats';
+document.getElementById('sideBtc').textContent=state.demoSats.toLocaleString()+' sats';
+document.getElementById('stagePill').textContent='Day '+day+' / 100';
+document.getElementById('treeTitle').textContent=t?'Tree #'+(state.active+1):'Your first tree';
+document.getElementById('treeSubtitle').textContent=t?(day>=100?'Your tree has reached its mature stage!':'Keep caring for your tree every day.'):'A small seed today, a big tree tomorrow!';
+document.getElementById('dayLabel').textContent=t?(day>=100?'🌳 Mature tree unlocked':`Day ${day} of 100 · Daily care ${done===4?'complete':'in progress'}`):'Plant your first tree to begin';
+document.getElementById('percentLabel').textContent=day+'%';
+document.getElementById('treeProgress').style.width=day+'%';
+document.getElementById('plantBtn').textContent=t?'🌱 Plant Another Tree':'🌱 Plant a Tree';
+document.getElementById('missionCount').textContent=done+' / 4';
+const map=[['water','waterStatus','waterProgress',1],['compost','compostStatus','compostProgress',1],['steps','stepsStatus','stepsProgress',10000],['nature','natureStatus','natureProgress',1]];
+map.forEach(([key,status,bar,max])=>{const val=state.missions[key],n=key==='steps'?Number(val):val?1:0;document.getElementById(status).textContent=n.toLocaleString()+' / '+max.toLocaleString();document.getElementById(bar).style.width=Math.min(100,n/max*100)+'%';const btn=document.querySelector('[data-mission="'+key+'"]');if(btn){const complete=n>=max;btn.classList.toggle('done',complete);btn.textContent=complete?'✓ Done':key==='steps'?'Add steps':'Do it';btn.disabled=complete;}});
+document.querySelectorAll('[data-mission]').forEach(btn=>{const k=btn.dataset.mission;const val=state.missions[k];btn.classList.toggle('done',k==='steps'?val>=10000:val===true);});
+save();
+}
+function plant(){if(state.trees.length>=1000){toast('Demo limit reached (1,000 trees on this device).');return}state.trees.push({day:0,created:today()});state.active=state.trees.length-1;freshMissions();render();toast('🌱 Tree planted! Complete all daily missions to grow it.')}
+function mission(k){
+if(!activeTree()){toast('Plant a tree first to start daily missions.');return}
+if(k==='steps'){document.getElementById('stepsModal').classList.remove('hidden');return}
+if(state.missions[k]){toast('Mission already completed today.');return}
+state.missions[k]=true;state.points+=10;render();toast('Mission complete! +10 demo green points.');
+}
+function completeDay(){
+const t=activeTree();if(!t){toast('Plant a tree first.');return}
+const m=state.missions;
+if(!(m.water&&m.compost&&m.steps>=10000&&m.nature)){toast('Complete all 4 daily missions before advancing your tree.');return}
+if(t.day>=100){toast('This tree is already mature. Plant another tree!');return}
+t.day++;state.demoSats+=10;state.points+=20;
+if(t.day===100&&!state.rewarded.includes(state.active)){state.demoSats+=1000;state.rewarded.push(state.active);toast('🎉 Day 100 reached! +1,000 demo sats milestone!')}
+else toast('🌳 Tree grew to Day '+t.day+'! +10 demo sats.');
+freshMissions();render();
+}
+document.getElementById('plantBtn').addEventListener('click',plant);
+document.getElementById('startBtn').addEventListener('click',()=>{if(!activeTree())plant();else document.getElementById('trees').scrollIntoView({behavior:'smooth'})});
+document.getElementById('moreTreesBtn').addEventListener('click',plant);
+document.querySelectorAll('[data-mission]').forEach(b=>b.addEventListener('click',()=>mission(b.dataset.mission)));
+document.querySelectorAll('[data-jump]').forEach(b=>b.addEventListener('click',()=>document.getElementById(b.dataset.jump).scrollIntoView({behavior:'smooth'})));
+document.getElementById('saveSteps').addEventListener('click',()=>{const input=document.getElementById('stepInput');const n=Math.max(0,Math.min(10000,Math.floor(Number(input.value)||0)));if(!activeTree()){toast('Plant a tree first.');return}const old=state.missions.steps;state.missions.steps=n;if(n>old)state.points+=Math.floor((n-old)/1000)*2;document.getElementById('stepsModal').classList.add('hidden');render();toast(n>=10000?'👣 Step goal complete! +green points.':'Steps saved for this demo.');});
+document.getElementById('cancelSteps').addEventListener('click',()=>document.getElementById('stepsModal').classList.add('hidden'));
+document.getElementById('stepsModal').addEventListener('click',e=>{if(e.target.id==='stepsModal')e.currentTarget.classList.add('hidden')});
+document.getElementById('profileBtn').addEventListener('click',()=>toast('Guest demo mode — no account or wallet connected.'));
+document.getElementById('nav').addEventListener('click',e=>{const b=e.target.closest('button[data-target]');if(!b)return;document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x===b));const target=b.dataset.target;if(target==='home')window.scrollTo({top:0,behavior:'smooth'});else document.getElementById(target).scrollIntoView({behavior:'smooth'});});
+if(state.lastDay!==today())freshMissions();
+if(!state.missions)freshMissions();
+render();
 })();
 </script>
 </body>
