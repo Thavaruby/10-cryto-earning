@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#064e3b">
+<title>BTC Plant — My Green Planet</title>
+<style>
+:root{
+  --forest:#064e3b;
+  --green:#087f4f;
+  --leaf:#22a45a;
+  --lime:#b8ef77;
+  --gold:#f5c542;
+  --bg:#f2f8ef;
+  --white:#ffffff;
+  --text:#183b2c;
+  --muted:#6c8274;
+  --border:#deebdf;
+  --shadow:0 12px 32px rgba(12,74,48,.09);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:95px}
+body{
+  margin:0;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+button,a{font:inherit}
+button{cursor:pointer}
+a{color:inherit;text-decoration:none}
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  height:72px;background:rgba(255,255,255,.96);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(14px);
+}
+.nav{
+  max-width:1240px;height:100%;margin:auto;padding:0 22px;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;color:var(--forest);white-space:nowrap}
+.brand-icon{
+  width:42px;height:42px;border-radius:14px;
+  background:linear-gradient(145deg,#a5e86d,#22a45a);
+  display:grid;place-items:center;font-size:25px;
+}
+.brand small{display:block;font-size:10px;letter-spacing:2px;color:var(--muted);margin-top:2px}
+.navlinks{display:flex;align-items:center;gap:7px}
+.navlinks a{
+  padding:11px 14px;border-radius:12px;color:#587363;
+  font-size:13px;font-weight:750;white-space:nowrap;
+}
+.navlinks a.active,.navlinks a:hover{background:#e8f6e7;color:var(--forest)}
+.menu-btn{
+  display:none;background:#e8f6e7;color:var(--forest);
+  border:0;border-radius:10px;padding:10px 13px;font-weight:800;
+}
+main{max-width:1240px;margin:auto;padding:94px 22px 50px}
+.hero{
+  min-height:300px;position:relative;overflow:hidden;
+  border-radius:28px;padding:38px;
+  background:linear-gradient(110deg,#064e3b 0%,#087f4f 53%,#4cae65 100%);
+  color:#fff;box-shadow:var(--shadow);
+  display:flex;align-items:center;justify-content:space-between;gap:25px;
+}
+.hero:before,.hero:after{
+  content:"";position:absolute;border-radius:50%;pointer-events:none;
+  background:rgba(196,255,153,.10);
+}
+.hero:before{width:320px;height:320px;right:70px;top:-190px}
+.hero:after{width:240px;height:240px;right:-70px;bottom:-145px}
+.hero-content{position:relative;z-index:2;max-width:590px}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);
+  padding:8px 12px;border-radius:30px;font-size:12px;font-weight:800;
+}
+.hero h1{font-size:clamp(30px,4vw,49px);line-height:1.08;letter-spacing:-1.5px;margin:20px 0 13px}
+.hero p{font-size:15px;line-height:1.8;color:#e0f6e5;max-width:480px;margin:0 0 23px}
+.btn{
+  border:0;border-radius:13px;padding:13px 18px;
+  font-weight:850;font-size:13px;display:inline-flex;
+  align-items:center;justify-content:center;gap:8px;transition:.2s;
+}
+.btn:hover{transform:translateY(-1px);filter:brightness(.97)}
+.btn-lime{background:var(--lime);color:#174527}
+.btn-green{background:var(--green);color:#fff}
+.btn-light{background:#e8f6e7;color:var(--forest)}
+.btn-outline{background:#fff;border:1px solid var(--border);color:var(--forest)}
+.hero-art{
+  position:relative;z-index:1;flex:0 0 250px;height:225px;
+  display:flex;align-items:center;justify-content:center;
+}
+.orbit{
+  width:215px;height:215px;border:1px solid rgba(255,255,255,.26);
+  border-radius:50%;display:grid;place-items:center;
+  background:radial-gradient(circle,rgba(210,255,165,.15),transparent 68%);
+}
+.tree-emoji{font-size:124px;filter:drop-shadow(0 12px 12px rgba(0,0,0,.15))}
+.coin{
+  position:absolute;background:var(--gold);color:#664600;
+  width:39px;height:39px;border-radius:50%;display:grid;place-items:center;
+  font-weight:950;border:3px solid #ffe89a;box-shadow:0 5px 14px #073b2b55;
+}
+.coin.one{top:15px;right:18px}
+.coin.two{bottom:25px;left:10px}
+.section-heading{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  gap:15px;margin:32px 0 16px;
+}
+.section-heading h2{margin:0;font-size:23px;letter-spacing:-.5px}
+.section-heading p{margin:6px 0 0;color:var(--muted);font-size:13px;line-height:1.6}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.stat{
+  padding:24px;border-radius:21px;background:var(--white);
+  border:1px solid var(--border);box-shadow:var(--shadow);
+}
+.stat-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.stat-label{font-size:12px;font-weight:850;color:var(--muted);letter-spacing:.6px}
+.stat-icon{
+  width:45px;height:45px;display:grid;place-items:center;
+  border-radius:15px;background:#e8f6e7;font-size:23px;
+}
+.stat-value{font-size:35px;font-weight:950;letter-spacing:-1px;margin:17px 0 5px;color:var(--forest)}
+.stat-value span{font-size:19px;color:var(--muted);font-weight:750}
+.stat-note{font-size:12px;color:var(--muted)}
+.progress{height:8px;border-radius:20px;background:#e7f0e7;overflow:hidden;margin-top:17px}
+.progress-fill{height:100%;width:0;background:linear-gradient(90deg,#22a45a,#b8ef77);border-radius:20px;transition:width .3s}
+.care-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.care-card{
+  background:#fff;border:1px solid var(--border);border-radius:20px;
+  padding:21px;box-shadow:var(--shadow);min-width:0;
+}
+.care-icon{
+  width:51px;height:51px;display:grid;place-items:center;
+  font-size:27px;background:#edf8e8;border-radius:16px;margin-bottom:15px;
+}
+.care-card h3{margin:0 0 8px;font-size:17px}
+.care-card p{font-size:12px;color:var(--muted);line-height:1.7;min-height:40px;margin:0 0 15px}
+.tag{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:11px;font-weight:850;padding:6px 9px;
+  background:#e9f7e8;color:#19713e;border-radius:20px;margin-bottom:15px;
+}
+.care-card .btn{width:100%}
+.care-card .btn:disabled{cursor:default;opacity:.7;transform:none}
+.start-panel{
+  margin-top:30px;border-radius:24px;padding:27px;
+  background:linear-gradient(120deg,#e5f5d9,#f7fbed);
+  border:1px solid #cfe6c9;display:grid;
+  grid-template-columns:1fr auto;gap:22px;align-items:center;
+}
+.start-panel h2{margin:0 0 8px;font-size:23px}
+.start-panel p{margin:0;color:#59735f;font-size:13px;line-height:1.8}
+.requirements{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}
+.requirement{
+  background:#fff;border:1px solid #d4e7cf;border-radius:10px;
+  padding:9px 11px;font-size:12px;font-weight:800;
+}
+.start-actions{display:flex;flex-direction:column;gap:9px;min-width:175px}
+.start-actions .btn{width:100%}
+.notice{
+  display:none;margin-top:18px;padding:14px 16px;border-radius:13px;
+  font-size:13px;line-height:1.6;background:#fff7dc;color:#735514;
+  border:1px solid #f3df9b;
+}
+.notice.show{display:block}
+.tree-section{
+  margin-top:32px;background:#fff;border:1px solid var(--border);
+  border-radius:22px;padding:23px;box-shadow:var(--shadow);
+}
+.tree-list{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.empty{
+  grid-column:1/-1;padding:34px 15px;text-align:center;
+  color:var(--muted);background:#f7fbf5;border-radius:16px;
+}
+.empty .empty-icon{font-size:40px;margin-bottom:10px}
+.tree-card{border:1px solid var(--border);border-radius:17px;padding:16px;background:#fbfdf9}
+.tree-card-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.tree-card h3{margin:0;font-size:14px}
+.tree-stage{font-size:11px;color:#23834d;background:#e6f6e4;padding:6px 9px;border-radius:20px;font-weight:800}
+.tree-visual{
+  margin:15px 0;min-height:110px;border-radius:13px;
+  background:linear-gradient(#e4f5d7,#f3f9e8);
+  display:grid;place-items:center;font-size:57px;
+}
+.tree-card p{font-size:12px;color:var(--muted);margin:7px 0}
+.tree-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px}
+.tree-actions .btn{padding:10px 7px;font-size:11px}
+.small-note{font-size:11px;line-height:1.7;color:var(--muted);margin-top:16px}
+.footer{text-align:center;color:var(--muted);font-size:11px;padding:27px 10px 0}
+.demo-box{display:none;margin-top:20px;padding:18px;border:1px dashed #a9cf9e;border-radius:16px;background:#f8fcf4}
+.demo-box.show{display:block}
+.demo-box h3{margin:0 0 7px}
+.demo-box p{font-size:12px;line-height:1.7;color:var(--muted)}
+.demo-actions{display:flex;flex-wrap:wrap;gap:8px}
+@media(max-width:760px){
+  .topbar{height:64px}
+  .nav{padding:0 14px}
+  .brand-icon{width:37px;height:37px}
+  .brand{font-size:14px}
+  .brand small{font-size:9px}
+  .menu-btn{display:block}
+  .navlinks{
+    display:none;position:absolute;top:63px;left:0;right:0;
+    padding:12px;background:#fff;border-bottom:1px solid var(--border);
+    box-shadow:var(--shadow);flex-direction:column;align-items:stretch;
+  }
+  .navlinks.open{display:flex}
+  .navlinks a{padding:13px}
+  main{padding:79px 14px 30px}
+  .hero{padding:25px 21px;min-height:0;border-radius:22px}
+  .hero-art{flex:0 0 90px;height:135px}
+  .orbit{width:115px;height:115px}
+  .tree-emoji{font-size:68px}
+  .coin{width:28px;height:28px;font-size:12px;border-width:2px}
+  .coin.one{top:0;right:0}
+  .coin.two{bottom:0;left:0}
+  .hero h1{font-size:30px;letter-spacing:-.8px}
+  .hero p{font-size:13px}
+  .stats{gap:10px}
+  .stat{padding:15px;border-radius:17px}
+  .stat-value{font-size:28px}
+  .stat-label{font-size:10px}
+  .stat-icon{width:36px;height:36px;font-size:19px}
+  .care-grid{grid-template-columns:1fr;gap:11px}
+  .care-card{display:grid;grid-template-columns:48px 1fr;gap:0 13px;padding:16px}
+  .care-icon{grid-row:1/4;width:45px;height:45px;font-size:24px;margin:0}
+  .care-card h3{align-self:end;font-size:15px}
+  .care-card p{min-height:0;margin:5px 0 9px}
+  .care-card .tag{grid-column:2;justify-self:start;margin-bottom:9px}
+  .care-card .btn{grid-column:1/-1}
+  .start-panel{grid-template-columns:1fr;padding:21px}
+  .start-panel h2{font-size:21px}
+  .start-actions{min-width:0}
+  .tree-section{padding:15px}
+  .tree-list{grid-template-columns:1fr 1fr;gap:9px}
+  .tree-card{padding:10px}
+  .tree-card h3{font-size:12px}
+  .tree-stage{font-size:9px;padding:5px 6px}
+  .tree-visual{min-height:90px;font-size:44px}
+  .tree-actions{grid-template-columns:1fr}
+  .tree-actions .btn{font-size:10px}
+  .section-heading h2{font-size:20px}
+}
+@media(max-width:380px){
+  .hero-art{display:none}
+  .hero h1{font-size:29px}
+  .stat-value{font-size:25px}
+  .tree-list{grid-template-columns:1fr}
+  .tree-actions{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <nav class="nav">
+    <a class="brand" href="#home" aria-label="BTC Plant Home">
+      <span class="brand-icon">🌱</span>
+      <span>BTC PLANT<small>GROW A GREENER WORLD</small></span>
+    </a>
+    <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-label="Open navigation">☰ Menu</button>
+    <div class="navlinks" id="navlinks">
+      <a class="active" href="#home">⌂ Home</a>
+      <a href="#my-planet">🌿 My Planet</a>
+      <a href="#global-planet">🌍 Global Planet</a>
+      <a href="#demo">✦ Demo</a>
+    </div>
+  </nav>
+</header>
+
+<main id="home">
+  <section class="hero">
+    <div class="hero-content">
+      <span class="eyebrow">🌎 YOUR PLANET, YOUR TREES</span>
+      <h1>Grow your planet,<br>one tree at a time.</h1>
+      <p>Care for your trees every day. Complete natural activities, grow your green world and work towards BTC rewards.</p>
+      <a class="btn btn-lime" href="#daily-care">🌱 Care for my trees <span>→</span></a>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+      <div class="orbit"><span class="tree-emoji">🌳</span></div>
+      <span class="coin one">₿</span>
+      <span class="coin two">₿</span>
+    </div>
+  </section>
+
+  <div class="section-heading">
+    <div>
+      <h2>Your Planet Overview</h2>
+      <p>Your personal dashboard · Your own growing forest</p>
+    </div>
+  </div>
+
+  <section class="stats">
+    <article class="stat">
+      <div class="stat-top">
+        <span class="stat-label">TOTAL TREES / 50</span>
+        <span class="stat-icon">🌳</span>
+      </div>
+      <div class="stat-value"><span id="treeCount">0</span> <span>/ 50</span></div>
+      <div class="stat-note">Active trees in your planet</div>
+      <div class="progress"><div class="progress-fill" id="treeProgress"></div></div>
+    </article>
+    <article class="stat">
+      <div class="stat-top">
+        <span class="stat-label">TOTAL BTC BALANCE</span>
+        <span class="stat-icon">₿</span>
+      </div>
+      <div class="stat-value" style="font-size:clamp(20px,3vw,31px)" id="btcBalance">0 sats</div>
+      <div class="stat-note">Rewards credited to your account</div>
+      <div class="progress"><div class="progress-fill" style="width:0%" id="btcProgress"></div></div>
+    </article>
+  </section>
+
+  <div class="section-heading" id="daily-care">
+    <div>
+      <h2>Daily Tree Care 🌿</h2>
+      <p>Each active tree needs all three daily tasks.</p>
+    </div>
+  </div>
+
+  <section class="care-grid">
+    <article class="care-card">
+      <div class="care-icon">💧</div>
+      <h3>Water your trees</h3>
+      <p>Give every active tree its daily water. Keep your forest fresh and healthy.</p>
+      <span class="tag">✓ FREE EVERY DAY</span>
+      <button class="btn btn-green" id="waterAll">💧 Water all trees</button>
+    </article>
+    <article class="care-card">
+      <div class="care-icon">🍃</div>
+      <h3>Add compost</h3>
+      <p>One free compost per active tree, every day. Help your trees keep growing.</p>
+      <span class="tag">✓ 1 FREE / TREE / DAY</span>
+      <button class="btn btn-green" id="compostAll">🍃 Compost all trees</button>
+    </article>
+    <article class="care-card">
+      <div class="care-icon">🌍</div>
+      <h3>Natural activity</h3>
+      <p>Complete an eligible natural activity each day to care for your planet.</p>
+      <span class="tag">✓ DAILY ACTIVITY</span>
+      <button class="btn btn-green" id="activityBtn">🌿 Complete activity</button>
+    </article>
+  </section>
+
+  <section class="start-panel">
+    <div>
+      <h2>Plant a New Tree 🌱</h2>
+      <p>Earn your eligibility with 10,000 steps and one eligible natural activity. Each new tree begins its own 100-day journey.</p>
+      <div class="requirements">
+        <span class="requirement">👣 10,000 steps</span>
+        <span class="requirement">🌱 1 natural activity</span>
+        <span class="requirement">🌳 Maximum 50 active trees</span>
+      </div>
+    </div>
+    <div class="start-actions">
+      <button class="btn btn-green" id="startTree">＋ Start a New Tree</button>
+      <span class="small-note" style="margin:0;text-align:center" id="eligibilityText">Demo: eligibility is not verified</span>
+    </div>
+  </section>
+
+  <div class="notice" id="notice" role="status" aria-live="polite"></div>
+
+  <section class="tree-section" id="my-planet">
+    <div class="section-heading" style="margin:0 0 18px">
+      <div>
+        <h2>🌳 My Trees</h2>
+        <p>Only trees belonging to your personal dashboard.</p>
+      </div>
+      <span class="tag" id="myTreeBadge">0 / 50</span>
+    </div>
+    <div class="tree-list" id="treeList">
+      <div class="empty">
+        <div class="empty-icon">🌱</div>
+        <strong>Your forest starts here</strong>
+        <p>Meet the requirements to plant your first tree.</p>
+      </div>
+    </div>
+    <p class="small-note">Prototype only: tree data is stored locally in this browser. Real accounts, step verification, server-side task validation and BTC payments must be connected before production.</p>
+  </section>
+
+  <section class="tree-section" id="global-planet">
+    <div class="section-heading" style="margin:0 0 14px">
+      <div>
+        <h2>🌍 Global BTC Plant</h2>
+        <p>A shared planet where eligible trees from all users can be planted.</p>
+      </div>
+    </div>
+    <div style="border-radius:17px;overflow:hidden;background:linear-gradient(180deg,#d9f0d0,#f1f8e7);padding:24px 15px;text-align:center">
+      <div style="font-size:54px;letter-spacing:7px">🌳🌲🌳</div>
+      <div style="font-size:37px;margin:12px 0">🌿🌳🌲🌳🌿</div>
+      <h3 style="margin:0;color:#14532d">One planet. Millions of possibilities.</h3>
+      <p style="font-size:12px;color:#587363;line-height:1.8;max-width:470px;margin:10px auto">In the full version, every eligible tree will receive a unique position in the shared world. Visitors will see tree visuals only, never private account details.</p>
+      <span class="tag">GLOBAL WORLD PREVIEW</span>
+    </div>
+  </section>
+
+  <section class="tree-section" id="demo">
+    <div class="section-heading" style="margin:0">
+      <div>
+        <h2>✦ Demo Playground</h2>
+        <p>Test the interface without claiming real BTC or verifying real-world activity.</p>
+      </div>
+      <button class="btn btn-light" id="toggleDemo">Open Demo</button>
+    </div>
+    <div class="demo-box" id="demoBox">
+      <h3>Prototype testing controls</h3>
+      <p>These controls simulate eligibility for interface testing only. They do not verify steps, prove a natural activity, or award real Bitcoin.</p>
+      <div class="demo-actions">
+        <button class="btn btn-green" id="demoEligible">Simulate eligibility</button>
+        <button class="btn btn-outline" id="demoReset">Reset demo data</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    BTC Plant · Grow responsibly 🌱 · BTC rewards are subject to verification and available funding.
+  </footer>
+</main>
+
+<script>
+(function(){
+"use strict";
+
+const MAX_TREES = 50;
+const DAY_MS = 86400000;
+const STORAGE_KEY = "btcPlantDashboardDemoV1";
+
+const $ = id => document.getElementById(id);
+const state = {
+  trees: [],
+  balance: 0,
+  demoEligible: false,
+  lastActivityDay: "",
+  noticeTimer: null
+};
+
+function todayKey(){
+  const d = new Date();
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+
+function notify(message){
+  const el = $("notice");
+  el.textContent = message;
+  el.classList.add("show");
+  clearTimeout(state.noticeTimer);
+  state.noticeTimer = setTimeout(()=>el.classList.remove("show"),5000);
+}
+
+function load(){
+  try{
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if(!saved) return;
+    const data = JSON.parse(saved);
+    if(!data || !Array.isArray(data.trees)) return;
+    state.trees = data.trees
+      .filter(t => t && typeof t.id === "string")
+      .slice(0,MAX_TREES)
+      .map(t => ({
+        id:t.id,
+        startDay:Number.isFinite(t.startDay)?t.startDay:Date.now(),
+        waterDay:typeof t.waterDay==="string"?t.waterDay:"",
+        compostDay:typeof t.compostDay==="string"?t.compostDay:"",
+        activityDay:typeof t.activityDay==="string"?t.activityDay:"",
+        rescueDays:Array.isArray(t.rescueDays)?t.rescueDays:[],
+        completed:!!t.completed
+      }));
+    state.balance = 0;
+    state.demoEligible = false;
+    state.lastActivityDay = typeof data.lastActivityDay==="string"?data.lastActivityDay:"";
+  }catch(e){
+    console.warn("BTC Plant demo data could not be loaded.");
+  }
+}
+
+function save(){
+  try{
+    localStorage.setItem(STORAGE_KEY,JSON.stringify({
+      trees:state.trees,
+      lastActivityDay:state.lastActivityDay
+    }));
+  }catch(e){
+    notify("Browser storage is unavailable. Your demo changes may not persist.");
+  }
+}
+
+function treeDay(tree){
+  const elapsed = Math.floor((Date.now()-tree.startDay)/DAY_MS);
+  return Math.max(1,Math.min(100,elapsed+1));
+}
+
+function stage(day){
+  if(day<=10) return {name:"Seedling",icon:"🌱"};
+  if(day<=30) return {name:"Young Plant",icon:"🌿"};
+  if(day<=60) return {name:"Growing Tree",icon:"🌳"};
+  if(day<100) return {name:"Mature Tree",icon:"🌲"};
+  return {name:"Day 100",icon:"🌳"};
+}
+
+function render(){
+  const count = state.trees.filter(t=>!t.completed).length;
+  $("treeCount").textContent = count;
+  $("myTreeBadge").textContent = count+" / "+MAX_TREES;
+  $("treeProgress").style.width = (count/MAX_TREES*100)+"%";
+  $("btcBalance").textContent = state.balance.toLocaleString()+" sats";
+  $("btcProgress").style.width = "0%";
+  $("startTree").disabled = count>=MAX_TREES;
+  $("startTree").style.opacity = count>=MAX_TREES?".6":"1";
+
+  const list = $("treeList");
+  list.replaceChildren();
+
+  if(state.trees.length===0){
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    const icon = document.createElement("div");
+    icon.className = "empty-icon";
+    icon.textContent = "🌱";
+    const title = document.createElement("strong");
+    title.textContent = "Your forest starts here";
+    const p = document.createElement("p");
+    p.textContent = "Meet the requirements to plant your first tree.";
+    empty.append(icon,title,p);
+    list.appendChild(empty);
+    return;
+  }
+
+  state.trees.forEach(tree=>{
+    const day = treeDay(tree);
+    const st = stage(day);
+    const card = document.createElement("article");
+    card.className = "tree-card";
+
+    const head = document.createElement("div");
+    head.className = "tree-card-head";
+    const title = document.createElement("h3");
+    title.textContent = "My Tree · "+tree.id.slice(-5);
+    const badge = document.createElement("span");
+    badge.className = "tree-stage";
+    badge.textContent = tree.completed?"Completed":st.name;
+    head.append(title,badge);
+
+    const visual = document.createElement("div");
+    visual.className = "tree-visual";
+    visual.textContent = st.icon;
+
+    const dayText = document.createElement("p");
+    dayText.textContent = "Growth: Day "+day+" / 100";
+
+    const progress = document.createElement("div");
+    progress.className = "progress";
+    const fill = document.createElement("div");
+    fill.className = "progress-fill";
+    fill.style.width = day+"%";
+    progress.appendChild(fill);
+
+    const water = document.createElement("p");
+    water.textContent = "Water: "+(tree.waterDay===todayKey()?"✓ Done":"Pending");
+
+    const compost = document.createElement("p");
+    compost.textContent = "Compost: "+(tree.compostDay===todayKey()?"✓ Done":"Pending");
+
+    const activity = document.createElement("p");
+    activity.textContent = "Natural activity: "+(tree.activityDay===todayKey()?"✓ Done":"Pending");
+
+    const actions = document.createElement("div");
+    actions.className = "tree-actions";
+
+    const waterBtn = document.createElement("button");
+    waterBtn.className = "btn btn-light";
+    waterBtn.textContent = tree.waterDay===todayKey()?"✓ Watered":"💧 Water";
+    waterBtn.disabled = tree.waterDay===todayKey();
+    waterBtn.addEventListener("click",()=>completeTask(tree.id,"water"));
+
+    const compostBtn = document.createElement("button");
+    compostBtn.className = "btn btn-light";
+    compostBtn.textContent = tree.compostDay===todayKey()?"✓ Composted":"🍃 Compost";
+    compostBtn.disabled = tree.compostDay===todayKey();
+    compostBtn.addEventListener("click",()=>completeTask(tree.id,"compost"));
+
+    actions.append(waterBtn,compostBtn);
+    card.append(head,visual,dayText,progress,water,compost,activity,actions);
+    list.appendChild(card);
+  });
+}
+
+function completeTask(treeId,task){
+  const tree = state.trees.find(t=>t.id===treeId);
+  if(!tree) return;
+  if(task!=="water" && task!=="compost") return;
+
+  const field = task==="water"?"waterDay":"compostDay";
+  if(tree[field]===todayKey()){
+    notify("This task is already completed today.");
+    return;
+  }
+  tree[field] = todayKey();
+  save();
+  render();
+  notify(task==="water"?"Demo: daily water recorded for this tree.":"Demo: one daily compost recorded for this tree.");
+}
+
+function startTree(){
+  const active = state.trees.filter(t=>!t.completed).length;
+  if(active>=MAX_TREES){
+    notify("You have reached the limit of 50 active trees.");
+    return;
+  }
+  if(!state.demoEligible){
+    notify("New tree requirements: verified 10,000 steps + one eligible natural activity. Use Demo to simulate eligibility for UI testing.");
+    return;
+  }
+
+  const tree = {
+    id:"tree-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,7),
+    startDay:Date.now(),
+    waterDay:"",
+    compostDay:"",
+    activityDay:todayKey(),
+    rescueDays:[],
+    completed:false
+  };
+  state.trees.push(tree);
+  state.demoEligible = false;
+  $("eligibilityText").textContent = "Demo eligibility used. Verify requirements again.";
+  save();
+  render();
+  notify("Demo tree created. Real step verification and server-side account storage are not connected.");
+  $("my-planet").scrollIntoView({behavior:"smooth"});
+}
+
+$("waterAll").addEventListener("click",()=>{
+  const trees = state.trees.filter(t=>!t.completed);
+  if(!trees.length){notify("Plant a tree first to complete daily care.");return;}
+  let done=0;
+  trees.forEach(t=>{
+    if(t.waterDay!==todayKey()){t.waterDay=todayKey();done++;}
+  });
+  save();render();
+  notify(done?`Demo: free water recorded for ${done} tree(s).`:"All active trees have already been watered today.");
+});
+
+$("compostAll").addEventListener("click",()=>{
+  const trees = state.trees.filter(t=>!t.completed);
+  if(!trees.length){notify("Plant a tree first to add compost.");return;}
+  let done=0;
+  trees.forEach(t=>{
+    if(t.compostDay!==todayKey()){t.compostDay=todayKey();done++;}
+  });
+  save();render();
+  notify(done?`Demo: one free compost recorded for ${done} tree(s).`:"All active trees have already received compost today.");
+});
+
+$("activityBtn").addEventListener("click",()=>{
+  if(state.lastActivityDay===todayKey()){
+    notify("A natural activity has already been recorded today in this demo.");
+    return;
+  }
+  state.lastActivityDay=todayKey();
+  save();
+  notify("Demo activity recorded. Real natural activity evidence is not verified by this prototype.");
+});
+
+$("startTree").addEventListener("click",startTree);
+
+$("toggleDemo").addEventListener("click",()=>{
+  const box=$("demoBox");
+  box.classList.toggle("show");
+  $("toggleDemo").textContent=box.classList.contains("show")?"Close Demo":"Open Demo";
+});
+
+$("demoEligible").addEventListener("click",()=>{
+  state.demoEligible=true;
+  $("eligibilityText").textContent="Demo eligibility enabled — not real verification";
+  notify("Demo only: simulated eligibility enabled. No real steps or activity have been verified.");
+});
+
+$("demoReset").addEventListener("click",()=>{
+  if(!confirm("Reset this browser's BTC Plant demo trees? This does not affect any real account."))return;
+  state.trees=[];
+  state.balance=0;
+  state.demoEligible=false;
+  state.lastActivityDay="";
+  try{localStorage.removeItem(STORAGE_KEY)}catch(e){}
+  $("eligibilityText").textContent="Demo: eligibility is not verified";
+  render();
+  notify("Demo data reset.");
+});
+
+$("menuBtn").addEventListener("click",()=>{
+  const links=$("navlinks");
+  const opened=links.classList.toggle("open");
+  $("menuBtn").setAttribute("aria-expanded",String(opened));
+});
+
+document.querySelectorAll(".navlinks a").forEach(link=>{
+  link.addEventListener("click",()=>{
+    document.querySelectorAll(".navlinks a").forEach(a=>a.classList.remove("active"));
+    link.classList.add("active");
+    $("navlinks").classList.remove("open");
+    $("menuBtn").setAttribute("aria-expanded","false");
+  });
+});
+
+load();
+render();
+})();
+</script>
+</body>
+</html>
