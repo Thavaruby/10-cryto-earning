@@ -320,7 +320,7 @@ footer p{font-size:12px;color:var(--muted);line-height:1.8;max-width:650px;margi
     <span class="brand-icon">₿</span>
     <span class="brand-name">BTC PLANET<small>GROW • CARE • REPEAT</small></span>
   </a>
-  <span class="header-status">🌱 GREEN PLANET</span>
+  <span class="header-status" id="userEmail">Loading email...</span>
 </header>
 
 <nav class="nav-bar" aria-label="Main navigation">
@@ -571,6 +571,37 @@ footer p{font-size:12px;color:var(--muted);line-height:1.8;max-width:650px;margi
     toastTimer = setTimeout(() => toast.classList.remove("show"), 3200);
   }
 
+  // Display the signed-in user's email when supplied by the website.
+const emailElement = document.getElementById("userEmail");
+
+emailElement.textContent = "User account";
+
+fetch("/api/me", {
+  method: "GET",
+  credentials: "same-origin",
+  headers: { "Accept": "application/json" }
+})
+.then(response => {
+  if (!response.ok) throw new Error("Not signed in");
+  return response.json();
+})
+.then(data => {
+  const email =
+    data.email ||
+    data.user?.email ||
+    data.user?.email_address;
+
+  if (email && typeof email === "string") {
+    emailElement.textContent = email;
+    emailElement.title = email;
+  } else {
+    emailElement.textContent = "User account";
+  }
+})
+.catch(() => {
+  emailElement.textContent = "Not signed in";
+});
+  
   $("year").textContent = new Date().getFullYear();
 
   // The calendar is a visual prototype; it does not record real tree growth.
