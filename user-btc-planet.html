@@ -110,13 +110,16 @@ h1 span{color:var(--gold)}
   width:250px;height:200px;border-radius:50%;
   background:#7cff7540;filter:blur(30px);
 }
-.tree-emoji{
-  position:absolute;left:50%;top:50%;
-  transform:translate(-50%,-49%);
-  font-size:clamp(130px,27vw,205px);
-  line-height:1;
-  filter:drop-shadow(0 12px 12px #00180c70);
-  animation:sway 4s ease-in-out infinite;
+.tree-hero-art {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -49%);
+  width: min(355px, 90%);
+  height: 245px;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 12px #00180c70);
+  animation: sway 4s ease-in-out infinite;
 }
 .coin{
   position:absolute;z-index:2;
@@ -340,19 +343,107 @@ footer p{font-size:12px;color:var(--muted);line-height:1.8;max-width:650px;margi
         Complete 100 days of tree care to reach the golden BTC tree milestone.
       </p>
 
-      <div class="tree-stage" aria-label="Illustration of a mature green tree decorated with Bitcoin coins">
-        <div class="glow"></div>
-        <span class="coin c1">₿</span>
-        <span class="coin c2">₿</span>
-        <span class="coin c3">₿</span>
-        <span class="coin c4">₿</span>
-        <span class="coin c5">₿</span>
-        <span class="coin c6">₿</span>
-        <span class="coin c7">₿</span>
-        <span class="coin c8">₿</span>
-        <div class="tree-emoji">🌳</div>
-        <div class="ground"></div>
-      </div>
+      <!-- MAIN TREE IMAGE: replace the old tree-emoji and coin elements -->
+<div class="tree-stage" aria-label="Natural tree covered with Bitcoin coins">
+  <div class="glow"></div>
+
+  <svg class="tree-hero-art"
+       viewBox="0 0 360 300"
+       role="img"
+       aria-label="Natural green tree covered with golden Bitcoin coins"
+       xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="leafA" x1="0" y1="0" x2="1" y2="1">
+        <stop stop-color="#d7ff82"/>
+        <stop offset=".45" stop-color="#54c94f"/>
+        <stop offset="1" stop-color="#126438"/>
+      </linearGradient>
+      <linearGradient id="woodA" x1="0" y1="0" x2="1" y2="0">
+        <stop stop-color="#633a1e"/>
+        <stop offset=".45" stop-color="#c47b36"/>
+        <stop offset="1" stop-color="#5a301a"/>
+      </linearGradient>
+      <linearGradient id="coinA" x1="0" y1="0" x2="1" y2="1">
+        <stop stop-color="#fff7b2"/>
+        <stop offset=".45" stop-color="#ffc928"/>
+        <stop offset="1" stop-color="#cf7600"/>
+      </linearGradient>
+    </defs>
+
+    <!-- Ground and natural trunk -->
+    <ellipse cx="180" cy="274" rx="111" ry="13" fill="#061b0d"/>
+    <path d="M167 270 C171 225 151 198 160 160
+             C167 126 151 100 146 83 L170 88
+             C187 123 183 151 190 177
+             C199 211 190 240 201 270Z"
+          fill="url(#woodA)" stroke="#e4a14c" stroke-width="2"/>
+
+    <!-- Tree branches -->
+    <g fill="none" stroke="#8a5127" stroke-width="12" stroke-linecap="round">
+      <path d="M176 211 C139 188 119 162 102 137"/>
+      <path d="M177 177 C208 151 224 130 239 104"/>
+      <path d="M169 147 C144 123 130 103 124 83"/>
+      <path d="M186 199 C221 189 245 169 261 146"/>
+    </g>
+
+    <!-- Green foliage -->
+    <g fill="url(#leafA)" stroke="#b9f878" stroke-opacity=".42" stroke-width="2">
+      <circle cx="111" cy="111" r="43"/>
+      <circle cx="151" cy="77" r="48"/>
+      <circle cx="199" cy="70" r="48"/>
+      <circle cx="244" cy="103" r="44"/>
+      <circle cx="92" cy="151" r="36"/>
+      <circle cx="141" cy="135" r="48"/>
+      <circle cx="205" cy="127" r="51"/>
+      <circle cx="263" cy="150" r="34"/>
+      <circle cx="177" cy="99" r="51"/>
+      <circle cx="123" cy="181" r="27"/>
+      <circle cx="225" cy="182" r="31"/>
+    </g>
+
+    <!-- Golden Bitcoin coins -->
+    <g fill="url(#coinA)" stroke="#fff0a0" stroke-width="2">
+      <circle cx="117" cy="116" r="15"/>
+      <circle cx="157" cy="86" r="16"/>
+      <circle cx="204" cy="93" r="16"/>
+      <circle cx="243" cy="120" r="15"/>
+      <circle cx="91" cy="153" r="13"/>
+      <circle cx="143" cy="154" r="15"/>
+      <circle cx="192" cy="142" r="16"/>
+      <circle cx="230" cy="170" r="14"/>
+      <circle cx="126" cy="187" r="13"/>
+      <circle cx="176" cy="192" r="15"/>
+      <circle cx="259" cy="151" r="12"/>
+      <circle cx="169" cy="119" r="13"/>
+      <circle cx="207" cy="205" r="12"/>
+      <circle cx="151" cy="218" r="11"/>
+      <circle cx="189" cy="244" r="12"/>
+    </g>
+
+    <!-- Bitcoin symbols -->
+    <g fill="#704500" font-family="Arial,sans-serif"
+       font-weight="900" text-anchor="middle"
+       dominant-baseline="central">
+      <text x="117" y="116" font-size="17">₿</text>
+      <text x="157" y="86" font-size="18">₿</text>
+      <text x="204" y="93" font-size="18">₿</text>
+      <text x="243" y="120" font-size="17">₿</text>
+      <text x="91" y="153" font-size="15">₿</text>
+      <text x="143" y="154" font-size="17">₿</text>
+      <text x="192" y="142" font-size="18">₿</text>
+      <text x="230" y="170" font-size="16">₿</text>
+      <text x="126" y="187" font-size="15">₿</text>
+      <text x="176" y="192" font-size="17">₿</text>
+      <text x="259" y="151" font-size="14">₿</text>
+      <text x="169" y="119" font-size="15">₿</text>
+      <text x="207" y="205" font-size="14">₿</text>
+      <text x="151" y="218" font-size="13">₿</text>
+      <text x="189" y="244" font-size="14">₿</text>
+    </g>
+  </svg>
+
+  <div class="ground"></div>
+</div>
 
       <div class="hero-actions">
         <button class="btn btn-gold" id="demoButton" type="button">🌳 Demo Tree</button>
