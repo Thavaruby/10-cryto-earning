@@ -3,258 +3,356 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BTC Planet — 100 Day Tree</title>
+<meta name="theme-color" content="#08291b">
+<title>My BTC Planet — 100 Day Tree</title>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#071b14;color:#fff}
-header{padding:18px;text-align:center;background:#092d20;font-size:22px;font-weight:bold}
+body{
+  margin:0;
+  background:#071b13;
+  color:#fff;
+  font-family:Arial,sans-serif;
+}
+header{
+  padding:18px 12px;
+  background:#092d20;
+  text-align:center;
+  font-size:22px;
+  font-weight:bold;
+}
 main{max-width:760px;margin:auto;padding:16px}
-.panel{background:#10291e;border:1px solid #28513a;border-radius:16px;padding:15px}
+.card{
+  background:#10281d;
+  border:1px solid #2b5037;
+  border-radius:18px;
+  padding:16px;
+}
 h2{text-align:center;color:#f6cc53}
-.scene{height:430px;position:relative;overflow:hidden;border-radius:12px;background:linear-gradient(#8dc9e0 0%,#dcebc5 67%,#688d43 67%,#416a31 100%)}
-.sun{position:absolute;right:30px;top:25px;width:44px;height:44px;border-radius:50%;background:#ffe8a0}
-.hill{position:absolute;bottom:45px;left:-10%;width:120%;height:65px;border-radius:50% 50% 0 0;background:#537d39}
-#tree{position:absolute;inset:0;width:100%;height:100%}
-#soil{position:absolute;bottom:0;width:100%;height:45px;background:#533b28}
-.day{text-align:center;font-size:25px;font-weight:bold;margin:17px}
-input{width:100%;accent-color:#e9bd36}
-.controls{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:15px 0}
-button{padding:12px 15px;border:0;border-radius:8px;background:#e8bc37;color:#152317;font-weight:bold}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.stat{text-align:center;background:#1b3929;padding:12px 4px;border-radius:9px}
-.stat small{display:block;color:#c7d7c8;margin-bottom:8px}
+.subtitle{text-align:center;color:#c4d7c7;line-height:1.5}
+.scene{
+  position:relative;
+  overflow:hidden;
+  height:440px;
+  border-radius:14px;
+  background:#b4dba0;
+}
+#treeImage{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  object-position:center;
+  transition:opacity .3s;
+}
+.day-badge{
+  position:absolute;
+  top:12px;
+  left:12px;
+  background:#08291bdc;
+  border:1px solid #d9b43e;
+  color:#fff;
+  padding:10px 13px;
+  border-radius:10px;
+  font-weight:bold;
+}
+#coins{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+.coin{
+  position:absolute;
+  width:39px;
+  height:39px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  color:#80500a;
+  font-size:23px;
+  font-weight:bold;
+  background:radial-gradient(circle at 32% 25%,#fff5a7,#ffcf39 48%,#b97a08);
+  border:3px solid #f4d36c;
+  box-shadow:0 2px 8px #0008,inset 0 0 0 2px #c58b19;
+  animation:appear .5s ease both;
+}
+@keyframes appear{
+  from{opacity:0;transform:scale(.3)}
+  to{opacity:1;transform:scale(1)}
+}
+.day{
+  text-align:center;
+  font-size:27px;
+  font-weight:bold;
+  margin:18px 0 10px;
+}
+input[type=range]{width:100%;accent-color:#e9c343}
+.range-labels{
+  display:flex;
+  justify-content:space-between;
+  color:#c2d4c5;
+  font-size:12px;
+  margin-top:7px;
+}
+.buttons{
+  display:flex;
+  gap:9px;
+  flex-wrap:wrap;
+  justify-content:center;
+  margin:18px 0;
+}
+button{
+  padding:12px 15px;
+  border:0;
+  border-radius:9px;
+  background:#e9c343;
+  color:#142519;
+  font-weight:bold;
+  cursor:pointer;
+}
+#message{
+  text-align:center;
+  line-height:1.6;
+  min-height:45px;
+}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+.stat{
+  background:#1c3929;
+  padding:13px 4px;
+  text-align:center;
+  border-radius:10px;
+}
+.stat small{
+  display:block;
+  color:#c2d4c5;
+  margin-bottom:8px;
+}
 .stat strong{font-size:17px}
-#message{text-align:center;min-height:40px;line-height:1.5}
-.note{text-align:center;font-size:12px;color:#bac9bb;line-height:1.5}
+.note{
+  color:#b9c9bc;
+  font-size:12px;
+  text-align:center;
+  line-height:1.6;
+  margin-top:16px;
+}
+@media(max-width:480px){
+  main{padding:10px}
+  .scene{height:390px}
+  .coin{width:32px;height:32px;font-size:19px}
+  .stat strong{font-size:14px}
+  .buttons button{padding:11px}
+}
 </style>
 </head>
+
 <body>
 <header>🌍 My BTC Planet</header>
+
 <main>
-<div class="panel">
-<h2>🌳 Natural Tree Growth — 100 Days</h2>
+<section class="card">
+<h2>🌱 Grow Your BTC Tree</h2>
+<p class="subtitle">
+100 days of natural growth<br>
+From a tiny seed to a lush green tree
+</p>
 
 <div class="scene">
-<div class="sun"></div>
-<div class="hill"></div>
-<svg id="tree" viewBox="0 0 400 430" preserveAspectRatio="xMidYMax meet">
-<defs>
- <linearGradient id="bark" x1="0" x2="1">
-  <stop offset="0" stop-color="#56351e"/>
-  <stop offset=".4" stop-color="#96653a"/>
-  <stop offset=".7" stop-color="#754726"/>
-  <stop offset="1" stop-color="#49301e"/>
- </linearGradient>
- <radialGradient id="green">
-  <stop offset="0" stop-color="#75bd4d"/>
-  <stop offset="1" stop-color="#236333"/>
- </radialGradient>
- <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
-  <stop offset="0" stop-color="#fff19b"/>
-  <stop offset=".5" stop-color="#ffc629"/>
-  <stop offset="1" stop-color="#b77912"/>
- </linearGradient>
-</defs>
-<g id="roots"></g>
-<g id="wood"></g>
-<g id="leaves"></g>
-<g id="coins"></g>
-</svg>
-<div id="soil"></div>
+<img id="treeImage"
+src="https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=1000&q=85"
+alt="Natural green plant growing in a garden">
+
+<div class="day-badge" id="badge">DAY 1 / 100</div>
+<div id="coins"></div>
 </div>
 
-<div class="day" id="day">DAY 1 / 100</div>
-<input id="slider" type="range" min="1" max="100" value="1">
-<div style="display:flex;justify-content:space-between;font-size:12px;margin-top:6px">
-<span>Seed</span><span>Young tree</span><span>BTC tree</span>
+<div class="day" id="dayTitle">Day 1 / 100</div>
+
+<input id="daySlider" type="range" min="1" max="100" value="1">
+
+<div class="range-labels">
+<span>🌰 Seed</span>
+<span>🌿 Growing</span>
+<span>🌳 Mature tree</span>
 </div>
 
-<div class="controls">
-<button id="prev">← Previous</button>
-<button id="next">Next →</button>
-<button id="demo">▶ Demo Growth</button>
+<div class="buttons">
+<button id="previous">← Previous</button>
+<button id="next">Next day →</button>
+<button id="demo">▶ Demo Tree</button>
 </div>
 
-<p id="message">Day 1: A small seed lies beneath the soil.</p>
+<p id="message">A seed begins its journey.</p>
 
 <div class="stats">
-<div class="stat"><small>Growth day</small><strong id="growth">1%</strong></div>
-<div class="stat"><small>Tree stage</small><strong id="stage">Seed</strong></div>
-<div class="stat"><small>BTC coins shown</small><strong id="count">0</strong></div>
+<div class="stat">
+<small>📅 Day</small>
+<strong id="dayStat">1 / 100</strong>
+</div>
+<div class="stat">
+<small>🌿 Stage</small>
+<strong id="stage">Seed</strong>
+</div>
+<div class="stat">
+<small>₿ Visible coins</small>
+<strong id="coinCount">0</strong>
+</div>
 </div>
 
-<p class="note">Procedural tree simulation using HTML, CSS and JavaScript. BTC coins are visual elements only; no real cryptocurrency is earned.</p>
-</div>
+<p class="note">
+Photographic growth-stage preview. Photos are illustrative, not a scientifically exact daily timelapse. BTC coins are visual game elements, not real cryptocurrency rewards.
+</p>
+</section>
 </main>
 
 <script>
-const NS="http://www.w3.org/2000/svg";
-const $=id=>document.getElementById(id);
-const wood=$("wood"),leaves=$("leaves"),roots=$("roots"),coins=$("coins");
-let timer=null;
+const slider = document.getElementById("daySlider");
+const photo = document.getElementById("treeImage");
+const coinLayer = document.getElementById("coins");
 
-function node(tag,attrs,parent){
- const n=document.createElementNS(NS,tag);
- for(const k in attrs)n.setAttribute(k,attrs[k]);
- parent.appendChild(n);
- return n;
-}
+let timer = null;
 
-function leaf(x,y,size,angle,color){
- const g=node("g",{transform:`translate(${x} ${y}) rotate(${angle})`},leaves);
- node("path",{
-  d:`M0 0 C${-size*.75} ${-size*.55} ${-size*.7} ${-size*1.5} 0 ${-size*2}
-  C${size*.8} ${-size*1.45} ${size*.65} ${-size*.55} 0 0Z`,
-  fill:color,stroke:"#285b2c","stroke-width":".7"
- },g);
- node("path",{
-  d:`M0 0 L0 ${-size*1.7}`,
-  stroke:"#b5d77a","stroke-width":".65",fill:"none"
- },g);
-}
+/*
+ Replace these URLs with your own verified photographs
+ for a more accurate seed-to-tree progression.
+*/
+const stages = [
+ {
+  day:1,
+  name:"Seed",
+  url:"https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=1000&q=85",
+  message:"🌰 Day 1: The seed is planted."
+ },
+ {
+  day:10,
+  name:"Sprout",
+  url:"https://images.unsplash.com/photo-1497250681960-ef046c08a56e?auto=format&fit=crop&w=1000&q=85",
+  message:"🌱 A young sprout begins to develop."
+ },
+ {
+  day:30,
+  name:"Seedling",
+  url:"https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1000&q=85",
+  message:"🌿 The seedling develops new leaves."
+ },
+ {
+  day:50,
+  name:"Young tree",
+  url:"https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1000&q=85",
+  message:"🌳 The plant continues to grow."
+ },
+ {
+  day:75,
+  name:"Maturing",
+  url:"https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1000&q=85",
+  message:"🍃 The tree enters its mature growth stage."
+ },
+ {
+  day:100,
+  name:"BTC tree",
+  url:"https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1000&q=85",
+  message:"🌳₿ Your mature tree displays its BTC coins."
+ }
+];
 
-function branch(x1,y1,x2,y2,width){
- node("path",{
-  d:`M${x1} ${y1} Q${(x1+x2)/2+3} ${(y1+y2)/2} ${x2} ${y2}`,
-  fill:"none",stroke:"url(#bark)","stroke-width":width,
-  "stroke-linecap":"round"
- },wood);
-}
+const coinPositions = [
+ [20,29],[39,20],[59,30],[72,40],[29,48],
+ [48,43],[64,55],[18,59],[42,64],[78,64],
+ [53,17],[34,35],[68,23],[24,72],[57,74],
+ [81,34],[43,28],[13,43],[70,72],[49,53]
+];
 
-function draw(day){
- wood.replaceChildren();
- leaves.replaceChildren();
- roots.replaceChildren();
- coins.replaceChildren();
+function drawCoins(day){
+ coinLayer.replaceChildren();
 
- const age=(day-1)/99;
- const ground=382;
- const height=day===1?0:Math.min(270,day*2.7);
- const top=ground-height;
+ const count = day < 90
+   ? 0
+   : Math.min(coinPositions.length, Math.floor((day-89)*2));
 
- // Roots
- if(day>1){
-  node("path",{
-   d:"M200 385 Q174 395 151 399 M200 385 Q225 396 251 399 M200 386 Q193 402 187 407 M204 386 Q215 401 222 406",
-   fill:"none",stroke:"#674329","stroke-width":3+age*5,
-   "stroke-linecap":"round"
-  },roots);
+ for(let i=0;i<count;i++){
+   const coin=document.createElement("div");
+   coin.className="coin";
+   coin.textContent="₿";
+   coin.style.left=coinPositions[i][0]+"%";
+   coin.style.top=coinPositions[i][1]+"%";
+   coin.style.animationDelay=(i*.04)+"s";
+   coinLayer.appendChild(coin);
  }
 
- // Day one seed
- if(day===1){
-  node("ellipse",{cx:200,cy:378,rx:6,ry:4,fill:"#624022"},leaves);
- }else{
-  // Naturally tapered trunk with subtle bends
-  const trunkWidth=2+age*17;
-  node("path",{
-   d:`M${200-trunkWidth*.5} 383
-   C${194-trunkWidth*.4} 330 ${202-trunkWidth*.2} 280 ${198-trunkWidth*.2} ${top}
-   L${202+trunkWidth*.4} ${top}
-   C${210+trunkWidth*.3} 290 ${205+trunkWidth*.4} 340 ${200+trunkWidth*.5} 383Z`,
-   fill:"url(#bark)",stroke:"#634024","stroke-width":".8"
-  },wood);
-
-  // First two leaves on the young sprout
-  leaf(200,top+5,day<8?7:Math.min(13,7+age*6),-48,"#58a943");
-  leaf(200,top+5,day<8?7:Math.min(13,7+age*6),48,"#3c9239");
-
-  // Branches progressively grow from the trunk
-  const number=day<8?0:Math.min(26,Math.floor((day-5)*.28));
-  for(let i=0;i<number;i++){
-   const f=(i+1)/(number+1);
-   const y=ground-height*f;
-   const side=i%2===0?-1:1;
-   const length=(8+age*105)*(0.45+f*.6);
-   const x=200+side*length;
-   const ey=y-length*.48;
-
-   branch(200,y,x,ey,1+age*4);
-
-   if(day>=12){
-    const s=4+age*8;
-    leaf(x,ey,s,side<0?-40:40,i%2?"#39873a":"#5cab43");
-    leaf(x,ey,s,side<0?48:-48,"#347b36");
-   }
-  }
-
-  // Irregular canopy: denser with age, individual leaves are visible
-  if(day>=12){
-   const count=Math.min(260,Math.floor((day-10)*2.9));
-   const radius=12+age*105;
-
-   for(let i=0;i<count;i++){
-    const angle=i*2.399963;
-    const r=radius*Math.sqrt((i+.5)/count);
-    const x=200+Math.cos(angle)*r;
-    const y=top+height*.34+Math.sin(angle)*r*.64;
-
-    leaf(x,y,3.5+age*3.5,(i*47)%110-55,
-      ["#276b32","#34883a","#499b3f","#5cae47","#2e7834"][i%5]);
-   }
-  }
- }
-
- // BTC coins first appear on day 90 and increase gradually
- const coinPositions=[
-  [151,.56],[248,.60],[196,.29],[127,.72],[274,.73],
-  [169,.78],[229,.79],[169,.42],[237,.43],[201,.63],
-  [199,.13],[143,.34],[260,.35],[185,.91],[218,.51],
-  [110,.53],[287,.49],[222,.25],[161,.62],[245,.69]
- ];
- const visible=day<90?0:Math.min(coinPositions.length,Math.floor((day-89)*2));
-
- for(let i=0;i<visible;i++){
-  const [x,f]=coinPositions[i];
-  const y=top+Math.max(12,height*f);
-  const g=node("g",{},coins);
-  node("circle",{cx:x,cy:y,r:i%5===0?12:9.5,fill:"url(#gold)",stroke:"#a97113","stroke-width":2},g);
-  node("circle",{cx:x,cy:y,r:i%5===0?8:6.5,fill:"none",stroke:"#fff0a0","stroke-width":1},g);
-  const t=node("text",{x,y:y+1.5,"text-anchor":"middle","font-size":i%5===0?14:11,"font-weight":"bold",fill:"#76500b"},g);
-  t.textContent="₿";
- }
-
- $("day").textContent=`DAY ${day} / 100`;
- $("growth").textContent=day+"%";
- $("count").textContent=visible;
-
- let s,m;
- if(day===1){s="Seed";m="🌰 Day 1: The seed is beneath the soil."}
- else if(day===2){s="Sprout";m="🌱 Day 2: A tiny shoot with two leaves emerges."}
- else if(day<10){s="Seedling";m="🌿 The stem rises and the first leaves expand."}
- else if(day<30){s="Young plant";m="🍃 More leaves form along the growing stem."}
- else if(day<60){s="Young tree";m="🌳 The trunk strengthens and branches spread."}
- else if(day<90){s="Maturing";m="🌳 The canopy becomes fuller and greener."}
- else if(day<100){s="BTC growth";m="₿ Gold BTC coins begin to appear among the leaves."}
- else{s="BTC tree";m="🌳 Day 100: A full green tree with many visible BTC coins."}
-
- $("stage").textContent=s;
- $("message").textContent=m;
+ document.getElementById("coinCount").textContent=count;
 }
 
-function setDay(d){
- $("slider").value=Math.max(1,Math.min(100,d));
- draw(Number($("slider").value));
+function update(day){
+ day=Math.max(1,Math.min(100,Number(day)));
+ slider.value=day;
+
+ const stage=[...stages].reverse().find(s=>day>=s.day)||stages[0];
+
+ if(photo.dataset.stage!==String(stage.day)){
+   photo.style.opacity=".35";
+   photo.onload=()=>{photo.style.opacity="1"};
+   photo.onerror=()=>{
+     photo.style.opacity="1";
+     document.getElementById("message").textContent=
+       "Photo unavailable. Check your internet connection or image URL.";
+   };
+   photo.src=stage.url;
+   photo.dataset.stage=String(stage.day);
+ }
+
+ document.getElementById("dayTitle").textContent=`Day ${day} / 100`;
+ document.getElementById("badge").textContent=`DAY ${day} / 100`;
+ document.getElementById("dayStat").textContent=`${day} / 100`;
+ document.getElementById("stage").textContent=
+   day>=90?"BTC growth":stage.name;
+
+ document.getElementById("message").textContent=
+   day>=90
+   ? day===100
+     ? "🌳₿ Day 100: BTC coins are visible among the tree foliage."
+     : `₿ Day ${day}: More BTC coins begin appearing.`
+   : stage.message;
+
+ drawCoins(day);
 }
-function stop(){
+
+function stopDemo(){
  if(timer)clearInterval(timer);
  timer=null;
- $("demo").textContent="▶ Demo Growth";
+ document.getElementById("demo").textContent="▶ Demo Tree";
 }
-$("slider").addEventListener("input",()=>draw(Number($("slider").value)));
-$("prev").onclick=()=>{stop();setDay(+$("slider").value-1)};
-$("next").onclick=()=>{stop();setDay(+$("slider").value+1)};
-$("demo").onclick=()=>{
- if(timer){stop();return}
- if(+$("slider").value>=100)setDay(1);
- $("demo").textContent="❚❚ Pause";
- timer=setInterval(()=>{
-  const d=+$("slider").value;
-  if(d>=100){stop();return}
-  setDay(d+1);
- },450);
+
+slider.addEventListener("input",()=>update(slider.value));
+
+document.getElementById("previous").onclick=()=>{
+ stopDemo();
+ update(Number(slider.value)-1);
 };
-draw(1);
+
+document.getElementById("next").onclick=()=>{
+ stopDemo();
+ update(Number(slider.value)+1);
+};
+
+document.getElementById("demo").onclick=()=>{
+ if(timer){stopDemo();return;}
+
+ if(Number(slider.value)>=100)update(1);
+
+ document.getElementById("demo").textContent="❚❚ Pause";
+
+ timer=setInterval(()=>{
+   const d=Number(slider.value);
+   if(d>=100){stopDemo();return;}
+   update(d+1);
+ },500);
+};
+
+update(1);
 </script>
 </body>
 </html>
