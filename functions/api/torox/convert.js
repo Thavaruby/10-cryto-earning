@@ -47,14 +47,19 @@ async function getUser(request, env) {
 
 async function getBtcPrice() {
   const response = await fetch(
-    "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT",
-    { headers: { "Accept": "application/json" } }
+    "https://myfaucetcrypto.com/api/converter/crypto-rates",
+    {
+      headers: { "Accept": "application/json" },
+      cf: { cacheTtl: 0 }
+    }
   );
 
-  if (!response.ok) throw new Error("BTC price unavailable");
+  if (!response.ok) {
+    throw new Error("BTC price unavailable");
+  }
 
   const data = await response.json();
-  const price = Number(data.price);
+  const price = Number(data?.rates?.BTC);
 
   if (!Number.isFinite(price) || price <= 0) {
     throw new Error("Invalid BTC price");
