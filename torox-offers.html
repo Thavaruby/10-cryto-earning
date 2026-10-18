@@ -1,0 +1,236 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Earn Points by completing Torox offers on My Crypto Faucet.">
+  <title>Earn Points with Torox | My Crypto Faucet</title>
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+
+  <style>
+    :root {
+      --bg: #07152f;
+      --panel: #102344;
+      --gold: #f5c542;
+      --text: #ffffff;
+      --muted: #b8c5d9;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      background: #0b1d3b;
+      border-bottom: 1px solid #243c60;
+      padding: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    .nav {
+      max-width: 1100px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      color: var(--gold);
+      font-weight: bold;
+      font-size: 19px;
+    }
+
+    a { color: var(--gold); }
+
+    .back {
+      text-decoration: none;
+      border: 1px solid var(--gold);
+      border-radius: 8px;
+      padding: 10px 14px;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 25px auto;
+      padding: 0 15px;
+    }
+
+    .intro {
+      background: var(--panel);
+      border: 1px solid #243c60;
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin-top: 0;
+      color: var(--gold);
+    }
+
+    .muted {
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .points {
+      color: var(--gold);
+      font-weight: bold;
+    }
+
+    #status {
+      padding: 14px;
+      margin: 15px 0;
+      border-radius: 8px;
+      background: #102344;
+      line-height: 1.6;
+    }
+
+    #retry {
+      display: none;
+      background: var(--gold);
+      color: #07152f;
+      font-weight: bold;
+      border: 0;
+      border-radius: 8px;
+      padding: 12px 18px;
+      cursor: pointer;
+    }
+
+    #offerwall {
+      width: 100%;
+      height: 75vh;
+      min-height: 500px;
+      border: 1px solid #243c60;
+      border-radius: 12px;
+      background: white;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      padding: 25px 12px;
+      font-size: 13px;
+    }
+
+    @media (max-width: 600px) {
+      #offerwall { height: 70vh; min-height: 450px; }
+      .intro { padding: 16px; }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand">₿ My Crypto Faucet</div>
+      <a class="back" href="/dashboard.html">← Back to Dashboard</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="intro">
+      <h1>🎯 Earn Points with Torox</h1>
+      <p class="muted">
+        Complete available offers and activities through Torox to earn
+        <span class="points">Points</span>.
+      </p>
+      <p class="muted">
+        Torox Points are separate from your Bitcoin faucet balance.
+        Completing an offer does not automatically add BTC to your wallet.
+      </p>
+    </section>
+
+    <div id="status" role="status" aria-live="polite">
+      Checking your login and connecting to Torox…
+    </div>
+
+    <button id="retry" type="button">Try Again</button>
+
+    <iframe
+      id="offerwall"
+      title="Torox Offerwall"
+      hidden
+      referrerpolicy="strict-origin-when-cross-origin"
+      allow="clipboard-write">
+    </iframe>
+  </main>
+
+  <footer>
+    My Crypto Faucet · Torox Offerwall
+  </footer>
+
+  <script>
+    const statusBox = document.getElementById("status");
+    const offerwall = document.getElementById("offerwall");
+    const retryButton = document.getElementById("retry");
+
+    async function loadTorox() {
+      statusBox.textContent = "Checking your login and connecting to Torox…";
+      retryButton.style.display = "none";
+      offerwall.hidden = true;
+      offerwall.removeAttribute("src");
+
+      try {
+        const response = await fetch("/api/torox/session", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Accept": "application/json"
+          }
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (response.status === 401) {
+          statusBox.textContent =
+            "Please log in to My Crypto Faucet first, then reopen this page.";
+          retryButton.style.display = "inline-block";
+          return;
+        }
+
+        if (!response.ok || !data.wallUrl) {
+          statusBox.textContent =
+            data.error ||
+            "Torox could not be opened. Please try again later.";
+          retryButton.style.display = "inline-block";
+          return;
+        }
+
+        const wallUrl = new URL(data.wallUrl);
+
+        if (
+          wallUrl.protocol !== "https:" ||
+          wallUrl.hostname !== "wall.torox.io"
+        ) {
+          throw new Error("Invalid Torox offerwall URL.");
+        }
+
+        offerwall.src = wallUrl.href;
+        offerwall.hidden = false;
+        statusBox.textContent =
+          "Torox is loading. Complete offers to earn Points.";
+      } catch (error) {
+        console.error("Torox loading error:", error);
+        statusBox.textContent =
+          "Unable to connect to Torox. Please check your connection and try again.";
+        retryButton.style.display = "inline-block";
+      }
+    }
+
+    retryButton.addEventListener("click", loadTorox);
+    loadTorox();
+  </script>
+</body>
+</html>
