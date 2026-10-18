@@ -1,6 +1,12 @@
+
 const EXPECTED_CURRENCY = "Points";
 const TOROX_SOURCE_IP = "44.212.211.226";
 const MAX_AMOUNT_POINTS = 1_000_000_000;
+
+function logToroxReject(reason, details = {}) {
+  // Never log the app key or supplied/expected signatures.
+  console.warn("[Torox postback]", reason, details);
+}
 
 function reply(value, status = 200) {
   return new Response(value, {
@@ -131,7 +137,7 @@ function parsePoints(value) {
   const unsigned = negative ? value.slice(1) : value;
   const [wholeRaw, fractionRaw = ""] = unsigned.split(".");
 
-  // Accept extra decimal places only when they are trailing zeros.
+  // Extra decimal places are allowed only when trailing zeros.
   if (
     fractionRaw.length > 3 &&
     /[^0]/.test(fractionRaw.slice(3))
@@ -187,6 +193,10 @@ function matchesConversion(
 export async function onRequestGet({ request, env }) {
   try {
     if (!env.DB || !env.TOROX_APP_KEY) {
+      console.error("[Torox postback] Missing configuration", {
+        dbConfigured: Boolean(env.DB),
+        appKeyConfigured: Boolean(env.TOROX_APP_KEY)
+      });
       return reply("0", 500);
     }
 
@@ -208,33 +218,55 @@ export async function onRequestGet({ request, env }) {
       !validText(currencyName, 50) ||
       !/^[a-f0-9]{32}$/.test(suppliedSignature)
     ) {
+      logToroxReject("missing_or_invalid_parameters", {
+        hasId: Boolean(conversionId),
+        hasOfferId: Boolean(offerId),
+        hasUserId: Boolean(userIdRaw),
+        hasAmount: Boolean(amountRaw),
+        hasCurrency: Boolean(currencyName),
+        hasValidSignatureFormat: /^[a-f0-9]{32}$/.test(suppliedSignature)
+      });
       return reply("0");
     }
 
-    // The user_id must be the numeric users.id from your database.
     if (!/^[1-9]\d*$/.test(userIdRaw)) {
+      logToroxReject("invalid_user_id_format", { conversionId, offerId });
       return reply("0");
     }
 
     const userId = Number(userIdRaw);
     if (!Number.isSafeInteger(userId)) {
+      logToroxReject("unsafe_user_id", { conversionId, offerId });
       return reply("0");
     }
 
     const expectedCurrency = env.TOROX_CURRENCY_NAME || EXPECTED_CURRENCY;
     if (currencyName !== expectedCurrency) {
+      logToroxReject("currency_mismatch", {
+        conversionId,
+        offerId,
+        userId,
+        receivedCurrency: currencyName,
+        expectedCurrency
+      });
       return reply("0");
     }
 
     const amountMilli = parsePoints(amountRaw);
     if (amountMilli === null) {
+      logToroxReject("invalid_amount", { conversionId, offerId, userId });
       return reply("0");
     }
 
-    // Cloudflare must be in front of this Pages endpoint.
-    // Verify Torox's actual source IP before production use.
+    // Keep source IP verification enabled.
     const sourceIp = request.headers.get("CF-Connecting-IP");
     if (sourceIp !== TOROX_SOURCE_IP) {
+      logToroxReject("source_ip_mismatch", {
+        conversionId,
+        offerId,
+        userId,
+        sourceIp: sourceIp || "missing"
+      });
       return reply("0", 403);
     }
 
@@ -243,21 +275,34 @@ export async function onRequestGet({ request, env }) {
     );
 
     if (!constantTimeEqual(suppliedSignature, expectedSignature)) {
+      logToroxReject("signature_mismatch", {
+        conversionId,
+        offerId,
+        userId
+      });
       return reply("0");
     }
 
     const existing = await findConversion(env.DB, conversionId);
 
     if (existing) {
-      return reply(
-        matchesConversion(
-          existing,
-          userId,
-          offerId,
-          amountMilli,
-          currencyName
-        ) ? "1" : "0"
+      const matches = matchesConversion(
+        existing,
+        userId,
+        offerId,
+        amountMilli,
+        currencyName
       );
+
+      if (!matches) {
+        logToroxReject("duplicate_conversion_mismatch", {
+          conversionId,
+          offerId,
+          userId
+        });
+      }
+
+      return reply(matches ? "1" : "0");
     }
 
     const user = await env.DB.prepare(
@@ -265,13 +310,16 @@ export async function onRequestGet({ request, env }) {
     ).bind(userId).first();
 
     if (!user) {
+      logToroxReject("user_not_found", {
+        conversionId,
+        offerId,
+        userId
+      });
       return reply("0");
     }
 
     const now = new Date().toISOString();
 
-    // All three database changes are submitted together.
-    // The unique conversion ID prevents a repeated credit.
     await env.DB.batch([
       env.DB.prepare(`
         INSERT INTO torox_conversions
@@ -310,10 +358,22 @@ export async function onRequestGet({ request, env }) {
       )
     ]);
 
+    console.log("[Torox postback] Credit recorded", {
+      conversionId,
+      offerId,
+      userId,
+      amountMilli,
+      currencyName
+    });
+
     return reply("1");
   } catch (error) {
-    // If a concurrent retry inserted this conversion first,
-    // acknowledge only when every stored field matches.
+    console.error("[Torox postback] Processing exception", {
+      errorName: error instanceof Error ? error.name : "UnknownError",
+      errorMessage: error instanceof Error ? error.message : "Unknown error"
+    });
+
+    // Acknowledge only if a retry already recorded the same conversion.
     try {
       const url = new URL(request.url);
       const conversionId = url.searchParams.get("id");
