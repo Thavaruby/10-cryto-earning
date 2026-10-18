@@ -1,4 +1,3 @@
-
 const EXPECTED_CURRENCY = "Points";
 const TOROX_SOURCE_IP = "44.212.211.226";
 const MAX_AMOUNT_POINTS = 1_000_000_000;
