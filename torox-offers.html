@@ -190,6 +190,54 @@
   </p>
 </section>
 
+<section class="intro" id="torox-history">
+  <h2 style="color:#f5c542">📜 Conversion History</h2>
+  <p class="muted">
+    Your latest 50 Points-to-BTC conversions.
+  </p>
+
+  <p id="historyStatus" class="muted"
+     role="status" aria-live="polite">
+    Loading conversion history...
+  </p>
+
+  <div style="overflow-x:auto">
+    <table style="width:100%;border-collapse:collapse;
+      min-width:600px;text-align:left">
+      <thead>
+        <tr style="color:#f5c542">
+          <th style="padding:10px;border-bottom:1px solid #345">
+            Date
+          </th>
+          <th style="padding:10px;border-bottom:1px solid #345">
+            Points
+          </th>
+          <th style="padding:10px;border-bottom:1px solid #345">
+            BTC Received
+          </th>
+          <th style="padding:10px;border-bottom:1px solid #345">
+            BTC Price (USDT)
+          </th>
+        </tr>
+      </thead>
+      <tbody id="historyRows">
+        <tr>
+          <td colspan="4" style="padding:12px">
+            Loading...
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <button id="refreshHistory" type="button"
+    style="margin-top:14px;background:#f5c542;
+    color:#07152f;border:0;border-radius:8px;
+    padding:10px 15px;font-weight:bold;cursor:pointer">
+    Refresh History
+  </button>
+</section>
+
     <div id="status" role="status" aria-live="polite">
       Checking your login and connecting to Torox…
     </div>
@@ -362,6 +410,83 @@ convertButton.addEventListener("click", async () => {
     await loadToroxBalance();
   }
 });
+
+    
+const historyRows = document.getElementById("historyRows");
+const historyStatus = document.getElementById("historyStatus");
+const refreshHistoryButton = document.getElementById("refreshHistory");
+
+async function loadConversionHistory() {
+  historyStatus.textContent = "Loading conversion history...";
+  historyRows.replaceChildren();
+
+  try {
+    const response = await fetch("/api/torox/history", {
+      method: "GET",
+      credentials: "same-origin",
+      cache: "no-store",
+      headers: { "Accept": "application/json" }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(data.error || "Could not load history.");
+    }
+
+    if (!Array.isArray(data.history) || data.history.length === 0) {
+      historyStatus.textContent = "No conversions yet.";
+      return;
+    }
+
+    historyStatus.textContent =
+      "Showing your latest " + data.history.length + " conversion(s).";
+
+    for (const item of data.history) {
+      const tr = document.createElement("tr");
+
+      const values = [
+        Number.isFinite(Date.parse(item.createdAt))
+          ? new Date(item.createdAt).toLocaleString()
+          : "—",
+        Number(item.points).toLocaleString(undefined, {
+          maximumFractionDigits: 3
+        }),
+        Number(item.btc).toFixed(8),
+        "$" + Number(item.btcPriceUSDT).toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        })
+      ];
+
+      for (const value of values) {
+        const td = document.createElement("td");
+        td.style.padding = "10px";
+        td.style.borderBottom = "1px solid #243c60";
+        td.textContent = value;
+        tr.appendChild(td);
+      }
+
+      historyRows.appendChild(tr);
+    }
+  } catch (error) {
+    historyStatus.textContent = error.message;
+    const tr = document.createElement("tr");
+    const td = document.createElement("td");
+    td.colSpan = 4;
+    td.style.padding = "12px";
+    td.textContent = "History unavailable. Please try again.";
+    tr.appendChild(td);
+    historyRows.appendChild(tr);
+  }
+}
+
+refreshHistoryButton.addEventListener(
+  "click",
+  loadConversionHistory
+);
+
+loadConversionHistory();
 
 loadToroxBalance();
 
