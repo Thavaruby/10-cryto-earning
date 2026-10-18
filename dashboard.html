@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/png" href="assets/favi.png">
+<link rel="icon" type="image/png" href="assets/favic.png">
 <title>Dashboard - My Crypto Faucet</title>
 <meta name="robots" content="noindex, nofollow">
 
@@ -61,29 +61,25 @@ body{
     justify-content:center;
     gap:11px;
 }
-.logo-coin{
-    width:48px;
-    height:48px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    border-radius:50%;
-    background:
-        radial-gradient(
-            circle at 30% 20%,
-            #fff8cf,
-            #fbbf24 35%,
-            #f59e0b 70%,
-            #b45309
-        );
-    color:#111827;
-    font-size:25px;
-    font-weight:900;
-    border:2px solid rgba(255,255,255,.30);
-    box-shadow:
-        0 0 0 5px rgba(251,191,36,.06),
-        0 0 28px rgba(251,191,36,.24),
-        inset 3px 3px 9px rgba(255,255,255,.35);
+..logo-icon {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    box-shadow: 0 0 22px rgba(251,191,36,0.28);
+    animation: pulseCoin 3s ease-in-out infinite;
+}
+
+.logo-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
 }
 .brand h1{
     margin:0;
@@ -1548,8 +1544,9 @@ select:focus{
 ===================================================== -->
 <header class="crypto-header">
     <div class="brand">
-        <div class="logo-coin">
-            ₿ </div>
+        <span class="logo-icon">
+    <img src="/assets/favicon.png" alt="My Crypto Faucet">
+</span>
         <div>
             <h1> My Crypto Faucet </h1>
         </div>
@@ -1565,11 +1562,6 @@ select:focus{
 <div class="container">
     <!-- DASHBOARD INTRO -->
     <section class="dashboard-intro">
-        <img
-            src="assets/favi.png"
-            class="dashboard-intro-icon"
-            alt="My Crypto Faucet">
-        <h2> Dashboard </h2>
         <p>
 Claim free Bitcoin every hour and grow your BTC balance with regular hourly rewards. Check your current Bitcoin balance and keep track of your earnings from every successful claim. Withdraw your available BTC securely through FaucetPay whenever you reach the minimum withdrawal amount. Your claim and withdrawal activity can be reviewed anytime from the dashboard menu. Invite genuine users with your referral link and earn additional Bitcoin rewards automatically. Referral rewards are added directly to your BTC balance when your referred users reach the required milestones. Use your dashboard to manage your Bitcoin earnings, referrals, withdrawals, and support requests in one place.
         </p>
