@@ -138,15 +138,20 @@ header {
     height: 40px;
     flex-shrink: 0;
     border-radius: 50%;
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(145deg,#fbbf24,#f59e0b);
-    color: #111827;
-    font-size: 23px;
-    font-weight: 900;
+    background: transparent;
     box-shadow: 0 0 22px rgba(251,191,36,0.28);
     animation: pulseCoin 3s ease-in-out infinite;
+}
+
+.logo-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
 }
 
 .nav-links {
@@ -1289,7 +1294,9 @@ a:focus-visible {
     <nav class="navbar">
 
         <a href="/" class="logo" aria-label="My Crypto Faucet Home">
-            <span class="logo-icon">₿</span>
+            <span class="logo-icon">
+    <img src="/assets/favicon.png" alt="My Crypto Faucet">
+</span>
             My Crypto Faucet
         </a>
 
@@ -1353,10 +1360,9 @@ a:focus-visible {
 
             <div class="coin-glow"></div>
 
-            <div class="floating-coin coin-1"> <div class="bitcoin">
-                <img src="/assets/favicon.png" alt="Bitcoin">
-            </div>
-            </div>
+<div class="floating-coin coin-1">
+    <img src="/assets/favicon.png" alt="₿">
+</div>
             <div class="floating-coin coin-2">₿</div>
             <div class="floating-coin coin-3">₿</div>
 
