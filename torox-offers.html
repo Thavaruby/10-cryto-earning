@@ -152,6 +152,44 @@
       </p>
     </section>
 
+<section class="intro" id="torox-conversion">
+  <h2 style="color:#f5c542">₿ Convert Points to BTC</h2>
+
+  <p class="muted">
+    Your Torox Points are separate from your BTC balance.
+    Convert them whenever you choose.
+  </p>
+
+  <p>Available Points:
+    <strong class="points" id="pointsBalance">Loading...</strong>
+  </p>
+
+  <p>Current BTC price:
+    <strong id="btcPrice">Loading...</strong>
+  </p>
+
+  <p>Estimated BTC to receive:
+    <strong class="points" id="estimatedBTC">Loading...</strong>
+  </p>
+
+  <button
+    id="convertButton"
+    type="button"
+    style="background:#f5c542;color:#07152f;border:0;
+    border-radius:8px;padding:13px 18px;font-weight:bold;
+    cursor:pointer">
+    Convert to BTC
+  </button>
+
+  <p id="conversionStatus" class="muted"
+     role="status" aria-live="polite"></p>
+
+  <p class="muted">
+    Exchange rate: 70 Points = $1.
+    The BTC amount is calculated using the current market price.
+  </p>
+</section>
+
     <div id="status" role="status" aria-live="polite">
       Checking your login and connecting to Torox…
     </div>
@@ -228,6 +266,104 @@
         retryButton.style.display = "inline-block";
       }
     }
+
+const pointsBalanceEl = document.getElementById("pointsBalance");
+const btcPriceEl = document.getElementById("btcPrice");
+const estimatedBTCEl = document.getElementById("estimatedBTC");
+const convertButton = document.getElementById("convertButton");
+const conversionStatus = document.getElementById("conversionStatus");
+
+async function loadToroxBalance() {
+  pointsBalanceEl.textContent = "Loading...";
+  btcPriceEl.textContent = "Loading...";
+  estimatedBTCEl.textContent = "Loading...";
+
+  try {
+    const response = await fetch("/api/torox/balance", {
+      method: "GET",
+      credentials: "same-origin",
+      cache: "no-store"
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Could not load balance.");
+    }
+
+    pointsBalanceEl.textContent =
+      Number(data.points).toLocaleString(undefined, {
+        maximumFractionDigits: 3
+      }) + " Points";
+
+    btcPriceEl.textContent =
+      "$" + Number(data.btcPriceUSDT).toLocaleString(
+        undefined,
+        { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+      );
+
+    estimatedBTCEl.textContent =
+      Number(data.estimatedBTC).toFixed(8) + " BTC";
+
+    convertButton.disabled = Number(data.pointsMilli) <= 0;
+    convertButton.style.opacity =
+      convertButton.disabled ? "0.6" : "1";
+
+    conversionStatus.textContent = "";
+  } catch (error) {
+    pointsBalanceEl.textContent = "Unavailable";
+    btcPriceEl.textContent = "Unavailable";
+    estimatedBTCEl.textContent = "Unavailable";
+    conversionStatus.textContent = error.message;
+  }
+}
+
+convertButton.addEventListener("click", async () => {
+  if (convertButton.disabled) return;
+
+  const confirmed = window.confirm(
+    "Convert your entire available Torox Points balance to BTC?"
+  );
+
+  if (!confirmed) return;
+
+  convertButton.disabled = true;
+  convertButton.textContent = "Converting...";
+  conversionStatus.textContent = "Processing conversion...";
+
+  try {
+    const response = await fetch("/api/torox/convert", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: {
+        "Accept": "application/json"
+      }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(data.error || "Conversion failed.");
+    }
+
+    conversionStatus.textContent =
+      "Success! " +
+      Number(data.convertedPoints).toLocaleString() +
+      " Points converted. " +
+      Number(data.creditedBTC).toFixed(8) +
+      " BTC added to your BTC balance.";
+
+    await loadToroxBalance();
+  } catch (error) {
+    conversionStatus.textContent = error.message;
+  } finally {
+    convertButton.textContent = "Convert to BTC";
+    convertButton.disabled = false;
+    await loadToroxBalance();
+  }
+});
+
+loadToroxBalance();
 
     retryButton.addEventListener("click", loadTorox);
     loadTorox();
