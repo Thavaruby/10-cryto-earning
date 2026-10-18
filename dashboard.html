@@ -328,6 +328,69 @@ body{
     color:#93c5fd;
     border:1px solid rgba(96,165,250,.20);
 }
+.torox-card {
+  margin: 18px 0;
+  padding: 18px;
+  border: 1px solid #f5c542;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #102344, #07152f);
+  color: #fff;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.25);
+}
+.torox-heading {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+.torox-icon {
+  width: 54px;
+  height: 54px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: #f5c542;
+  color: #07152f;
+  font-size: 27px;
+}
+.torox-card h3 {
+  margin: 0 0 6px;
+  color: #f5c542;
+  font-size: 21px;
+}
+.torox-card p {
+  margin: 5px 0 14px;
+  color: #c3cee0;
+  line-height: 1.5;
+}
+.torox-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px;
+  border: 0;
+  border-radius: 10px;
+  background: #f5c542;
+  color: #07152f;
+  font-size: 15px;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform .2s, box-shadow .2s;
+}
+.torox-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 16px #f5c54240;
+}
+.torox-note {
+  display: block;
+  margin-top: 10px;
+  text-align: center;
+  color: #aabbd3;
+  font-size: 12px;
+}
 
 /* =========================================================
    BTC BALANCE
@@ -1573,16 +1636,38 @@ select:focus{
     <section class="dashboard-intro">
         <p>
 Claim free Bitcoin every hour and grow your BTC balance with regular hourly rewards. Check your current Bitcoin balance and keep track of your earnings from every successful claim. Withdraw your available BTC securely through FaucetPay whenever you reach the minimum withdrawal amount. Your claim and withdrawal activity can be reviewed anytime from the dashboard menu. Invite genuine users with your referral link and earn additional Bitcoin rewards automatically. Referral rewards are added directly to your BTC balance when your referred users reach the required milestones. Use your dashboard to manage your Bitcoin earnings, referrals, withdrawals, and support requests in one place.
-        </p>
+        
        <!-- Torox Offerwall Button: place directly below the Claim button -->
 <button
   type="button"
   class="menu-item"
    font-size="20px"
   onclick="window.location.href='/torox-offers.html'">
-  🎯 Earn More BTC with Offerwall <span colour="blue" font-size="25px">Click</span> And Earn
-</button>
+  🎯 Offerwall 
+</button> </p>
     </section>
+   <div class="torox-card">
+  <div class="torox-heading">
+    <div class="torox-icon">🎁</div>
+    <div>
+      <h3>Earn More Points!</h3>
+      <strong>🎯 Torox Offerwall</strong>
+    </div>
+  </div>
+
+  <p>
+    Discover exciting offers, complete tasks and earn
+    more BTC.
+  </p>
+
+  <a class="torox-cta" href="/torox-offers.html">
+    🚀 START EARNING NOW →
+  </a>
+
+  <span class="torox-note">
+    Torox Points are converted to current btc value then add your BTC balance.
+  </span>
+   </div>
     <div id="topNotification"></div>
 
     <!-- =================================================
