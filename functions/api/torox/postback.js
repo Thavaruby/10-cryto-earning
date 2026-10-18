@@ -122,20 +122,32 @@ function constantTimeEqual(a, b) {
 function parsePoints(value) {
   if (
     typeof value !== "string" ||
-    !/^-?\d+(?:\.\d{1,3})?$/.test(value)
+    !/^-?\d+(?:\.\d+)?$/.test(value)
   ) {
     return null;
   }
 
   const negative = value.startsWith("-");
   const unsigned = negative ? value.slice(1) : value;
-  const parts = unsigned.split(".");
-  const whole = Number(parts[0]);
-  const fraction = Number((parts[1] || "").padEnd(3, "0"));
+  const [wholeRaw, fractionRaw = ""] = unsigned.split(".");
+
+  // Accept extra decimal places only when they are trailing zeros.
+  if (
+    fractionRaw.length > 3 &&
+    /[^0]/.test(fractionRaw.slice(3))
+  ) {
+    return null;
+  }
+
+  const whole = Number(wholeRaw);
+  const fraction = Number(
+    fractionRaw.slice(0, 3).padEnd(3, "0")
+  );
 
   if (!Number.isSafeInteger(whole)) return null;
 
   const milli = whole * 1000 + fraction;
+
   if (!Number.isSafeInteger(milli)) return null;
   if (milli === 0) return null;
   if (milli > MAX_AMOUNT_POINTS * 1000) return null;
