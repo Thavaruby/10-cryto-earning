@@ -1951,8 +1951,83 @@ My Crypto Faucet · Secure Administration Panel
     </div>
 
 </div>
+
     
-    <script>  
+<!-- TOROX POINTS SETTINGS -->
+<section id="toroxAdminPanel" style="
+  margin:24px 0;
+  padding:22px;
+  border:1px solid #29456b;
+  border-radius:16px;
+  background:#0b1930;
+  color:#fff;
+">
+  <h2 style="margin-top:0;color:#f5c542">
+    Torox Points Settings
+  </h2>
+
+  <p style="color:#b8c8df">
+    Manage the Points conversion rate and conversion fee.
+    These settings apply only to Torox conversions.
+  </p>
+
+  <div style="display:grid;gap:14px;max-width:420px">
+    <label>
+      Points per $1
+      <input
+        id="toroxPointsRate"
+        type="number"
+        min="1"
+        max="1000000"
+        step="1"
+        value="100"
+        style="display:block;width:100%;padding:12px;margin-top:6px"
+      >
+    </label>
+
+    <label>
+      Conversion fee (%)
+      <input
+        id="toroxConversionFee"
+        type="number"
+        min="0"
+        max="50"
+        step="0.1"
+        value="5"
+        style="display:block;width:100%;padding:12px;margin-top:6px"
+      >
+    </label>
+
+    <button
+      type="button"
+      id="toroxSaveSettings"
+      onclick="saveToroxSettings()"
+      style="
+        padding:12px;
+        border:0;
+        border-radius:8px;
+        background:#f5c542;
+        color:#07152f;
+        font-weight:bold;
+        cursor:pointer;
+      "
+    >
+      Save Torox Settings
+    </button>
+
+    <button
+      type="button"
+      onclick="loadToroxSettings()"
+      style="padding:10px;cursor:pointer"
+    >
+      Reload Settings
+    </button>
+
+    <p id="toroxSettingsMessage" role="status"></p>
+  </div>
+</section>
+
+<script>
   
 /* =========================================================  
    GLOBAL STATE  
@@ -3689,6 +3764,107 @@ function statsDetailsNextPage() {
     loadStatsDetails();
 }
 
+    async function loadToroxSettings() {
+  const message = document.getElementById("toroxSettingsMessage");
+
+  try {
+    const response = await fetch("/api/torox/admin-settings", {
+      method: "GET",
+      credentials: "same-origin",
+      cache: "no-store"
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(data.error || "Unable to load settings.");
+    }
+
+    document.getElementById("toroxPointsRate").value =
+      data.settings.pointsPerUsd;
+
+    document.getElementById("toroxConversionFee").value =
+      data.settings.conversionFeePercent;
+
+    message.textContent = "Settings loaded successfully.";
+    message.style.color = "#78e6a0";
+  } catch (error) {
+    message.textContent = error.message || "Unable to load settings.";
+    message.style.color = "#ff8585";
+  }
+}
+
+async function saveToroxSettings() {
+  const message = document.getElementById("toroxSettingsMessage");
+  const button = document.getElementById("toroxSaveSettings");
+
+  const pointsPerUsd = Number(
+    document.getElementById("toroxPointsRate").value
+  );
+
+  const conversionFeePercent = Number(
+    document.getElementById("toroxConversionFee").value
+  );
+
+  if (
+    !Number.isFinite(pointsPerUsd) ||
+    pointsPerUsd < 1 ||
+    pointsPerUsd > 1000000
+  ) {
+    message.textContent = "Points rate must be between 1 and 1,000,000.";
+    message.style.color = "#ff8585";
+    return;
+  }
+
+  if (
+    !Number.isFinite(conversionFeePercent) ||
+    conversionFeePercent < 0 ||
+    conversionFeePercent > 50
+  ) {
+    message.textContent = "Fee must be between 0% and 50%.";
+    message.style.color = "#ff8585";
+    return;
+  }
+
+  button.disabled = true;
+  message.textContent = "Saving settings...";
+
+  try {
+    const response = await fetch("/api/torox/admin-settings", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        pointsPerUsd,
+        conversionFeePercent
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(data.error || "Unable to save settings.");
+    }
+
+    document.getElementById("toroxPointsRate").value =
+      data.settings.pointsPerUsd;
+
+    document.getElementById("toroxConversionFee").value =
+      data.settings.conversionFeePercent;
+
+    message.textContent = "Torox settings saved successfully.";
+    message.style.color = "#78e6a0";
+  } catch (error) {
+    message.textContent = error.message || "Unable to save settings.";
+    message.style.color = "#ff8585";
+  } finally {
+    button.disabled = false;
+  }
+}
+
+loadToroxSettings();
 
 /* =====================================================
    SEARCH
