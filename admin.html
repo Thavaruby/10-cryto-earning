@@ -2027,6 +2027,39 @@ My Crypto Faucet · Secure Administration Panel
   </div>
 </section>
 
+<section id="toroxProfitPanel" style="margin:24px 0;padding:20px;background:#0b1930;color:white;border:1px solid #29456b;border-radius:16px">
+  <h2 style="color:#f5c542">Torox Revenue &amp; Profit Report</h2>
+
+  <p>Known revenue:
+    <strong id="toroxProfitRevenue">—</strong>
+  </p>
+
+  <p>Known payouts:
+    <strong id="toroxProfitKnown">—</strong>
+  </p>
+
+  <p>Missing payouts:
+    <strong id="toroxProfitMissing">—</strong>
+  </p>
+
+  <p>BTC converted (sats):
+    <strong id="toroxProfitSats">—</strong>
+  </p>
+
+  <p>Profit status:
+    <strong id="toroxProfitStatus">Not calculated</strong>
+  </p>
+
+  <p id="toroxProfitMessage">
+    Report not loaded yet.
+  </p>
+
+  <button type="button" onclick="loadToroxProfit()"
+    style="padding:10px;background:#f5c542;color:#07152f;border:0;border-radius:8px">
+    Refresh Report
+  </button>
+</section>
+
 <script>
   
 /* =========================================================  
@@ -3865,6 +3898,62 @@ async function saveToroxSettings() {
 }
 
 loadToroxSettings();
+
+    
+async function loadToroxProfit() {
+  const message = document.getElementById("toroxProfitMessage");
+  const status = document.getElementById("toroxProfitStatus");
+
+  message.textContent = "Loading report...";
+  status.textContent = "Loading...";
+
+  try {
+    const response = await fetch("/api/torox/admin-profit", {
+      method: "GET",
+      credentials: "same-origin",
+      cache: "no-store"
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(data.error || "Unable to load report.");
+    }
+
+    const money = value =>
+      "$" + Number(value || 0).toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 6
+      });
+
+    document.getElementById("toroxProfitRevenue").textContent =
+      money(data.revenueUsd);
+
+    document.getElementById("toroxProfitKnown").textContent =
+      Number(data.knownPayouts || 0).toLocaleString("en-US");
+
+    document.getElementById("toroxProfitMissing").textContent =
+      Number(data.missingPayouts || 0).toLocaleString("en-US");
+
+    document.getElementById("toroxProfitSats").textContent =
+      Number(data.totalConvertedSats || 0).toLocaleString("en-US");
+
+    if (data.profitUsd == null) {
+      status.textContent = "Not yet reliable";
+      message.textContent =
+        data.profitNote ||
+        "Complete payout and BTC cost data are required.";
+    } else {
+      status.textContent = money(data.profitUsd);
+      message.textContent = "Profit report loaded.";
+    }
+  } catch (error) {
+    status.textContent = "Unavailable";
+    message.textContent =
+      error.message || "Unable to load report.";
+  }
+}
+
 
 /* =====================================================
    SEARCH
