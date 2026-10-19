@@ -438,7 +438,7 @@ export async function onRequestGet({ request, env }) {
         amountMilli,
         amountMilli < 0 ? "reversal" : "credit",
         now
-      )
+      ),
       env.DB.prepare(`
         INSERT INTO torox_payout_tracking
           (conversion_id, user_id, offer_id, payout_usd, created_at)
