@@ -283,6 +283,19 @@ export async function onRequestGet({ request, env }) {
       return reply("0");
     }
 
+        // Handle Torox's built-in postback test without crediting a real user.
+    if (
+      params.get("event") === "Test" &&
+      params.get("o_name") === "Postback Tester"
+    ) {
+      console.log("[Torox postback] Test request acknowledged", {
+        conversionId,
+        offerId,
+        userId
+      });
+      return reply("1");
+    }
+
     const existing = await findConversion(env.DB, conversionId);
 
     if (existing) {
