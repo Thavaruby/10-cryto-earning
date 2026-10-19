@@ -3,10 +3,45 @@ const EXPECTED_CURRENCY = "Points";
 const TOROX_SOURCE_IP = "44.212.211.226";
 const MAX_AMOUNT_POINTS = 1_000_000_000;
 
-function logToroxReject(reason, details = {}) {
-  // Never log the app key or supplied/expected signatures.
-  console.warn("[Torox postback]", reason, details);
+
+async function logToroxReject(env, reason, details = {}) {
+  // Keep a minimal diagnostic in Cloudflare logs.
+  console.warn("[Torox postback rejected]", {
+    reason,
+    conversion_id: details.conversionId ?? null,
+    offer_id: details.offerId ?? null,
+    user_id: details.userId ?? null
+  });
+
+  // Persist rejection details in D1 without affecting the response.
+  try {
+    if (!env?.DB) return;
+
+    await env.DB.prepare(`
+      INSERT INTO torox_postback_rejections
+        (conversion_id, offer_id, user_id, reason)
+      VALUES (?, ?, ?, ?)
+    `).bind(
+      details.conversionId == null
+        ? null
+        : String(details.conversionId),
+      details.offerId == null
+        ? null
+        : String(details.offerId),
+      details.userId == null ||
+      !Number.isSafeInteger(Number(details.userId))
+        ? null
+        : Number(details.userId),
+      String(reason).slice(0, 200)
+    ).run();
+  } catch (error) {
+    // Diagnostic failure must not change the postback response.
+    console.error("[Torox rejection log insert failed]", {
+      reason: String(error?.message || "D1 insert failed")
+    });
+  }
 }
+
 
 function reply(value, status = 200) {
   return new Response(value, {
@@ -303,7 +338,7 @@ export async function onRequestGet({ request, env }) {
     // Keep source IP verification enabled.
     const sourceIp = request.headers.get("CF-Connecting-IP");
     if (sourceIp !== TOROX_SOURCE_IP) {
-      logToroxReject("source_ip_mismatch", {
+      logToroxReject(env,"source_ip_mismatch", {
         conversionId,
         offerId,
         userId,
