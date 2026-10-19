@@ -80,47 +80,105 @@ export async function onRequestGet({ request, env }) {
       )
     `).run();
 
-    const result = await db.prepare(`
+    // Include every conversion, even if its payout
+    // has not yet been recorded.
+    const revenueResult = await db.prepare(`
       SELECT
-        COUNT(*) AS totalConversions,
-        COUNT(payout_usd) AS knownPayouts,
-        SUM(CASE WHEN payout_usd IS NULL THEN 1 ELSE 0 END)
-          AS missingPayouts,
-        COALESCE(SUM(payout_usd), 0) AS revenueUsd
-      FROM torox_payout_tracking
+        COUNT(c.conversion_id) AS totalConversions,
+
+        COUNT(p.conversion_id) AS trackedConversions,
+
+        COUNT(p.payout_usd) AS knownPayouts,
+
+        SUM(
+          CASE
+            WHEN p.payout_usd IS NULL THEN 1
+            ELSE 0
+          END
+        ) AS missingPayouts,
+
+        COALESCE(SUM(p.payout_usd), 0) AS revenueUsd
+
+      FROM torox_conversions c
+
+      LEFT JOIN torox_payout_tracking p
+        ON p.conversion_id = c.conversion_id
     `).first();
 
-    const redemption = await db.prepare(`
+    // Calculate the recorded BTC cost using the
+    // BTC price stored at each redemption.
+    const costResult = await db.prepare(`
       SELECT
         COUNT(*) AS totalRedemptions,
-        COALESCE(SUM(btc_sats), 0) AS totalSats
+
+        COALESCE(SUM(btc_sats), 0) AS totalSats,
+
+        COALESCE(
+          SUM(
+            (btc_sats / 100000000.0) * btc_price_usdt
+          ),
+          0
+        ) AS convertedBtcCostUsd
+
       FROM torox_points_redemptions
     `).first();
 
-    const revenue = Number(result?.revenueUsd || 0);
-    const known = Number(result?.knownPayouts || 0);
-    const missing = Number(result?.missingPayouts || 0);
-    const total = Number(result?.totalConversions || 0);
-    const sats = Number(redemption?.totalSats || 0);
+    const totalConversions =
+      Number(revenueResult?.totalConversions || 0);
 
-    // BTC value is intentionally not estimated here:
-    // historical redemptions need their recorded BTC price
-    // to calculate a reliable USD cost.
+    const trackedConversions =
+      Number(revenueResult?.trackedConversions || 0);
+
+    const knownPayouts =
+      Number(revenueResult?.knownPayouts || 0);
+
+    const missingPayouts =
+      Number(revenueResult?.missingPayouts || 0);
+
+    const revenueUsd =
+      Number(revenueResult?.revenueUsd || 0);
+
+    const totalRedemptions =
+      Number(costResult?.totalRedemptions || 0);
+
+    const totalConvertedSats =
+      Number(costResult?.totalSats || 0);
+
+    const convertedBtcCostUsd =
+      Number(costResult?.convertedBtcCostUsd || 0);
+
+    // Do not claim an accurate profit while any
+    // conversion has an unknown payout.
+    const profitUsd = missingPayouts === 0
+      ? revenueUsd - convertedBtcCostUsd
+      : null;
+
     return json({
       success: true,
-      revenueUsd: revenue,
-      knownPayouts: known,
-      missingPayouts: missing,
-      totalTrackedConversions: total,
-      totalRedemptions: Number(redemption?.totalRedemptions || 0),
-      totalConvertedSats: sats,
-      profitUsd: null,
-      profitNote:
-        "Profit requires the USD value of BTC at each redemption. " +
-        "Missing payout records are unknown, not zero revenue."
+
+      totalConversions,
+      trackedConversions,
+      knownPayouts,
+      missingPayouts,
+
+      revenueUsd,
+
+      totalRedemptions,
+      totalConvertedSats,
+      convertedBtcCostUsd,
+
+      profitUsd,
+
+      profitNote: profitUsd === null
+        ? "Profit is not reliable yet. Some conversion payouts are missing or unknown."
+        : "Profit is calculated from recorded payouts minus recorded BTC conversion cost."
     });
+
   } catch (error) {
     console.error("Torox profit report error:", error);
-    return json({ error: "Could not load Torox profit report." }, 500);
+
+    return json({
+      error: "Could not load Torox profit report."
+    }, 500);
   }
 }
