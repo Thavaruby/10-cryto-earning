@@ -295,7 +295,7 @@ export async function onRequestGet({ request, env }) {
       !validText(currencyName, 50) ||
       !/^[a-f0-9]{32}$/.test(suppliedSignature)
     ) {
-      logToroxReject("missing_or_invalid_parameters", {
+     await logToroxReject(env,"missing_or_invalid_parameters", {
         hasId: Boolean(conversionId),
         hasOfferId: Boolean(offerId),
         hasUserId: Boolean(userIdRaw),
@@ -307,19 +307,19 @@ export async function onRequestGet({ request, env }) {
     }
 
     if (!/^[1-9]\d*$/.test(userIdRaw)) {
-      logToroxReject("invalid_user_id_format", { conversionId, offerId });
+     await logToroxReject(env,"invalid_user_id_format", { conversionId, offerId });
       return reply("0");
     }
 
     const userId = Number(userIdRaw);
     if (!Number.isSafeInteger(userId)) {
-      logToroxReject("unsafe_user_id", { conversionId, offerId });
+     await logToroxReject(env,"unsafe_user_id", { conversionId, offerId });
       return reply("0");
     }
 
     const expectedCurrency = env.TOROX_CURRENCY_NAME || EXPECTED_CURRENCY;
     if (currencyName !== expectedCurrency) {
-      logToroxReject("currency_mismatch", {
+      await logToroxReject(env,"currency_mismatch", {
         conversionId,
         offerId,
         userId,
@@ -331,14 +331,14 @@ export async function onRequestGet({ request, env }) {
 
     const amountMilli = parsePoints(amountRaw);
     if (amountMilli === null) {
-      logToroxReject("invalid_amount", { conversionId, offerId, userId });
+     await logToroxReject(env, "invalid_amount", { conversionId, offerId, userId });
       return reply("0");
     }
 
     // Keep source IP verification enabled.
     const sourceIp = request.headers.get("CF-Connecting-IP");
     if (sourceIp !== TOROX_SOURCE_IP) {
-      logToroxReject(env,"source_ip_mismatch", {
+     await logToroxReject(env,"source_ip_mismatch", {
         conversionId,
         offerId,
         userId,
@@ -352,7 +352,7 @@ export async function onRequestGet({ request, env }) {
     );
 
     if (!constantTimeEqual(suppliedSignature, expectedSignature)) {
-      logToroxReject("signature_mismatch", {
+     await logToroxReject(env, "signature_mismatch", {
         conversionId,
         offerId,
         userId
@@ -377,7 +377,7 @@ export async function onRequestGet({ request, env }) {
     const payoutInfo = parseToroxPayout(params.get("payout"));
 
     if (!payoutInfo.valid) {
-      logToroxReject("invalid_payout", { conversionId, offerId, userId });
+     await logToroxReject(env, "invalid_payout", { conversionId, offerId, userId });
       return reply("0");
     }
 
@@ -404,7 +404,7 @@ export async function onRequestGet({ request, env }) {
       );
 
       if (!matches) {
-        logToroxReject("duplicate_conversion_mismatch", {
+       await logToroxReject(env, "duplicate_conversion_mismatch", {
           conversionId,
           offerId,
           userId
@@ -428,7 +428,7 @@ export async function onRequestGet({ request, env }) {
     ).bind(userId).first();
 
     if (!user) {
-      logToroxReject("user_not_found", {
+     await logToroxReject(env, "user_not_found", {
         conversionId,
         offerId,
         userId
