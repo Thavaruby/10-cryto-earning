@@ -1,33 +1,43 @@
 
 function json(data, status = 200) {
-  return Response.json(data, {
+  return new Response(JSON.stringify(data), {
     status,
-    headers: { "Cache-Control": "no-store" }
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "no-store"
+    }
   });
 }
 
 function getCookie(request, name) {
   const header = request.headers.get("Cookie") || "";
-  for (const item of header.split(";")) {
-    const [key, ...rest] = item.trim().split("=");
-    if (key === name) return rest.join("=");
+
+  for (const part of header.split(";")) {
+    const [key, ...value] = part.trim().split("=");
+    if (key === name) return value.join("=");
   }
+
   return null;
 }
 
 async function hashToken(token) {
-  const bytes = new TextEncoder().encode(token);
-  const hash = await crypto.subtle.digest("SHA-256", bytes);
+  const hash = await crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode(token)
+  );
+
   return Array.from(new Uint8Array(hash))
-    .map(b => b.toString(16).padStart(2, "0"))
+    .map(byte => byte.toString(16).padStart(2, "0"))
     .join("");
 }
 
-async function isAdmin(request, db) {
+async function checkAdmin(request, db) {
   const token = getCookie(request, "session");
-  if (!token) return false;
+
+  if (!token || token.length > 512) return false;
 
   const tokenHash = await hashToken(token);
+
   const session = await db.prepare(`
     SELECT user_id
     FROM sessions
@@ -39,11 +49,13 @@ async function isAdmin(request, db) {
   if (!session) return false;
 
   const admin = await db.prepare(`
-    SELECT user_id FROM admins
-    WHERE user_id = ? LIMIT 1
+    SELECT user_id
+    FROM admins
+    WHERE user_id = ?
+    LIMIT 1
   `).bind(session.user_id).first();
 
-  return !!admin;
+  return Boolean(admin);
 }
 
 async function ensureSettings(db) {
@@ -70,49 +82,62 @@ async function ensureSettings(db) {
 }
 
 async function readSettings(db) {
-  await ensureSettings(db);
-
-  const rows = await db.prepare(`
+  const result = await db.prepare(`
     SELECT setting_key, setting_value
     FROM torox_settings
+    WHERE setting_key IN (
+      'points_per_usd',
+      'conversion_fee_percent'
+    )
   `).all();
 
-  const values = Object.fromEntries(
-    (rows.results || []).map(r => [
-      r.setting_key,
-      Number(r.setting_value)
-    ])
-  );
+  const values = {};
+
+  for (const row of result.results || []) {
+    values[row.setting_key] = Number(row.setting_value);
+  }
 
   return {
     pointsPerUsd: values.points_per_usd ?? 100,
-    conversionFeePercent:
-      values.conversion_fee_percent ?? 5
+    conversionFeePercent: values.conversion_fee_percent ?? 5
   };
 }
 
 export async function onRequestGet({ request, env }) {
   try {
+    if (!env.DB) return json({ error: "Database unavailable." }, 503);
+
     const db = env.DB.withSession("first-primary");
 
-    if (!await isAdmin(request, db)) {
-      return json({ success: false, error: "Unauthorized" }, 401);
+    if (!(await checkAdmin(request, db))) {
+      return json({ error: "Unauthorized." }, 401);
     }
 
-    const settings = await readSettings(db);
-    return json({ success: true, settings });
+    await ensureSettings(db);
+
+    return json({
+      success: true,
+      settings: await readSettings(db)
+    });
   } catch (error) {
     console.error("Torox admin settings GET error:", error);
-    return json({ success: false, error: "Unable to load settings" }, 500);
+    return json({ error: "Could not load settings." }, 500);
   }
 }
 
 export async function onRequestPost({ request, env }) {
   try {
+    if (!env.DB) return json({ error: "Database unavailable." }, 503);
+
+    const origin = request.headers.get("Origin");
+    if (origin && origin !== new URL(request.url).origin) {
+      return json({ error: "Invalid request origin." }, 403);
+    }
+
     const db = env.DB.withSession("first-primary");
 
-    if (!await isAdmin(request, db)) {
-      return json({ success: false, error: "Unauthorized" }, 401);
+    if (!(await checkAdmin(request, db))) {
+      return json({ error: "Unauthorized." }, 401);
     }
 
     const body = await request.json();
@@ -122,38 +147,49 @@ export async function onRequestPost({ request, env }) {
     if (
       !Number.isFinite(pointsPerUsd) ||
       pointsPerUsd < 1 ||
-      pointsPerUsd > 1000000 ||
+      pointsPerUsd > 1000000
+    ) {
+      return json({ error: "Points per USD must be between 1 and 1,000,000." }, 400);
+    }
+
+    if (
       !Number.isFinite(fee) ||
       fee < 0 ||
       fee > 50
     ) {
-      return json({
-        success: false,
-        error: "Rate must be 1–1000000; fee must be 0–50%."
-      }, 400);
+      return json({ error: "Fee must be between 0% and 50%." }, 400);
     }
 
     await ensureSettings(db);
 
+    const now = new Date().toISOString();
+
     await db.batch([
       db.prepare(`
-        UPDATE torox_settings
-        SET setting_value = ?, updated_at = CURRENT_TIMESTAMP
-        WHERE setting_key = 'points_per_usd'
-      `).bind(String(pointsPerUsd)),
+        INSERT INTO torox_settings
+          (setting_key, setting_value, updated_at)
+        VALUES ('points_per_usd', ?, ?)
+        ON CONFLICT(setting_key) DO UPDATE SET
+          setting_value = excluded.setting_value,
+          updated_at = excluded.updated_at
+      `).bind(String(pointsPerUsd), now),
+
       db.prepare(`
-        UPDATE torox_settings
-        SET setting_value = ?, updated_at = CURRENT_TIMESTAMP
-        WHERE setting_key = 'conversion_fee_percent'
-      `).bind(String(fee))
+        INSERT INTO torox_settings
+          (setting_key, setting_value, updated_at)
+        VALUES ('conversion_fee_percent', ?, ?)
+        ON CONFLICT(setting_key) DO UPDATE SET
+          setting_value = excluded.setting_value,
+          updated_at = excluded.updated_at
+      `).bind(String(fee), now)
     ]);
 
     return json({
       success: true,
-      settings: { pointsPerUsd, conversionFeePercent: fee }
+      settings: await readSettings(db)
     });
   } catch (error) {
     console.error("Torox admin settings POST error:", error);
-    return json({ success: false, error: "Unable to save settings" }, 500);
+    return json({ error: "Could not save settings." }, 500);
   }
 }
