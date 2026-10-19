@@ -3,16 +3,39 @@ const EXPECTED_CURRENCY = "Points";
 const TOROX_SOURCE_IP = "44.212.211.226";
 const MAX_AMOUNT_POINTS = 1_000_000_000;
 
+
 async function logToroxReject(env, reason, details = {}) {
-  console.warn("[Torox postback rejected]", {
-    reason,
-    conversion_id: details.conversionId ?? null,
-    offer_id: details.offerId ?? null,
-    user_id: details.userId ?? null
-  });
+  const logDetails = {
+    reason: String(reason).slice(0, 200),
+    conversion_id: details.conversionId == null
+      ? null
+      : String(details.conversionId).slice(0, 200),
+    offer_id: details.offerId == null
+      ? null
+      : String(details.offerId).slice(0, 100),
+    user_id: details.userId == null ||
+      !Number.isSafeInteger(Number(details.userId))
+      ? null
+      : Number(details.userId),
+    http_status: Number.isInteger(details.httpStatus)
+      ? details.httpStatus
+      : null,
+    error_message: details.errorMessage == null
+      ? null
+      : String(details.errorMessage).slice(0, 500),
+    created_at: new Date().toISOString()
+  };
+
+  console.warn("[Torox postback rejected]", logDetails);
 
   try {
-    if (!env?.DB) return;
+    if (!env?.DB) {
+      console.error("[Torox rejection log failed]", {
+        reason: "D1 binding DB is unavailable",
+        ...logDetails
+      });
+      return;
+    }
 
     await env.DB.prepare(`
       CREATE TABLE IF NOT EXISTS torox_postback_rejections (
@@ -21,29 +44,58 @@ async function logToroxReject(env, reason, details = {}) {
         offer_id TEXT,
         user_id INTEGER,
         reason TEXT NOT NULL,
-        created_at TEXT NOT NULL DEFAULT (datetime('now'))
+        http_status INTEGER,
+        error_message TEXT,
+        created_at TEXT NOT NULL
       )
     `).run();
 
+    // Add columns when the existing table was created
+    // by the older version of this logger.
+    const columns = await env.DB.prepare(
+      "PRAGMA table_info(torox_postback_rejections)"
+    ).all();
+
+    const existingColumns = new Set(
+      (columns.results || []).map(column => column.name)
+    );
+
+    if (!existingColumns.has("http_status")) {
+      await env.DB.prepare(
+        "ALTER TABLE torox_postback_rejections ADD COLUMN http_status INTEGER"
+      ).run();
+    }
+
+    if (!existingColumns.has("error_message")) {
+      await env.DB.prepare(
+        "ALTER TABLE torox_postback_rejections ADD COLUMN error_message TEXT"
+      ).run();
+    }
+
     await env.DB.prepare(`
       INSERT INTO torox_postback_rejections
-        (conversion_id, offer_id, user_id, reason)
-      VALUES (?, ?, ?, ?)
+        (conversion_id, offer_id, user_id, reason,
+         http_status, error_message, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `).bind(
-      details.conversionId == null ? null : String(details.conversionId),
-      details.offerId == null ? null : String(details.offerId),
-      details.userId == null ||
-      !Number.isSafeInteger(Number(details.userId))
-        ? null
-        : Number(details.userId),
-      String(reason).slice(0, 200)
+      logDetails.conversion_id,
+      logDetails.offer_id,
+      logDetails.user_id,
+      logDetails.reason,
+      logDetails.http_status,
+      logDetails.error_message,
+      logDetails.created_at
     ).run();
+
   } catch (error) {
     console.error("[Torox rejection log insert failed]", {
-      reason: String(error?.message || "D1 insert failed")
+      reason: logDetails.reason,
+      conversion_id: logDetails.conversion_id,
+      error: String(error?.message || "D1 insert failed").slice(0, 500)
     });
   }
 }
+
 
 function reply(value, status = 200) {
   return new Response(value, {
@@ -486,12 +538,18 @@ export async function onRequestGet({ request, env }) {
     });
 
     // Persist the failure reason; logger failure must not mask the error.
-    await logToroxReject(env, "processing_exception", {
-      conversionId, offerId,
-      userId: userIdRaw && /^[1-9]\d*$/.test(userIdRaw)
-        ? Number(userIdRaw)
-        : null
-    });
+    
+await logToroxReject(env, "processing_exception", {
+  conversionId,
+  offerId,
+  userId: userIdRaw && /^[1-9]\d*$/.test(userIdRaw)
+    ? Number(userIdRaw)
+    : null,
+  httpStatus: 500,
+  errorMessage: error instanceof Error
+    ? error.message
+    : "Unknown error"
+});
 
     // Acknowledge only if this exact conversion was already recorded.
     try {
