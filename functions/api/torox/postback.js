@@ -167,6 +167,48 @@ function validText(value, maxLength = 200) {
     value.length <= maxLength;
 }
 
+
+function parseToroxPayout(value) {
+  if (value === null || value === "") {
+    return { valid: true, value: null };
+  }
+
+  if (!/^-?\d+(?:\.\d{1,4})?$/.test(value)) {
+    return { valid: false, value: null };
+  }
+
+  const payout = Number(value);
+
+  if (!Number.isFinite(payout) || Math.abs(payout) > 1000000) {
+    return { valid: false, value: null };
+  }
+
+  return {
+    valid: true,
+    value: Math.round(payout * 10000) / 10000
+  };
+}
+
+async function saveToroxPayout(db, conversionId, userId, offerId, payoutUsd) {
+  await db.prepare(`
+    INSERT INTO torox_payout_tracking
+      (conversion_id, user_id, offer_id, payout_usd, created_at)
+    VALUES (?1, ?2, ?3, ?4, ?5)
+    ON CONFLICT(conversion_id) DO UPDATE SET
+      payout_usd = COALESCE(
+        excluded.payout_usd,
+        torox_payout_tracking.payout_usd
+      )
+  `).bind(
+    conversionId,
+    userId,
+    offerId,
+    payoutUsd,
+    new Date().toISOString()
+  ).run();
+}
+
+                                  
 async function findConversion(db, conversionId) {
   return db.prepare(`
     SELECT conversion_id, user_id, offer_id,
@@ -296,6 +338,25 @@ export async function onRequestGet({ request, env }) {
       return reply("1");
     }
 
+
+    const payoutInfo = parseToroxPayout(params.get("payout"));
+
+    if (!payoutInfo.valid) {
+      logToroxReject("invalid_payout", { conversionId, offerId, userId });
+      return reply("0");
+    }
+
+    await env.DB.prepare(`
+      CREATE TABLE IF NOT EXISTS torox_payout_tracking (
+        conversion_id TEXT PRIMARY KEY,
+        user_id INTEGER NOT NULL,
+        offer_id TEXT NOT NULL,
+        payout_usd REAL,
+        created_at TEXT NOT NULL
+      )
+    `).run();
+
+      
     const existing = await findConversion(env.DB, conversionId);
 
     if (existing) {
@@ -315,6 +376,15 @@ export async function onRequestGet({ request, env }) {
         });
       }
 
+            if (matches) {
+        await saveToroxPayout(
+          env.DB,
+          conversionId,
+          userId,
+          offerId,
+          payoutInfo.value
+        );
+      }
       return reply(matches ? "1" : "0");
     }
 
@@ -367,6 +437,22 @@ export async function onRequestGet({ request, env }) {
         userId,
         amountMilli,
         amountMilli < 0 ? "reversal" : "credit",
+        now
+      )
+      env.DB.prepare(`
+        INSERT INTO torox_payout_tracking
+          (conversion_id, user_id, offer_id, payout_usd, created_at)
+        VALUES (?1, ?2, ?3, ?4, ?5)
+        ON CONFLICT(conversion_id) DO UPDATE SET
+          payout_usd = COALESCE(
+            excluded.payout_usd,
+            torox_payout_tracking.payout_usd
+          )
+      `).bind(
+        conversionId,
+        userId,
+        offerId,
+        payoutInfo.value,
         now
       )
     ]);
