@@ -156,21 +156,36 @@ function getCookie(
     return null;
 }
 
+        /* =================================================
+           DEVICE TOKEN
+        ================================================= */
 
-/* =====================================================
-   DEVICE TOKEN
-===================================================== */
+        /*
+         * Existing device keeps its existing token.
+         * A new browser/device receives a new token.
+         */
 
-function createDeviceToken() {
+        let deviceToken =
+            getCookie(
+                context.request,
+                DEVICE_COOKIE_NAME
+            );
 
-    return toBase64Url(
-        crypto.getRandomValues(
-            new Uint8Array(
-                DEVICE_TOKEN_BYTES
-            )
-        )
-    );
-}
+        let newDeviceCookie = false;
+
+        if (
+            !deviceToken ||
+            deviceToken.length !== 43 ||
+            !/^[A-Za-z0-9_-]+$/.test(deviceToken)
+        ) {
+            deviceToken = createDeviceToken();
+            newDeviceCookie = true;
+        }
+
+        const deviceIdHash =
+            await sha256Base64Url(
+                deviceToken
+            );
 
 
 /* =====================================================
