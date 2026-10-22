@@ -778,23 +778,125 @@ export async function onRequestPost(
                     .first();
 
 
-            if (existingUserDevice) {
+            
+if (existingUserDevice) {
+    // A different device must verify ownership by email
+    // before its device binding can be changed.
 
-                /*
-                 * The account is already bound to another
-                 * device. Do not bypass the device binding
-                 * by allowing the login without inserting
-                 * the new device.
-                 */
-                return jsonResponse(
-                    {
-                        success: false,
-                        error:
-                            "This account is already registered to another device."
-                    },
-                    403
-                );
+    const apiKey = context.env.RESEND_API_KEY;
+
+    if (!apiKey || !user.email) {
+        return jsonResponse({
+            success: false,
+            error: "Email verification is temporarily unavailable."
+        }, 503);
+    }
+
+    // Generate a six-digit code without modulo bias.
+    let code = "";
+    while (code.length < 6) {
+        const bytes = crypto.getRandomValues(new Uint8Array(16));
+
+        for (const byte of bytes) {
+            if (byte < 250) {
+                code += String(byte % 10);
+                if (code.length === 6) break;
             }
+        }
+    }
+
+    const codeSalt = crypto.getRandomValues(new Uint8Array(16));
+    const codeHash = await hashPassword(code, codeSalt);
+    const storedCodeHash =
+        `${toBase64(codeSalt)}$${toBase64(codeHash)}`;
+
+    const challengeToken = toBase64Url(
+        crypto.getRandomValues(new Uint8Array(32))
+    );
+    const challengeHash = await hashSessionToken(challengeToken);
+    const createdAt = Date.now();
+    const expiresAt = createdAt + 10 * 60 * 1000;
+
+    await db.prepare(`
+        DELETE FROM device_login_verifications
+        WHERE user_id = ? OR expires_at < ?
+    `).bind(user.id, createdAt).run();
+
+    await db.prepare(`
+        INSERT INTO device_login_verifications
+        (user_id, challenge_hash, code_hash, device_id_hash,
+         expires_at, attempts, created_at)
+        VALUES (?, ?, ?, ?, ?, 0, ?)
+    `).bind(
+        user.id,
+        challengeHash,
+        storedCodeHash,
+        deviceIdHash,
+        expiresAt,
+        createdAt
+    ).run();
+
+    let emailResponse;
+
+    try {
+        emailResponse = await fetch("https://api.resend.com/emails", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${apiKey}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                from: "My Crypto Faucet <noreply@myfaucetcrypto.com>",
+                to: [user.email],
+                subject: "Verify your new device",
+                text:
+                    `Your My Crypto Faucet verification code is ${code}.\n\n` +
+                    "It expires in 10 minutes. If you did not request this, " +
+                    "you can ignore this email."
+            })
+        });
+    } catch {
+        emailResponse = null;
+    }
+
+    if (!emailResponse || !emailResponse.ok) {
+        await db.prepare(`
+            DELETE FROM device_login_verifications
+            WHERE challenge_hash = ?
+        `).bind(challengeHash).run();
+
+        return jsonResponse({
+            success: false,
+            error: "Could not send the verification email. Please try again."
+        }, 503);
+    }
+
+    const headers = new Headers({
+        "Content-Type": "application/json",
+        "Cache-Control": "no-store"
+    });
+
+    headers.append(
+        "Set-Cookie",
+        `mcf_login_challenge=${challengeToken}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=600`
+    );
+
+    if (newDeviceCookie) {
+        headers.append(
+            "Set-Cookie",
+            `${DEVICE_COOKIE_NAME}=${encodeURIComponent(deviceToken)}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=${DEVICE_COOKIE_MAX_AGE}`
+        );
+    }
+
+    return new Response(JSON.stringify({
+        success: false,
+        requiresVerification: true,
+        message: "A verification code has been sent to your email."
+    }), {
+        status: 200,
+        headers
+    });
+}
 
 
             /* -------------------------------------------------
