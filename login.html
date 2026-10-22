@@ -852,6 +852,66 @@ if (result.requiresVerification) {
             }
         );
 
+/* =================================================
+   VERIFY NEW DEVICE
+================================================= */
+
+document
+    .getElementById("deviceVerificationForm")
+    .addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const codeInput =
+            document.getElementById("deviceVerificationCode");
+
+        const verifyButton =
+            document.getElementById("verifyDeviceButton");
+
+        const message =
+            document.getElementById("message");
+
+        verifyButton.disabled = true;
+        message.innerText = "⏳ Verifying your device...";
+
+        try {
+            const response = await fetch(
+                "/api/verify-device-login",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        code: codeInput.value.trim()
+                    })
+                }
+            );
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                message.innerText =
+                    "✅ Device verified. Login successful!";
+
+                window.location.href = "/dashboard.html";
+                return;
+            }
+
+            message.innerText =
+                "❌ " + (result.error || "Verification failed.");
+
+            verifyButton.disabled = false;
+
+        } catch (error) {
+            console.error("Device verification error:", error);
+
+            message.innerText =
+                "❌ Connection error. Please try again.";
+
+            verifyButton.disabled = false;
+        }
+    });
+
 </script>
 
 </body>
