@@ -278,23 +278,33 @@ export async function onRequestPost(context) {
             now + 7 * 24 * 60 * 60 * 1000
         ).toISOString();
 
-        await db.batch([
-            db.prepare(`
-                UPDATE user_devices
-                SET device_id_hash = ?
-                WHERE user_id = ?
-            `).bind(deviceIdHash, record.user_id),
+        
+await db.batch([
+    db.prepare(`
+        UPDATE user_devices
+        SET device_id_hash = ?
+        WHERE user_id = ?
+    `).bind(deviceIdHash, record.user_id),
 
-            db.prepare(`
-                INSERT INTO sessions (user_id, token_hash, expires_at)
-                VALUES (?, ?, ?)
-            `).bind(record.user_id, sessionHash, sessionExpiry),
+    // Revoke all previous sessions for this account.
+    db.prepare(`
+        DELETE FROM sessions
+        WHERE user_id = ?
+    `).bind(record.user_id),
 
-            db.prepare(`
-                DELETE FROM device_login_verifications
-                WHERE user_id = ?
-            `).bind(record.user_id)
-        ]);
+    // Create a fresh session for the verified device.
+    db.prepare(`
+        INSERT INTO sessions (user_id, token_hash, expires_at)
+        VALUES (?, ?, ?)
+    `).bind(record.user_id, sessionHash, sessionExpiry),
+
+    // Remove pending verification challenges for this account.
+    db.prepare(`
+        DELETE FROM device_login_verifications
+        WHERE user_id = ?
+    `).bind(record.user_id)
+]);
+
 
         return jsonResponse({
             success: true,
